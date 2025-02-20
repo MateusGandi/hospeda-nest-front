@@ -1,11 +1,12 @@
 import { TextField, MenuItem, InputAdornment } from "@mui/material";
-import { styled } from "@mui/system";
+import { height, styled } from "@mui/system";
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
     backgroundColor: "rgba(256, 256, 256, 0.1)",
     borderRadius: 8,
     border: "none",
+    height: "48px",
     color: "#fff !important",
     "& fieldset": { border: "none" },
     "&:hover fieldset": { border: "none" },
@@ -22,6 +23,7 @@ const CustomTextField = styled(TextField)({
   },
   "& .MuiInputBase-input": {
     color: "#fff",
+    height: "15px",
     "&::placeholder": {
       opacity: 1, // Mantém o placeholder visível
       color: "rgba(255,255,255,0.7)",
