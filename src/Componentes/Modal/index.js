@@ -40,6 +40,8 @@ const Modal = ({
   loading = false,
   buttons, //{titulo, action, color}
   buttonStyle,
+  modalStyle,
+  image,
 }) => {
   const [loadingButton, setLoadingButton] = useState(false);
   return (
@@ -105,7 +107,6 @@ const Modal = ({
           <DialogContent sx={{ p: "10px" }}>
             <Container
               maxWidth={maxWidth}
-              fullWidth
               sx={{
                 height: "100%",
                 p: "0 !important",
@@ -118,69 +119,95 @@ const Modal = ({
               }}
               component="form"
             >
-              <Paper
+              {" "}
+              <Grid
+                container
                 sx={{
-                  width: "100%",
-                  height: "100%",
-                  m: 0,
-                  p: ["modal"].includes(component)
-                    ? "10px 0"
-                    : isMobile
-                    ? "0"
-                    : "0px 24px",
-                  ...(isMobile || ["view", "modal"].includes(component)
-                    ? { background: "transparent" }
-                    : {}),
+                  display: "flex",
+                  justifyContent: "center",
                 }}
-                elevation={
-                  isMobile || ["view", "modal"].includes(component) ? 0 : 1
-                }
               >
-                <Grid
-                  container
-                  spacing={2}
-                  sx={{
-                    ...(component == "form"
-                      ? {
-                          p: "20px 0",
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          flexDirection: "column",
-                        }
-                      : {}),
-                  }}
-                >
-                  {["form", "view"].includes(component) && backAction ? (
-                    <Grid
-                      size={{ xs: 12, xs: 12 }}
-                      sx={{ textAlign: "center" }}
-                    >
-                      <Typography variant="h6">{titulo}</Typography>
-                    </Grid>
-                  ) : null}
-                  <Grid size={{ xs: 12, xs: 12 }}>{children}</Grid>
-                  <Grid size={{ xs: 12, xs: 12 }}>
-                    {component == "form" && (
-                      <Button
-                        fullWidth
-                        size="large"
-                        disableElevation
-                        onClick={() => {
-                          setLoadingButton(true);
-                          onAction()?.then(() => setLoadingButton(false));
-                        }}
-                        color={color}
-                        disabled={loadingButton}
-                        type="submit"
-                        sx={{ marginTop: "50px", ...buttonStyle }}
-                      >
-                        {loadingButton ? "Carregando..." : actionText}
-                      </Button>
-                    )}{" "}
+                {image && (
+                  <Grid size={{ xs: 0, md: 7 }}>
+                    {" "}
+                    <img
+                      src={image.src}
+                      style={{
+                        ...image.styles,
+                        display: !isMobile ? "block" : "none",
+                      }}
+                    />
                   </Grid>
+                )}
+                <Grid size={{ xs: 12, md: component != "form" ? 12 : 5 }}>
+                  {" "}
+                  <Paper
+                    variant={
+                      isMobile || component != "form" ? "contained" : "outlined"
+                    }
+                    sx={{
+                      ...modalStyle,
+                      height: component != "form" ? "100%" : "530px",
+                      m: 0,
+                      p: ["modal"].includes(component)
+                        ? "10px 0"
+                        : isMobile
+                        ? "0"
+                        : "0px 24px",
+                      background: "transparent",
+                    }}
+                    elevation={
+                      isMobile || ["view", "modal"].includes(component) ? 0 : 1
+                    }
+                  >
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{
+                        ...(component == "form"
+                          ? {
+                              p: "20px 0",
+                              height: component != "form" ? "100%" : "530px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              flexDirection: "column",
+                            }
+                          : {}),
+                      }}
+                    >
+                      {["form", "view"].includes(component) && backAction ? (
+                        <Grid
+                          size={{ xs: 12, xs: 12 }}
+                          sx={{ textAlign: "center" }}
+                        >
+                          <Typography variant="h6">{titulo}</Typography>
+                        </Grid>
+                      ) : null}
+                      <Grid size={{ xs: 12, xs: 12 }}>{children}</Grid>
+                      <Grid size={{ xs: 12, xs: 12 }}>
+                        {component == "form" && (
+                          <Button
+                            fullWidth
+                            size="large"
+                            disableElevation
+                            onClick={() => {
+                              setLoadingButton(true);
+                              onAction()?.then(() => setLoadingButton(false));
+                            }}
+                            variant="contained"
+                            color={color}
+                            disabled={loadingButton}
+                            type="submit"
+                            sx={{ marginTop: "50px", ...buttonStyle }}
+                          >
+                            {loadingButton ? "Carregando..." : actionText}
+                          </Button>
+                        )}{" "}
+                      </Grid>
+                    </Grid>
+                  </Paper>
                 </Grid>
-              </Paper>
+              </Grid>
             </Container>
           </DialogContent>
           {component != "form" && onAction && (

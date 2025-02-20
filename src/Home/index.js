@@ -7,7 +7,9 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import LogoImage from "../Assets/logo.png";
+import LogoImage from "../Assets/plus_banner.png";
+import TypingEffectText from "../Componentes/Effects";
+import { isMobile } from "../Componentes/Funcoes";
 
 const PublicPage = ({}) => {
   const navigate = useNavigate();
@@ -15,6 +17,8 @@ const PublicPage = ({}) => {
     <Container
       maxWidth="lg"
       style={{
+        background: `url(${LogoImage})`,
+        backgroundSize: "cover",
         display: "flex",
         alignItems: "center",
         minHeight: "88vh",
@@ -22,7 +26,7 @@ const PublicPage = ({}) => {
     >
       <Grid
         container
-        spacing={1}
+        spacing={2}
         sx={{
           textAlign: "center",
           justifyContent: "center",
@@ -42,21 +46,22 @@ const PublicPage = ({}) => {
               flexWrap: "wrap",
             }}
           >
-            <CardMedia
+            <TypingEffectText />
+            {/* <CardMedia
               component="img"
               image={LogoImage}
               sx={{
-                width: { xs: "200px", md: "300px" },
+                width: { xs: "600px", md: "300px" },
               }}
               alt="Logo"
-            />
+            /> */}
           </Typography>
         </Grid>
 
         {/* Texto descritivo */}
         <Grid size={12}>
           <Typography
-            variant="h5"
+            variant={isMobile ? "body1" : "h6"}
             style={{ marginBottom: "40px", color: "#fff" }}
           >
             Os serviços da sua barberia e tudo mais em um só lugar, agente já!
@@ -65,14 +70,15 @@ const PublicPage = ({}) => {
 
         {/* Botões */}
         {/* Criar */}
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 2, md: 1 } }}>
           <Button
             variant="outlined"
             fullWidth
             size="large"
             color="secondary"
+            disableElevation
             style={{
-              border: "1px solid #303030",
+              border: "1px solid #fff",
               color: "#FFFFFF",
             }}
             onClick={() => navigate("/create")}
@@ -81,14 +87,16 @@ const PublicPage = ({}) => {
           </Button>
         </Grid>
         {/* Login */}
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 1, md: 2 } }}>
           <Button
             fullWidth
             variant="contained"
             size="large"
-            color="warning"
+            color="primary"
+            disableElevation
             style={{
               fontWeight: "bold",
+              color: "#FFFFFF",
             }}
             onClick={() => navigate("/estabelecimentos")}
           >

@@ -5,6 +5,8 @@ import { Grid2 as Grid } from "@mui/material";
 import Modal from "../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
+import Banner from "../Assets/banner_onboard.png";
+import { Height } from "@mui/icons-material";
 
 const LoginPage = ({ page, alertCustom }) => {
   const navigate = useNavigate();
@@ -96,11 +98,13 @@ const LoginPage = ({ page, alertCustom }) => {
         onAction={() =>
           inicialState.componente == "create" ? handleCreate() : handleLogin()
         }
-        buttonStyle={{ variant: "outlined", border: "1px solid #606060" }}
-        maxWidth="xs"
+        buttonStyle={{ variant: "contained" }}
+        maxWidth="md"
+        modalStyle={{ minWidth: "360px !important" }}
         component="form"
         fullScreen="all"
         backAction={inicialState.backAction}
+        image={{ styles: { height: "530px" }, src: Banner }}
       >
         <Grid container spacing={4}>
           {inicialState.componente == "create" ? (
