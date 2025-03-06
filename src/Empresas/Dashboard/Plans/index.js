@@ -52,7 +52,7 @@ const ModalPlanos = () => {
         onClick={modal.onOpen}
         variant="outlined"
         fullWidth
-        sx={{ border: "1px solid #484848", color: "" }}
+        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
         startIcon={<VerifiedRoundedIcon />}
       >
         Ver Planos

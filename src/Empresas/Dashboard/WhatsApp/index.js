@@ -39,7 +39,7 @@ const GestorSessoesWhatsApp = () => {
         color="success"
         startIcon={<WhatsAppIcon />}
         onClick={() => setModalSessoes(true)}
-        sx={{ border: "1px solid #484848" }}
+        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
         fullWidth
       >
         Configurar WhatsApp

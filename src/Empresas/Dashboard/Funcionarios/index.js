@@ -3,6 +3,7 @@ import Modal from "../../../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import FuncionarioForm from "./AdicionarFuncionario";
 import { Rows } from "../../../Componentes/Lista/Rows";
+import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 
@@ -13,7 +14,6 @@ const GerenciarFuncionarios = ({
   handleClose,
   alertCustom,
 }) => {
-  const navigate = useNavigate();
   const [modal, setModal] = useState({
     open: false,
     titulo: "Adicionar novo funcionário",
@@ -21,13 +21,7 @@ const GerenciarFuncionarios = ({
     actionText: "Adicionar",
   });
   const [funcionarios, setFuncionarios] = useState([]);
-  const [servicos, setServicos] = useState([
-    { id: 1, nome: "Corte", duracao: 30, valor: 50 },
-    { id: 2, nome: "Barba", duracao: 20, valor: 30 },
-    { id: 3, nome: "Coloração", duracao: 120, valor: 150 },
-    { id: 4, nome: "Hidratação", duracao: 60, valor: 80 },
-    { id: 5, nome: "Alisamento", duracao: 180, valor: 200 },
-  ]);
+  const [servicos, setServicos] = useState([]);
 
   const handleDelete = async (item) => {
     try {
@@ -95,8 +89,45 @@ const GerenciarFuncionarios = ({
       setServicos(dados);
     };
     setFuncionarios(dados);
-    // fetchServicos()
+    fetchServicos();
   }, [dados]);
+
+  const handlePhotoUpload = async (e, userId) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      console.error("Nenhum arquivo selecionado.");
+      return;
+    }
+
+    try {
+      // Ajustar o nome do arquivo
+      const fileExtension = file.type.split("/")[1];
+      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
+      const renamedFile = new File([file], newName, { type: file.type });
+
+      const formData = new FormData();
+      formData.append("fotos", renamedFile);
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const endpoint = `/images/user/${userId}`;
+          await Api.query("POST", endpoint, formData);
+
+          alertCustom("Foto adicionada com sucesso!");
+        } catch (uploadError) {
+          alertCustom("Erro ao adicionar foto!");
+          console.error("Erro ao fazer upload da imagem:", uploadError);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Erro ao processar o arquivo:", error);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -123,23 +154,33 @@ const GerenciarFuncionarios = ({
           buttons={modal.buttons}
         />{" "}
         {funcionarios && funcionarios.length ? (
-          <>
-            <Rows
-              oneTapMode={true}
-              onSelect={handleSelect}
-              items={funcionarios.map((item, index) => ({
-                ...item,
-                id: index,
-                titulo: `${item.nome} - ${item.telefone}`,
-                subtitulo: item.servicosPrestados?.length
-                  ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
-                  : "Sem serviços cadastrados",
-              }))}
-            />
-            <Typography variant="body1" className="show-box">
-              Aviso: Clique sobre um funcionário para editar ou excluir
-            </Typography>
-          </>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <Cards
+                onUpload={handlePhotoUpload}
+                oneTapMode={true}
+                onSelect={handleSelect}
+                items={funcionarios.map((item, index) => ({
+                  ...item,
+                  imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
+                  titulo: `${item.nome} - ${item.telefone}`,
+
+                  subtitulo: item.servicosPrestados?.length
+                    ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
+                    : "Sem serviços cadastrados",
+                }))}
+                keys={[
+                  { label: "", value: "nome" },
+                  { label: "Tel", value: "telefone" },
+                ]}
+              />
+            </Grid>
+            <Grid size={12}>
+              <Typography variant="body1" className="show-box">
+                Aviso: Clique sobre um funcionário para editar ou excluir
+              </Typography>
+            </Grid>
+          </Grid>
         ) : (
           <Typography
             variant="h5"

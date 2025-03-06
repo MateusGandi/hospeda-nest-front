@@ -1,72 +1,151 @@
 import React, { useState } from "react";
-import Grid from "@mui/material/Grid2";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
+import {
+  Grid2 as Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Typography,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 
 export const Cards = ({
   items,
   onSelect,
-  selectedItems = [],
-  multipleSelect = false,
+  onEdit,
+  onDelete,
+  label,
+  onUpload,
+  selectionMode = "onEdit", // "onTap" ou "onEdit"
+  keys,
 }) => {
-  const [selected, setSelected] = useState(selectedItems);
+  const [previews, setPreviews] = useState({}); // Estado para armazenar imagens carregadas
 
   const handleSelect = (id) => {
-    let updatedSelection;
-    if (multipleSelect) {
-      updatedSelection = selected.includes(id)
-        ? selected.filter((item) => item !== id)
-        : [...selected, id];
-    } else {
-      updatedSelection = selected.includes(id) ? [] : [id];
+    if (selectionMode === "onTap" && onSelect) {
+      onSelect(id);
     }
+  };
 
-    setSelected(updatedSelection);
-    if (onSelect) onSelect(updatedSelection);
+  const handleUpload = (event, id) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviews((prev) => ({ ...prev, [id]: reader.result })); // Atualiza a pré-visualização da imagem
+      if (onUpload) onUpload(event, id);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
     <Grid container spacing={2}>
       {items.map((item) => (
-        <Grid item xs={12} sm={6} md={4} key={item.id}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
           <Card
             variant="outlined"
             onClick={() => handleSelect(item.id)}
             sx={{
-              display: "flex",
-              alignItems: "start",
-              cursor: "pointer",
+              position: "relative",
               borderRadius: "10px",
-              color: "#000",
-              ...(selected.includes(item.id)
-                ? { border: "2px solid blue" }
-                : {}),
+              overflow: "hidden",
+              width: "100%",
+              aspectRatio: "1 / 1", // Mantém o card sempre quadrado
             }}
           >
-            <CardMedia
-              component="img"
-              sx={{ width: 100 }}
-              image={item.imagem}
-              alt={item.titulo}
+            {/* Upload ao clicar na imagem */}
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              id={`upload-${item.id}`}
+              onChange={(e) => handleUpload(e, item.id)}
+              disabled={selectionMode === "onTap"}
             />
-            <CardContent sx={{ flex: 1 }}>
-              <Typography variant="h6">{item.titulo}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {item.subtitulo}
-              </Typography>
-            </CardContent>
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                item.onDelete(item.id);
-              }}
+            <label
+              htmlFor={!item.disabled ? `upload-${item.id}` : ""}
+              style={{ position: "relative" }}
             >
-              <CloseIcon />
-            </IconButton>
+              <CardMedia
+                component="img"
+                sx={{
+                  width: "100%",
+                  height: "60%",
+                  objectFit: "cover",
+                  cursor: selectionMode === "onTap" ? "default" : "pointer",
+                }}
+                image={previews[item.id] || item.imagem} // Mostra a imagem carregada ou a original
+                alt={item.titulo}
+              />
+              <Typography
+                sx={{
+                  position: "absolute",
+                  color: "rgba(256,256,256,0.4)",
+                  top: "80%",
+                  width: "100%",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
+                variant="body1"
+              >
+                {!item.disabled
+                  ? "Clique para mudar a imagem"
+                  : "Salve antes de adicionar imagem"}
+              </Typography>
+            </label>
+
+            <CardContent sx={{ p: 1 }}>
+              {keys ? (
+                keys.map((key) => (
+                  <Typography variant="body1" sx={{ width: "100%", m: 0 }}>
+                    {`${key.label ? `${key.label}: ` : ""}${item[key.value]}`}
+                  </Typography>
+                ))
+              ) : (
+                <Typography variant="body1">{item.titulo}</Typography>
+              )}
+            </CardContent>
+
+            {/* Botões no canto superior direito */}
+            {onDelete && (
+              <Tooltip title="Excluir">
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(item.id);
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {selectionMode === "onEdit" && (
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  left: 8,
+                  borderRadius: "10px !important",
+                  p: "5px 10px",
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(item);
+                }}
+              >
+                <Typography variant="body2">Editar {label}</Typography>
+              </IconButton>
+            )}
           </Card>
         </Grid>
       ))}

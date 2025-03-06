@@ -69,6 +69,9 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
         </Grid>
       </Modal>
       <Grid container alignItems="center">
+        <Typography variant="body1" sx={{ marginRight: 1 }}>
+          {formData.aberto ? "Aberto" : "Fechado"}
+        </Typography>{" "}
         <Switch
           checked={formData.aberto}
           onChange={async (e) => {
@@ -77,9 +80,6 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
           }}
           color="primary"
         />{" "}
-        <Typography variant="body1" sx={{ marginRight: 1 }}>
-          {formData.aberto ? "Aberto" : "Fechado"}
-        </Typography>
       </Grid>
     </>
   );

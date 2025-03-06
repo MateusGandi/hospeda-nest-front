@@ -3,6 +3,7 @@ import Modal from "../../../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import ServicoForm from "./addServico";
 import { Rows } from "../../../Componentes/Lista/Rows";
+import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 
@@ -67,7 +68,20 @@ const GerenciarServicos = ({
   const handleSave = async () => {
     try {
       const servicosNovos = servicos.filter((item) => !item.id);
-      await Api.query("POST", `/service/${barbearia.id}`, servicosNovos);
+      const servicosAtualizados = servicos
+        .filter((item) => !!item.id && item.flagUpdate)
+        .map(({ flagUpdate, ...item }) => item);
+
+      if (servicosNovos.length)
+        await Api.query("POST", `/service/${barbearia.id}`, servicosNovos);
+
+      if (servicosAtualizados.length)
+        await Api.query(
+          "PATCH",
+          `/service/${barbearia.id}`,
+          servicosAtualizados
+        );
+      await fetchServicos();
       alertCustom("Serviços atualizados atualizada!");
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
@@ -83,18 +97,55 @@ const GerenciarServicos = ({
       alertCustom("Erro ao cadastrar serviços!");
     }
   };
+  const fetchServicos = async () => {
+    const dados = await Api.query("GET", `/service/${barbearia.id}`);
+    setServicos(dados);
+  };
 
   useEffect(() => {
-    const fetchServicos = async () => {
-      const dados = await Api.query("GET", `/service/${barbearia.id}`);
-      setServicos(dados);
-    };
-    //if (dados && !dados.length) {
-    return setOpenAlertModal(true);
-    // }
-    //setServicos(dados);
+    if (dados && !dados.length) {
+      return setOpenAlertModal(true);
+    }
+    setServicos(dados);
     fetchServicos();
-  }, [dados]);
+  }, [open]);
+
+  const handlePhotoUpload = async (e, serviceId) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      console.error("Nenhum arquivo selecionado.");
+      return;
+    }
+
+    try {
+      // Ajustar o nome do arquivo
+      const fileExtension = file.type.split("/")[1];
+      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
+      const renamedFile = new File([file], newName, { type: file.type });
+
+      const formData = new FormData();
+      formData.append("fotos", renamedFile);
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const endpoint = `/images/service/${serviceId}`;
+          await Api.query("POST", endpoint, formData);
+
+          alertCustom("Foto adicionada com sucesso!");
+        } catch (uploadError) {
+          alertCustom("Erro ao adicionar foto!");
+          console.error("Erro ao fazer upload da imagem:", uploadError);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Erro ao processar o arquivo:", error);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -120,23 +171,36 @@ const GerenciarServicos = ({
           buttons={modal.buttons}
         />{" "}
         {servicos && servicos.length ? (
-          <>
-            <Rows
-              oneTapMode={true}
-              onSelect={handleSelect}
-              items={servicos.map((item, index) => ({
-                ...item,
-                titulo: item.nome,
-                subtitulo:
-                  item.tempoGasto && item.descricao
-                    ? `Duração: ${item.tempoGasto} - ${item.descricao}`
-                    : "Sem descrição",
-              }))}
-            />{" "}
-            <Typography variant="body1" className="show-box">
-              Aviso: Clique sobre um funcionário para editar ou excluir
-            </Typography>
-          </>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              {" "}
+              <Cards
+                onUpload={handlePhotoUpload}
+                oneTapMode={true}
+                label="produto"
+                keys={[
+                  { label: "", value: "nome" },
+                  { label: "Preço (R$)", value: "preco" },
+                ]}
+                onEdit={handleSelect}
+                items={servicos.map((item, index) => ({
+                  ...item,
+                  imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,
+                  titulo: item.nome,
+                  subtitulo:
+                    item.tempoGasto && item.descricao
+                      ? `Duração: ${item.tempoGasto} - ${item.descricao}`
+                      : "Sem descrição",
+                }))}
+              />
+            </Grid>
+            <Grid size={12}>
+              {" "}
+              <Typography variant="body1" className="show-box">
+                💡 Clique sobre o item para trocar a imagem
+              </Typography>
+            </Grid>
+          </Grid>
         ) : (
           <Typography
             variant="h5"
@@ -164,7 +228,7 @@ const GerenciarServicos = ({
         fullScreen="mobile"
         component="modal"
       >
-        <Typography variant="h6" sx={{ m: 1 }} color="GrayColor">
+        <Typography variant="body1" sx={{ m: 1 }} color="GrayColor">
           Gostaria de usar e editar serviços pré-definidos?
         </Typography>
       </Modal>

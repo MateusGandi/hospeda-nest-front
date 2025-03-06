@@ -17,6 +17,10 @@ export default function ClienteSelecionar({ formData, setFormData }) {
   const [clienteSelecionado, setClienteSelecionado] = useState(null);
 
   useEffect(() => {
+    setFormData((prev) => ({ ...prev, cliente: null }));
+  }, [novoCliente]);
+
+  useEffect(() => {
     if (clienteSelecionado) setFormData(clienteSelecionado);
   }, [clienteSelecionado]);
 
@@ -30,7 +34,9 @@ export default function ClienteSelecionar({ formData, setFormData }) {
             variant="outlined"
             sx={{
               cursor: "pointer",
-              border: !novoCliente ? "2px solid #fff" : "2px solid transparent",
+              border: !novoCliente
+                ? "2px solid rgba(256,256,256,0.1)"
+                : "2px solid transparent",
               backgroundColor: !novoCliente
                 ? "rgba(256, 256, 256, 0.05)"
                 : "transparent",
@@ -58,7 +64,9 @@ export default function ClienteSelecionar({ formData, setFormData }) {
             variant="outlined"
             sx={{
               cursor: "pointer",
-              border: novoCliente ? "2px solid #fff" : "2px solid transparent",
+              border: novoCliente
+                ? "2px solid rgba(256,256,256,0.1)"
+                : "2px solid transparent",
               backgroundColor: novoCliente
                 ? "rgba(256, 256, 256, 0.05)"
                 : "transparent",
@@ -90,11 +98,13 @@ export default function ClienteSelecionar({ formData, setFormData }) {
           />
         ) : (
           <SearchField
-            url={`${process.env.REACT_APP_BACK_TONSUS}/user/search`}
-            searchField="nome"
+            fields={["telefone", "nome"]}
+            url={`${process.env.REACT_APP_BACK_TONSUS}/user`}
             placeholder="Pesquise o nome ou telefone do cliente"
-            setItemSelecionado={setClienteSelecionado}
-            itemSelecionado={clienteSelecionado}
+            setItemSelecionado={(item) =>
+              setFormData((prev) => ({ ...prev, cliente: item }))
+            }
+            itemSelecionado={formData.cliente}
           />
         )}
       </Box>

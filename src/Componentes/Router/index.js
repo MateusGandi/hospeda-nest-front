@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Box, Typography } from "@mui/material";
 import { Navigate } from "react-router-dom";
+import bgiteract from "../../Assets/vt.png";
 
 import Login from "../../Login";
 import Empresa from "../../Empresas/Home/";
@@ -26,6 +27,8 @@ export function RouteElement({ path, alertCustom }) {
         setPathsAllowed([
           "/login",
           "/create",
+          "/change",
+          "/recover",
           "/onboard",
           "/estabelecimentos",
           "/barbearia",
@@ -44,6 +47,8 @@ export function RouteElement({ path, alertCustom }) {
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
     "/create": <Login page="create" alertCustom={alertCustom} />,
+    "/recover": <Login page="recover" alertCustom={alertCustom} />,
+    "/change": <Login page="change" alertCustom={alertCustom} />,
     "/onboard": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
     "/barbearia": <Empresa alertCustom={alertCustom} />,

@@ -18,7 +18,7 @@ export const Rows = ({
   sx,
   unSelectMode = false,
   actions,
-  disableTouchRipple = false,
+  disabled = false,
 }) => {
   const [selected, setSelected] = useState(selectedItems);
 
@@ -47,8 +47,7 @@ export const Rows = ({
         <>
           {" "}
           <CardActionArea
-            disableTouchRipple={disableTouchRipple}
-            focusRipple={disableTouchRipple}
+            disabled={disabled}
             sx={{ borderRadius: "10px !important", margin: "10px 0" }}
           >
             <Card

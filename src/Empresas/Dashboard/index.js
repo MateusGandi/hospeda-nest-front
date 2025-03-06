@@ -108,7 +108,7 @@ const BarberShopMenu = ({ alertCustom }) => {
       try {
         const data = await Api.query(
           "GET",
-          `/establishment?establishmentId=${localStorage?.barbeariaId}`
+          `/establishment?establishmentId=${localStorage?.establishmentId}`
         );
         console.log(data);
         setBarbearia(data);
@@ -257,7 +257,10 @@ const BarberShopMenu = ({ alertCustom }) => {
                     <Grid container spacing={2}>
                       <Grid size={{ xs: 12, md: 4 }}>
                         {" "}
-                        <Financeiro />
+                        <Financeiro
+                          alertCustom={alertCustom}
+                          barbearia={barbearia}
+                        />
                       </Grid>
                       <Grid size={{ xs: 12, md: 4 }}>
                         {" "}
@@ -313,11 +316,14 @@ const BarberShopMenu = ({ alertCustom }) => {
             </CustomCard>
           </Grid>
 
-          <Agendamentos
-            open={modal.agendamentos}
-            handleClose={handleClose}
-            alertCustom={alertCustom}
-          />
+          {barbearia && (
+            <Agendamentos
+              barbearia={barbearia}
+              open={modal.agendamentos}
+              handleClose={handleClose}
+              alertCustom={alertCustom}
+            />
+          )}
 
           <EditFuncionarios
             barbearia={barbearia}
@@ -353,8 +359,7 @@ const BarberShopMenu = ({ alertCustom }) => {
               onSubmit={etapa.onSubmit}
               submitText={etapa.submitText}
               backAction={{
-                action: () =>
-                  setEtapa({ ...etapa, progresso: etapa.progressoAnterior }),
+                action: etapa.back,
                 titulo: "Voltar",
               }}
               fullScreen="all"

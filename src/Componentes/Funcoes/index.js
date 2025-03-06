@@ -65,7 +65,7 @@ export const formatMoney = (valor) => {
 
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
-  return `R$ ${numeroFormatado.replace(".", ",")}`;
+  return numeroFormatado;
 };
 
 export const formatPhone = (value) => {

@@ -16,12 +16,12 @@ const PublicPage = ({}) => {
   return (
     <Container
       maxWidth="lg"
-      style={{
+      sx={{
         background: `url(${LogoImage})`,
         backgroundSize: "cover",
         display: "flex",
         alignItems: "center",
-        minHeight: "88vh",
+        height: "calc(100vh - 65px)",
       }}
     >
       <Grid

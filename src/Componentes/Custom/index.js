@@ -6,7 +6,6 @@ const CustomTextField = styled(TextField)({
     backgroundColor: "rgba(256, 256, 256, 0.1)",
     borderRadius: 8,
     border: "none",
-    height: "48px",
     color: "#fff !important",
     "& fieldset": { border: "none" },
     "&:hover fieldset": { border: "none" },
@@ -36,6 +35,8 @@ export function CustomInput({
   startIcon,
   endIcon,
   label,
+  multiline,
+  minRows,
   ...props
 }) {
   return (
@@ -43,6 +44,8 @@ export function CustomInput({
       {...props}
       variant="outlined"
       label={label}
+      minRows={minRows}
+      multiline={multiline}
       placeholder={placeholder || label}
       InputLabelProps={{ shrink: true }}
       InputProps={{
@@ -59,10 +62,11 @@ export function CustomInput({
 
 export function CustomSelect({
   options,
-  placeholder,
   startIcon,
   endIcon,
   children,
+  label,
+  placeholder,
   ...props
 }) {
   return (
@@ -70,7 +74,16 @@ export function CustomSelect({
       {...props}
       select
       variant="outlined"
+      label={label} // Mantendo o label vindo da props
       InputLabelProps={{ shrink: true }}
+      displayEmpty
+      SelectProps={{
+        displayEmpty: true, // Permite exibir o placeholder
+        renderValue: (selected) =>
+          selected
+            ? options.find((opt) => opt.value === selected)?.label
+            : placeholder, // Mostra o placeholder se nada estiver selecionado
+      }}
       InputProps={{
         startAdornment: startIcon ? (
           <InputAdornment position="start">{startIcon}</InputAdornment>
@@ -80,17 +93,13 @@ export function CustomSelect({
         ) : null,
       }}
     >
-      {placeholder && (
-        <MenuItem value="" disabled>
-          {placeholder}
-        </MenuItem>
-      )}
       {options &&
         options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
         ))}
+
       {children}
     </CustomTextField>
   );

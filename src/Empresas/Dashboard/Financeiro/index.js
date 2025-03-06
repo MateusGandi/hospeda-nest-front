@@ -1,131 +1,200 @@
-import React, { useState } from "react";
-import { Typography, Divider, Grid2 as Grid, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Divider,
+  Grid2 as Grid,
+  Button,
+  Card,
+  CardContent,
+  FormControl,
+  Select,
+  MenuItem,
+  InputBase,
+} from "@mui/material";
 import Modal from "../../../Componentes/Modal";
-import { Rows } from "../../../Componentes/Lista/Rows";
+import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BuildIcon from "@mui/icons-material/Build";
 import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import Api from "../../../Componentes/Api/axios";
 
 const dadosMock = {
   receita: 12500.75,
   estoque: [
-    { produto: "Shampoo", quantidade: 15 },
-    { produto: "Cera Modeladora", quantidade: 8 },
-    { produto: "Navalha Profissional", quantidade: 5 },
+    { id: 1, produto: "Shampoo", quantidade: 15 },
+    { id: 2, produto: "Cera Modeladora", quantidade: 8 },
+    { id: 3, produto: "Navalha Profissional", quantidade: 5 },
   ],
   vendas: [
-    { cliente: "João Silva", valor: 120.5, data: "10/02/2025" },
-    { cliente: "Maria Souza", valor: 85.0, data: "12/02/2025" },
-    { cliente: "Carlos Mendes", valor: 200.75, data: "15/02/2025" },
-  ],
-  servicos: [
-    {
-      nome: "Corte Masculino",
-      profissional: "Lucas Pereira",
-      data: "10/02/2025",
-    },
-    {
-      nome: "Barba Completa",
-      profissional: "Fernando Almeida",
-      data: "12/02/2025",
-    },
-    { nome: "Hidratação", profissional: "Ana Beatriz", data: "15/02/2025" },
+    { id: 4, cliente: "João Silva", valor: 120.5, data: "10/02/2025" },
+    { id: 5, cliente: "Maria Souza", valor: 85.0, data: "12/02/2025" },
+    { id: 6, cliente: "Carlos Mendes", valor: 200.75, data: "15/02/2025" },
   ],
 };
 
-const ModalRelatorio = ({ open, onClose, dados = dadosMock }) => {
+const ModalRelatorio = ({ barbearia, alertCustom, financas }) => {
+  const hoje = new Date();
+  const [mesReferencia, setMesReferencia] = useState(new Date());
+  const [dados, setDados] = useState(null);
   const navigate = useNavigate();
-  const [modal, setModal] = useState({
-    open: false,
-    onOpen: () => setModal((prev) => ({ ...prev, open: true })),
-    onClose: () => setModal((prev) => ({ ...prev, open: false })),
-    titulo: "Financeiro",
-    backAction: {
-      action: () => setModal((prev) => ({ ...prev, open: false })),
-      titulo: "Voltar",
+
+  const handleGet = async () => {
+    try {
+      const data = await Api.query(
+        "GET",
+        `/establishment/financial/${barbearia.id}`
+      );
+      setDados(dadosMock);
+    } catch (error) {
+      alertCustom("Erro ao buscar balanço financeiro!");
+    }
+  };
+
+  useEffect(() => {
+    handleGet();
+  }, []);
+
+  const colunas = [
+    {
+      field: "produto",
+      headerName: "Produto/Cliente",
+      flex: 1,
+      headerClassName: "custom-header",
     },
-    loading: false,
-  });
+    {
+      field: "quantidade",
+      headerName: "Quantidade/Valor",
+      flex: 1,
+      renderCell: (params) =>
+        params.row.quantidade ?? `R$ ${params.row.valor.toFixed(2)}`,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "data",
+      headerName: "Data",
+      flex: 1,
+      hide: (row) => !row.data,
+      headerClassName: "custom-header",
+    },
+  ];
 
   return (
     <>
       <Button
         color="warning"
         disableElevation
-        onClick={modal.onOpen}
+        onClick={() => setDados({ ...dados, modalOpen: true })}
         variant="outlined"
         fullWidth
         startIcon={<AttachMoneyRoundedIcon />}
-        sx={{
-          border: "1px solid #484848",
-        }}
+        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
       >
-        ver financeiro
+        Ver Financeiro
       </Button>
 
       <Modal
-        onClose={modal.onClose}
-        open={modal.open}
-        titulo={modal.titulo}
-        backAction={modal.backAction}
-        component="view"
+        onClose={() => setDados({ ...dados, modalOpen: false })}
+        open={dados?.modalOpen}
+        titulo="Financeiro"
         fullScreen="all"
         maxWidth="lg"
-        loading={modal.loading}
       >
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 12 }}>
-            <Typography variant="h6">Receita Gerada</Typography>
-            <Typography variant="body1" color="primary">
-              R$ {dados.receita.toFixed(2)}
-            </Typography>
+            <Card sx={{ padding: 2, marginBottom: 2 }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Receita Mensal
+                </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span>{`R$ ${financas?.approved.valor.toFixed(2)}`}</span>
+                  <ArrowUpwardIcon fontSize="10" color="success" />
+                  <FormControl variant="outlined" sx={{ marginLeft: "auto" }}>
+                    <Select
+                      value={`${mesReferencia.getMonth()}-${mesReferencia.getFullYear()}`}
+                      onChange={(event) => {
+                        const [selectedMonth, selectedYear] = event.target.value
+                          .split("-")
+                          .map(Number);
+                        const selectedDate = new Date(
+                          selectedYear,
+                          selectedMonth + 1,
+                          0
+                        );
+                        setMesReferencia(
+                          selectedDate.getMonth() === new Date().getMonth()
+                            ? new Date()
+                            : selectedDate
+                        );
+                      }}
+                      input={<InputBase />}
+                    >
+                      {[...Array(6)].map((_, index) => {
+                        const monthDate = new Date();
+                        monthDate.setMonth(new Date().getMonth() - index, 1);
+                        const monthAbbreviation = monthDate.toLocaleString(
+                          "default",
+                          { month: "short" }
+                        );
+                        return (
+                          <MenuItem
+                            key={index}
+                            value={`${monthDate.getMonth()}-${monthDate.getFullYear()}`}
+                          >
+                            {`${monthAbbreviation
+                              .toUpperCase()
+                              .replace(".", "")} ${monthDate.getFullYear()}`}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <Typography variant="body2" color="textSecondary">
+                  {`+ ${financas?.totalDiario.valor.toFixed(
+                    2
+                  )} acumulados hoje`}
+                </Typography>
+                <Typography variant="body2">{`R$ ${(
+                  financas?.pending.valor ?? 0
+                ).toFixed(2)} pendentes`}</Typography>
+                <Typography variant="body2">{`R$ ${(
+                  financas?.cancelled.valor ?? 0
+                ).toFixed(2)} em cancelamentos`}</Typography>
+                <Button
+                  fullWidth
+                  sx={{ marginTop: 1 }}
+                  onClick={() => navigate("/dash/volumetria")}
+                >
+                  Detalhes
+                </Button>
+              </CardContent>
+            </Card>
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
-            {" "}
-            <Divider sx={{ my: 2 }} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h6">Estoque Movimentado</Typography>
-            <Rows
-              items={dados.estoque.map((item) => ({
-                titulo: item.produto,
-                subtitulo: `Quantidade: ${item.quantidade}`,
-                icon: <InventoryIcon color="primary" />,
-              }))}
-              disableTouchRipple={true}
-              oneTapMode={true}
-            />{" "}
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            {" "}
-            <Typography variant="h6">Histórico de Vendas</Typography>
-            <Rows
-              items={dados.vendas.map((venda) => ({
-                titulo: `Cliente: ${venda.cliente}`,
-                subtitulo: `Valor: R$ ${venda.valor.toFixed(2)} - Data: ${
-                  venda.data
-                }`,
-                icon: <ShoppingCartIcon color="success" />,
-              }))}
-              disableTouchRipple={true}
-              oneTapMode={true}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            {" "}
-            <Typography variant="h6">Últimos Serviços</Typography>
-            <Rows
-              items={dados.servicos.map((servico) => ({
-                titulo: `Serviço: ${servico.nome}`,
-                subtitulo: `Profissional: ${servico.profissional} - Data: ${servico.data}`,
-                icon: <BuildIcon color="secondary" />,
-              }))}
-              disableTouchRipple={true}
-              oneTapMode={true}
+            <Typography variant="h6">Movimentação</Typography>
+            <DataGrid
+              rows={[]}
+              columns={colunas}
+              sx={{
+                "& .custom-header": {
+                  background: "#404040",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                },
+                background: "#404040",
+              }}
+              pageSize={5}
+              disableSelectionOnClick
+              hideFooter
+              hideFooterPagination
+              hideFooterSelectedRowCount
             />
           </Grid>
         </Grid>

@@ -42,8 +42,8 @@ const Modal = ({
   buttonStyle,
   modalStyle,
   image,
+  loadingButton = false,
 }) => {
-  const [loadingButton, setLoadingButton] = useState(false);
   return (
     <Dialog
       open={open}
@@ -114,8 +114,7 @@ const Modal = ({
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                setLoadingButton(true);
-                onAction()?.then(() => setLoadingButton(false));
+                onAction();
               }}
               component="form"
             >
@@ -184,26 +183,44 @@ const Modal = ({
                         </Grid>
                       ) : null}
                       <Grid size={{ xs: 12, xs: 12 }}>{children}</Grid>
-                      <Grid size={{ xs: 12, xs: 12 }}>
-                        {component == "form" && (
-                          <Button
-                            fullWidth
-                            size="large"
-                            disableElevation
-                            onClick={() => {
-                              setLoadingButton(true);
-                              onAction()?.then(() => setLoadingButton(false));
-                            }}
-                            variant="contained"
-                            color={color}
-                            disabled={loadingButton}
-                            type="submit"
-                            sx={{ marginTop: "50px", ...buttonStyle }}
-                          >
-                            {loadingButton ? "Carregando..." : actionText}
-                          </Button>
-                        )}{" "}
-                      </Grid>
+                      {component == "form" && (
+                        <>
+                          <Grid size={{ xs: 12, xs: 12 }}>
+                            <Button
+                              fullWidth
+                              size="large"
+                              disableElevation
+                              onClick={() => onAction()}
+                              variant="contained"
+                              color={color}
+                              disabled={loadingButton}
+                              type="submit"
+                              sx={{ marginTop: "50px", ...buttonStyle }}
+                            >
+                              {loadingButton ? "Carregando..." : actionText}
+                            </Button>
+                          </Grid>{" "}
+                          {submitText && (
+                            <Grid size={{ xs: 12, xs: 12 }}>
+                              <Button
+                                fullWidth
+                                size="large"
+                                disableElevation
+                                onClick={async () => {
+                                  await onSubmit();
+                                }}
+                                sx={{
+                                  border: "1px solid #484848",
+                                  color: "#fff",
+                                }}
+                                variant="outlined"
+                              >
+                                {submitText}
+                              </Button>
+                            </Grid>
+                          )}
+                        </>
+                      )}{" "}
                     </Grid>
                   </Paper>
                 </Grid>
@@ -245,10 +262,7 @@ const Modal = ({
               <Button
                 fullWidth={isMobile}
                 disableElevation
-                onClick={() => {
-                  setLoadingButton(true);
-                  onAction()?.then(() => setLoadingButton(false));
-                }}
+                onClick={() => onAction()}
                 variant="contained"
                 color={color}
               >

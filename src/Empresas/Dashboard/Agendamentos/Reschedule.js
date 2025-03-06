@@ -7,7 +7,7 @@ import Calendario from "../../../Componentes/Calendar";
 import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 
-const Agendamento = ({ setError, form, setForm, alertCustom }) => {
+const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
   const [data, setData] = useState({ horario: null, dia: null });
@@ -47,9 +47,15 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
   useEffect(() => {
     const buscar = async () => {
       if (data.dia) {
-        const ids = form.servicos.map(({ id }) => id).join(",");
+        const { id, establishmentId } = localStorage;
+        const services = await Api.query(
+          "GET",
+          `/service/${establishmentId}/${id}`
+        );
+
+        const ids = services.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro.id,
+          id,
           ids,
           data.dia.toISOString().split("T")[0]
         );
@@ -140,4 +146,4 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
   );
 };
 
-export default Agendamento;
+export default Reagendamento;

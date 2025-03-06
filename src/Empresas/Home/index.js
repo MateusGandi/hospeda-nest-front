@@ -68,7 +68,7 @@ const Empresa = ({ alertCustom }) => {
     try {
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
-        return alertCustom(`Selecioneao menos 1 item antes de prosseguir!`);
+        return alertCustom(`Selecione ao menos 1 item antes de prosseguir!`);
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -99,12 +99,14 @@ const Empresa = ({ alertCustom }) => {
   const handleBack = () => {
     try {
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo == -1) {
+      console.log("pathTo", pathTo);
+      if (pathTo == 0) {
         return navigate("/onboard");
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo - 1].key}`);
     } catch (error) {
+      console.log(error);
       alertCustom("Erro interno!");
     }
   };
@@ -147,9 +149,9 @@ const Empresa = ({ alertCustom }) => {
       return items.map((item) => ({
         ...item,
         titulo: item.nome,
-        subtitulo: `${item.telefone} - Especialidades: ${item.servicosPrestados
-          .map(({ nome }) => nome)
-          .join(", ")}`,
+        subtitulo: `${item.telefone} - Especialidades: ${
+          item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
+        }`,
         imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
       }));
     }

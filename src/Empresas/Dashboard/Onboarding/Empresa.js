@@ -13,7 +13,7 @@ const Empresa = ({ formData, setFormData }) => {
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} justifyContent={"center"}>
         <Grid item size={{ xs: 12, md: 6 }}>
           <CustomInput
             label="Nome da Empresa"

@@ -8,6 +8,7 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { CustomInput } from "../Componentes/Custom";
+import { formatPhone } from "../Componentes/Funcoes";
 
 const Create = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,9 @@ const Create = ({ dados, setDados }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    if (name == "telefone") {
+      return setDados((prev) => ({ ...prev, [name]: formatPhone(value) }));
+    }
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -48,7 +52,7 @@ const Create = ({ dados, setDados }) => {
           placeholder="Informe seu telefone"
           name="telefone"
           type="tel"
-          value={dados.telefone || ""}
+          value={formatPhone(dados.telefone || "")}
           onChange={handleChange}
           variant="outlined"
         />

@@ -30,15 +30,21 @@ const Servico = ({
       setData({ ...data, [name]: hrs });
       return setHorario(hrs);
     }
+
+    if (name == "preco") {
+      return setData({ ...data, [name]: formatMoney(value) });
+    }
     setData({ ...data, [name]: value });
   };
 
   useEffect(() => {
     if (formData) {
       setData({
+        flagUpdate: true,
+        id: formData.id,
+        foto: formData.foto,
         nome: formData.nome || "",
         tempoGasto: formData.tempoGasto || "",
-        valor: formData.valor || 0,
         descricao: formData.descricao || "",
         preco: formData.preco || 0,
       });
@@ -49,13 +55,16 @@ const Servico = ({
     if (formData) {
       setFormData((prev) => [
         ...prev.filter((item) => item.id !== formData.id),
-        data,
+        { ...data, preco: +data.preco },
       ]);
     } else {
-      setFormData((prev) => [...prev, data]);
+      setFormData((prev) => [
+        ...prev,
+        { ...data, preco: +data.preco, disabled: true },
+      ]);
     }
 
-    setData({ nome: "", tempoGasto: 0, valor: 0, descricao: "" });
+    setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
     setOpen(false);
   };
 
@@ -100,7 +109,8 @@ const Servico = ({
             label="Preço do serviço"
             placeholder="Preço do serviço"
             name="preco"
-            value={formatMoney(data.preco)}
+            startIcon={"R$"}
+            value={data.preco}
             onChange={handleChange}
             variant="outlined"
             fullWidth
@@ -110,8 +120,7 @@ const Servico = ({
         <Grid item size={{ xs: 12, md: 12 }}>
           <CustomInput
             label="Descrição"
-            placeholder="Preço do serviço"
-            multiline
+            multiline={true}
             minRows={4}
             name="descricao"
             value={data.descricao}

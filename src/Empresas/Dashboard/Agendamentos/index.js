@@ -6,10 +6,16 @@ import { Rows } from "../../../Componentes/Lista/Rows";
 import Calendario from "../../../Componentes/Calendar";
 import { format } from "date-fns";
 import { isMobile } from "../../../Componentes/Funcoes";
+import Reagendamento from "./Reschedule";
+import apiService from "../../../Componentes/Api/axios";
+import InsertInvitationRoundedIcon from "@mui/icons-material/InsertInvitationRounded";
 
-const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
+const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const [agendamentos, setAgendamentos] = useState([]);
+  const [form, setForm] = useState({
+    barbearia: barbearia,
+  });
   const [modalConteudo, setModalConteudo] = useState({
     open: false,
     titulo: "",
@@ -17,7 +23,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
   });
   const status = {
     reschedule: "reagendamento",
-    cancelled: "cancelamento",
+    cancel: "cancelamento",
     report: "reporte",
   };
   const buttons = [
@@ -25,13 +31,19 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
       titulo: "Reagendar",
       color: "warning",
       route: "reschedule",
-      action: () => handleAction("reschedule"),
+      action: () =>
+        setModalConteudo({
+          open: true,
+          fullScreen: "all",
+          titulo: "Reagendar cliente",
+          dados: "reagendar",
+        }),
     },
     {
       titulo: "Cancelar",
       color: "error",
       route: "cancelled",
-      action: () => handleAction("cancelled"),
+      action: () => handleAction("cancel"),
     },
     {
       titulo: "Não compareceu",
@@ -44,30 +56,21 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
   const buscarAgendamentos = async () => {
     try {
       const dataFormatted = dataSelecionada.toISOString().split("T")[0];
+      const { id, establishmentId } = localStorage;
+      const agendamentos = //await Promise.all(
+        await apiService.query(
+          "GET",
+          `/scheduling/employee/${establishmentId}/${dataFormatted}`
+        );
+      // apiService.query(
+      //   "GET",
+      //   `/scheduling/employee/scheduleds/${id}/${dataFormatted}`
+      // )
+      //);
 
       // Simulando resposta da API
       setAgendamentos(
-        [
-          {
-            id: 44,
-            data: "2025-02-11T20:30:00.000Z",
-            dataFinalizacao: "2025-02-11T21:00:00.000Z",
-            nomeCliente: "João Silva",
-            status: "PENDING",
-            servicos: [
-              { titulo: "Corte de cabelo", subtitulo: "R$ 13,99" },
-              { titulo: "Barba", subtitulo: "R$ 13,99" },
-            ],
-          },
-          {
-            id: 43,
-            data: "2025-02-27T17:30:00.000Z",
-            dataFinalizacao: "2025-02-27T18:00:00.000Z",
-            nomeCliente: "Maria Souza",
-            status: "PENDING",
-            servicos: [{ titulo: "Coloração", subtitulo: "R$ 15,99" }],
-          },
-        ].map((item) => ({
+        agendamentos.map((item) => ({
           ...item,
           titulo: `${item.nomeCliente || "Desconhecido"} - ${format(
             new Date(item.data),
@@ -88,11 +91,15 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
 
   useEffect(() => {
     if (open) buscarAgendamentos();
-  }, [open]);
+  }, [dataSelecionada]);
 
-  const handleAction = async (acao) => {
+  const handleAction = async (acao, data) => {
     try {
-      await Api.query("PATCH", `/scheduling/${acao}/${modalConteudo.dados.id}`);
+      await Api.query(
+        "PATCH",
+        `/scheduling/${acao}/${modalConteudo.dados.id}`,
+        { data }
+      );
       alertCustom(`${status[acao]} realizado com sucesso!`);
       setModalConteudo({ open: false, titulo: "", dados: null });
       buscarAgendamentos();
@@ -113,36 +120,41 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
       <Container maxWidth="md">
         <Grid container spacing={2}>
           <Grid item size={{ xs: 12 }} sx={{ textAlign: "center" }}>
-            <Typography variant="body1" color="GrayText">
-              Data selecionada
+            <Typography>
+              <Button
+                onClick={() =>
+                  setModalConteudo({
+                    open: true,
+                    titulo: "Selecione um dia",
+                    dados: "calendario",
+                  })
+                }
+                endIcon={<InsertInvitationRoundedIcon />}
+                color="inherit"
+                variant="outlined"
+                size="large"
+                fullWidth={isMobile}
+                sx={{ border: "1px solid #484848", m: "8px 0", p: "5px 20px" }}
+              >
+                {dataSelecionada.toLocaleDateString()}
+              </Button>
+              <Typography variant="body1" color="GrayText">
+                Clique para mudar o dia...
+              </Typography>
             </Typography>
-            <Button
-              color="primary"
-              onClick={() =>
-                setModalConteudo({
-                  open: true,
-                  titulo: "Selecione um dia",
-                  dados: "calendario",
-                })
-              }
-              variant="outlined"
-              fullWidth={isMobile}
-              sx={{ border: "1px solid #484848", m: "8px 0" }}
-            >
-              {dataSelecionada.toLocaleDateString()}
-            </Button>
           </Grid>
           <Grid item size={{ xs: 12 }}>
             {agendamentos.length ? (
               <Rows
                 items={agendamentos}
-                onSelect={(item) =>
+                onSelect={(item) => {
+                  setForm((prev) => ({ ...prev, servicos: item.servicos }));
                   setModalConteudo({
                     open: true,
                     titulo: item.titulo,
                     dados: item,
-                  })
-                }
+                  });
+                }}
                 oneTapMode={true}
               />
             ) : (
@@ -157,32 +169,39 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
               >
                 Uffa!
                 <Typography variant="body1">
-                  Sua agenda está vazia para esse dia
+                  Sua agenda está vazia para este dia...
                 </Typography>
               </Typography>
             )}
           </Grid>
         </Grid>
       </Container>
-
       {/* Modal reutilizável */}
       <Modal
         open={modalConteudo.open}
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.dados === "calendario" ? "xs" : "md"}
-        buttons={modalConteudo.dados != "calendario" ? buttons : []}
+        buttons={!!modalConteudo.dados && buttons}
         onAction={
           modalConteudo.dados == "calendario" ? null : () => console.log("oi")
         }
         actionText="Concluído"
+        fullScreen={modalConteudo.fullScreen || "mobile"}
       >
         {modalConteudo.dados === "calendario" ? (
           <Calendario
             onSelect={(date) => {
               setDataSelecionada(date);
-              setModalConteudo({ open: false, titulo: "", dados: null });
+              setModalConteudo((prev) => ({ ...prev, open: false }));
             }}
+          />
+        ) : modalConteudo.dados === "reagendar" ? (
+          <Reagendamento
+            form={form}
+            setForm={setForm}
+            alertCustom={alertCustom}
+            onConfirm={(data) => handleAction("reschedule", data)}
           />
         ) : (
           modalConteudo.dados && (
@@ -190,11 +209,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom }) => {
               <Typography variant="body1" sx={{ mb: 2 }}>
                 Serviços:
               </Typography>
-              <Rows
-                items={modalConteudo.dados.servicos}
-                oneTapMode={true}
-                disableTouchRipple={true}
-              />
+              <Rows items={modalConteudo.dados.servicos} disabled={true} />
             </>
           )
         )}

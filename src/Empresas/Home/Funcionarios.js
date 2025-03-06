@@ -7,8 +7,10 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
 
   useEffect(() => {
     try {
+      console.log(form.barbearia.funcionarios); //,format(form.barbearia.funcionarios, "barbeiros"))
       setFuncionarios(format(form.barbearia.funcionarios, "barbeiros"));
     } catch (error) {
+      console.log(error);
       setError("Não há funcionários disponíveis");
     }
   }, [form.barbearia]);
@@ -22,7 +24,12 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
         {funcionarios && funcionarios.length ? (
           <Rows items={funcionarios} onSelect={handleSelect} />
         ) : (
-          <Typography variant="body1">Nenhum resultado encontrado!</Typography>
+          <Typography
+            variant="body1"
+            sx={{ width: "100%", textAlign: "center" }}
+          >
+            Nenhum funcionário disponível!
+          </Typography>
         )}
       </Grid>
     </Grid>

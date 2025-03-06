@@ -3,7 +3,7 @@ import axios from "axios";
 class ApiService {
   constructor(baseURL) {
     this.api = axios.create({
-      baseURL: "http://185.139.1.237:3333", //process.env.REACT_APP_BACK_TONSUS,
+      baseURL: "https://srv744360.hstgr.cloud/tonsus/api", //process.env.REACT_APP_BACK_TONSUS,
     });
   }
 
@@ -24,7 +24,7 @@ class ApiService {
 
   async query(method, route, body, headers = {}) {
     const defaultHeaders = {
-      establishmentId: localStorage.getItem("barbeariaId"),
+      establishmentId: localStorage.getItem("establishmentId"),
       "x-access-token": localStorage.getItem("accessToken"),
       authorization: `Bearer ${localStorage.getItem("token")}`,
     };

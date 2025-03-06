@@ -13,8 +13,7 @@ import Alerta from "./Componentes/Alert";
 import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router";
-import MenuIcon from "@mui/icons-material/Menu";
-
+import bgiteract from "./Assets/vt.png";
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -62,6 +61,8 @@ function App() {
     "/onboard",
     "/create",
     "/login",
+    "/change/:hash?",
+    "/recover",
     "estabelecimentos",
     "/barbearia/:barbeariaName/:subPath?",
     "/agendamento/:barbeariaName/:subPath?",

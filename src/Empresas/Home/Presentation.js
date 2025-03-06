@@ -83,43 +83,6 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               oneTapMode={true}
             />
           </Grid>{" "}
-          <Grid item size={{ xs: 12 }}>
-            <Card elevation={0} button>
-              <CardActionArea sx={{ borderRadius: "10px !important", p: 1 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    p: 1,
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      bgcolor: "#46663B",
-                      animation: "pulse 1.5s infinite",
-                      marginRight: "20px",
-                      "@keyframes pulse": {
-                        "0%": { transform: "scale(1)" },
-                        "50%": { transform: "scale(1.1)" },
-                        "100%": { transform: "scale(1)" },
-                      },
-                      color: "#fff",
-                    }}
-                  >
-                    <GpsFixedRoundedIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="body1" sx={{ fontSize: "18px" }}>
-                      Explore barbearias parceiras
-                      <Typography variant="body2">
-                        Ainda mais próximas de você...
-                      </Typography>
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardActionArea>
-            </Card>
-          </Grid>
         </Grid>
       ) : (
         <div
