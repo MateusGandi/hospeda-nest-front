@@ -186,7 +186,7 @@ const LoginPage = ({ page, alertCustom }) => {
         component="form"
         fullScreen="all"
         backAction={inicialState.backAction}
-        image={{ styles: { height: "530px" }, src: Banner }}
+        image={{ styles: { height: "500px" }, src: Banner }}
       >
         <Grid container spacing={4}>
           {inicialState.componente == "create" && (

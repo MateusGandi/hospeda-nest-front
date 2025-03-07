@@ -10,6 +10,7 @@ import DashBoard from "../../Empresas/Dashboard";
 import PublicPage from "../../Home";
 import Manager from "../../Manager";
 import UserData from "../../User";
+import Plans from "../../Empresas/Plans";
 
 import Api from "../Api/axios";
 
@@ -35,6 +36,7 @@ export function RouteElement({ path, alertCustom }) {
           "/dashboard",
           "/manager",
           "/me",
+          "/plans",
         ]);
       } finally {
         setIsLoading(false);
@@ -55,6 +57,7 @@ export function RouteElement({ path, alertCustom }) {
     "/dashboard": <DashBoard alertCustom={alertCustom} />,
     "/manager": <Manager alertCustom={alertCustom} />,
     "/me": <UserData alertCustom={alertCustom} />,
+    "/plans": <Plans alertCustom={alertCustom} />,
   };
 
   if (isLoading) {

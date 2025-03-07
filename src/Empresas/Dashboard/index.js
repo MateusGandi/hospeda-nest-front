@@ -20,7 +20,7 @@ import EditFuncionarios from "./Funcionarios";
 import EditServicos from "./Servicos";
 import Agendamentos from "./Agendamentos";
 import Financeiro from "./Financeiro";
-import Plans from "./Plans";
+import Plans from "../Plans";
 import WhatsApp from "./WhatsApp";
 
 import CustomCard from "../../Componentes/Card/";
