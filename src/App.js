@@ -70,6 +70,7 @@ function App() {
     "/dashboard/:subPath?",
     "/manager/:page?",
     "/me",
+    "plans",
   ]);
   const [alert, setAlert] = useState({
     message: "",

@@ -20,6 +20,7 @@ import { Rows } from "../Lista/Rows";
 import { isMobile } from "../Funcoes";
 import { deepPurple } from "@mui/material/colors";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 
 const NavigationBar = ({ logo }) => {
   const navigate = useNavigate();
@@ -35,26 +36,36 @@ const NavigationBar = ({ logo }) => {
         titulo: "Início",
         action: () => navigate("/onboard"),
         route: "/onboard",
+        type: "text",
         icon: <HomeRoundedIcon />,
       },
       {
         titulo: "Criar minha conta",
         icon: <PersonAddRoundedIcon />,
         action: () => navigate("/signup"),
+        type: "button",
         route: "/signup",
       },
       {
         titulo: "Pesquisar",
-        button: "icon",
+        type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
       },
     ],
-    user: [
+    client: [
+      {
+        titulo: "Para empresas",
+        action: () => navigate("/plans"),
+        route: "/plans",
+        type: "text",
+        icon: <BusinessCenterIcon />,
+      },
       {
         titulo: "Início",
         action: () => navigate("/onboard"),
         route: "/onboard",
+        type: "text",
         icon: <HomeRoundedIcon />,
       },
       {
@@ -64,12 +75,13 @@ const NavigationBar = ({ logo }) => {
             N
           </Avatar>
         ),
+        type: "button",
         action: () => navigate("/me"),
         route: "/me",
       },
       {
         titulo: "Pesquisar",
-        button: "icon",
+        type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
       },
@@ -79,16 +91,25 @@ const NavigationBar = ({ logo }) => {
         titulo: "Início",
         action: () => navigate("/onboard"),
         route: "/onboard",
+        type: "text",
         icon: <HomeRoundedIcon />,
+      },
+      {
+        titulo: "Para empresas",
+        action: () => navigate("/enterprise"),
+        route: "/enterprise",
+        type: "text",
+        icon: <BusinessCenterIcon />,
       },
       {
         titulo: "Gerenciar",
         action: () => navigate("/manager"),
         route: "/manager",
+        type: "button",
       },
       {
         titulo: "Pesquisar",
-        button: "icon",
+        type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
       },
@@ -98,16 +119,18 @@ const NavigationBar = ({ logo }) => {
         titulo: "Início",
         action: () => navigate("/onboard"),
         route: "/onboard",
+        type: "text",
         icon: <HomeRoundedIcon />,
       },
       {
         titulo: "Minha Barbearia",
         action: () => navigate("/dashboard"),
+        type: "button",
         route: "/dashboard",
       },
       {
         titulo: "Pesquisar",
-        button: "icon",
+        type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
       },
@@ -181,9 +204,8 @@ const NavigationBar = ({ logo }) => {
                   >
                     {actions
                       .filter((item) => location.pathname !== item.route)
-                      .slice(-2)
                       .map((item, index) =>
-                        item.button === "icon" ? (
+                        item.type === "icon" ? (
                           <IconButton
                             key={index}
                             onClick={item.action}
@@ -191,6 +213,21 @@ const NavigationBar = ({ logo }) => {
                           >
                             {item.icon}
                           </IconButton>
+                        ) : item.type === "text" ? (
+                          <Typography
+                            component="a"
+                            href="/plans"
+                            sx={{
+                              m: "5px 10px",
+                              color: "#fff",
+                              textDecoration: "none",
+                              ":hover": {
+                                textDecoration: "underline !important",
+                              },
+                            }}
+                          >
+                            {item.titulo}
+                          </Typography>
                         ) : (
                           <Button
                             key={index}
