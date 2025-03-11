@@ -6,7 +6,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, Card, CardActionArea, Typography } from "@mui/material";
+import { Box, Button, Card, CardActionArea, Typography } from "@mui/material";
 
 export const Rows = ({
   items = [],
@@ -80,6 +80,7 @@ export const Rows = ({
                         color: "#fff",
                         width: 50,
                         height: 50,
+                        mr: 2,
                       }}
                     >
                       {item.icon}
@@ -143,6 +144,7 @@ export const Rows = ({
               </ListItem>
             </Card>
           </CardActionArea>
+          {selected.some((op) => op.id === item.id) && item.renderDetails}
         </>
       ))}
     </List>

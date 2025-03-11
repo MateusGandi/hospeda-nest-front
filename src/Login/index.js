@@ -27,7 +27,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(data.initialPath ? data.initialPath : "/estabelecimentos");
+      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
       alertCustom("Login realizado com sucesso!");
     } catch (error) {
       console.log(error);
@@ -45,7 +45,7 @@ const LoginPage = ({ page, alertCustom }) => {
         senha,
       });
       Api.setKey(data);
-      navigate(data.initialPath ? data.initialPath : "/estabelecimentos");
+      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
       alertCustom("Senha atualizada com sucesso!");
     } catch (error) {
       console.log(error);
@@ -88,7 +88,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(data.initialPath ? data.initialPath : "/estabelecimentos");
+      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
       alertCustom("Conta criada com sucesso!");
     } catch (error) {
       console.log(error);

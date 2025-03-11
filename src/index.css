@@ -24,3 +24,8 @@ code {
 button {
   border-radius: 50px;
 }
+
+.destaque-texto {
+  color: #0195f7;
+  font-weight: bold;
+}

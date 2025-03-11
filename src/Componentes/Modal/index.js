@@ -43,6 +43,7 @@ const Modal = ({
   modalStyle,
   image,
   loadingButton = false,
+  sx,
 }) => {
   return (
     <Dialog
@@ -53,6 +54,7 @@ const Modal = ({
       fullScreen={full[fullScreen]}
       PaperProps={{
         sx: {
+          ...sx,
           borderRadius:
             ["form", "view"].includes(component) || full[fullScreen]
               ? 0

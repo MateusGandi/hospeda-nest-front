@@ -86,3 +86,38 @@ export const formatPhone = (value) => {
     .replace(/(\d{2}) (\d{2})(\d)/, "$1 $2 $3") // Separa o DDD
     .replace(/(\d{5})(\d{1,4})$/, "$1 $2"); // Separa os últimos dígitos
 };
+
+export const formatCardInfo = (value, campo = "numero") => {
+  if (!value) return "";
+
+  let digits = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+
+  if (campo === "numero") {
+    digits = digits.slice(0, 16); // Limita a 16 dígitos
+    return digits.replace(/(\d{4})/g, "$1 ").trim(); // Formato 0000 0000 0000 0000
+  }
+
+  if (campo === "data") {
+    digits = digits.slice(0, 4); // Limita a 4 dígitos (MMYY)
+
+    // Permite apagar corretamente sem travar no "/"
+    if (value.length < digits.length) return value;
+
+    if (digits.length >= 2) {
+      let month = parseInt(digits.slice(0, 2), 10);
+      if (month < 1 || month > 12) return digits.slice(0, 1); // Evita meses inválidos
+    }
+
+    if (digits.length === 4) {
+      let year = parseInt(digits.slice(2, 4), 10);
+      const attYear = new Date().getFullYear() % 100; // Ano atual (últimos 2 dígitos)
+      if (year < attYear) return value.slice(0, value.length - 1); // Evita anos passados
+    }
+
+    return digits.length > 2
+      ? `${digits.slice(0, 2)}/${digits.slice(2)}`
+      : digits; // Formato MM/YY
+  }
+
+  return digits; // Retorna apenas os números caso `campo` seja inválido
+};
