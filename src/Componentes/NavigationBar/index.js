@@ -127,6 +127,7 @@ const NavigationBar = ({ logo }) => {
         action: () => navigate("/dashboard"),
         type: "button",
         route: "/dashboard",
+        icon: <BusinessCenterIcon />,
       },
       {
         titulo: "Pesquisar",
@@ -185,14 +186,20 @@ const NavigationBar = ({ logo }) => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
-                      titulo={<b>Tonsus App</b>}
+                      titulo={<b>Tonsus Appaaa</b>}
                     >
                       <Rows
-                        items={actions.filter(
-                          (item) => location.pathname !== item.route
-                        )}
+                        items={actions
+                          .filter((item) => location.pathname !== item.route)
+                          .map((item) => ({
+                            ...item,
+                            action: () => {
+                              item.action();
+                              item.titulo != "Pesquisar" &&
+                                setMenuOpen((prev) => !prev);
+                            },
+                          }))}
                         oneTapMode={true}
-                        onSelect={(item) => item.action()}
                       />
                     </Modal>
                   </>

@@ -72,7 +72,13 @@ const GerenciarFuncionarios = ({
       await Api.query(
         "POST",
         `/establishment/employees/${barbearia.id}`,
-        funcionariosNovos
+        funcionariosNovos.map((item) => ({
+          ...item,
+          telefone: item.telefone.replace(/\D/g, ""),
+          servicosPrestados: item.servicosPrestados.map(
+            (service) => service.id
+          ),
+        }))
       );
       alertCustom("Equipe atualizada!");
     } catch (error) {
@@ -82,15 +88,17 @@ const GerenciarFuncionarios = ({
 
   useEffect(() => {
     const fetchServicos = async () => {
-      const dados = await Api.query(
-        "GET",
-        `/establishment/services/${barbearia.id}`
-      );
-      setServicos(dados);
+      try {
+        const dados = await Api.query("GET", `/service/${barbearia.id}`);
+        setServicos(dados);
+      } catch (e) {
+        console.log(e);
+        alertCustom("Erro ao buscar serviços!");
+      }
     };
-    setFuncionarios(dados);
+
     fetchServicos();
-  }, [dados]);
+  }, [barbearia.id]);
 
   const handlePhotoUpload = async (e, userId) => {
     const file = e.target.files[0];
@@ -162,7 +170,10 @@ const GerenciarFuncionarios = ({
                 onSelect={handleSelect}
                 items={funcionarios.map((item, index) => ({
                   ...item,
-                  imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
+                  imagem: `${String(process.env.REACT_APP_BACK_TONSUS).replace(
+                    /"/g,
+                    ""
+                  )}/images/user/${item.id}/${item.foto}`,
                   titulo: `${item.nome} - ${item.telefone}`,
 
                   subtitulo: item.servicosPrestados?.length

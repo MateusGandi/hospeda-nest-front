@@ -16,7 +16,7 @@ const GerenciarServicos = ({
 }) => {
   const [modal, setModal] = useState({
     open: false,
-    titulo: "Adicionar novo funcionário",
+    titulo: "Adicionar novo serviço",
     servicoSelecionado: null,
     actionText: "Adicionar",
   });
@@ -37,7 +37,7 @@ const GerenciarServicos = ({
   const handleCancelEdit = () => {
     setModal({
       open: false,
-      titulo: "Adicionar novo funcionário",
+      titulo: "Adicionar novo serviço",
       servicoSelecionado: null,
       actionText: "Adicionar",
     });
@@ -67,13 +67,15 @@ const GerenciarServicos = ({
   };
   const handleSave = async () => {
     try {
-      const servicosNovos = servicos.filter((item) => !item.id);
+      const servicosNovos = servicos
+        .filter((item) => !item.id)
+        .map((item) => ({ ...item, barbeariaId: barbearia.id }));
       const servicosAtualizados = servicos
         .filter((item) => !!item.id && item.flagUpdate)
         .map(({ flagUpdate, ...item }) => item);
 
       if (servicosNovos.length)
-        await Api.query("POST", `/service/${barbearia.id}`, servicosNovos);
+        await Api.query("POST", `/service`, servicosNovos);
 
       if (servicosAtualizados.length)
         await Api.query(
@@ -185,7 +187,10 @@ const GerenciarServicos = ({
                 onEdit={handleSelect}
                 items={servicos.map((item, index) => ({
                   ...item,
-                  imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,
+                  imagem: `${String(process.env.REACT_APP_BACK_TONSUS).replace(
+                    /"/g,
+                    ""
+                  )}/images/service/${item.id}/${item.foto}`,
                   titulo: item.nome,
                   subtitulo:
                     item.tempoGasto && item.descricao

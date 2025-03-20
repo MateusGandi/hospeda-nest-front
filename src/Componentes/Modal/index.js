@@ -43,6 +43,8 @@ const Modal = ({
   modalStyle,
   image,
   loadingButton = false,
+  sx,
+  disablePadding,
 }) => {
   return (
     <Dialog
@@ -53,10 +55,12 @@ const Modal = ({
       fullScreen={full[fullScreen]}
       PaperProps={{
         sx: {
+          ...sx,
           borderRadius:
             ["form", "view"].includes(component) || full[fullScreen]
               ? 0
               : "10px",
+          position: "relative",
         },
       }}
     >
@@ -98,13 +102,14 @@ const Modal = ({
             justifyContent: "center",
             alignItems: "center",
             height: "100%",
+            zIndex: 1,
           }}
         >
           <CircularProgress />
         </Container>
       ) : (
         <>
-          <DialogContent sx={{ p: "10px" }}>
+          <DialogContent sx={{ p: disablePadding ? 0 : "10px" }}>
             <Container
               maxWidth={maxWidth}
               sx={{
@@ -179,7 +184,7 @@ const Modal = ({
                           size={{ xs: 12, xs: 12 }}
                           sx={{ textAlign: "center" }}
                         >
-                          <Typography variant="h6">{titulo}</Typography>
+                          <Typography variant="h5">{titulo}</Typography>
                         </Grid>
                       ) : null}
                       <Grid size={{ xs: 12, xs: 12 }}>{children}</Grid>
@@ -227,18 +232,20 @@ const Modal = ({
               </Grid>
             </Container>
           </DialogContent>
-          {component != "form" && onAction && (
+          {component != "form" && (
             <DialogActions>
               {" "}
               {buttons &&
+                buttons.length &&
                 buttons.map((button) => (
                   <Button
                     color={button.color || "primary"}
                     disableElevation
                     onClick={button.action}
-                    variant="outlined"
+                    variant={button.variant ? button.variant : "outlined"}
                     fullWidth={isMobile}
                     sx={{
+                      ...buttonStyle,
                       border: "1px solid #484848",
                     }}
                   >
@@ -259,15 +266,17 @@ const Modal = ({
                   {submitText}
                 </Button>
               )}
-              <Button
-                fullWidth={isMobile}
-                disableElevation
-                onClick={() => onAction()}
-                variant="contained"
-                color={color}
-              >
-                {actionText}
-              </Button>
+              {onAction && (
+                <Button
+                  fullWidth={isMobile}
+                  disableElevation
+                  onClick={() => onAction()}
+                  variant="contained"
+                  color={color}
+                >
+                  {actionText}
+                </Button>
+              )}
             </DialogActions>
           )}
         </>

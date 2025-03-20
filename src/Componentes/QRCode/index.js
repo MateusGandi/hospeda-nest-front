@@ -13,9 +13,10 @@ export const QRCodeGenerator = ({ value }) => {
       <QRCodeSVG
         value={value}
         size={280}
-        fgColor="#212121"
-        width={"150px"}
-        height={"150px"}
+        fgColor="#FFF"
+        bgColor="#2A2A2A"
+        width={"320px"}
+        height={"320px"}
       />
     </div>
   );

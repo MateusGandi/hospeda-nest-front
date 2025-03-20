@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Box, Typography } from "@mui/material";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import bgiteract from "../../Assets/vt.png";
 
 import Login from "../../Login";
@@ -11,13 +11,14 @@ import PublicPage from "../../Home";
 import Manager from "../../Manager";
 import UserData from "../../User";
 import Plans from "../../Empresas/Plans";
+import Checkout from "../Checkout";
 
 import Api from "../Api/axios";
 
 export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Controle de carregamento
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchRoutesAllowed = async () => {
       try {
@@ -37,6 +38,7 @@ export function RouteElement({ path, alertCustom }) {
           "/manager",
           "/me",
           "/plans",
+          "/checkout",
         ]);
       } finally {
         setIsLoading(false);
@@ -45,6 +47,10 @@ export function RouteElement({ path, alertCustom }) {
 
     fetchRoutesAllowed();
   }, [path]);
+
+  const handleModalClose = () => {
+    navigate(-1);
+  };
 
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
@@ -57,7 +63,8 @@ export function RouteElement({ path, alertCustom }) {
     "/dashboard": <DashBoard alertCustom={alertCustom} />,
     "/manager": <Manager alertCustom={alertCustom} />,
     "/me": <UserData alertCustom={alertCustom} />,
-    "/plans": <Plans alertCustom={alertCustom} />,
+    "/plans": <Plans alertCustom={alertCustom} onClose={handleModalClose} />,
+    "/checkout": <Checkout alertCustom={alertCustom} />,
   };
 
   if (isLoading) {

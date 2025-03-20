@@ -99,7 +99,7 @@ export default function ClienteSelecionar({ formData, setFormData }) {
         ) : (
           <SearchField
             fields={["telefone", "nome"]}
-            url={`${process.env.REACT_APP_BACK_TONSUS}/user`}
+            url={`/user`}
             placeholder="Pesquise o nome ou telefone do cliente"
             setItemSelecionado={(item) =>
               setFormData((prev) => ({ ...prev, cliente: item }))

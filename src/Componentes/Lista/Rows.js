@@ -6,7 +6,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, Card, CardActionArea, Typography } from "@mui/material";
+import { Box, Button, Card, CardActionArea, Typography } from "@mui/material";
 
 export const Rows = ({
   items = [],
@@ -14,56 +14,59 @@ export const Rows = ({
   selectedItems = [],
   multipleSelect = false,
   onDelete,
-  oneTapMode, //não persiste e seleção, apenas clique
+  oneTapMode, // não persiste a seleção, apenas clique
   sx,
   unSelectMode = false,
+  styleSelect,
   actions,
   disabled = false,
 }) => {
-  const [selected, setSelected] = useState(selectedItems);
+  const [selected, setSelected] = useState(selectedItems ?? []);
 
   const handleSelect = (item) => {
     let updatedSelection;
 
     if (multipleSelect) {
-      // Remove o item se já estiver selecionado, ou adiciona se não estiver
       updatedSelection = selected.some((op) => op.id === item.id)
         ? selected.filter((op) => op.id !== item.id)
         : [...selected, item];
     } else {
-      // Alterna entre seleção única ou nenhuma
       updatedSelection =
-        unSelectMode && selected?.some((op) => op.id === item.id) ? [] : [item];
+        unSelectMode && selected.some((op) => op.id === item.id) ? [] : [item];
     }
+
     if (!oneTapMode) setSelected(updatedSelection);
 
-    // Callback com array para múltiplos ou objeto único para simples
     if (onSelect) onSelect(multipleSelect ? updatedSelection : item);
   };
 
   return (
     <List sx={{ m: 0, p: 0 }}>
-      {items.map((item, index) => (
+      {items.map((item) => (
         <>
-          {" "}
           <CardActionArea
+            key={item.id}
             disabled={disabled}
-            sx={{ borderRadius: "10px !important", margin: "10px 0" }}
+            sx={{ borderRadius: "10px !important", m: "10px 0" }}
           >
             <Card
               onClick={() => (item.action ? item.action() : handleSelect(item))}
               elevation={0}
               sx={{
-                ...(selected.some((opcao) => opcao.id === item.id)
+                ...(Array.isArray(selected) &&
+                selected?.some((opcao) => opcao.id === item.id)
                   ? {
-                      border: "1px solid rgb(134, 134, 134)",
-                      background: "rgba(256,256,256,0.05)",
+                      ...(styleSelect
+                        ? styleSelect
+                        : {
+                            border: "1px solid rgb(134, 134, 134)",
+                            background: "rgba(256,256,256,0.05)",
+                          }),
                     }
                   : { border: "1px solid transparent" }),
               }}
             >
               <ListItem
-                key={item.id}
                 sx={{
                   borderRadius: "10px",
                   overflow: "hidden",
@@ -72,7 +75,6 @@ export const Rows = ({
               >
                 {(item.icon || item.imagem) && (
                   <ListItemAvatar>
-                    {" "}
                     <Avatar
                       src={item.imagem}
                       sx={{
@@ -80,10 +82,11 @@ export const Rows = ({
                         color: "#fff",
                         width: 50,
                         height: 50,
+                        mr: 2,
                       }}
                     >
                       {item.icon}
-                    </Avatar>{" "}
+                    </Avatar>
                   </ListItemAvatar>
                 )}
 
@@ -95,15 +98,17 @@ export const Rows = ({
                   }
                   secondary={item.subtitulo}
                 />
+
                 {actions &&
-                  actions.map((item) =>
-                    !item.icon ? (
+                  actions.map((actionItem, index) =>
+                    !actionItem.icon ? (
                       <Button
-                        color={item.color || "primary"}
+                        key={index}
+                        color={actionItem.color || "primary"}
                         disableElevation
                         onClick={(e) => {
                           e.stopPropagation();
-                          item.action(item.id);
+                          actionItem.action(item.id);
                         }}
                         variant="outlined"
                         sx={{
@@ -111,20 +116,21 @@ export const Rows = ({
                           border: "1px solid #484848",
                         }}
                       >
-                        {item.titulo}
+                        {actionItem.titulo}
                       </Button>
                     ) : (
                       <IconButton
+                        key={index}
                         edge="end"
                         onClick={(e) => {
                           e.stopPropagation();
-                          item.action(item.id);
+                          actionItem.action(item.id);
                         }}
                         sx={{
                           m: "0 5px",
                         }}
                       >
-                        {item.icon}
+                        {actionItem.icon}
                       </IconButton>
                     )
                   )}
@@ -133,7 +139,7 @@ export const Rows = ({
                   <IconButton
                     edge="end"
                     onClick={(e) => {
-                      e.stopPropagation(); // Impede a seleção ao clicar no botão
+                      e.stopPropagation();
                       onDelete(item.id);
                     }}
                   >
@@ -143,6 +149,22 @@ export const Rows = ({
               </ListItem>
             </Card>
           </CardActionArea>
+          {item.renderDetails && (
+            <Box
+              sx={{
+                mt: 1.8,
+                height:
+                  Array.isArray(selected) &&
+                  selected.some((op) => op.id === item.id)
+                    ? 240
+                    : 0, // Ajuste o valor conforme necessário
+                overflow: "hidden",
+                transition: "height 0.3s ease-in-out",
+              }}
+            >
+              {item.renderDetails}
+            </Box>
+          )}
         </>
       ))}
     </List>

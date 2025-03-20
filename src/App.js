@@ -17,6 +17,9 @@ import bgiteract from "./Assets/vt.png";
 const theme = createTheme({
   palette: {
     mode: "dark",
+    force: {
+      main: "#012FE5",
+    },
     primary: {
       main: "#0195F7",
     },
@@ -24,7 +27,7 @@ const theme = createTheme({
       main: "#fff",
     },
     warning: {
-      main: "#DAA835",
+      main: "#ffb200",
     },
     background: {
       default: "#000",
@@ -70,7 +73,8 @@ function App() {
     "/dashboard/:subPath?",
     "/manager/:page?",
     "/me",
-    "plans",
+    "/plans",
+    "/checkout/:key?",
   ]);
   const [alert, setAlert] = useState({
     message: "",

@@ -3,6 +3,7 @@ import {
   Grid2 as Grid,
   MenuItem,
   Select,
+  Typography,
   Checkbox,
   ListItemText,
   InputLabel,
@@ -10,7 +11,8 @@ import {
 } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import { CustomInput, CustomSelect } from "../../../Componentes/Custom";
-
+import { Rows } from "../../../Componentes/Lista/Rows";
+import { formatPhone } from "../../../Componentes/Funcoes";
 const Funcionario = ({
   formData,
   setFormData,
@@ -85,49 +87,37 @@ const Funcionario = ({
             variant="outlined"
             fullWidth
           />
-        </Grid>
+        </Grid>{" "}
         <Grid item size={{ xs: 12, md: 6 }}>
           <CustomInput
             label="Número de Telefone"
             name="telefone"
-            value={data.telefone}
+            value={formatPhone(data.telefone)}
             onChange={handleChange}
             variant="outlined"
             fullWidth
           />
         </Grid>
         <Grid item size={{ xs: 12, md: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel id="servicos-label">Serviços Prestados</InputLabel>
-            <CustomSelect
-              fullWidth
-              label="Serviços Prestados"
-              labelId="servicos-label"
-              name="servicosPrestados"
-              multiple
-              value={data.servicosPrestados}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  servicosPrestados: e.target.value,
-                })
-              }
-              renderValue={(selected) =>
-                selected.map((servico) => servico.nome).join(", ")
-              }
-            >
-              {servicos.map((servico) => (
-                <MenuItem key={servico.id} value={servico}>
-                  <Checkbox
-                    checked={data.servicosPrestados?.some(
-                      (item) => item.id === servico.id
-                    )}
-                  />
-                  <ListItemText primary={servico.nome} />
-                </MenuItem>
-              ))}
-            </CustomSelect>
-          </FormControl>
+          <Typography variant="body1" sx={{ top: 0 }}>
+            Selecione serviços para o funcionário
+          </Typography>
+
+          <Rows
+            items={servicos?.map((item) => ({
+              ...item,
+              titulo: item.nome,
+              subtitulo: `R$ ${item.preco} | Duração: ${item.tempoGasto}`,
+            }))}
+            onSelect={(value) =>
+              setData({
+                ...data,
+                servicosPrestados: value,
+              })
+            }
+            selectedItems={data.servicosPrestados}
+            multipleSelect={true}
+          />
         </Grid>
       </Grid>
     </Modal>

@@ -24,29 +24,18 @@ class ApiService {
 
   async query(method, route, body, headers = {}) {
     const defaultHeaders = {
-      establishmentId: localStorage.getItem("establishmentId"),
+      id: localStorage.getItem("establishmentId"),
       "x-access-token": localStorage.getItem("accessToken"),
       authorization: `Bearer ${localStorage.getItem("token")}`,
     };
 
-    try {
-      const response = await this.api({
-        method,
-        url: route,
-        headers: { ...defaultHeaders, ...headers },
-        ...(body ? { data: body } : {}),
-      });
-      return response.data;
-    } catch (error) {
-      console.error(
-        "Erro ao fazer requisição:",
-        error.response?.data || error.message
-      );
-      throw {
-        status: error.response?.status || 500,
-        message: error.response?.data || "Erro desconhecido",
-      };
-    }
+    const response = await this.api({
+      method,
+      url: route,
+      headers: { ...defaultHeaders, ...headers },
+      ...(body ? { data: body } : {}),
+    });
+    return response.data;
   }
 }
 
