@@ -15,6 +15,13 @@ code {
     monospace;
 }
 
+.bar {
+  width: 5px;
+  height: 100%;
+  background-color: #484848;
+  border-radius: 10px;
+}
+
 .show-box {
   border-radius: 10px;
   border: 1px solid #484848;

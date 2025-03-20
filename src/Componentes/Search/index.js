@@ -18,7 +18,7 @@ const SearchBarWithFilters = ({
   elements,
   setElements,
   label,
-  propFilters,
+  propFilters = [],
   searchValue,
   setSearchValue,
 }) => {
@@ -94,7 +94,11 @@ const SearchBarWithFilters = ({
   };
 
   return (
-    <Box sx={{ width: "100%" }} onBlur={handleBlur} tabIndex={-1}>
+    <Box
+      sx={{ width: "100%", maxWidth: "500px" }}
+      onBlur={handleBlur}
+      tabIndex={-1}
+    >
       <TextField
         fullWidth
         variant="outlined"

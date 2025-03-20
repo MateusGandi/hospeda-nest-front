@@ -146,6 +146,10 @@ const ModalPlanos = ({ alertCustom }) => {
     setModal((prev) => ({ ...prev, loading: false }));
   };
 
+  useEffect(() => {
+    // fetchData();
+  }, []);
+
   const handleSelectPlan = async (idPlan) => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {

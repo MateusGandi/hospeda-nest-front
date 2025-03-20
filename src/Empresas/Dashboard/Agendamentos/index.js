@@ -138,8 +138,8 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
               >
                 {dataSelecionada.toLocaleDateString()}
               </Button>
-              <Typography variant="body1" color="GrayText">
-                Clique para mudar o dia...
+              <Typography variant="body2" color="GrayText">
+                Clique para mudar o dia
               </Typography>
             </Typography>
           </Grid>
@@ -182,7 +182,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.dados === "calendario" ? "xs" : "md"}
-        buttons={!!modalConteudo.dados && buttons}
+        buttons={modalConteudo.dados != "calendario" && buttons}
         onAction={
           modalConteudo.dados == "calendario" ? null : () => console.log("oi")
         }

@@ -5,8 +5,17 @@ import { CustomInput } from "../Componentes/Custom";
 import { useNavigate } from "react-router-dom";
 import { formatPhone } from "../Componentes/Funcoes";
 import ListaAgendamentos from "./Agendamentos";
+import Financeiro from "./Financeiro";
 
-const Profile = ({ formData, setFormData, open, setOpen, titulo, loading }) => {
+const Profile = ({
+  formData,
+  setFormData,
+  open,
+  setOpen,
+  titulo,
+  loading,
+  alertCustom,
+}) => {
   const navigate = useNavigate();
   const [data, setData] = useState({
     nome: "",
@@ -54,6 +63,7 @@ const Profile = ({ formData, setFormData, open, setOpen, titulo, loading }) => {
       fullScreen="all"
       component="view"
       loading={loading}
+      disablePadding={true}
       buttons={[
         {
           color: "error",
@@ -62,7 +72,8 @@ const Profile = ({ formData, setFormData, open, setOpen, titulo, loading }) => {
         },
       ]}
     >
-      <Grid container spacing={4} sx={{ mt: 4 }}>
+      <Financeiro usuario={formData} alertCustom={alertCustom} />
+      <Grid container spacing={4} sx={{ m: 1 }}>
         <Grid item size={{ xs: 12, md: 12 }}>
           <Typography variant="h6">Editar meus dados</Typography>
         </Grid>

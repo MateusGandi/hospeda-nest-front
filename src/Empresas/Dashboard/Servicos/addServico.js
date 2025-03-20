@@ -38,6 +38,11 @@ const Servico = ({
   };
 
   useEffect(() => {
+    if (!open)
+      setData({ nome: "", tempoGasto: null, preco: null, descricao: "" });
+  }, [open]);
+
+  useEffect(() => {
     if (formData) {
       setData({
         flagUpdate: true,

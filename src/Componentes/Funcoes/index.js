@@ -121,3 +121,15 @@ export const formatCardInfo = (value, campo = "numero") => {
 
   return digits; // Retorna apenas os números caso `campo` seja inválido
 };
+
+export const Saudacao = () => {
+  const hora = new Date().getHours();
+
+  if (hora < 12) {
+    return "Bom dia!";
+  } else if (hora < 18) {
+    return "Boa tarde!";
+  } else {
+    return "Boa noite!";
+  }
+};

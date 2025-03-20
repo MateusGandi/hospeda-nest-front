@@ -37,7 +37,7 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
         fullScreen="all"
         component="modal"
       >
-        <Grid container spacing={2} sx={{ mt: 4 }}>
+        <Grid container spacing={3.5} sx={{ mt: 4 }}>
           <Grid item size={{ xs: 12, md: 4 }}>
             <CustomInput
               fullWidth

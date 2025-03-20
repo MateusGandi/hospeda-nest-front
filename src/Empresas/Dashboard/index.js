@@ -14,13 +14,13 @@ import {
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import Modal from "../../Componentes/Modal";
 import Onboarding from "./Onboarding";
+import StyleIcon from "@mui/icons-material/Style";
 
 import EditData from "./Edit";
 import EditFuncionarios from "./Funcionarios";
 import EditServicos from "./Servicos";
 import Agendamentos from "./Agendamentos";
 import Financeiro from "./Financeiro";
-import Plans from "../Plans";
 import WhatsApp from "./WhatsApp";
 
 import CustomCard from "../../Componentes/Card/";
@@ -41,6 +41,8 @@ const BarberShopMenu = ({ alertCustom }) => {
     agendamento: false,
     edicao: false,
     agendamentos: false,
+    plans: false,
+    complete: false,
   });
   const [etapa, setEtapa] = useState({
     progresso: "empresa",
@@ -111,6 +113,7 @@ const BarberShopMenu = ({ alertCustom }) => {
           `/establishment?establishmentId=${localStorage?.establishmentId}`
         );
         console.log(data);
+        //setModal() se o cadastro não estiver completo, so abrir
         setBarbearia(data);
       } catch (error) {
         alertCustom("Erro ao buscar informações do estabelecimento!");
@@ -135,7 +138,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ p: "5px" }}>
       {!barbearia ? (
         <Grid
           container
@@ -171,7 +174,12 @@ const BarberShopMenu = ({ alertCustom }) => {
                   backgroundColor: "rgba(0,0,0,0.1)",
                   backgroundImage: `url(${
                     bannerImage ||
-                    `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner}`
+                    `${String(process.env.REACT_APP_BACK_TONSUS).replace(
+                      /"/g,
+                      ""
+                    )}/images/establishment/${barbearia.id}/banner/${
+                      barbearia.banner
+                    }`
                   })`,
                   height: 160,
                   backgroundSize: "cover",
@@ -201,7 +209,12 @@ const BarberShopMenu = ({ alertCustom }) => {
                 <Avatar
                   src={
                     profileImage ||
-                    `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
+                    `${String(process.env.REACT_APP_BACK_TONSUS).replace(
+                      /"/g,
+                      ""
+                    )}/images/establishment/${barbearia.id}/profile/${
+                      barbearia.profile
+                    }`
                   } // Renderiza a imagem de perfil
                   sx={{
                     position: "absolute",
@@ -264,7 +277,16 @@ const BarberShopMenu = ({ alertCustom }) => {
                       </Grid>
                       <Grid size={{ xs: 12, md: 4 }}>
                         {" "}
-                        <Plans />
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          startIcon={<StyleIcon />}
+                          onClick={() => navigate("/plans")}
+                          sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
+                          fullWidth
+                        >
+                          Planos
+                        </Button>
                       </Grid>
                       <Grid size={{ xs: 12, md: 4 }}>
                         <WhatsApp />
@@ -312,7 +334,7 @@ const BarberShopMenu = ({ alertCustom }) => {
           <Grid item size={{ xs: 12, md: 3 }}>
             <CustomCard onClick={() => handleOpen("agendamentos")}>
               <CalendarMonth sx={{ mr: 1 }} /> {/* Ícone de calendário */}
-              <Typography variant="body1">Agenda</Typography>
+              <Typography variant="body1">Minha Agenda</Typography>
             </CustomCard>
           </Grid>
 
@@ -351,7 +373,7 @@ const BarberShopMenu = ({ alertCustom }) => {
 
           {etapa && (
             <Modal
-              open={etapa.progresso}
+              open={modal.complete}
               onClose={() => setEtapa({ ...etapa, progresso: 0 })}
               titulo={"Completar dados"}
               onAction={etapa.next}

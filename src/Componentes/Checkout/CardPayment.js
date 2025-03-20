@@ -17,7 +17,7 @@ const CardPayment = ({ setForm, form }) => {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ p: "20px 0" }}>
       <Grid size={12}>
         {" "}
         <CustomInput
