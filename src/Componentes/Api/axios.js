@@ -13,12 +13,8 @@ class ApiService {
   }
 
   async getAccess() {
-    const accessToken = localStorage.getItem("accessToken");
-    const userId = localStorage.getItem("userId");
-    const { data } = await this.query(
-      "GET",
-      `/routes/${accessToken}/${userId}`
-    );
+    const typeUserId = localStorage.getItem("typeUserId");
+    const { data } = await this.query("GET", `/user/routes/${typeUserId}`);
     return data.pathsAllowed;
   }
 
