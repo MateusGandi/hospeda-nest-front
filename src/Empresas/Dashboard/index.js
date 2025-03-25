@@ -138,7 +138,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ p: "5px" }}>
+    <Container maxWidth="lg" sx={{ p: "10px" }}>
       {!barbearia ? (
         <Grid
           container
@@ -174,12 +174,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                   backgroundColor: "rgba(0,0,0,0.1)",
                   backgroundImage: `url(${
                     bannerImage ||
-                    `${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                      /"/g,
-                      ""
-                    )}/images/establishment/${barbearia.id}/banner/${
-                      barbearia.banner
-                    }`
+                    `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/banner/${barbearia.banner}`
                   })`,
                   height: 160,
                   backgroundSize: "cover",
@@ -209,12 +204,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                 <Avatar
                   src={
                     profileImage ||
-                    `${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                      /"/g,
-                      ""
-                    )}/images/establishment/${barbearia.id}/profile/${
-                      barbearia.profile
-                    }`
+                    `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
                   } // Renderiza a imagem de perfil
                   sx={{
                     position: "absolute",

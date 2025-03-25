@@ -1,19 +1,20 @@
 import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import apiService from "../Api/axios";
-import {
-  Box,
-  InputAdornment,
-  OutlinedInput,
-  styled,
-  TextField,
-} from "@mui/material";
+import { Box, TextField, styled, Popper } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { formatPhone } from "../Funcoes";
+
+const CustomPopper = styled(Popper)({
+  "& .MuiPaper-root": {
+    marginTop: 10,
+    backgroundColor: "#303030", // Define o fundo do popover como verde
+  },
+});
 
 export default function FreeSolo({
   url,
   fields,
+  label,
   placeholder,
   searchField,
   setItemSelecionado,
@@ -55,11 +56,12 @@ export default function FreeSolo({
       value={itemSelecionado?.title}
       options={options.map((option) => option.title)}
       onChange={(event, newValue) => {
-        const item = options.find((option) => option.title == newValue);
+        const item = options.find((option) => option.title === newValue);
         setItemSelecionado(item);
       }}
       fullWidth
       loading={loading}
+      PopperComponent={CustomPopper}
       renderInput={(params) => (
         <Box
           sx={{
@@ -79,14 +81,14 @@ export default function FreeSolo({
                 border: "none",
               },
               "& .MuiOutlinedInput-input": {
-                padding: "5px 10px !important", // Garantir que o padding seja aplicado
+                padding: "5px 10px !important",
               },
               "& .MuiAutocomplete-endAdornment": {
                 paddingRight: "5px !important",
               },
             }}
           />
-          {!inputValue.length && (
+          {!inputValue.length && !itemSelecionado && (
             <SearchIcon
               fontSize="medium"
               sx={{ position: "absolute", right: "13px", top: "13px" }}

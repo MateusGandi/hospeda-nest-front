@@ -186,7 +186,7 @@ const NavigationBar = ({ logo }) => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
-                      titulo={<b>Tonsus Appaaa</b>}
+                      titulo={<b>Tonsus App</b>}
                     >
                       <Rows
                         items={actions
@@ -223,7 +223,7 @@ const NavigationBar = ({ logo }) => {
                         ) : item.type === "text" ? (
                           <Typography
                             component="a"
-                            href="/plans"
+                            href={item.route}
                             sx={{
                               m: "5px 10px",
                               color: "#fff",

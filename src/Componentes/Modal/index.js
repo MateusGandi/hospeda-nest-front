@@ -236,7 +236,7 @@ const Modal = ({
             <DialogActions>
               {" "}
               {buttons &&
-                buttons.length &&
+                // buttons.length &&
                 buttons.map((button) => (
                   <Button
                     color={button.color || "primary"}

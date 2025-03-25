@@ -213,6 +213,7 @@ const ModalRelatorio = ({
               label="Pesquisar vendas"
               searchValue={search}
               setSearchValue={setSearch}
+              fullWidth={false}
             />
           </Grid>
           <Grid size={12} sx={{ m: "0 10px" }}>

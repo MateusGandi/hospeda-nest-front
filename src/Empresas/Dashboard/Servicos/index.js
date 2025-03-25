@@ -187,10 +187,7 @@ const GerenciarServicos = ({
                 onEdit={handleSelect}
                 items={servicos.map((item, index) => ({
                   ...item,
-                  imagem: `${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                    /"/g,
-                    ""
-                  )}/images/service/${item.id}/${item.foto}`,
+                  imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/service/${item.id}/${item.foto}`,
                   titulo: item.nome,
                   subtitulo:
                     item.tempoGasto && item.descricao

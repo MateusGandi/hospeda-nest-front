@@ -12,7 +12,9 @@ import {
 import Modal from "../../../Componentes/Modal";
 import { CustomInput, CustomSelect } from "../../../Componentes/Custom";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatPhone } from "../../../Componentes/Funcoes";
+import { formatarHorario, formatPhone } from "../../../Componentes/Funcoes";
+import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
+
 const Funcionario = ({
   formData,
   setFormData,
@@ -38,10 +40,17 @@ const Funcionario = ({
 
   useEffect(() => {
     if (formData) {
+      console.log("formData", formData);
       setData({
+        id: formData.id,
+        title: `${formData.nome} - ${formData.telefone}`,
         nome: formData.nome || "",
         telefone: formData.telefone || "",
         servicosPrestados: formData.servicosPrestados || [],
+        foto: formData.foto || null,
+        imagem: formData.foto
+          ? `https://srv744360.hstgr.cloud/tonsus/api/images/user/${formData.id}/${formData.foto}`
+          : null,
       });
     }
   }, [formData]);
@@ -57,6 +66,7 @@ const Funcionario = ({
     }
 
     setData({
+      id: null,
       nome: "",
       telefone: "",
       servicosPrestados: [],
@@ -79,16 +89,38 @@ const Funcionario = ({
     >
       <Grid container spacing={4} sx={{ mt: 4 }}>
         <Grid item size={{ xs: 12, md: 6 }}>
-          <CustomInput
+          <Typography variant="body1">Funcionário</Typography>
+          <SearchField
+            fields={["telefone", "nome"]}
+            url={`/user`}
+            placeholder="Pesquise por nome ou telefone"
+            setItemSelecionado={(item) => {
+              if (!item)
+                return setData({
+                  id: null,
+                  nome: "",
+                  telefone: "",
+                  servicosPrestados: [],
+                });
+              setData({
+                ...data,
+                nome: item.nome,
+                telefone: item.telefone,
+                id: item.id,
+              });
+            }}
+            itemSelecionado={data}
+          />
+          {/* <CustomInput
             label="Nome do Funcionário"
             name="nome"
             value={data.nome}
             onChange={handleChange}
             variant="outlined"
             fullWidth
-          />
+          /> */}
         </Grid>{" "}
-        <Grid item size={{ xs: 12, md: 6 }}>
+        {/* <Grid item size={{ xs: 12, md: 6 }}>
           <CustomInput
             label="Número de Telefone"
             name="telefone"
@@ -97,7 +129,7 @@ const Funcionario = ({
             variant="outlined"
             fullWidth
           />
-        </Grid>
+        </Grid> */}
         <Grid item size={{ xs: 12, md: 6 }}>
           <Typography variant="body1" sx={{ top: 0 }}>
             Selecione serviços para o funcionário
@@ -107,7 +139,9 @@ const Funcionario = ({
             items={servicos?.map((item) => ({
               ...item,
               titulo: item.nome,
-              subtitulo: `R$ ${item.preco} | Duração: ${item.tempoGasto}`,
+              subtitulo: `R$ ${item.preco} | Duração: ${formatarHorario(
+                item.tempoGasto
+              )}`,
             }))}
             onSelect={(value) =>
               setData({

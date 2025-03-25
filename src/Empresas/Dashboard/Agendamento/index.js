@@ -5,10 +5,12 @@ import Api from "../../../Componentes/Api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import NavigationIcon from "@mui/icons-material/Navigation";
 
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
 import ClienteForm from "./Cliente";
+import { formatarHorario } from "../../../Componentes/Funcoes";
 
 const AgendamentoManual = ({
   open,
@@ -81,6 +83,7 @@ const AgendamentoManual = ({
       establishmentId: empresa.id,
       services: form.servicos.map(({ id }) => id),
       userName: form.cliente.nome,
+      userId: form.cliente.id,
       barberId: barbeiro.id,
     });
   };
@@ -89,7 +92,9 @@ const AgendamentoManual = ({
     try {
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
-        return alertCustom(`Selecione ao menos 1 item antes de prosseguir!`);
+        return alertCustom(
+          `Informe as informações necessárias para prosseguir!`
+        );
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -105,8 +110,8 @@ const AgendamentoManual = ({
             alertCustom(
               "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
-            setTituloModal(paths[pathTo + 2].title);
-            navigate(`/dashboard/${paths[pathTo + 2].key}`);
+            // setTituloModal(paths[pathTo + 2].title);
+            // navigate(`/dashboard/${paths[pathTo + 2].key}`);
           });
       }
       setTituloModal(paths[pathTo + 1].title);
@@ -120,12 +125,13 @@ const AgendamentoManual = ({
   const handleBack = () => {
     try {
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo == -1) {
+      if (pathTo - 1 == -1) {
         return onClose();
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/dashboard/${paths[pathTo - 1].key}`);
     } catch (error) {
+      console.log(error);
       alertCustom("Erro interno!");
     }
   };
@@ -166,7 +172,7 @@ const AgendamentoManual = ({
       return items.map((item) => ({
         ...item,
         titulo: `R$ ${item.preco} ${item.nome}`,
-        subtitulo: `Duração: ${item.duracao}`,
+        subtitulo: `Duração: ${formatarHorario(item.tempoGasto)}`,
       }));
     }
     if (pagina == "agendamentos") {
@@ -241,18 +247,71 @@ const AgendamentoManual = ({
               >
                 <Grid size={{ md: 12, xs: 12 }}>
                   {" "}
-                  <Typography variant="h5">Agendamento Confirmado!</Typography>
+                  <Typography variant="h4" sx={{ mb: 1 }}>
+                    Agendamento Confirmado!
+                  </Typography>
+                  <Typography variant="h5" color="warning">
+                    {format(() => {
+                      const data = new Date(form?.agendamento.id);
+                      data.setHours(data.getHours() + 3);
+                      // Adiciona 3 horas à data
+                      return data;
+                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                  </Typography>{" "}
+                </Grid>
+                <Grid
+                  size={{ md: 12, xs: 12 }}
+                  className="show-box"
+                  sx={{ textAlign: "start" }}
+                >
+                  <Typography variant="h6">
+                    🔔 Notificação
+                    <Typography variant="body1">
+                      {
+                        "Seu cliente será notificado! Caso ele tenha permitido notificações via WhatsApp"
+                      }
+                    </Typography>
+                    {/* <Typography variant="body1" textAlign="center">
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={form.notify}
+                            onChange={(e) =>
+                              setForm((prev) => ({
+                                ...prev,
+                                notify: e.target.checked,
+                              }))
+                            }
+                            color="success"
+                          />
+                        }
+                        label="Quero ser notificado pelo WhatsApp"
+                      />
+                    </Typography> */}
+                  </Typography>
+                </Grid>
+                <Grid size={{ md: 12, xs: 12 }}>
+                  <a
+                    href="https://www.google.com/maps?q=Av. Paulista, São Paulo"
+                    target="_blank"
+                  >
+                    <Button
+                      disableElevation
+                      color="primary"
+                      size="large"
+                      variant="contained"
+                      startIcon={<NavigationIcon />}
+                    >
+                      Ver Localização
+                    </Button>
+                  </a>
                 </Grid>
                 <Grid size={{ md: 12, xs: 12 }}>
                   <Button
                     disableElevation
-                    variant="outlined"
-                    color="success"
+                    color="terciary"
                     size="large"
                     onClick={() => navigate("/dashboard")}
-                    sx={{
-                      border: "1px solid #484848",
-                    }}
                     startIcon={<ArrowBackIcon />}
                   >
                     Voltar a tela inicial

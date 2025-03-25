@@ -12,16 +12,12 @@ import {
   ListItemText,
   Paper,
   IconButton,
+  CardActions,
 } from "@mui/material";
-import Modal from "../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
-import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Api from "../Componentes/Api/axios";
 import { isMobile, Saudacao } from "../Componentes/Funcoes";
-import SearchBarWithFilters from "../Componentes/Search";
 import { PaperList } from "../Componentes/Lista/Paper";
 
 const financasMock = {
@@ -52,93 +48,80 @@ const ModalRelatorio = ({ usuario, alertCustom, financas = financasMock }) => {
   }, []);
 
   return (
-    <Grid container spacing={3} justifyContent={"center"}>
-      <Grid size={12} sx={{ mb: "-75px" }}>
-        <Paper
+    <>
+      <Grid size={12}>
+        <Card
           sx={{
-            height: "180px",
-            width: "100%",
-            left: 0,
-            position: "relative",
+            top: "15px",
+            height: "150px",
+            overflow: "visible",
+            m: "-16px -16px 60px -16px",
+            p: "8px 24px",
             borderRadius: isMobile ? 0 : "10px",
           }}
         >
-          <Card
-            elevation={0}
+          <CardHeader
+            avatar={
+              <Avatar
+                sx={{
+                  bgcolor: "#fff",
+                  width: "50px",
+                  height: "50px",
+                  fontSize: 30,
+                  fontWeight: 600,
+                }}
+              >
+                {usuario.nome[0].toUpperCase()}
+              </Avatar>
+            }
+            title={<Typography variant="body1">{Saudacao()}</Typography>}
+            subheader={
+              <Typography variant="h6" sx={{ mt: "-8px" }}>
+                {usuario.nome}
+              </Typography>
+            }
+            action={<Button color="#fff">Editar</Button>}
+          />
+          <CardActions
             sx={{
-              width: "100%",
-              background: "none",
-              position: "absolute",
-              top: "15px",
-              ...(!isMobile ? { ml: "50px" } : {}),
+              display: "flex",
+              justifyContent: isMobile ? "center" : "left",
             }}
           >
-            <CardHeader
-              avatar={
-                <Avatar
-                  sx={{
-                    bgcolor: "#fff",
-                    width: "50px",
-                    height: "50px",
-                    fontSize: 30,
-                    fontWeight: 600,
-                  }}
-                >
-                  {usuario.nome[0].toUpperCase()}
-                </Avatar>
-              }
-              title={<Typography variant="body1">{Saudacao()}</Typography>}
-              subheader={
-                <Typography variant="h6" sx={{ marginTop: "-8px" }}>
-                  {usuario.nome}
-                </Typography>
-              }
-              action={"oi"}
-            />
-          </Card>
-        </Paper>
-      </Grid>
-
-      <Grid
-        size={12}
-        sx={{
-          zIndex: 1,
-          m: "0 10px",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Card
-          variant="outlined"
-          sx={{
-            background: "#388E3C",
-            position: "relative",
-            minWidth: "350px",
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6">Total Cash Back</Typography>
-            <Typography variant="h5">
-              {mostrarSaldo
-                ? `R$ ${financas.approved.valor.toFixed(2)}`
-                : "******"}
-            </Typography>
-            <IconButton
-              onClick={() => setMostrarSaldo(!mostrarSaldo)}
+            {" "}
+            <Card
+              variant="outlined"
               sx={{
-                position: "absolute",
-                top: 10,
-                right: 10,
-                color: "#fff",
+                background: "#388E3C",
+                minWidth: "350px",
+                position: "relative",
               }}
             >
-              {mostrarSaldo ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </IconButton>
-          </CardContent>
+              <CardContent>
+                <Typography variant="h6">Total Cash Back</Typography>
+                <Typography variant="h5">
+                  {mostrarSaldo
+                    ? `R$ ${financas.approved.valor.toFixed(2)}`
+                    : "******"}
+                </Typography>
+                <IconButton
+                  onClick={() => setMostrarSaldo(!mostrarSaldo)}
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    color: "#fff",
+                  }}
+                >
+                  {mostrarSaldo ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </CardContent>
+            </Card>
+          </CardActions>
         </Card>
       </Grid>
 
-      <Grid size={{ xs: 12, md: 6 }} sx={{ m: "0 10px" }}>
+      <Grid size={12}>
         <PaperList
           items={financas.vendas.map((venda) => ({
             ...venda,
@@ -152,7 +135,7 @@ const ModalRelatorio = ({ usuario, alertCustom, financas = financasMock }) => {
           </Typography>{" "}
         </PaperList>
       </Grid>
-    </Grid>
+    </>
   );
 };
 

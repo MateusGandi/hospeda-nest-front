@@ -7,6 +7,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, Card, CardActionArea, Typography } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export const Rows = ({
   items = [],
@@ -59,13 +60,26 @@ export const Rows = ({
                       ...(styleSelect
                         ? styleSelect
                         : {
+                            background: "rgba(256, 256, 256,0.1)",
                             border: "1px solid rgb(134, 134, 134)",
                             background: "rgba(256,256,256,0.05)",
                           }),
                     }
                   : { border: "1px solid transparent" }),
+                position: "relative",
               }}
             >
+              {Array.isArray(selected) &&
+                selected?.some((opcao) => opcao.id === item.id) && (
+                  <CheckCircleIcon
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: 15,
+                      transform: "translateY(-50%)",
+                    }}
+                  />
+                )}
               <ListItem
                 sx={{
                   borderRadius: "10px",

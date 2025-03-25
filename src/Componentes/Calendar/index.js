@@ -117,7 +117,7 @@ const Calendario = ({ onSelect }) => {
       variant="outlined"
     >
       <CardContent>
-        <Grid container spacing={1} sx={{ minHeight: "62vh" }}>
+        <Grid container spacing={1} sx={{ minHeight: "58.5vh" }}>
           <Grid size={{ xs: 12 }}>
             <Box display="flex" justifyContent="space-between" mb={2}>
               <IconButton onClick={handleMesAnterior}>

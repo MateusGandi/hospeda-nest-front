@@ -21,28 +21,45 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
-export const formatarData = (dataISO, timeZone = "sao_paulo") => {
+export const formatarData = (dataISO, timeZone = "rio_branco") => {
   const data = new Date(dataISO);
 
+  // Adiciona 3 horas à data
+  data.setHours(data.getHours() + 3);
+
   const titulo = data.toLocaleTimeString("pt-BR", {
-    timeZone: timezones[timeZone],
+    //timeZone: timezones[timeZone],
     hour: "2-digit",
     minute: "2-digit",
   });
 
   const subtitulo = data.toLocaleDateString("pt-BR", {
-    timeZone: timezones[timeZone],
+    // timeZone: timezones[timeZone],
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
 
   return {
-    id: data.getTime(),
+    id: new Date(dataISO).getTime(),
     titulo,
     subtitulo,
   };
 };
+
+export function formatarHorario(horario) {
+  const [hh, mm, ss] = horario.split(":").map(Number);
+  let partes = [];
+
+  if (hh > 0) partes.push(`${hh} hora${hh > 1 ? "s" : ""}`);
+  if (mm > 0) partes.push(`${mm} minuto${mm > 1 ? "s" : ""}`);
+  if (ss > 0) partes.push(`${ss} segundo${ss > 1 ? "s" : ""}`);
+
+  if (partes.length === 0) return "0 segundos";
+  if (partes.length === 1) return partes[0];
+
+  return partes.slice(0, -1).join(", ") + " e " + partes[partes.length - 1];
+}
 
 export const formatTime = (valorant, valor) => {
   let numeros = valor.replace(/\D/g, "");

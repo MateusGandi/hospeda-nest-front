@@ -4,8 +4,9 @@ import apiService from "../Componentes/Api/axios";
 
 const Usuarios = ({ alertCustom }) => {
   const [userData, setUserData] = useState({
-    nome: "mateus",
-    telefone: "62994629569",
+    id: localStorage.getItem("userId"),
+    nome: "oi",
+    telefone: "1",
   });
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -14,9 +15,12 @@ const Usuarios = ({ alertCustom }) => {
     const fetch = async () => {
       setLoading(true);
       try {
-        const data = await apiService.query("GET", "/auth/profile");
+        const data = await apiService.query(
+          "GET",
+          `/user/profile/${userData.id}`
+        );
 
-        // setUserData(data);
+        setUserData((prev) => ({ prev, ...data }));
       } catch (error) {
         console.error("Erro ao buscar dados da conta:", error);
       } finally {
@@ -33,7 +37,7 @@ const Usuarios = ({ alertCustom }) => {
         setOpen={setOpen}
         formData={userData}
         setFormData={setUserData}
-        titulo={`Bem vindo, ${localStorage.nome}!`}
+        titulo={`Meu perfil`}
         loading={loading}
         alertCustom={alertCustom}
       />

@@ -137,6 +137,10 @@ export const Cards = ({
                   left: 8,
                   borderRadius: "10px !important",
                   p: "5px 10px",
+                  background: "rgba(0,0,0,0.5)",
+                  ":hover": {
+                    background: "rgba(0,0,0,0.8)",
+                  },
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
