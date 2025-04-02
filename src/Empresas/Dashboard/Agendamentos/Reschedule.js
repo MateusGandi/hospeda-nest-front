@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarData } from "../../../Componentes/Funcoes";
+import { formatarData, getLocalItem } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar";
 import Horario from "../../../Componentes/Horario/fixed";
@@ -47,7 +47,8 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
   useEffect(() => {
     const buscar = async () => {
       if (data.dia) {
-        const { id, establishmentId } = localStorage;
+        const id = getLocalItem("id");
+        const establishmentId = getLocalItem("establishmentId");
         const services = await Api.query(
           "GET",
           `/service/${establishmentId}/${id}`

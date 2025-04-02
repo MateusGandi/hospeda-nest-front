@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid2 as Grid,
   TextField,
   IconButton,
   InputAdornment,
+  Typography,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -13,6 +14,20 @@ import { formatPhone } from "../Componentes/Funcoes";
 const Create = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    if (
+      dados.senha &&
+      dados.confirmarSenha &&
+      dados.senha?.length <= dados.confirmarSenha?.length &&
+      dados.senha != dados.confirmarSenha
+    )
+      setFeedback("●\tSenhas devem ser iguais");
+    else if (dados.senha?.length < 5)
+      setFeedback("●\tSenha devem conter ao menos 5 caracteres!");
+    else setFeedback(null);
+  }, [dados]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -100,6 +115,11 @@ const Create = ({ dados, setDados }) => {
             </InputAdornment>
           }
         />
+      </Grid>{" "}
+      <Grid size={12} sx={{ height: 0 }}>
+        <Typography color="error" variant="body1">
+          {feedback}
+        </Typography>
       </Grid>
     </>
   );

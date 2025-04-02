@@ -233,7 +233,7 @@ const Modal = ({
             </Container>
           </DialogContent>
           {component != "form" && (
-            <DialogActions>
+            <DialogActions sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
               {" "}
               {buttons &&
                 // buttons.length &&
@@ -243,7 +243,10 @@ const Modal = ({
                     disableElevation
                     onClick={button.action}
                     variant={button.variant ? button.variant : "outlined"}
-                    fullWidth={isMobile}
+                    fullWidth={
+                      (["form", "view"].includes(component) || fullScreen) &&
+                      isMobile
+                    }
                     sx={{
                       ...buttonStyle,
                       border: "1px solid #484848",

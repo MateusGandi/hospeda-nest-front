@@ -85,6 +85,22 @@ export const formatMoney = (valor) => {
   return numeroFormatado;
 };
 
+export const formatCNPJ = (value) => {
+  // Remove tudo que não for número
+  let digits = value?.replace(/\D/g, "");
+  if (!value) return "";
+
+  // Limita ao formato máximo (14 dígitos para CNPJ)
+  digits = digits.slice(0, 14);
+
+  // Aplica a formatação XX.XXX.XXX/XXXX-XX
+  return digits
+    .replace(/^(\d{2})(\d)/, "$1.$2") // Adiciona o primeiro ponto
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Adiciona o segundo ponto
+    .replace(/\.(\d{3})(\d)/, ".$1/$2") // Adiciona a barra
+    .replace(/(\d{4})(\d)/, "$1-$2"); // Adiciona o hífen
+};
+
 export const formatPhone = (value) => {
   // Remove tudo que não for número
   let digits = value?.replace(/\D/g, "");
@@ -148,5 +164,45 @@ export const Saudacao = () => {
     return "Boa tarde!";
   } else {
     return "Boa noite!";
+  }
+};
+
+export const formatNumberToWords = (num) => {
+  if (num < 100) return "vários";
+  if (num < 1000) return "centenas";
+
+  if (num < 10000) {
+    return `${Math.floor(num / 1000)} mil`;
+  }
+
+  if (num < 1000000) {
+    return `${(num / 1000).toFixed(0)} mil`;
+  }
+
+  if (num < 1000000000) {
+    return `${(num / 1000000).toFixed(0)} milhões`;
+  }
+
+  return "muitos";
+};
+
+export const setLocalItem = (key, value) => {
+  if (typeof value === "object" || Array.isArray(value)) {
+    value = JSON.stringify(value); // Serializa se for um objeto ou array
+  } else if (typeof value === "boolean" || typeof value === "number") {
+    value = String(value); // Converte booleanos e números para string
+  }
+  window.localStorage.setItem(key, value); // Armazena o item como uma string no localStorage
+};
+
+export const getLocalItem = (key) => {
+  const item = window.localStorage.getItem(key);
+  if (item === null) return null;
+
+  try {
+    const parsed = JSON.parse(item);
+    return parsed; // Retorna o valor parseado se for possível
+  } catch (e) {
+    return item; // Retorna o item original se o parse falhar (string, número ou booleano)
   }
 };

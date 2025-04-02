@@ -111,6 +111,8 @@ const Calendario = ({ onSelect }) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
   return (
     <Card
       sx={{ borderRadius: "10px", background: "transparent" }}
@@ -132,8 +134,24 @@ const Calendario = ({ onSelect }) => {
                 <ArrowForward />
               </IconButton>
             </Box>
+          </Grid>{" "}
+          <Grid container spacing={1} sx={{ width: "100%", maxHeight: "10px" }}>
+            {diasDaSemana.map((dia, index) => (
+              <Grid
+                size={12 / 7}
+                key={index}
+                sx={{
+                  maxHeight: "10px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {dia}
+                </Typography>
+              </Grid>
+            ))}
           </Grid>
-
           {renderizaDias()}
         </Grid>
       </CardContent>

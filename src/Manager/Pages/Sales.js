@@ -8,7 +8,7 @@ export default function Sales() {
     <Box sx={{ p: 2, display: "flex" }}>
       <img src={BannerImage} style={{ width: "300px", borderRadius: "10px" }} />
       <Typography variant="h4" fontWeight={600} sx={{ ml: 2 }}>
-        Tonsus App
+        Tonsus.app
         <Typography variant="h6">
           Em linguística, a noção de texto é ampla e ainda aberta a uma
           definição mais precisa. Grosso modo, pode ser entendido como

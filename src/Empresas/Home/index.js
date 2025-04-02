@@ -18,7 +18,7 @@ import Funcioanarios from "./Funcionarios";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
 import AnimatedCheck from "../../Componentes/Motion/Icons";
-import { formatarHorario } from "../../Componentes/Funcoes";
+import { formatarHorario, getLocalItem } from "../../Componentes/Funcoes";
 
 const Empresa = ({ alertCustom }) => {
   const paths = [
@@ -68,7 +68,7 @@ const Empresa = ({ alertCustom }) => {
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
       establishmentId: empresa.id,
-      userId: localStorage.userId,
+      userId: getLocalItem("userId"),
       barberId: form.barbeiro.id,
       services: form.servicos.map(({ id }) => id),
     });
@@ -113,7 +113,7 @@ const Empresa = ({ alertCustom }) => {
       const pathTo = paths.findIndex((item) => item.key === subPath);
       console.log("pathTo", pathTo);
       if (pathTo == 0) {
-        return navigate("/onboard");
+        return navigate("/home");
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo - 1].key}`);
@@ -150,7 +150,7 @@ const Empresa = ({ alertCustom }) => {
       open: true,
       onClose: () => {
         setPage((prev) => ({ ...prev, open: false }));
-        navigate("/onboard");
+        navigate("/home");
       },
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
@@ -192,7 +192,7 @@ const Empresa = ({ alertCustom }) => {
         backAction={{
           action: !["confirmacao", "error"].includes(subPath)
             ? handleBack
-            : () => navigate("/onboard"),
+            : () => navigate("/home"),
           titulo: "Voltar",
         }}
         onClose={page.onClose}
@@ -260,10 +260,12 @@ const Empresa = ({ alertCustom }) => {
                     Agendamento Confirmado!
                   </Typography>
                   <Typography variant="h5" color="warning">
-                    {format(
-                      new Date(form?.agendamento?.id || 1),
-                      "dd/MM/yyyy' às 'HH:mm'h'"
-                    )}
+                    {format(() => {
+                      const data = new Date(form?.agendamento.id);
+                      data.setHours(data.getHours() + 3);
+                      // Adiciona 3 horas à data
+                      return data;
+                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
                   </Typography>{" "}
                 </Grid>
                 <Grid
@@ -274,7 +276,7 @@ const Empresa = ({ alertCustom }) => {
                   <Typography variant="h6">
                     🔔 Notificação
                     <Typography variant="body1">
-                      {localStorage.flagWhatsapp
+                      {getLocalItem("flagWhatsapp")
                         ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
                         : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
                     </Typography>
@@ -318,7 +320,7 @@ const Empresa = ({ alertCustom }) => {
                     disableElevation
                     color="terciary"
                     size="large"
-                    onClick={() => navigate("/onboard")}
+                    onClick={() => navigate("/home")}
                     startIcon={<ArrowBackIcon />}
                   >
                     Voltar a tela inicial
@@ -355,7 +357,7 @@ const Empresa = ({ alertCustom }) => {
                     sx={{
                       border: "1px solid #484848",
                     }}
-                    onClick={() => navigate("/onboard")}
+                    onClick={() => navigate("/home")}
                   >
                     Voltar a tela inicial
                   </Button>

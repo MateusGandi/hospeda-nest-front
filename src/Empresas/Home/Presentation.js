@@ -76,7 +76,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item size={{ xs: 12 }}>
+          <Grid item size={{ xs: 12 }} sx={{ mt: "10px" }}>
             <Rows
               items={actions}
               onSelect={({ action }) => action()}

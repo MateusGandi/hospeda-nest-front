@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getLocalItem, setLocalItem } from "../Funcoes";
 
 class ApiService {
   constructor(baseURL) {
@@ -8,21 +9,20 @@ class ApiService {
   }
 
   setKey(data) {
-    if (data)
-      Object.keys(data).map((key) => localStorage.setItem(key, data[key]));
+    if (data) Object.keys(data).map((key) => setLocalItem(key, data[key]));
   }
 
   async getAccess() {
-    const typeUserId = localStorage.getItem("typeUserId");
-    const { data } = await this.query("GET", `/user/routes/${typeUserId}`);
-    return data.pathsAllowed;
+    const typeUserId = getLocalItem("typeUserId");
+    const data = await this.query("GET", `/user/routes/${typeUserId}`);
+    return data;
   }
 
   async query(method, route, body, headers = {}) {
     const defaultHeaders = {
-      id: localStorage.getItem("establishmentId"),
-      "x-access-token": localStorage.getItem("accessToken"),
-      authorization: `Bearer ${localStorage.getItem("token")}`,
+      id: getLocalItem("establishmentId"),
+      "x-access-token": getLocalItem("accessToken"),
+      authorization: `Bearer ${getLocalItem("token")}`,
     };
 
     const response = await this.api({

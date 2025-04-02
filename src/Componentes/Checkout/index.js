@@ -29,9 +29,8 @@ const Checkout = ({ alertCustom }) => {
 
   const handleSubmit = async () => {
     setPaymentConfirmed(true);
-    console.log("tetse mateus", modal.method);
     try {
-      await apiService.query("POST");
+      await apiService.query("POST", form);
     } catch (error) {
       alertCustom(
         "Erro ao proceder com o pagamento, tente novamente mais tarde!"
@@ -118,18 +117,6 @@ const Checkout = ({ alertCustom }) => {
           <Confirmacao alertCustom={alertCustom} />
         ) : (
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Typography variant="h6" gutterBottom>
-                Resumo do pedido
-              </Typography>
-              <PaperList items={orderDetails}>
-                <Paper sx={{ p: 2, borderRadius: 0 }}>
-                  <Typography>Subtotal: R$ 29,90</Typography>
-                  <Typography>Desconto: R$ 9,90</Typography>
-                  <Typography>Total: R$ 20,00</Typography>
-                </Paper>
-              </PaperList>
-            </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
               {" "}
               <Typography variant="h6" gutterBottom>
@@ -147,6 +134,18 @@ const Checkout = ({ alertCustom }) => {
                   }))
                 }
               />
+            </Grid>{" "}
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Typography variant="h6" gutterBottom>
+                Resumo do pedido
+              </Typography>
+              <PaperList items={orderDetails}>
+                <Paper sx={{ p: 2, borderRadius: 0 }}>
+                  <Typography>Subtotal: R$ 29,90</Typography>
+                  <Typography>Desconto: R$ 9,90</Typography>
+                  <Typography>Total: R$ 20,00</Typography>
+                </Paper>
+              </PaperList>
             </Grid>
           </Grid>
         )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ThemeProvider,
   createTheme,
@@ -9,11 +9,12 @@ import {
   Container,
 } from "@mui/material";
 
-import Alerta from "./Componentes/Alert";
+import Alerta from "./Componentes/Alert/Temp";
 import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router";
-import bgiteract from "./Assets/vt.png";
+import Permissions from "./Componentes/Permissions";
+
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -61,8 +62,9 @@ const theme = createTheme({
 function App() {
   const [page, setPage] = useState(null);
   const [paths] = useState([
-    "/onboard",
+    "/home",
     "/create",
+    "/onboard/:planId?",
     "/login",
     "/change/:hash?",
     "/recover",
@@ -72,7 +74,7 @@ function App() {
     "/barbearia",
     "/dashboard/:subPath?",
     "/manager/:page?",
-    "/me",
+    "/me/:agendamentoId?",
     "/plans",
     "/checkout/:key?",
   ]);
@@ -93,8 +95,8 @@ function App() {
       <Alerta alert={alert} setAlert={setAlert} />
       <CssBaseline />
       <BrowserRouter>
-        <NavigationBar logo="Tonsus App" />
-
+        <NavigationBar logo="Tonsus.app" />
+        <Permissions alertCustom={alertCustom} />
         <Routes>
           {paths.map((path, index) => (
             <Route

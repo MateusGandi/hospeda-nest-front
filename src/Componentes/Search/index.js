@@ -38,7 +38,7 @@ const SearchBarWithFilters = ({
       filterValues[prop] = uniqueValues;
     });
     setUniqueFilterValues(filterValues);
-  }, [elements, propFilters]);
+  }, [elements]);
 
   useEffect(() => {
     // Aplica os filtros e a busca

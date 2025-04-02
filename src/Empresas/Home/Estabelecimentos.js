@@ -18,10 +18,10 @@ const Estabelecimentos = () => {
   useEffect(() => {
     setDados({
       open: true,
-      onClose: () => navigate("/onboard"),
+      onClose: () => navigate("/home"),
       onSelect: (barbearia) => navigate(`/barbearia/${barbearia.path}`),
       back: {
-        action: () => navigate("/onboard"),
+        action: () => navigate("/home"),
         titulo: "Voltar",
       },
     });
@@ -78,7 +78,7 @@ const Estabelecimentos = () => {
             setSearchValue={setSearchValue}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
           {empresasFiltred && empresasFiltred.length ? (
             <Rows
               items={empresasFiltred}

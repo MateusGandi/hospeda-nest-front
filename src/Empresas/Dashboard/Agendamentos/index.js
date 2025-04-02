@@ -5,7 +5,7 @@ import Api from "../../../Componentes/Api/axios";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import Calendario from "../../../Componentes/Calendar";
 import { format } from "date-fns";
-import { isMobile } from "../../../Componentes/Funcoes";
+import { getLocalItem, isMobile } from "../../../Componentes/Funcoes";
 import Reagendamento from "./Reschedule";
 import apiService from "../../../Componentes/Api/axios";
 import InsertInvitationRoundedIcon from "@mui/icons-material/InsertInvitationRounded";
@@ -56,11 +56,12 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   const buscarAgendamentos = async () => {
     try {
       const dataFormatted = dataSelecionada.toISOString().split("T")[0];
-      const { id, establishmentId } = localStorage;
+      const establishmentId = getLocalItem("establishmentId");
+
       const agendamentos = //await Promise.all(
         await apiService.query(
           "GET",
-          `/scheduling/employee/${establishmentId}/${dataFormatted}`
+          `/scheduling/employee/scheduleds/${establishmentId}/${dataFormatted}`
         );
       // apiService.query(
       //   "GET",

@@ -25,7 +25,7 @@ import WhatsApp from "./WhatsApp";
 
 import CustomCard from "../../Componentes/Card/";
 import AgendamentoManual from "./Agendamento";
-import { isMobile } from "../../Componentes/Funcoes";
+import { getLocalItem, isMobile } from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
 
 import { Edit, People, Build, CalendarMonth } from "@mui/icons-material";
@@ -110,7 +110,7 @@ const BarberShopMenu = ({ alertCustom }) => {
       try {
         const data = await Api.query(
           "GET",
-          `/establishment?establishmentId=${localStorage?.establishmentId}`
+          `/establishment?establishmentId=${getLocalItem("establishmentId")}`
         );
         console.log(data);
         //setModal() se o cadastro não estiver completo, so abrir

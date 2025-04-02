@@ -107,6 +107,7 @@ const Funcionario = ({
                 nome: item.nome,
                 telefone: item.telefone,
                 id: item.id,
+                imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
               });
             }}
             itemSelecionado={data}

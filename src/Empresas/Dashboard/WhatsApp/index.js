@@ -5,6 +5,7 @@ import { QRCodeGenerator } from "../../../Componentes/QRCode";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import imagemTeste from "../../../Assets/undraw_barber_utly.svg";
+import Icon from "../../../Assets/Emojis";
 const GestorSessoesWhatsApp = () => {
   const [sessoes, setSessoes] = useState([
     {
@@ -71,7 +72,7 @@ const GestorSessoesWhatsApp = () => {
           <Grid size={12}>
             {" "}
             <Typography variant="h6" className="show-box">
-              📌Atenção
+              <Icon>📌</Icon>Atenção
               <Typography variant="body1">
                 Ao usar a ferramenta de WhatsApp você concorda com os termos e
                 condições previstos e concorda em ceder informações sobre seus

@@ -72,7 +72,7 @@ const TypingEffectText = () => {
       variant={isMobile ? "h5" : "h2"}
       component="p"
       sx={{
-        width: "90%",
+        width: "95%",
         minHeight: isMobile ? "105px" : "145px",
         textAlign: "left",
       }}

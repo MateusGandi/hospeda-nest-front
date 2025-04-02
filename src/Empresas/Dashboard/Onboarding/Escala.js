@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CustomSelect } from "../../../Componentes/Custom";
+import Icon from "../../../Assets/Emojis";
 
 const Escala = ({ formData, setFormData }) => {
   const handleChange = (event) => {
@@ -48,7 +49,7 @@ const Escala = ({ formData, setFormData }) => {
         {/* Escala */}
         <Grid item size={{ xs: 12, md: 12 }}>
           <Typography variant="h6" className="show-box">
-            📌Atenção
+            <Icon>📌</Icon>Atenção
             <Typography variant="body1">
               A escala usada no aplicativo varia por tempo médio de cada serviço
               cadastrado. Ajustamos as vagas para que se encaixem perfeitamente

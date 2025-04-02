@@ -15,6 +15,20 @@ code {
     monospace;
 }
 
+.emoji-number {
+  display: flex;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(25%);
+  align-items: center;
+  border-radius: 2px;
+  background-color: #0195f7; /* Cor de fundo */
+  font-weight: bold;
+  text-align: center;
+  color: #fff; /* Cor do número */
+  font-family: "Nunito", sans-serif; /* Usando Nunito */
+}
+
 .bar {
   width: 5px;
   height: 100%;

@@ -16,15 +16,7 @@ import {
 } from "@mui/material";
 import { isMobile } from "../Funcoes"; // Função que detecta dispositivos móveis
 
-const VideoPlayer = ({
-  open,
-  onClose,
-  videoList = [
-    { title: 1, src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    { title: 2, src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-  ],
-  maxWidth,
-}) => {
+const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
   const videoRefs = useRef([]); // Ref para os vídeos
   const containerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0); // Índice do vídeo atual
@@ -127,6 +119,7 @@ const VideoPlayer = ({
           display: "flex",
           justifyContent: "space-between",
           zIndex: 999,
+          alignItems: "start",
         }}
       >
         <Typography variant="h6">

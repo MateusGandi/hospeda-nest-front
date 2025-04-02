@@ -192,7 +192,9 @@ const GerenciarFuncionarios = ({
             </Grid>
             <Grid size={12}>
               <Typography variant="body1" className="show-box">
-                Aviso: Clique sobre um funcionário para editar ou excluir
+                <Typography variant="h6">💡Ajuda rápida</Typography>
+                Clique sobre um funcionário para adicionar uma foto ou em
+                'Editar' para personalizar seu atendimento
               </Typography>
             </Grid>
           </Grid>

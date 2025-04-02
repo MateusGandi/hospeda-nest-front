@@ -17,10 +17,11 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import Modal from "../Modal";
 import { Rows } from "../Lista/Rows";
-import { isMobile } from "../Funcoes";
-import { deepPurple } from "@mui/material/colors";
+import { getLocalItem, isMobile } from "../Funcoes";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const NavigationBar = ({ logo }) => {
   const navigate = useNavigate();
@@ -28,23 +29,38 @@ const NavigationBar = ({ logo }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const accessType = localStorage.getItem("accessType");
+  const accessType = getLocalItem("accessType");
 
   const actionsMap = {
     null: [
       {
+        titulo: "Para empresas",
+        action: () => navigate("/plans"),
+        route: "/plans",
+        type: "text",
+        icon: <BusinessCenterIcon />,
+      },
+      {
         titulo: "Início",
-        action: () => navigate("/onboard"),
-        route: "/onboard",
+        action: () => navigate("/home"),
+        route: "/home",
         type: "text",
         icon: <HomeRoundedIcon />,
       },
       {
+        titulo: "Entrar",
+        action: () => navigate("/login"),
+        route: "/login",
+        type: "text",
+
+        icon: <LoginIcon />,
+      },
+      {
         titulo: "Criar minha conta",
         icon: <PersonAddRoundedIcon />,
-        action: () => navigate("/signup"),
+        action: () => navigate("/create"),
         type: "button",
-        route: "/signup",
+        route: "/create",
       },
       {
         titulo: "Pesquisar",
@@ -63,21 +79,34 @@ const NavigationBar = ({ logo }) => {
       },
       {
         titulo: "Início",
-        action: () => navigate("/onboard"),
-        route: "/onboard",
+        action: () => navigate("/home"),
+        route: "/home",
         type: "text",
         icon: <HomeRoundedIcon />,
       },
       {
         titulo: "Meus agendamentos",
         icon: (
-          <Avatar sx={{ bgcolor: deepPurple[500], width: 30, height: 30 }}>
-            N
+          <Avatar
+            sx={{ bgcolor: "#0195F7", color: "#fff", width: 40, height: 40 }}
+          >
+            {(getLocalItem("nome") ?? "T")[0]}
           </Avatar>
         ),
         type: "button",
         action: () => navigate("/me"),
         route: "/me",
+      },
+      {
+        titulo: "Sair",
+        action: () => {
+          localStorage.clear();
+          navigate("/login");
+        },
+        route: "/logout",
+        type: "text",
+
+        icon: <LogoutIcon />,
       },
       {
         titulo: "Pesquisar",
@@ -89,8 +118,8 @@ const NavigationBar = ({ logo }) => {
     manager: [
       {
         titulo: "Início",
-        action: () => navigate("/onboard"),
-        route: "/onboard",
+        action: () => navigate("/home"),
+        route: "/home",
         type: "text",
         icon: <HomeRoundedIcon />,
       },
@@ -116,9 +145,20 @@ const NavigationBar = ({ logo }) => {
     ],
     adm: [
       {
+        titulo: "Sair",
+        action: () => {
+          localStorage.clear();
+          navigate("/login");
+        },
+        route: "/logout",
+        type: "text",
+
+        icon: <LogoutIcon />,
+      },
+      {
         titulo: "Início",
-        action: () => navigate("/onboard"),
-        route: "/onboard",
+        action: () => navigate("/home"),
+        route: "/home",
         type: "text",
         icon: <HomeRoundedIcon />,
       },
@@ -168,7 +208,7 @@ const NavigationBar = ({ logo }) => {
                   display: "flex",
                   alignItems: "center",
                 }}
-                onClick={() => navigate("/onboard")}
+                onClick={() => navigate("/home")}
               >
                 {logo}
               </Typography>
@@ -186,7 +226,7 @@ const NavigationBar = ({ logo }) => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
-                      titulo={<b>Tonsus App</b>}
+                      titulo={<b>Tonsus.app</b>}
                     >
                       <Rows
                         items={actions
@@ -222,11 +262,12 @@ const NavigationBar = ({ logo }) => {
                           </IconButton>
                         ) : item.type === "text" ? (
                           <Typography
-                            component="a"
                             href={item.route}
+                            onClick={item.action}
                             sx={{
                               m: "5px 10px",
                               color: "#fff",
+                              cursor: "pointer",
                               textDecoration: "none",
                               ":hover": {
                                 textDecoration: "underline !important",

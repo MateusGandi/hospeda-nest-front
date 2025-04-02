@@ -1,137 +1,90 @@
-import React, { useEffect, useState } from "react";
-import { Grid2 as Grid, Button, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Grid2 as Grid, Typography, Box, Button } from "@mui/material";
 import Modal from "../Componentes/Modal";
 import { CustomInput } from "../Componentes/Custom";
-import { useNavigate } from "react-router-dom";
-import { formatPhone, isMobile } from "../Componentes/Funcoes";
-import ListaAgendamentos from "./Agendamentos";
-import Financeiro from "./Financeiro";
+import apiService from "../Componentes/Api/axios";
+import { getLocalItem } from "../Componentes/Funcoes";
+import { formatPhone } from "../Componentes/Funcoes";
 
-const Profile = ({
-  formData,
-  setFormData,
-  open,
-  setOpen,
-  titulo,
-  loading,
-  alertCustom,
-}) => {
-  const navigate = useNavigate();
-  const [data, setData] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
+const EditUserModal = ({ open, onClose, alertCustom, userData }) => {
+  const [formData, setFormData] = useState({
+    nome: userData?.nome || "",
+    email: userData?.email || "",
+    telefone: userData?.telefone || "",
   });
 
-  useEffect(() => {
-    if (formData) {
-      setData({
-        nome: formData.nome || "",
-        email: formData.email || "",
-        telefone: formData.telefone || "",
-      });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await apiService.query(
+        "PUT",
+        `/user/update?userId=${getLocalItem("userId")}`,
+        {
+          ...formData,
+          telefone: formData.telefone.replace(/\D/g, ""),
+        }
+      );
+      alertCustom("Dados atualizados com sucesso!");
+      onClose();
+    } catch (error) {
+      alertCustom("Erro ao atualizar os dados, tente novamente mais tarde.");
     }
-  }, [formData]);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    if (name == "telefone")
-      return setData({ ...data, [name]: formatPhone(value) });
-    setData({ ...data, [name]: value });
-  };
-
-  const handleSave = () => {
-    setFormData((prev) => [
-      ...prev.filter((item) => item.id !== formData?.id),
-      data,
-    ]);
-    setOpen(false);
-  };
-
-  const handleResetPassword = () => {
-    console.log("Solicitação de reset de senha para:", data.email);
-    // Aqui pode ser chamado um serviço de reset de senha
   };
 
   return (
     <Modal
       open={open}
-      onClose={() => navigate(-1)}
-      titulo={titulo}
-      onAction={handleSave}
+      onClose={onClose}
+      titulo="Editar seus dados"
+      onAction={handleSubmit}
       actionText="Salvar"
       fullScreen="all"
-      component="view"
-      loading={loading}
-      disablePadding={true}
-      buttons={[
-        {
-          color: "error",
-          action: handleResetPassword,
-          titulo: "Resetar Senha",
-        },
-      ]}
+      buttons={[{ titulo: "cancelar", action: onClose, color: "terciary" }]}
     >
-      {" "}
-      <Grid container spacing={isMobile ? 1 : 3} sx={{ p: 2 }}>
-        <Financeiro usuario={formData} alertCustom={alertCustom} />
-        <Grid item size={12}>
-          {" "}
-          <Typography variant="h6">Meus agendamentos</Typography>
-          <ListaAgendamentos usuario={formData} alertCustom={alertCustom} />
-        </Grid>
-        <Grid item size={12}>
-          <Grid container spacing={3}>
-            <Grid item size={12}>
-              <Typography variant="h6">Editar seus dados</Typography>{" "}
-            </Grid>
-            <Grid item size={12}>
-              <Typography className="show-box" sx={{ mb: 2 }}>
-                Ao editar seus dados você concorda com os termos e condições
-              </Typography>{" "}
-            </Grid>
-            <Grid item size={{ xs: 12, md: 6 }}>
-              {" "}
-              <CustomInput
-                label="Nome"
-                name="nome"
-                value={data.nome}
-                onChange={handleChange}
-                variant="outlined"
-                fullWidth
-                placeholder={"Informe seu nome"}
-              />
-            </Grid>
-            <Grid item size={{ xs: 12, md: 6 }}>
-              {" "}
-              <CustomInput
-                label="E-mail"
-                name="email"
-                type="email"
-                value={data.email}
-                onChange={handleChange}
-                variant="outlined"
-                fullWidth
-                placeholder={"Informe seu email"}
-              />
-            </Grid>
-            <Grid item size={{ xs: 12, md: 6 }}>
-              {" "}
-              <CustomInput
-                label="Telefone"
-                name="telefone"
-                value={formatPhone(data.telefone)}
-                onChange={handleChange}
-                variant="outlined"
-                fullWidth
-                placeholder={"Informe seu telefone"}
-              />
-            </Grid>
+      <Box>
+        <Grid container spacing={3} sx={{ m: 1, pt: 3 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <CustomInput
+              label="Nome"
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+              variant="outlined"
+              fullWidth
+              placeholder="Informe seu nome"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <CustomInput
+              label="E-mail"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              variant="outlined"
+              fullWidth
+              placeholder="Informe seu email"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <CustomInput
+              label="Telefone"
+              name="telefone"
+              value={formatPhone(formData.telefone)}
+              onChange={handleChange}
+              variant="outlined"
+              fullWidth
+              placeholder="Informe seu telefone"
+            />
           </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Modal>
   );
 };
 
-export default Profile;
+export default EditUserModal;
