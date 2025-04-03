@@ -111,7 +111,6 @@ const Empresa = ({ alertCustom }) => {
   const handleBack = () => {
     try {
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      console.log("pathTo", pathTo);
       if (pathTo == 0) {
         return navigate("/home");
       }

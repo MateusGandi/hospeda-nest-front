@@ -40,7 +40,6 @@ const Funcionario = ({
 
   useEffect(() => {
     if (formData) {
-      console.log("formData", formData);
       setData({
         id: formData.id,
         title: `${formData.nome} - ${formData.telefone}`,

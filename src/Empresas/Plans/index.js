@@ -91,7 +91,7 @@ const ModalPlanos = ({ alertCustom }) => {
             sx={{ fontWeight: 600, cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
-            Tonsus.app
+            Tonsus App
             <Typography variant="body1" sx={{ mt: "-8px", ml: "44px" }}>
               Parceiros
             </Typography>

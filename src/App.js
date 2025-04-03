@@ -68,11 +68,11 @@ function App() {
     "/login",
     "/change/:hash?",
     "/recover",
-    "estabelecimentos",
+    "/estabelecimentos",
     "/barbearia/:barbeariaName/:subPath?",
     "/agendamento/:barbeariaName/:subPath?",
     "/barbearia",
-    "/dashboard/:subPath?",
+    "/dashboard/:path?/:subPath?",
     "/manager/:page?",
     "/me/:agendamentoId?",
     "/plans",
@@ -95,7 +95,7 @@ function App() {
       <Alerta alert={alert} setAlert={setAlert} />
       <CssBaseline />
       <BrowserRouter>
-        <NavigationBar logo="Tonsus.app" />
+        <NavigationBar logo="Tonsus App" />
         <Permissions alertCustom={alertCustom} />
         <Routes>
           {paths.map((path, index) => (

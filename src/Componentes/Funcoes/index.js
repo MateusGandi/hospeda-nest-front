@@ -206,3 +206,50 @@ export const getLocalItem = (key) => {
     return item; // Retorna o item original se o parse falhar (string, número ou booleano)
   }
 };
+
+export const getStatus = (status) => {
+  switch (status) {
+    case "PENDING":
+      return {
+        color: "success",
+        valor: "Agendado",
+      };
+    case "NOT_ATTEND":
+      return {
+        color: "error",
+        valor: "Não Compareceu",
+      };
+    case "CANCELLED":
+      return {
+        color: "terciary",
+        valor: "Cancelado",
+      };
+    case "OK":
+      return {
+        color: "primary",
+        valor: "Concluído",
+      };
+    default:
+      return { color: "warning", valor: "Não atendido" };
+  }
+};
+
+export function formatDataToString(dataString) {
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+
+  const [dia, mes, ano] = dataString.split("/");
+  return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
+}

@@ -21,7 +21,7 @@ const AgendamentoManual = ({
 }) => {
   const paths = [
     {
-      key: "cliente",
+      key: "",
       title: "Dados do cliente",
       item: "cliente",
     },
@@ -106,7 +106,6 @@ const AgendamentoManual = ({
             navigate(`/dashboard/${paths[pathTo + 1].key}`);
           })
           .catch((error) => {
-            console.log(error);
             alertCustom(
               "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
@@ -117,7 +116,6 @@ const AgendamentoManual = ({
       setTituloModal(paths[pathTo + 1].title);
       navigate(`/dashboard/${paths[pathTo + 1].key}`);
     } catch (error) {
-      console.log(error);
       alertCustom("Erro interno!");
     }
   };
@@ -131,7 +129,6 @@ const AgendamentoManual = ({
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/dashboard/${paths[pathTo - 1].key}`);
     } catch (error) {
-      console.log(error);
       alertCustom("Erro interno!");
     }
   };
@@ -183,9 +180,6 @@ const AgendamentoManual = ({
       }));
     }
   };
-  useEffect(() => {
-    console.log("form", form);
-  }, [form]);
 
   return (
     page && (

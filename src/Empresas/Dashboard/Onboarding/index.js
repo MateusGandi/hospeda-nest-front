@@ -101,7 +101,6 @@ const Onboarding = ({ etapa, setEtapa, alertCustom }) => {
 
   const handleBack = () => {
     const currentIndex = steps.indexOf(etapa.progresso);
-    console.log("currentIndex", currentIndex);
     // Verifica se o índice atual é válido e não ultrapassa os limites
     if (currentIndex >= 0) {
       const nextStep = steps[currentIndex - 1];

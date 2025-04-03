@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isMobile } from "../Funcoes";
+import { useNavigate } from "react-router-dom";
 
 const full = {
   [undefined]: false,
@@ -45,7 +46,14 @@ const Modal = ({
   loadingButton = false,
   sx,
   disablePadding,
+  route = "",
 }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (open && route) navigate(route.replace(/[^a-zA-Z]/g, ""));
+  }, [open]);
+
   return (
     <Dialog
       open={open}

@@ -18,7 +18,6 @@ const Permissions = ({ alertCustom }) => {
     open: Cookies.get("getPermission") != "false",
   });
 
-  console.log(Cookies.get("getPermission"));
   const [permissions, setPermissions] = useState({
     flagCookies: getLocalItem("flagCookies"),
     flagEmail: getLocalItem("flagEmail"),

@@ -85,7 +85,6 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
           const response = await axios.get(paymentData.url);
           setStatus("E" + response.data.status);
         } catch (error) {
-          console.log("E" + error.status);
           setStatus("E" + error.status);
         }
       };

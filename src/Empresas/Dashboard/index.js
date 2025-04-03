@@ -33,8 +33,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const BarberShopMenu = ({ alertCustom }) => {
   const navigate = useNavigate();
-  const { subPath } = useParams();
-
+  const { path } = useParams();
   const [modal, setModal] = useState({
     funcionarios: false,
     servicos: false,
@@ -55,12 +54,27 @@ const BarberShopMenu = ({ alertCustom }) => {
 
   const handleOpen = (to) => {
     if (!to) return;
-    setModal((prev) => ({ ...prev, [to]: true }));
+
+    navigate(`/dashboard/${to}`);
+    setModal((prev) => ({ ...prev, [to.split("/")[0]]: true }));
   };
 
+  useEffect(() => {
+    if (!path) handleClose();
+  }, [path]);
+
   const handleClose = () => {
-    setModal({ ...Object.keys(modal).map((key) => ({ [key]: false })) });
+    setModal((prev) => {
+      return Object.keys(prev).reduce(
+        (acc, key) => ({ ...acc, [key]: false }),
+        {}
+      );
+    });
   };
+
+  useEffect(() => {
+    if (Object.values(modal).every((item) => !item)) navigate(`/dashboard`);
+  }, [modal]);
 
   const handlePhotoUpload = async (e, type) => {
     const file = e.target.files[0];
@@ -119,7 +133,6 @@ const BarberShopMenu = ({ alertCustom }) => {
         alertCustom("Erro ao buscar informações do estabelecimento!");
       }
     };
-    if (subPath) navigate("/dashboard");
     fetch();
   }, []);
 
@@ -312,8 +325,7 @@ const BarberShopMenu = ({ alertCustom }) => {
           <Grid item size={{ xs: 12, md: 3 }}>
             <CustomCard
               onClick={() => {
-                handleOpen("agendamento");
-                navigate("/dashboard/cliente");
+                handleOpen("agendamento/cliente");
               }}
             >
               <CalendarMonth sx={{ mr: 1 }} /> {/* Ícone de calendário */}

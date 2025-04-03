@@ -98,7 +98,6 @@ const GerenciarFuncionarios = ({
         const dados = await Api.query("GET", `/service/${barbearia.id}`);
         setServicos(dados);
       } catch (e) {
-        console.log(e);
         alertCustom("Erro ao buscar serviços!");
       }
     };

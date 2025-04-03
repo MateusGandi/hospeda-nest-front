@@ -226,7 +226,7 @@ const NavigationBar = ({ logo }) => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
-                      titulo={<b>Tonsus.app</b>}
+                      titulo={<b>Tonsus App</b>}
                     >
                       <Rows
                         items={actions

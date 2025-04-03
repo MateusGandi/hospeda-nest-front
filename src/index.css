@@ -29,6 +29,14 @@ code {
   font-family: "Nunito", sans-serif; /* Usando Nunito */
 }
 
+.show-art {
+  background-color: rgba(256, 256, 256, 0.1);
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-right: 5px;
+  font-weight: 600;
+}
+
 .bar {
   width: 5px;
   height: 100%;

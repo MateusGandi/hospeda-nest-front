@@ -1,25 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Grid2 as Grid, Typography } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Container,
+  Grid2 as Grid,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import Api from "../../../Componentes/Api/axios";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import Calendario from "../../../Componentes/Calendar";
 import { format } from "date-fns";
-import { getLocalItem, isMobile } from "../../../Componentes/Funcoes";
+import {
+  formatarHorario,
+  formatDataToString,
+  formatTime,
+  getLocalItem,
+  getStatus,
+  isMobile,
+} from "../../../Componentes/Funcoes";
 import Reagendamento from "./Reschedule";
 import apiService from "../../../Componentes/Api/axios";
 import InsertInvitationRoundedIcon from "@mui/icons-material/InsertInvitationRounded";
+import Icon from "../../../Assets/Emojis";
+import { PaperList } from "../../../Componentes/Lista/Paper";
+import Filter from "../../../Componentes/Filter";
 
 const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
-  const [agendamentos, setAgendamentos] = useState([]);
+  const [filterOptions] = useState({
+    PENDING: "Agendados",
+    NOT_ATTEND: "Não Compareci",
+    CANCELLED: "Cancelados",
+    OK: "Concluídos",
+  });
   const [form, setForm] = useState({
     barbearia: barbearia,
+    servicos: null,
+    horario: null,
+    dia: null,
+    barbeiro: { id: getLocalItem("userId") },
   });
   const [modalConteudo, setModalConteudo] = useState({
     open: false,
+    view: "agendamento",
     titulo: "",
     dados: null,
+    agendamentos: [],
+    filter: "PENDING",
   });
   const status = {
     reschedule: "reagendamento",
@@ -28,26 +57,28 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   };
   const buttons = [
     {
-      titulo: "Reagendar",
-      color: "warning",
-      route: "reschedule",
-      action: () =>
-        setModalConteudo({
-          open: true,
-          fullScreen: "all",
-          titulo: "Reagendar cliente",
-          dados: "reagendar",
-        }),
-    },
-    {
       titulo: "Cancelar",
       color: "error",
       route: "cancelled",
       action: () => handleAction("cancel"),
     },
     {
+      titulo: "Reagendar",
+      color: "terciary",
+      route: "reschedule",
+      action: () =>
+        setModalConteudo((prev) => ({
+          ...prev,
+          open: true,
+          fullScreen: "all",
+          titulo: "Reagendar cliente",
+          view: "reagendar",
+        })),
+    },
+
+    {
       titulo: "Não compareceu",
-      color: "error",
+      color: "terciary",
       route: "report",
       action: () => handleAction("report"),
     },
@@ -56,33 +87,96 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   const buscarAgendamentos = async () => {
     try {
       const dataFormatted = dataSelecionada.toISOString().split("T")[0];
-      const establishmentId = getLocalItem("establishmentId");
+      const userId = getLocalItem("userId");
 
-      const agendamentos = //await Promise.all(
-        await apiService.query(
-          "GET",
-          `/scheduling/employee/scheduleds/${establishmentId}/${dataFormatted}`
-        );
-      // apiService.query(
-      //   "GET",
-      //   `/scheduling/employee/scheduleds/${id}/${dataFormatted}`
-      // )
-      //);
+      const agendamentos = await apiService.query(
+        "GET",
+        `/scheduling/employee/scheduleds/${userId}/${dataFormatted}?filter=${modalConteudo.filter}`
+      );
+
+      const agendas = agendamentos.map((item) => {
+        const data = new Date(item.data);
+        data.setHours(data.getHours() + 3);
+
+        const dataFinalizacao = new Date(item.dataFinalizacao);
+        dataFinalizacao.setHours(dataFinalizacao.getHours() + 3);
+
+        return {
+          ...item,
+          data,
+          dataFinalizacao,
+        };
+      });
 
       // Simulando resposta da API
-      setAgendamentos(
-        agendamentos.map((item) => ({
+
+      const agFormatted = agendas.map((item) => {
+        const status = getStatus(item.status);
+        return {
           ...item,
-          titulo: `${item.nomeCliente || "Desconhecido"} - ${format(
-            new Date(item.data),
-            "dd/MM HH:mm"
-          )}`,
-          subtitulo: `Finaliza às ${format(
-            new Date(item.dataFinalizacao),
-            "HH:mm"
-          )}`,
-        }))
-      );
+          servicosPrestados: [
+            {
+              nome: "Corte de Cabelo",
+              tempoGasto: "00:30:00",
+              foto: "1743085070375as2_MateusHenriqueGandi.png",
+              id: 1,
+              descricao: "",
+              preco: "35.00",
+            },
+            {
+              nome: "Barba",
+              tempoGasto: "00:10:00",
+              foto: "1743085072312Diagrama sem nome.png",
+              id: 2,
+              descricao: "",
+              preco: "10.00",
+            },
+          ].map((item) => ({
+            ...item,
+            titulo: `${item.nome} | R$ ${item.preco}`,
+            subtitulo: formatarHorario(item.tempoGasto),
+          })),
+          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/7/profile/1743508933036Imagem%20do%20WhatsApp%20de%202025-03-30%20%C3%83%C2%A0(s)%2001.jpeg`,
+          titulo: (
+            <Typography
+              variant="h6"
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>
+                {" "}
+                <span className="show-art"> {format(item.data, "HH:mm")}</span>
+                {item.nomeCliente || "Desconhecido"}{" "}
+              </span>
+              <span>
+                {" "}
+                {status.manual && <Chip size="small" label={"Manual"} />}
+                <Chip size="small" label={status.valor} color={status.color} />
+              </span>
+            </Typography>
+          ),
+          //disabled: ["NOT_ATTEND"].includes(item.status),
+          subtitulo: (
+            <>
+              <Typography variant="body2" sx={{ display: "flex", gap: 1 }}>
+                {format(
+                  new Date(item.dataFinalizacao),
+                  "'Previsão para finalizar até ' HH:mm ' horas'"
+                )}
+              </Typography>
+            </>
+          ),
+        };
+      });
+
+      setModalConteudo((prev) => ({
+        ...prev,
+        agendamentos: agFormatted,
+      }));
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ?? "Erro ao buscar agendamentos!"
@@ -91,8 +185,8 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   };
 
   useEffect(() => {
-    if (open) buscarAgendamentos();
-  }, [dataSelecionada]);
+    buscarAgendamentos();
+  }, [modalConteudo.filter, dataSelecionada]);
 
   const handleAction = async (acao, data) => {
     try {
@@ -117,101 +211,120 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
       onClose={handleClose}
       titulo="Agendamentos"
       fullScreen="all"
+      maxWidth="sm"
     >
-      <Container maxWidth="md">
-        <Grid container spacing={2}>
-          <Grid item size={{ xs: 12 }} sx={{ textAlign: "center" }}>
-            <Typography>
-              <Button
-                onClick={() =>
-                  setModalConteudo({
-                    open: true,
-                    titulo: "Selecione um dia",
-                    dados: "calendario",
-                  })
-                }
-                endIcon={<InsertInvitationRoundedIcon />}
-                color="inherit"
-                variant="outlined"
-                size="large"
-                fullWidth={isMobile}
-                sx={{ border: "1px solid #484848", m: "8px 0", p: "5px 20px" }}
-              >
-                {dataSelecionada.toLocaleDateString()}
-              </Button>
-              <Typography variant="body2" color="GrayText">
-                Clique para mudar o dia
+      <Grid container spacing={2}>
+        <Grid
+          item
+          size={{ xs: 12 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: 'center"',
+          }}
+        >
+          <Typography variant="h6">
+            <Typography variant="body1" color="GrayText" sx={{ mb: -1 }}>
+              Exibindo resultados para
+            </Typography>
+            {formatDataToString(dataSelecionada.toLocaleDateString())}
+          </Typography>
+          <span>
+            <Filter
+              title="Filtrar por"
+              options={filterOptions}
+              filter={modalConteudo.filter}
+              setFilter={(filter) =>
+                setModalConteudo((prev) => ({ ...prev, filtrados: filter }))
+              }
+            />
+            <IconButton
+              onClick={() =>
+                setModalConteudo((prev) => ({
+                  ...prev,
+                  open: true,
+                  titulo: "Selecione um dia",
+                  view: "calendario",
+                }))
+              }
+            >
+              <InsertInvitationRoundedIcon />
+            </IconButton>
+          </span>
+        </Grid>
+        <Grid item size={{ xs: 12 }}>
+          {modalConteudo.agendamentos?.length ? (
+            <Rows
+              items={modalConteudo.agendamentos}
+              onSelect={(item) => {
+                setForm((prev) => ({
+                  ...prev,
+                  servicos: item.servicosPrestados,
+                }));
+                setModalConteudo((prev) => ({
+                  ...prev,
+                  view: "agendamento",
+                  open: true,
+                  titulo: item.nomeCliente,
+                  dados: item,
+                }));
+              }}
+              oneTapMode={true}
+            />
+          ) : (
+            <Typography
+              variant="h6"
+              sx={{
+                width: "100%",
+                marginTop: "20vh",
+                alignContent: "center",
+              }}
+              className="show-box"
+            >
+              <Icon>🎯</Icon> Uffa!
+              <Typography variant="body1">
+                Sua agenda está vazia para este dia...
               </Typography>
             </Typography>
-          </Grid>
-          <Grid item size={{ xs: 12 }}>
-            {agendamentos.length ? (
-              <Rows
-                items={agendamentos}
-                onSelect={(item) => {
-                  setForm((prev) => ({ ...prev, servicos: item.servicos }));
-                  setModalConteudo({
-                    open: true,
-                    titulo: item.titulo,
-                    dados: item,
-                  });
-                }}
-                oneTapMode={true}
-              />
-            ) : (
-              <Typography
-                variant="h5"
-                sx={{
-                  width: "100%",
-                  height: "70vh",
-                  alignContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                Uffa!
-                <Typography variant="body1">
-                  Sua agenda está vazia para este dia...
-                </Typography>
-              </Typography>
-            )}
-          </Grid>
+          )}
         </Grid>
-      </Container>
+      </Grid>
+
       {/* Modal reutilizável */}
       <Modal
         open={modalConteudo.open}
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
-        titulo={modalConteudo.titulo}
-        maxWidth={modalConteudo.dados === "calendario" ? "xs" : "md"}
-        buttons={modalConteudo.dados != "calendario" && buttons}
+        titulo={modalConteudo.titulo || "Agendamento"}
+        maxWidth={modalConteudo.view === "calendario" ? "xs" : "md"}
+        buttons={modalConteudo.view != "calendario" && buttons}
         onAction={
-          modalConteudo.dados == "calendario" ? null : () => console.log("oi")
+          modalConteudo.view == "calendario" ? null : () => console.log("oi")
         }
         actionText="Concluído"
         fullScreen={modalConteudo.fullScreen || "mobile"}
       >
-        {modalConteudo.dados === "calendario" ? (
+        {modalConteudo.view === "calendario" ? (
           <Calendario
+            all={true}
             onSelect={(date) => {
               setDataSelecionada(date);
               setModalConteudo((prev) => ({ ...prev, open: false }));
             }}
           />
-        ) : modalConteudo.dados === "reagendar" ? (
+        ) : modalConteudo.view === "reagendar" ? (
           <Reagendamento
-            form={form}
             setForm={setForm}
+            form={modalConteudo.dados}
             alertCustom={alertCustom}
             onConfirm={(data) => handleAction("reschedule", data)}
           />
         ) : (
           modalConteudo.dados && (
-            <>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                Serviços:
+            <PaperList items={modalConteudo.dados.servicosPrestados}>
+              <Typography variant="h6" sx={{ p: "5px 10px" }}>
+                Resumo do pedido
               </Typography>
-              <Rows items={modalConteudo.dados.servicos} disabled={true} />
-            </>
+            </PaperList>
           )
         )}
       </Modal>

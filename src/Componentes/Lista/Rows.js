@@ -60,7 +60,7 @@ export const Rows = ({
         <>
           <CardActionArea
             key={item.id}
-            disabled={disabled}
+            disabled={disabled || item.disabled}
             sx={{ borderRadius: "10px !important" }}
           >
             <Card

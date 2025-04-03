@@ -54,7 +54,6 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
             new Date().toISOString().split("T")[0]
           }`;
       const data = await Api.query("GET", url);
-      console.log(data);
       const vendas = [];
 
       Object.keys(data.estatisticasFuncionarios).forEach((funcionario) => {
@@ -68,11 +67,9 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         );
       });
 
-      console.log(vendas);
       setVendasFiltradas(vendas);
       setFinancas({ ...data, vendas: vendas });
     } catch (error) {
-      console.log(error);
       alertCustom("Erro ao buscar balanço financeiro!");
     }
   };
