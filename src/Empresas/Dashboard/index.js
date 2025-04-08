@@ -52,7 +52,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   const [bannerImage, setBannerImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
   const cards = {
-    funcionario: [
+    employee: [
       {
         action: "agendamento/cliente",
         icon: <CalendarMonth sx={{ mr: 1 }} />,
