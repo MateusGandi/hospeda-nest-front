@@ -29,7 +29,7 @@ const LoginPage = ({ page, alertCustom }) => {
       });
       Api.setKey(data);
       navigate(
-        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+        window?.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
           ? "/home"
           : getLocalItem("lastRoute")
       );
@@ -56,7 +56,7 @@ const LoginPage = ({ page, alertCustom }) => {
       });
       Api.setKey(data);
       navigate(
-        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+        window?.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
           ? "/home"
           : getLocalItem("lastRoute")
       );
@@ -110,7 +110,7 @@ const LoginPage = ({ page, alertCustom }) => {
       });
       Api.setKey(data);
       navigate(
-        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+        window?.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
           ? "/home"
           : getLocalItem("lastRoute")
       );
