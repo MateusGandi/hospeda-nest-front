@@ -71,6 +71,39 @@ const NavigationBar = ({ logo }) => {
         action: () => setModal(true),
       },
     ],
+    employee: [
+      {
+        titulo: "Sair",
+        action: () => {
+          localStorage.clear();
+          navigate("/login");
+        },
+        route: "/logout",
+        type: "text",
+
+        icon: <LogoutIcon />,
+      },
+      {
+        titulo: "Início",
+        action: () => navigate("/home"),
+        route: "/home",
+        type: "text",
+        icon: <HomeRoundedIcon />,
+      },
+      {
+        titulo: "Atendimento",
+        action: () => navigate("/dashboard"),
+        type: "button",
+        route: "/dashboard",
+        icon: <BusinessCenterIcon />,
+      },
+      {
+        titulo: "Pesquisar",
+        type: "icon",
+        icon: <SearchIcon />,
+        action: () => setModal(true),
+      },
+    ],
     client: [
       {
         titulo: "Para empresas",
