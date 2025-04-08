@@ -44,27 +44,30 @@ const PublicPage = ({}) => {
               display: "flex",
               justifyContent: "center",
               flexWrap: "wrap",
+              m: "0 2%",
             }}
           >
             <TypingEffectText />
-            {/* <CardMedia
-              component="img"
-              image={LogoImage}
-              sx={{
-                width: { xs: "600px", md: "300px" },
-              }}
-              alt="Logo"
-            /> */}
           </Typography>
         </Grid>
 
         {/* Texto descritivo */}
         <Grid size={12}>
           <Typography
-            variant={isMobile ? "body1" : "h6"}
-            style={{ marginBottom: "40px", color: "#fff" }}
+            variant={"h5"}
+            style={{
+              marginBottom: "40px",
+              color: "#fff",
+            }}
           >
-            Os serviços da sua barberia e tudo mais em um só lugar, agente já!
+            <span
+              style={{
+                borderRadius: "10px",
+                padding: "3px 10px",
+              }}
+            >
+              Os serviços da sua barberia e tudo mais em um só lugar, agente já!
+            </span>
           </Typography>
         </Grid>
 

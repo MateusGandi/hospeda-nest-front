@@ -20,14 +20,10 @@ const EditUserModal = ({ open, onClose, alertCustom, userData }) => {
 
   const handleSubmit = async () => {
     try {
-      await apiService.query(
-        "PUT",
-        `/user/update?userId=${getLocalItem("userId")}`,
-        {
-          ...formData,
-          telefone: formData.telefone.replace(/\D/g, ""),
-        }
-      );
+      await apiService.query("PATCH", `/user/${getLocalItem("userId")}`, {
+        ...formData,
+        telefone: formData.telefone.replace(/\D/g, ""),
+      });
       alertCustom("Dados atualizados com sucesso!");
       onClose();
     } catch (error) {

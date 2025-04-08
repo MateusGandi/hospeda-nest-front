@@ -51,6 +51,74 @@ const BarberShopMenu = ({ alertCustom }) => {
   const [barbearia, setBarbearia] = useState(null);
   const [bannerImage, setBannerImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const cards = {
+    funcionario: [
+      {
+        action: "agendamento/cliente",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Agendar Cliente",
+      },
+      {
+        action: "agendamentos",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Minha Agenda",
+      },
+    ],
+    manager: [
+      {
+        action: "edicao",
+        icon: <Edit sx={{ mr: 1 }} />,
+        title: "Editar dados da barbearia",
+      },
+      {
+        action: "funcionarios",
+        icon: <People sx={{ mr: 1 }} />,
+        title: "Funcionários",
+      },
+      {
+        action: "servicos",
+        icon: <Build sx={{ mr: 1 }} />,
+        title: "Serviços",
+      },
+      {
+        action: "agendamento/cliente",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Agendar Cliente",
+      },
+      {
+        action: "agendamentos",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Minha Agenda",
+      },
+    ],
+    adm: [
+      {
+        action: "edicao",
+        icon: <Edit sx={{ mr: 1 }} />,
+        title: "Editar dados da barbearia",
+      },
+      {
+        action: "funcionarios",
+        icon: <People sx={{ mr: 1 }} />,
+        title: "Funcionários",
+      },
+      {
+        action: "servicos",
+        icon: <Build sx={{ mr: 1 }} />,
+        title: "Serviços",
+      },
+      {
+        action: "agendamento/cliente",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Agendar Cliente",
+      },
+      {
+        action: "agendamentos",
+        icon: <CalendarMonth sx={{ mr: 1 }} />,
+        title: "Minha Agenda",
+      },
+    ],
+  };
 
   const handleOpen = (to) => {
     if (!to) return;
@@ -170,7 +238,7 @@ const BarberShopMenu = ({ alertCustom }) => {
           </Grid>
         </Grid>
       ) : (
-        <Grid container spacing={1}>
+        <Grid container spacing={1.5}>
           {/* Banner com ícone de adicionar foto */}
           <Grid item size={{ xs: 12 }}>
             <Card
@@ -205,7 +273,12 @@ const BarberShopMenu = ({ alertCustom }) => {
               <label htmlFor="banner-upload">
                 <IconButton
                   color="primary"
-                  sx={{ position: "absolute", right: 1, top: 1 }}
+                  sx={{
+                    position: "absolute",
+                    right: 1,
+                    top: 1,
+                    background: "rgba(0,0,0,0.1)",
+                  }}
                   component="span"
                 >
                   <AddPhotoAlternateIcon sx={{ color: "#fff" }} />
@@ -226,11 +299,11 @@ const BarberShopMenu = ({ alertCustom }) => {
                     transform: "translate(-50%, -50%)",
                     cursor: "pointer",
                     width: {
-                      xs: 120, // Para telas pequenas
+                      xs: 160, // Para telas pequenas
                       md: 160, // Para telas médias e maiores
                     },
                     height: {
-                      xs: 120,
+                      xs: 160,
                       md: 160,
                     },
                   }}
@@ -253,7 +326,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                 }}
               >
                 <Grid container justifyContent={"space-between"} spacing={2}>
-                  <Grid size={{ xs: 12, md: 4 }} sx={{ pt: { xs: 4, md: 11 } }}>
+                  <Grid size={{ xs: 12, md: 4 }} sx={{ pt: { xs: 6, md: 11 } }}>
                     <Typography variant="h6">{barbearia.nome}</Typography>
                     <Typography variant="body1">
                       {barbearia.endereco}
@@ -261,13 +334,27 @@ const BarberShopMenu = ({ alertCustom }) => {
                     <Typography variant="body1">
                       Telefone: {barbearia.telefone}
                     </Typography>
-                    <EditData
-                      open={modal.edicao}
-                      handleClose={handleClose}
-                      initialData={barbearia}
-                      onSave={handleSave}
-                      alertCustom={alertCustom}
-                    />
+                    {["adm", "manager"].includes(
+                      getLocalItem("accessType")
+                    ) && (
+                      <Box
+                        sx={{
+                          textAlign: "center",
+                          display: "flex",
+                          width: "100%",
+                          justifyContent: isMobile ? "center" : "left",
+                        }}
+                      >
+                        {" "}
+                        <EditData
+                          open={modal.edicao}
+                          handleClose={handleClose}
+                          initialData={barbearia}
+                          onSave={handleSave}
+                          alertCustom={alertCustom}
+                        />
+                      </Box>
+                    )}
                   </Grid>
                   <Grid size={{ xs: 12, md: 8 }} sx={{ textAlign: "right" }}>
                     <Grid container spacing={2}>
@@ -278,19 +365,26 @@ const BarberShopMenu = ({ alertCustom }) => {
                           barbearia={barbearia}
                         />
                       </Grid>
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        {" "}
-                        <Button
-                          variant="outlined"
-                          color="success"
-                          startIcon={<StyleIcon />}
-                          onClick={() => navigate("/plans")}
-                          sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
-                          fullWidth
-                        >
-                          Planos
-                        </Button>
-                      </Grid>
+                      {["adm", "manager"].includes(
+                        getLocalItem("accessType")
+                      ) && (
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          {" "}
+                          <Button
+                            variant="outlined"
+                            color="terciary"
+                            size="large"
+                            startIcon={<StyleIcon />}
+                            onClick={() => navigate("/plans")}
+                            sx={{
+                              border: "1px solid rgba(256, 256, 256, 0.2)",
+                            }}
+                            fullWidth
+                          >
+                            Planos
+                          </Button>
+                        </Grid>
+                      )}
                       <Grid size={{ xs: 12, md: 4 }}>
                         <WhatsApp />
                       </Grid>
@@ -301,44 +395,16 @@ const BarberShopMenu = ({ alertCustom }) => {
             </Card>
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 3 }}>
-            <CustomCard onClick={() => handleOpen("edicao")}>
-              <Edit sx={{ mr: 1 }} />
-              <Typography variant="body1">Editar dados da barbearia</Typography>
-            </CustomCard>
-          </Grid>
-
-          <Grid item size={{ xs: 12, md: 3 }}>
-            <CustomCard onClick={() => handleOpen("funcionarios")}>
-              <People sx={{ mr: 1 }} />
-              <Typography variant="body1">Funcionários</Typography>
-            </CustomCard>
-          </Grid>
-
-          <Grid item size={{ xs: 12, md: 3 }}>
-            <CustomCard onClick={() => handleOpen("servicos")}>
-              <Build sx={{ mr: 1 }} /> {/* Ícone de serviços */}
-              <Typography variant="body1">Serviços</Typography>
-            </CustomCard>
-          </Grid>
-
-          <Grid item size={{ xs: 12, md: 3 }}>
-            <CustomCard
-              onClick={() => {
-                handleOpen("agendamento/cliente");
-              }}
-            >
-              <CalendarMonth sx={{ mr: 1 }} /> {/* Ícone de calendário */}
-              <Typography variant="body1">Agendar Cliente</Typography>
-            </CustomCard>
-          </Grid>
-
-          <Grid item size={{ xs: 12, md: 3 }}>
-            <CustomCard onClick={() => handleOpen("agendamentos")}>
-              <CalendarMonth sx={{ mr: 1 }} /> {/* Ícone de calendário */}
-              <Typography variant="body1">Minha Agenda</Typography>
-            </CustomCard>
-          </Grid>
+          {cards[getLocalItem("accessType")].map(
+            ({ action, icon, title }, i) => (
+              <Grid item key={i} size={{ xs: 12, md: 3 }}>
+                <CustomCard onClick={() => handleOpen(action)}>
+                  {icon}
+                  <Typography variant="body1">{title}</Typography>
+                </CustomCard>
+              </Grid>
+            )
+          )}
 
           {barbearia && (
             <Agendamentos

@@ -48,7 +48,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
     titulo: "",
     dados: null,
     agendamentos: [],
-    filter: "PENDING",
+    filter: [{ PENDING: "Agendados" }],
   });
   const status = {
     reschedule: "reagendamento",
@@ -88,10 +88,9 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
     try {
       const dataFormatted = dataSelecionada.toISOString().split("T")[0];
       const userId = getLocalItem("userId");
-
       const agendamentos = await apiService.query(
         "GET",
-        `/scheduling/employee/scheduleds/${userId}/${dataFormatted}?filter=${modalConteudo.filter}`
+        `/scheduling/employee/scheduleds/${userId}/${dataFormatted}?filter=${modalConteudo.filter.valor}`
       );
 
       const agendas = agendamentos.map((item) => {
@@ -220,14 +219,13 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: 'center"',
+            alignItems: "center",
           }}
         >
           <Typography variant="h6">
-            <Typography variant="body1" color="GrayText" sx={{ mb: -1 }}>
-              Exibindo resultados para
-            </Typography>
-            {formatDataToString(dataSelecionada.toLocaleDateString())}
+            <span className="show-text">
+              {formatDataToString(dataSelecionada.toLocaleDateString())}
+            </span>
           </Typography>
           <span>
             <Filter
@@ -235,7 +233,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
               options={filterOptions}
               filter={modalConteudo.filter}
               setFilter={(filter) =>
-                setModalConteudo((prev) => ({ ...prev, filtrados: filter }))
+                setModalConteudo((prev) => ({ ...prev, filter: filter }))
               }
             />
             <IconButton

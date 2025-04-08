@@ -21,7 +21,7 @@ const AgendamentoManual = ({
 }) => {
   const paths = [
     {
-      key: "",
+      key: "cliente",
       title: "Dados do cliente",
       item: "cliente",
     },
@@ -103,7 +103,7 @@ const AgendamentoManual = ({
           .then(() => {
             alertCustom("Agendamento confirmado!");
             setTituloModal(paths[pathTo + 1].title);
-            navigate(`/dashboard/${paths[pathTo + 1].key}`);
+            navigate(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
           })
           .catch((error) => {
             alertCustom(
@@ -114,7 +114,8 @@ const AgendamentoManual = ({
           });
       }
       setTituloModal(paths[pathTo + 1].title);
-      navigate(`/dashboard/${paths[pathTo + 1].key}`);
+      console.log(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
+      navigate(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
     } catch (error) {
       alertCustom("Erro interno!");
     }
@@ -127,7 +128,7 @@ const AgendamentoManual = ({
         return onClose();
       }
       setTituloModal(paths[pathTo - 1].title);
-      navigate(`/dashboard/${paths[pathTo - 1].key}`);
+      navigate(`/dashboard/agendamento/${paths[pathTo - 1].key}`);
     } catch (error) {
       alertCustom("Erro interno!");
     }
@@ -200,6 +201,7 @@ const AgendamentoManual = ({
         }
         fullScreen="all"
         component="view"
+        maxWidth="sm"
       >
         <Grid container>
           <Grid size={{ xs: 12, md: 12 }}>

@@ -29,12 +29,16 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
     },
     {
       titulo: "Avaliar",
-      action: () => navigate(`/${barbearia.nome}/avaliar`),
+      action: () => navigate(`/review/${barbearia.id}`),
       icon: <StarRateRoundedIcon />,
     },
     {
       titulo: "Localização",
-      action: () => navigate(`/${barbearia.nome}/localizacao`),
+      action: () =>
+        window.open(
+          `https://www.google.com/maps?q=${barbearia.endereco}`,
+          "_blank"
+        ),
       icon: <LocationOn />,
     },
   ];

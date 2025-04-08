@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Grid2 as Grid, Typography } from "@mui/material";
+import {
+  Switch,
+  FormControlLabel,
+  Grid2 as Grid,
+  Typography,
+} from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
@@ -8,8 +13,8 @@ import {
   formatCNPJ,
   formatPhone,
   getLocalItem,
+  isMobile,
 } from "../../../Componentes/Funcoes";
-import EmojiNumber from "../../../Assets/Emojis/EmojiNumber";
 import Icon from "../../../Assets/Emojis";
 
 const CreateEstablishment = ({ alertCustom }) => {
@@ -29,6 +34,11 @@ const CreateEstablishment = ({ alertCustom }) => {
       return setFormData({
         ...formData,
         [name]: formatPhone(event.target.value),
+      });
+    if (name === "meAsEmployee")
+      return setFormData({
+        ...formData,
+        [name]: event.target.checked,
       });
     setFormData({ ...formData, [name]: event.target.value });
   };
@@ -85,30 +95,29 @@ const CreateEstablishment = ({ alertCustom }) => {
       cidade,
 
       estado,
-
+      meAsEmployee,
       logradouro,
       ...rest
     } = formData;
-
-    Api.query("GET", `/user/profile/${getLocalItem("userId")}`).then((data) => {
-      Api.query("POST", "/establishment", {
-        administrador: data.telefone,
-        funcionarios: [data.telefone],
-        endereco: [bairro, cidade, estado, logradouro].join(","),
-        telefone: telefone.replace(/\D/g, ""),
-        cnpj: cnpj.replace(/\D/g, ""),
-        planId: planId,
-        formaPagamento: "PIX",
-      })
-        .then((response) => {
+    console.log(formData);
+    Api.query("GET", `/user/profile/${getLocalItem("userId")}`)
+      .then(async (data) => {
+        await Api.query("POST", "/establishment", {
+          ...rest,
+          administrador: data.telefone,
+          funcionarios: meAsEmployee ? [data.telefone] : [],
+          endereco: [bairro, cidade, estado, logradouro].join(","),
+          telefone: telefone.replace(/\D/g, ""),
+          cnpj: cnpj.replace(/\D/g, ""),
+          planId: +planId,
+          formaPagamento: "PIX",
+        }).then((response) => {
           localStorage.clear();
           alertCustom("Conta criada com sucesso, faça login novamente!");
           navigate("/login");
-        })
-        .catch((error) => {
-          alertCustom("Erro ao criar estabelecimento.");
         });
-    });
+      })
+      .catch((error) => alertCustom("Erro ao criar estabelecimento."));
 
     setLoading(false);
   };
@@ -126,8 +135,19 @@ const CreateEstablishment = ({ alertCustom }) => {
       >
         <Grid container spacing={2} sx={{ mt: 4 }}>
           <Grid size={12}>
-            <Typography variant="h6" sx={{ display: "flex", gap: 1 }}>
-              <EmojiNumber num={1} /> <b>Informações Gerais</b>
+            <Typography
+              variant="h6"
+              sx={{
+                display: "flex",
+                gap: 1,
+                borderLeft: "2px solid #fff",
+
+                p: "2px 12px",
+                mb: 2,
+                ml: isMobile ? 0 : -2,
+              }}
+            >
+              Informações Gerais
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
@@ -161,10 +181,21 @@ const CreateEstablishment = ({ alertCustom }) => {
               variant="outlined"
             />
           </Grid>
-
           <Grid size={12}>
-            <Typography variant="h6" sx={{ mt: 1.5, display: "flex", gap: 1 }}>
-              <EmojiNumber num={2} /> <b>Endereço</b>
+            <Typography
+              variant="h6"
+              sx={{
+                mt: 1.5,
+                display: "flex",
+                gap: 1,
+                borderLeft: "2px solid #fff",
+
+                p: "2px 12px",
+                mb: 2,
+                ml: isMobile ? 0 : -2,
+              }}
+            >
+              Endereço
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
@@ -209,6 +240,36 @@ const CreateEstablishment = ({ alertCustom }) => {
               value={formData.logradouro}
               onChange={handleChange}
               variant="outlined"
+            />
+          </Grid>
+          <Grid size={12}>
+            <Typography
+              variant="h6"
+              sx={{
+                mt: 1.5,
+                display: "flex",
+                gap: 1,
+                borderLeft: "2px solid #fff",
+
+                p: "2px 12px",
+                mb: 2,
+                ml: isMobile ? 0 : -2,
+              }}
+            >
+              Preferências
+            </Typography>
+          </Grid>{" "}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  name="meAsEmployee"
+                  checked={formData.meAsEmployee}
+                  onChange={handleChange}
+                  color="primary"
+                />
+              }
+              label="Sou funcionário também"
             />
           </Grid>
           <Grid size={12} sx={{ m: "8px 0" }}>

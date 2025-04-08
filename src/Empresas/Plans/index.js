@@ -13,12 +13,17 @@ import {
   Tooltip,
 } from "@mui/material";
 import Modal from "../../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import VideoPlayer from "../../Componentes/Video";
 import apiService from "../../Componentes/Api/axios";
-import { formatNumberToWords, getLocalItem } from "../../Componentes/Funcoes";
+import {
+  formatNumberToWords,
+  getLocalItem,
+  isMobile,
+} from "../../Componentes/Funcoes";
+import LogoPartners from "../../Assets/logo_partners.png";
 
 const ModalPlanos = ({ alertCustom }) => {
   const periodicidade = {
@@ -28,12 +33,17 @@ const ModalPlanos = ({ alertCustom }) => {
     MENSAL: "/ mês",
     ANUAL: "/ ano",
   };
+  const to = {
+    client: "/home",
+    adm: "/dashboard",
+    manager: "/manager",
+    "": "/home",
+  };
   const navigate = useNavigate();
-
   const [modal, setModal] = useState({
     video: false,
     open: true,
-    onClose: () => navigate(-1),
+    onClose: () => navigate(to[getLocalItem("accessType") || ""]),
     loading: false,
     depoimentos: [],
     planos: [],
@@ -41,7 +51,13 @@ const ModalPlanos = ({ alertCustom }) => {
     avaliacao: 4.1,
     videos: [
       {
-        title: "Tudo Sobre A Melhor Plataforma Para Barbeiros",
+        id: "67f00094-d984-8007-b039-a6cc21a8f7e6",
+        title: "Tudo sobre o Tonsus",
+        src: "https://www.w3schools.com/html/mov_bbb.mp4",
+      },
+      {
+        id: "67f00094-d984-8007-b039-a6cc21a8f7ee",
+        title: "Ola mundo",
         src: "https://www.w3schools.com/html/mov_bbb.mp4",
       },
     ],
@@ -50,12 +66,12 @@ const ModalPlanos = ({ alertCustom }) => {
   const fetchData = async () => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
-      const [planos, depoimentos] = await Promise.all([
+      const [planos, { depoimentos, media }] = await Promise.all([
         apiService.query("GET", "/plan"),
         apiService.query("GET", "/evaluation?page=1&pageSize=3"),
       ]);
 
-      setModal((prev) => ({ ...prev, planos, depoimentos }));
+      setModal((prev) => ({ ...prev, planos, depoimentos, avaliacao: media }));
     } catch (error) {
       console.log(error);
       alertCustom(
@@ -74,6 +90,7 @@ const ModalPlanos = ({ alertCustom }) => {
   return (
     <>
       <VideoPlayer
+        setOpen={(flag) => setModal((prev) => ({ ...prev, video: flag }))}
         title="Bem vindo ao Tonsus"
         maxWidth="xs"
         open={modal.video}
@@ -91,10 +108,10 @@ const ModalPlanos = ({ alertCustom }) => {
             sx={{ fontWeight: 600, cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
-            Tonsus App
-            <Typography variant="body1" sx={{ mt: "-8px", ml: "44px" }}>
-              Parceiros
-            </Typography>
+            <img
+              src={LogoPartners}
+              style={{ height: "37px", marginLeft: isMobile ? 0 : "8px" }}
+            />
           </Typography>
         }
         loading={modal.loading}
@@ -131,7 +148,7 @@ const ModalPlanos = ({ alertCustom }) => {
                   color="force"
                   disableElevation
                   size="large"
-                  onClick={() => setModal((prev) => ({ ...prev, video: true }))}
+                  onClick={() => navigate(modal.videos[0].id)}
                   sx={{
                     width: { xs: "100%", md: "300px" },
                     fontWeight: 600,

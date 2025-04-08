@@ -67,22 +67,14 @@ const GerenciarServicos = ({
   };
   const handleSave = async () => {
     try {
-      const servicosNovos = servicos
-        .filter((item) => !item.id)
-        .map((item) => ({ ...item, barbeariaId: barbearia.id }));
-      const servicosAtualizados = servicos
-        .filter((item) => !!item.id && item.flagUpdate)
-        .map(({ flagUpdate, ...item }) => item);
-
-      if (servicosNovos.length)
-        await Api.query("POST", `/service`, servicosNovos);
+      const servicosAtualizados = servicos.map(({ flagUpdate, ...item }) => ({
+        ...item,
+        barbeariaId: barbearia.id,
+      }));
 
       if (servicosAtualizados.length)
-        await Api.query(
-          "PATCH",
-          `/service/${barbearia.id}`,
-          servicosAtualizados
-        );
+        await Api.query("POST", `/service`, servicosAtualizados);
+
       await fetchServicos();
       alertCustom("Serviços atualizados atualizada!");
     } catch (error) {

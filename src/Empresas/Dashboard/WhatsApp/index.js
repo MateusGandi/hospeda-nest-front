@@ -6,6 +6,7 @@ import { Rows } from "../../../Componentes/Lista/Rows";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import imagemTeste from "../../../Assets/undraw_barber_utly.svg";
 import Icon from "../../../Assets/Emojis";
+import { getLocalItem } from "../../../Componentes/Funcoes";
 const GestorSessoesWhatsApp = () => {
   const [sessoes, setSessoes] = useState([
     {
@@ -36,16 +37,19 @@ const GestorSessoesWhatsApp = () => {
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="success"
-        startIcon={<WhatsAppIcon />}
-        onClick={() => setModalSessoes(true)}
-        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
-        fullWidth
-      >
-        Configurar WhatsApp
-      </Button>
+      {["adm", "manager"].includes(getLocalItem("accessType")) && (
+        <Button
+          variant="outlined"
+          color="success"
+          startIcon={<WhatsAppIcon />}
+          onClick={() => setModalSessoes(true)}
+          sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
+          fullWidth
+          size="large"
+        >
+          Robô WhatsApp
+        </Button>
+      )}
 
       {/* Modal de Gerenciamento de Sessões */}
       <Modal

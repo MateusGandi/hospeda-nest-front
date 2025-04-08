@@ -22,7 +22,9 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Cookies from "js-cookie";
 
+import LogoImage from "../../Assets/logo_aut.png";
 const NavigationBar = ({ logo }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -100,6 +102,7 @@ const NavigationBar = ({ logo }) => {
       {
         titulo: "Sair",
         action: () => {
+          Cookies.remove("getPermission");
           localStorage.clear();
           navigate("/login");
         },
@@ -124,9 +127,21 @@ const NavigationBar = ({ logo }) => {
         icon: <HomeRoundedIcon />,
       },
       {
+        titulo: "Sair",
+        action: () => {
+          Cookies.remove("getPermission");
+          localStorage.clear();
+          navigate("/login");
+        },
+        route: "/logout",
+        type: "text",
+
+        icon: <LogoutIcon />,
+      },
+      {
         titulo: "Para empresas",
-        action: () => navigate("/enterprise"),
-        route: "/enterprise",
+        action: () => navigate("/plans"),
+        route: "/plans",
         type: "text",
         icon: <BusinessCenterIcon />,
       },
@@ -210,7 +225,9 @@ const NavigationBar = ({ logo }) => {
                 }}
                 onClick={() => navigate("/home")}
               >
-                {logo}
+                <b>
+                  <img src={LogoImage} style={{ height: "32px" }} />
+                </b>
               </Typography>
             </Grid>
             {actions.length > 0 && (
@@ -226,7 +243,11 @@ const NavigationBar = ({ logo }) => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
-                      titulo={<b>Tonsus App</b>}
+                      titulo={
+                        <b>
+                          <img src={LogoImage} style={{ height: "32px" }} />
+                        </b>
+                      }
                     >
                       <Rows
                         items={actions

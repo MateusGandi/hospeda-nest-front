@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import {
+  Box,
   CircularProgress,
   Container,
   Grid2 as Grid,
@@ -15,7 +16,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isMobile } from "../Funcoes";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const full = {
   [undefined]: false,
@@ -49,15 +50,34 @@ const Modal = ({
   route = "",
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [prevPath, setPrevPath] = useState(location.pathname);
 
+  // Atualiza o caminho anterior ao abrir a modal
   useEffect(() => {
-    if (open && route) navigate(route.replace(/[^a-zA-Z]/g, ""));
+    if (open) {
+      setPrevPath(location.pathname);
+      route && navigate(route);
+    }
   }, [open]);
+
+  // Fecha a modal se o usuário navegar para outra página manualmente
+  useEffect(() => {
+    if (open && prevPath !== location.pathname) {
+      onClose();
+    }
+  }, [prevPath]);
+
+  // Garante que onClose também navega de volta quando necessário
+  const handleClose = () => {
+    onClose();
+    if (route) navigate(-1);
+  };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth={maxWidth}
       fullWidth
       fullScreen={full[fullScreen]}
@@ -98,7 +118,7 @@ const Modal = ({
           titulo && <Typography variant="h6">{titulo}</Typography>
         )}
 
-        <IconButton aria-label="close" onClick={onClose} color="GrayText">
+        <IconButton aria-label="close" onClick={handleClose} color="GrayText">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -131,7 +151,6 @@ const Modal = ({
               }}
               component="form"
             >
-              {" "}
               <Grid
                 container
                 sx={{
@@ -141,7 +160,6 @@ const Modal = ({
               >
                 {image && (
                   <Grid size={{ xs: 0, md: 7 }}>
-                    {" "}
                     <img
                       src={image.src}
                       style={{
@@ -152,7 +170,6 @@ const Modal = ({
                   </Grid>
                 )}
                 <Grid size={{ xs: 12, md: component != "form" ? 12 : 5 }}>
-                  {" "}
                   <Paper
                     variant={
                       isMobile || component != "form" ? "contained" : "outlined"
@@ -188,14 +205,11 @@ const Modal = ({
                       }}
                     >
                       {["form", "view"].includes(component) && backAction ? (
-                        <Grid
-                          size={{ xs: 12, xs: 12 }}
-                          sx={{ textAlign: "center" }}
-                        >
+                        <Grid size={12} sx={{ textAlign: "center" }}>
                           <Typography variant="h5">{titulo}</Typography>
                         </Grid>
                       ) : null}
-                      <Grid size={{ xs: 12, xs: 12 }}>{children}</Grid>
+                      <Grid size={12}>{children}</Grid>{" "}
                       {component == "form" && (
                         <>
                           <Grid size={{ xs: 12, xs: 12 }}>
@@ -233,15 +247,25 @@ const Modal = ({
                             </Grid>
                           )}
                         </>
-                      )}{" "}
+                      )}
                     </Grid>
                   </Paper>
                 </Grid>
               </Grid>
             </Container>
-          </DialogContent>
+          </DialogContent>{" "}
           {component != "form" && (
-            <DialogActions sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            <DialogActions
+              disableSpacing={
+                (["form", "view"].includes(component) || fullScreen) && isMobile
+              }
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                columnGap: isMobile ? 0 : 1,
+                rowGap: 1,
+              }}
+            >
               {" "}
               {buttons &&
                 // buttons.length &&

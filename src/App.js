@@ -75,8 +75,9 @@ function App() {
     "/dashboard/:path?/:subPath?",
     "/manager/:page?",
     "/me/:agendamentoId?",
-    "/plans",
+    "/plans/:videoPath?",
     "/checkout/:key?",
+    "/review/:barbeariaId",
   ]);
   const [alert, setAlert] = useState({
     message: "",

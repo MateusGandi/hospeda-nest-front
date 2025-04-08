@@ -12,8 +12,10 @@ import apiService from "../Api/axios";
 import { getLocalItem } from "../Funcoes";
 import Modal from "../Modal";
 import Cookies from "js-cookie";
+import { useLocation } from "react-router-dom";
 
 const Permissions = ({ alertCustom }) => {
+  const location = useLocation();
   const [modal, setModal] = useState({
     open: Cookies.get("getPermission") != "false",
   });
@@ -33,6 +35,13 @@ const Permissions = ({ alertCustom }) => {
     });
   };
 
+  useEffect(() => {
+    setModal((prev) => ({
+      ...prev,
+      open: Cookies.get("getPermission") != "false",
+    }));
+  }, [location]);
+
   const handlePermissionChange = (event) => {
     setPermissions({
       ...permissions,
@@ -42,7 +51,7 @@ const Permissions = ({ alertCustom }) => {
 
   const onClose = (force) => {
     setModal((prev) => ({ ...prev, open: false }));
-    if (force) Cookies.set("getPermission", "false", { expires: 7 });
+    if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 
   const handleSubmit = async () => {
@@ -53,7 +62,7 @@ const Permissions = ({ alertCustom }) => {
     try {
       await apiService.query(
         "PATCH",
-        `/user/update/${getLocalItem("userId")}`,
+        `/user/${getLocalItem("userId")}`,
         permissions
       );
       alertCustom("Sucesso ao atualizar suas preferências");
@@ -75,7 +84,12 @@ const Permissions = ({ alertCustom }) => {
       onAction={handleSubmit}
       fullScreen="mobile"
       buttons={[
-        { titulo: "Aceitar tudo", action: acceptAll, color: "primary" },
+        {
+          titulo: "Perguntar Depois",
+          action: () => onClose(true),
+          color: "terciary",
+        },
+        { titulo: "Aceitar tudo", action: acceptAll, color: "terciary" },
       ]}
     >
       <Grid container spacing={2} sx={{ p: "0 8px" }}>

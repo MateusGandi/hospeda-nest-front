@@ -182,8 +182,6 @@ export const formatNumberToWords = (num) => {
   if (num < 1000000000) {
     return `${(num / 1000000).toFixed(0)} milhões`;
   }
-
-  return "muitos";
 };
 
 export const setLocalItem = (key, value) => {

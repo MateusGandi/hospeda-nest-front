@@ -81,10 +81,11 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
   return (
     <>
       <Button
-        color="warning"
+        color="terciary"
         disableElevation
         onClick={() => setDados({ ...dados, modalOpen: true })}
         variant="outlined"
+        size="large"
         fullWidth
         startIcon={<AttachMoneyRoundedIcon />}
         sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
@@ -99,6 +100,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         fullScreen="all"
         maxWidth="lg"
         disablePadding={true}
+        route="financeiro"
       >
         <Grid
           container
@@ -137,26 +139,16 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                         fontSize: 30,
                         fontWeight: 600,
                       }}
-                      src={`${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                        /"/g,
-                        ""
-                      )}/images/establishment/${barbearia.id}/profile/${
-                        barbearia.profile
-                      }`}
+                      src={`https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                     >
                       {barbearia.nome[0].toUpperCase()}
                     </Avatar>
                   }
-                  title={<Typography variant="body1">{Saudacao()}</Typography>}
+                  title={<Typography variant="h6">{barbearia.nome}</Typography>}
                   subheader={
-                    <>
-                      <Typography variant="h6" color="primary">
-                        {barbearia.nome}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mt: -0.5 }}>
-                        {formatCNPJ(barbearia.cnpj)}
-                      </Typography>
-                    </>
+                    <Typography variant="body2" sx={{ mt: -0.5 }}>
+                      CNPJ {formatCNPJ(barbearia.cnpj)}
+                    </Typography>
                   }
                 />
               </Card>

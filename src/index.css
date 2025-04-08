@@ -54,7 +54,10 @@ button {
   border-radius: 50px;
 }
 
-.destaque-texto {
-  color: #0195f7;
+.show-text {
+  color: #212121;
+  background: #fff;
+  border-radius: 5px;
+  padding: 2px 5px;
   font-weight: bold;
 }

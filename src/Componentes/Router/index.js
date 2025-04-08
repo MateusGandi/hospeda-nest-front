@@ -16,6 +16,7 @@ import CreateEstablishment from "../../Empresas/Plans/Onboard";
 
 import Api from "../Api/axios";
 import { setLocalItem } from "../Funcoes";
+import Reviews from "../../Empresas/Home/Avaliacao";
 
 export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -42,6 +43,7 @@ export function RouteElement({ path, alertCustom }) {
           "/plans",
           "/checkout",
           "/onboard",
+          "/review",
         ]);
       } finally {
         setIsLoading(false);
@@ -69,6 +71,7 @@ export function RouteElement({ path, alertCustom }) {
     "/plans": <Plans alertCustom={alertCustom} onClose={handleModalClose} />,
     "/checkout": <Checkout alertCustom={alertCustom} />,
     "/onboard": <CreateEstablishment alertCustom={alertCustom} />,
+    "/review": <Reviews alertCustom={alertCustom} />,
   };
 
   if (isLoading) {
@@ -89,7 +92,7 @@ export function RouteElement({ path, alertCustom }) {
   const pathF = pathsAllowed.find((rota) => `/${path}`.includes(rota));
   if (!pathF) {
     setLocalItem("lastRoute", "/login");
-    //return <Navigate to="/login" />;
+    return <Navigate to="/login" />;
   } else {
     setLocalItem("lastRoute", lastPath);
     return paths[pathF];

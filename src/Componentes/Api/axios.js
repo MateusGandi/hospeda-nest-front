@@ -13,7 +13,7 @@ class ApiService {
   }
 
   async getAccess() {
-    const typeUserId = getLocalItem("typeUserId");
+    const typeUserId = getLocalItem("typeUserId") ?? "";
     const data = await this.query("GET", `/user/routes/${typeUserId}`);
     return data;
   }

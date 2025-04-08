@@ -5,7 +5,13 @@ import { CustomInput } from "../../Componentes/Custom";
 import apiService from "../../Componentes/Api/axios";
 import { getLocalItem } from "../../Componentes/Funcoes";
 
-const ReviewBarbershopModal = ({ barbearia, open, onClose, alertCustom }) => {
+const ReviewBarbershopModal = ({
+  barbearia,
+  fullScreen = false,
+  open,
+  onClose,
+  alertCustom,
+}) => {
   const [formState, setFormState] = useState({
     rating: 0,
     comment: "",
@@ -50,7 +56,7 @@ const ReviewBarbershopModal = ({ barbearia, open, onClose, alertCustom }) => {
       titulo={`Avaliar ${barbearia.nome}`}
       onAction={handleSubmit}
       actionText="Enviar"
-      maxWidth="xs"
+      fullScreen={fullScreen ? "all" : null}
     >
       <Grid container spacing={3} sx={{ p: 1 }}>
         <Grid item size={12} textAlign="center">

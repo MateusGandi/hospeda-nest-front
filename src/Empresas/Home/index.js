@@ -300,7 +300,7 @@ const Empresa = ({ alertCustom }) => {
                 </Grid>
                 <Grid size={{ md: 12, xs: 12 }}>
                   <a
-                    href="https://www.google.com/maps?q=Av. Paulista, São Paulo"
+                    href={`https://www.google.com/maps?q=${form?.barbearia.endereco}`}
                     target="_blank"
                   >
                     <Button
