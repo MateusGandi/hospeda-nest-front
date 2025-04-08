@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarData } from "../../../Componentes/Funcoes";
+import { formatarData, getLocalItem } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar";
 import Horario from "../../../Componentes/Horario/fixed";
@@ -10,8 +10,6 @@ import Modal from "../../../Componentes/Modal";
 const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
-  const [data, setData] = useState({ horario: null, dia: null });
-
   const [loading, setLoading] = useState(false);
 
   const handleOpen = () => {
@@ -36,7 +34,6 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
       return info;
     } catch (error) {
       console.error("Erro ao buscar vagas:", error);
-      //setError("Não há vagas disponíveis");
       alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
       return [];
     } finally {
@@ -46,8 +43,9 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (data.dia) {
-        const { id, establishmentId } = localStorage;
+      if (form.dia) {
+        const id = getLocalItem("id");
+        const establishmentId = getLocalItem("establishmentId");
         const services = await Api.query(
           "GET",
           `/service/${establishmentId}/${id}`
@@ -57,12 +55,12 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
         const resp = await buscarVagas(
           id,
           ids,
-          data.dia.toISOString().split("T")[0]
+          form.dia.toISOString().split("T")[0]
         );
 
         setVagasDisponiveis(resp.map((item) => formatarData(item)));
-      } else if (Object.values(data).every((item) => !!item)) {
-        const { dia, horario } = data;
+      } else if (Object.values(form).every((item) => !!item)) {
+        const { dia, horario } = form;
         const [hr, min] = horario.split(":");
         const newDate = new Date(dia);
         newDate.setHours(hr, min);
@@ -71,13 +69,13 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
     };
 
     buscar().then(() => setModal((prev) => ({ ...prev, open: false })));
-  }, [data.dia]); // Adicionado data.dia e data.horario como dependências
+  }, [form.dia]);
 
   useEffect(() => {
     const fetch = async () => {
-      const ids = form.servicos.map(({ id }) => id).join(",");
+      const ids = form.servicos?.map(({ id }) => id).join(",");
       const dataAtual = new Date().toISOString().split("T")[0];
-      const resp = await buscarVagas(form.barbeiro.id, ids, dataAtual);
+      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
     fetch();
@@ -136,7 +134,7 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
           <Grid size={{ xs: 12, md: 12 }}>
             <Calendario
               onSelect={(value) => {
-                setData((prev) => ({ ...prev, dia: value }));
+                setForm((prev) => ({ ...prev, dia: value }));
               }}
             />
           </Grid>

@@ -14,7 +14,7 @@ const ClienteForm = ({ formData, setFormData }) => {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={4}>
       <Grid item size={{ xs: 12, md: 6 }}>
         <CustomInput
           fullWidth

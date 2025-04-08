@@ -11,7 +11,7 @@ import { format, addMonths, subMonths, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
-const Calendario = ({ onSelect }) => {
+const Calendario = ({ onSelect, all = false }) => {
   const [mesAtual, setMesAtual] = useState(new Date());
   const [dataSelecionada, setDataSelecionada] = useState(null);
 
@@ -19,8 +19,10 @@ const Calendario = ({ onSelect }) => {
   const intervaloDesabilitadoFim = new Date(2024, 9, 15);
 
   const isDataDesabilitada = (data) => {
+    if (all) return false;
+
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0); // Zera o horário para considerar apenas a data
+    hoje.setHours(0, 0, 0, 0);
     const dataSemHorario = new Date(data);
     dataSemHorario.setHours(0, 0, 0, 0);
 
@@ -111,13 +113,15 @@ const Calendario = ({ onSelect }) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
   return (
     <Card
       sx={{ borderRadius: "10px", background: "transparent" }}
       variant="outlined"
     >
       <CardContent>
-        <Grid container spacing={1} sx={{ minHeight: "62vh" }}>
+        <Grid container spacing={1} sx={{ minHeight: "58.5vh" }}>
           <Grid size={{ xs: 12 }}>
             <Box display="flex" justifyContent="space-between" mb={2}>
               <IconButton onClick={handleMesAnterior}>
@@ -133,7 +137,23 @@ const Calendario = ({ onSelect }) => {
               </IconButton>
             </Box>
           </Grid>
-
+          <Grid container spacing={1} sx={{ width: "100%", maxHeight: "10px" }}>
+            {diasDaSemana.map((dia, index) => (
+              <Grid
+                size={12 / 7}
+                key={index}
+                sx={{
+                  maxHeight: "10px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {dia}
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
           {renderizaDias()}
         </Grid>
       </CardContent>

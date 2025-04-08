@@ -83,6 +83,9 @@ export function CustomSelect({
           selected
             ? options.find((opt) => opt.value === selected)?.label
             : placeholder, // Mostra o placeholder se nada estiver selecionado
+        sx: {
+          height: "47px", // Ajusta a altura do Select (área onde o valor selecionado é exibido)
+        },
       }}
       InputProps={{
         startAdornment: startIcon ? (

@@ -21,28 +21,45 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
-export const formatarData = (dataISO, timeZone = "sao_paulo") => {
+export const formatarData = (dataISO, timeZone = "rio_branco") => {
   const data = new Date(dataISO);
 
+  // Adiciona 3 horas à data
+  data.setHours(data.getHours() + 3);
+
   const titulo = data.toLocaleTimeString("pt-BR", {
-    timeZone: timezones[timeZone],
+    //timeZone: timezones[timeZone],
     hour: "2-digit",
     minute: "2-digit",
   });
 
   const subtitulo = data.toLocaleDateString("pt-BR", {
-    timeZone: timezones[timeZone],
+    // timeZone: timezones[timeZone],
     day: "2-digit",
     month: "long",
     year: "numeric",
   });
 
   return {
-    id: data.getTime(),
+    id: new Date(dataISO).getTime(),
     titulo,
     subtitulo,
   };
 };
+
+export function formatarHorario(horario) {
+  const [hh, mm, ss] = horario.split(":").map(Number);
+  let partes = [];
+
+  if (hh > 0) partes.push(`${hh} hora${hh > 1 ? "s" : ""}`);
+  if (mm > 0) partes.push(`${mm} minuto${mm > 1 ? "s" : ""}`);
+  if (ss > 0) partes.push(`${ss} segundo${ss > 1 ? "s" : ""}`);
+
+  if (partes.length === 0) return "0 segundos";
+  if (partes.length === 1) return partes[0];
+
+  return partes.slice(0, -1).join(", ") + " e " + partes[partes.length - 1];
+}
 
 export const formatTime = (valorant, valor) => {
   let numeros = valor.replace(/\D/g, "");
@@ -66,6 +83,22 @@ export const formatMoney = (valor) => {
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
   return numeroFormatado;
+};
+
+export const formatCNPJ = (value) => {
+  // Remove tudo que não for número
+  let digits = value?.replace(/\D/g, "");
+  if (!value) return "";
+
+  // Limita ao formato máximo (14 dígitos para CNPJ)
+  digits = digits.slice(0, 14);
+
+  // Aplica a formatação XX.XXX.XXX/XXXX-XX
+  return digits
+    .replace(/^(\d{2})(\d)/, "$1.$2") // Adiciona o primeiro ponto
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Adiciona o segundo ponto
+    .replace(/\.(\d{3})(\d)/, ".$1/$2") // Adiciona a barra
+    .replace(/(\d{4})(\d)/, "$1-$2"); // Adiciona o hífen
 };
 
 export const formatPhone = (value) => {
@@ -133,3 +166,88 @@ export const Saudacao = () => {
     return "Boa noite!";
   }
 };
+
+export const formatNumberToWords = (num) => {
+  if (num < 100) return "vários";
+  if (num < 1000) return "centenas";
+
+  if (num < 10000) {
+    return `${Math.floor(num / 1000)} mil`;
+  }
+
+  if (num < 1000000) {
+    return `${(num / 1000).toFixed(0)} mil`;
+  }
+
+  if (num < 1000000000) {
+    return `${(num / 1000000).toFixed(0)} milhões`;
+  }
+};
+
+export const setLocalItem = (key, value) => {
+  if (typeof value === "object" || Array.isArray(value)) {
+    value = JSON.stringify(value); // Serializa se for um objeto ou array
+  } else if (typeof value === "boolean" || typeof value === "number") {
+    value = String(value); // Converte booleanos e números para string
+  }
+  window.localStorage.setItem(key, value); // Armazena o item como uma string no localStorage
+};
+
+export const getLocalItem = (key) => {
+  const item = window.localStorage.getItem(key);
+  if (item === null) return null;
+
+  try {
+    const parsed = JSON.parse(item);
+    return parsed; // Retorna o valor parseado se for possível
+  } catch (e) {
+    return item; // Retorna o item original se o parse falhar (string, número ou booleano)
+  }
+};
+
+export const getStatus = (status) => {
+  switch (status) {
+    case "PENDING":
+      return {
+        color: "success",
+        valor: "Agendado",
+      };
+    case "NOT_ATTEND":
+      return {
+        color: "error",
+        valor: "Não Compareceu",
+      };
+    case "CANCELLED":
+      return {
+        color: "terciary",
+        valor: "Cancelado",
+      };
+    case "OK":
+      return {
+        color: "primary",
+        valor: "Concluído",
+      };
+    default:
+      return { color: "warning", valor: "Não atendido" };
+  }
+};
+
+export function formatDataToString(dataString) {
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+
+  const [dia, mes, ano] = dataString.split("/");
+  return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
+}

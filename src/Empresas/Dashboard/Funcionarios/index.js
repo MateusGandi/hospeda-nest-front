@@ -23,6 +23,9 @@ const GerenciarFuncionarios = ({
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
+  useEffect(() => {
+    setFuncionarios(dados);
+  }, [dados]);
   const handleDelete = async (item) => {
     try {
       await Api.query("DELETE", `/employees/${item.id}`);
@@ -48,7 +51,7 @@ const GerenciarFuncionarios = ({
       buttons: [
         {
           color: "error",
-          titulo: "Remover funcionários",
+          titulo: "Remover funcionário",
           action: () => handleDelete(item),
         },
       ],
@@ -65,21 +68,24 @@ const GerenciarFuncionarios = ({
       titulo: "Adicionar novo funcionário",
     });
   };
+
+  const editFuncionario = (funcionario) => {
+    setModal({
+      open: true,
+      titulo: `Editar dados de ${funcionario.nome}`,
+      funcionarioSelecionado: funcionario,
+    });
+  };
+
   const handleSave = async () => {
     //envio para a api
     try {
-      const funcionariosNovos = funcionarios.filter((item) => !item.id);
-      await Api.query(
-        "POST",
-        `/establishment/employees/${barbearia.id}`,
-        funcionariosNovos.map((item) => ({
-          ...item,
-          telefone: item.telefone.replace(/\D/g, ""),
-          servicosPrestados: item.servicosPrestados.map(
-            (service) => service.id
-          ),
-        }))
-      );
+      await Api.query("PATCH", `/establishment/${barbearia.id}`, {
+        funcionarios: funcionarios.map((item) => ({
+          userId: item.id,
+          servicesId: item.servicosPrestados.map((service) => service.id),
+        })),
+      });
       alertCustom("Equipe atualizada!");
     } catch (error) {
       alertCustom("Erro ao cadastrar funcionários");
@@ -92,7 +98,6 @@ const GerenciarFuncionarios = ({
         const dados = await Api.query("GET", `/service/${barbearia.id}`);
         setServicos(dados);
       } catch (e) {
-        console.log(e);
         alertCustom("Erro ao buscar serviços!");
       }
     };
@@ -165,15 +170,13 @@ const GerenciarFuncionarios = ({
           <Grid container spacing={2}>
             <Grid size={12}>
               <Cards
+                onEdit={editFuncionario}
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
                 onSelect={handleSelect}
                 items={funcionarios.map((item, index) => ({
                   ...item,
-                  imagem: `${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                    /"/g,
-                    ""
-                  )}/images/user/${item.id}/${item.foto}`,
+                  imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
                   titulo: `${item.nome} - ${item.telefone}`,
 
                   subtitulo: item.servicosPrestados?.length
@@ -188,7 +191,9 @@ const GerenciarFuncionarios = ({
             </Grid>
             <Grid size={12}>
               <Typography variant="body1" className="show-box">
-                Aviso: Clique sobre um funcionário para editar ou excluir
+                <Typography variant="h6">💡Ajuda rápida</Typography>
+                Clique sobre um funcionário para adicionar uma foto ou em
+                'Editar' para personalizar seu atendimento
               </Typography>
             </Grid>
           </Grid>

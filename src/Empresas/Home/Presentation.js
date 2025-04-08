@@ -29,12 +29,16 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
     },
     {
       titulo: "Avaliar",
-      action: () => navigate(`/${barbearia.nome}/avaliar`),
+      action: () => navigate(`/review/${barbearia.id}`),
       icon: <StarRateRoundedIcon />,
     },
     {
       titulo: "Localização",
-      action: () => navigate(`/${barbearia.nome}/localizacao`),
+      action: () =>
+        window.open(
+          `https://www.google.com/maps?q=${barbearia.endereco}`,
+          "_blank"
+        ),
       icon: <LocationOn />,
     },
   ];
@@ -46,7 +50,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
             <Card elevation={0} sx={{ position: "relative" }}>
               <Box
                 sx={{
-                  backgroundImage: `url(${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner} )`,
+                  backgroundImage: `url(https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/banner/${barbearia.banner} )`,
                   backgroundColor: "#212121",
                   height: 160,
                   backgroundSize: "cover",
@@ -55,7 +59,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               />
 
               <Avatar
-                src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
+                src={`https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                 sx={{
                   width: "160px",
                   height: "160px",
@@ -76,7 +80,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item size={{ xs: 12 }}>
+          <Grid item size={{ xs: 12 }} sx={{ mt: "10px" }}>
             <Rows
               items={actions}
               onSelect={({ action }) => action()}

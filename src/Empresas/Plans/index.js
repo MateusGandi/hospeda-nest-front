@@ -7,20 +7,23 @@ import {
   CardContent,
   CardActions,
   Divider,
-  Box,
-  Container,
   Rating,
   Avatar,
   CardHeader,
   Tooltip,
 } from "@mui/material";
 import Modal from "../../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import VideoPlayer from "../../Componentes/Video";
-import AvatarImage from "../../Assets/1.jpg";
 import apiService from "../../Componentes/Api/axios";
+import {
+  formatNumberToWords,
+  getLocalItem,
+  isMobile,
+} from "../../Componentes/Funcoes";
+import LogoPartners from "../../Assets/logo_partners.png";
 
 const ModalPlanos = ({ alertCustom }) => {
   const periodicidade = {
@@ -30,115 +33,47 @@ const ModalPlanos = ({ alertCustom }) => {
     MENSAL: "/ mês",
     ANUAL: "/ ano",
   };
+  const to = {
+    client: "/home",
+    adm: "/dashboard",
+    manager: "/manager",
+    "": "/home",
+  };
   const navigate = useNavigate();
-  const [dados, setDados] = useState({
-    totalUsers: 3000,
-    avaliacaoGeral: 4.1,
-    urlVideoPresentation: null,
-  });
-  const [planos, setPlanos] = useState([
-    {
-      nome: "Gratuito",
-      vencimento: "",
-      preco: "0.00",
-      descricao: "Teste por 7 dias grátis",
-      ativo: true,
-      id: 1,
-      produtos: [
-        {
-          nome: "Acesso ao App",
-          descricao:
-            "Teste a agenda automática por 7 dias sem qualquer compromisso",
-          id: 6,
-        },
-      ],
-    },
-    {
-      nome: "Premium",
-      vencimento: "MENSAL",
-      preco: "29.90",
-      descricao: "Tudo em um só plano",
-      ativo: true,
-      id: 2,
-      destaque: true,
-      produtos: [
-        {
-          nome: "Automação de WhatsApp",
-          descricao:
-            "Acesso a um robo que controla seus atendimentos automaticamente",
-          id: 1,
-        },
-
-        {
-          nome: "Automação de Marketing ",
-          descricao:
-            "Geração de posts automáticos e movimentações nas redes sociais para trazer ainda mais clientes para perto de você",
-          id: 2,
-        },
-        {
-          nome: "Vendas na Plataforma",
-          descricao:
-            "Venda seus próprios produtos no maketplace do Tonsus e simplifique sua logística, não precisa se preocupar com entrega",
-          id: 3,
-        },
-        {
-          nome: "Programas de Incentivo",
-          descricao:
-            "Promova promoções para novos clientes com recorrentes descontos nos serviços sem ter que gastar um real a mais para isso",
-          id: 4,
-        },
-        {
-          nome: "Formas de Pagamento",
-          descricao:
-            "Tenha consigo todas as modalidades de pagamento: PIX, Boleto, Cartão com taxas acessíveis e direto no App, além de poder receber adiantado.",
-          id: 5,
-        },
-      ],
-    },
-  ]);
-  const [depoimentos, setDepoimentos] = useState([
-    {
-      nome: "Carlos Mendes",
-      comentario:
-        "O Tonsus revolucionou meu negócio! Agora consigo gerenciar tudo de forma simples e prática.",
-      avaliacao: 5,
-      foto: AvatarImage,
-    },
-    {
-      nome: "Fernanda Oliveira",
-      comentario:
-        "Adorei a plataforma! Meus clientes agora conseguem agendar horários sem complicação.",
-      avaliacao: 4,
-      foto: AvatarImage,
-    },
-    {
-      nome: "João Silva",
-      comentario:
-        "O marketing automático me ajudou a atrair mais clientes. Vale muito a pena!",
-      avaliacao: 5,
-      foto: AvatarImage,
-    },
-  ]);
   const [modal, setModal] = useState({
     video: false,
     open: true,
-    onClose: () => navigate(-1),
+    onClose: () => navigate(to[getLocalItem("accessType") || ""]),
     loading: false,
+    depoimentos: [],
+    planos: [],
+    usuarios: formatNumberToWords(3000),
+    avaliacao: 4.1,
+    videos: [
+      {
+        id: "67f00094-d984-8007-b039-a6cc21a8f7e6",
+        title: "Tudo sobre o Tonsus",
+        src: "https://www.w3schools.com/html/mov_bbb.mp4",
+      },
+      {
+        id: "67f00094-d984-8007-b039-a6cc21a8f7ee",
+        title: "Ola mundo",
+        src: "https://www.w3schools.com/html/mov_bbb.mp4",
+      },
+    ],
   });
 
   const fetchData = async () => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
-      const [data, page, comments] = await Promise.all[
-        (apiService.query("GET", `/plans`),
-        apiService.query("GET", `/plans/content`),
-        apiService.query("GET", `/comments/plans/3`))
-      ];
-      setPlanos(data);
-      const { totalUsers, avaliacaoGeral, urlVideoPresentation } = page;
-      setDepoimentos(comments);
-      setDados({ totalUsers, avaliacaoGeral, urlVideoPresentation });
+      const [planos, { depoimentos, media }] = await Promise.all([
+        apiService.query("GET", "/plan"),
+        apiService.query("GET", "/evaluation?page=1&pageSize=3"),
+      ]);
+
+      setModal((prev) => ({ ...prev, planos, depoimentos, avaliacao: media }));
     } catch (error) {
+      console.log(error);
       alertCustom(
         "Ocorreu um imprevisto ao trazer os dados, verifique sua conexão!"
       );
@@ -147,32 +82,19 @@ const ModalPlanos = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    // fetchData();
+    fetchData();
   }, []);
 
-  const handleSelectPlan = async (idPlan) => {
-    setModal((prev) => ({ ...prev, loading: true }));
-    try {
-      alertCustom("Faça login antes de prosseguir com a contratação do plano");
-      if (!localStorage.establishmentId) return navigate("/login");
-
-      const { key } = apiService.query("POST", `/plans/hire-plan`, {
-        planId: idPlan,
-        establishmentId: localStorage.establishmentId,
-      });
-      navigate(`/checkout/${key}`);
-    } catch (error) {
-      alertCustom("Ocorreu ao escolher plano, tente novamente mais tarde!");
-    }
-    setModal((prev) => ({ ...prev, loading: false }));
-  };
+  const handleSelectPlan = async (idPlan) => navigate(`/onboard/${idPlan}`);
 
   return (
     <>
       <VideoPlayer
+        setOpen={(flag) => setModal((prev) => ({ ...prev, video: flag }))}
         title="Bem vindo ao Tonsus"
         maxWidth="xs"
         open={modal.video}
+        videoList={modal.videos}
         onClose={() => setModal((prev) => ({ ...prev, video: false }))}
       />
       <Modal
@@ -181,11 +103,15 @@ const ModalPlanos = ({ alertCustom }) => {
         fullScreen="all"
         maxWidth="lg"
         titulo={
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Tonsus App
-            <Typography variant="body1" sx={{ mt: "-8px", ml: "44px" }}>
-              Parceiros
-            </Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 600, cursor: "pointer" }}
+            onClick={() => navigate("/home")}
+          >
+            <img
+              src={LogoPartners}
+              style={{ height: "37px", marginLeft: isMobile ? 0 : "8px" }}
+            />
           </Typography>
         }
         loading={modal.loading}
@@ -197,7 +123,6 @@ const ModalPlanos = ({ alertCustom }) => {
           spacing={3}
           sx={{ height: "calc(100vh - 100px)", m: 1 }}
         >
-          {/* Texto e botão do vídeo */}
           <Grid size={{ xs: 12, md: 6 }} order={{ xs: 1, md: 1 }}>
             <Grid
               container
@@ -223,7 +148,7 @@ const ModalPlanos = ({ alertCustom }) => {
                   color="force"
                   disableElevation
                   size="large"
-                  onClick={() => setModal((prev) => ({ ...prev, video: true }))}
+                  onClick={() => navigate(modal.videos[0].id)}
                   sx={{
                     width: { xs: "100%", md: "300px" },
                     fontWeight: 600,
@@ -234,7 +159,7 @@ const ModalPlanos = ({ alertCustom }) => {
               </Grid>
             </Grid>
           </Grid>
-          {/* Planos */}
+
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}
@@ -247,7 +172,7 @@ const ModalPlanos = ({ alertCustom }) => {
               Como começar?
             </Typography>
 
-            {planos.map((plano) => (
+            {modal.planos.map((plano) => (
               <Card
                 disableElevation
                 variant="outlined"
@@ -286,8 +211,8 @@ const ModalPlanos = ({ alertCustom }) => {
                     </Typography>
                   </Typography>
                   <Divider sx={{ m: "10px 0" }} />
-                  {plano.produtos.map((produto, i) => (
-                    <Tooltip title={produto.descricao}>
+                  {plano?.produtos?.map((produto, i) => (
+                    <>
                       <Typography
                         key={i}
                         variant="body1"
@@ -302,7 +227,10 @@ const ModalPlanos = ({ alertCustom }) => {
                         <CheckIcon />
                         {produto.nome}
                       </Typography>
-                    </Tooltip>
+                      <Typography variant="body2">
+                        {produto.descricao}
+                      </Typography>
+                    </>
                   ))}
                 </CardContent>
                 <CardActions sx={{ justifyContent: "center" }}>
@@ -318,7 +246,7 @@ const ModalPlanos = ({ alertCustom }) => {
               </Card>
             ))}
           </Grid>
-          {/* Depoimentos e avaliações */}
+
           <Grid
             size={{ xs: 12, md: 12 }}
             sx={{ flex: 1, display: "flex" }}
@@ -331,7 +259,7 @@ const ModalPlanos = ({ alertCustom }) => {
                 sx={{ width: "100%", textAlign: "center" }}
               >
                 A plataforma completa para gestão do seu negócio e conta com
-                mais de 3 mil usuários
+                mais de {modal.usuarios || "3 mil"} usuários
               </Typography>
               <Divider sx={{ m: "30px 0" }} />
               <Typography
@@ -353,11 +281,11 @@ const ModalPlanos = ({ alertCustom }) => {
                 <span>Avaliações: </span>
                 <Rating
                   name="read-only"
-                  value={dados.avaliacaoGeral.toFixed(0)}
+                  value={modal.avaliacao.toFixed(0)}
                   readOnly
                   sx={{ color: "#ffb200" }}
                 />
-                <span>{dados.avaliacaoGeral}/5</span>
+                <span>{modal.avaliacao}/5</span>
               </Typography>
             </Typography>
           </Grid>
@@ -368,7 +296,7 @@ const ModalPlanos = ({ alertCustom }) => {
               spacing={2}
               sx={{ m: "20px 0", alignItems: "stretch" }} // 🔹 Garante que os cards estiquem
             >
-              {depoimentos.map((depoimento, index) => (
+              {modal.depoimentos.map((depoimento, index) => (
                 <Grid
                   size={{ xs: 12, md: 4 }}
                   key={index}
@@ -387,23 +315,25 @@ const ModalPlanos = ({ alertCustom }) => {
                   >
                     <CardHeader
                       avatar={
-                        <Avatar src={depoimento.foto} aria-label="recipe">
+                        <Avatar
+                          src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${depoimento.usuario.id}/${depoimento.usuario.foto}`}
+                          aria-label="recipe"
+                        >
                           {depoimento.avatar}
                         </Avatar>
                       }
-                      title={depoimento.nome}
+                      title={depoimento.usuario.nome}
                       subheader={
                         <Rating
-                          value={depoimento.avaliacao}
+                          value={depoimento.nota}
                           readOnly
                           sx={{ color: "#ffb200" }}
                         />
                       }
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
-                      {/* 🔹 flexGrow faz com que o conteúdo cresça e o Card ocupe toda a altura */}
                       <Typography variant="body1" sx={{ fontStyle: "italic" }}>
-                        "{depoimento.comentario}"
+                        "{depoimento.descricao}"
                       </Typography>
                     </CardContent>
                   </Card>

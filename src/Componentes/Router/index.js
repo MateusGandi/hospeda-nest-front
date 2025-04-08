@@ -12,8 +12,11 @@ import Manager from "../../Manager";
 import UserData from "../../User";
 import Plans from "../../Empresas/Plans";
 import Checkout from "../Checkout";
+import CreateEstablishment from "../../Empresas/Plans/Onboard";
 
 import Api from "../Api/axios";
+import { setLocalItem } from "../Funcoes";
+import Reviews from "../../Empresas/Home/Avaliacao";
 
 export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -31,7 +34,7 @@ export function RouteElement({ path, alertCustom }) {
           "/create",
           "/change",
           "/recover",
-          "/onboard",
+          "/home",
           "/estabelecimentos",
           "/barbearia",
           "/dashboard",
@@ -39,6 +42,8 @@ export function RouteElement({ path, alertCustom }) {
           "/me",
           "/plans",
           "/checkout",
+          "/onboard",
+          "/review",
         ]);
       } finally {
         setIsLoading(false);
@@ -57,7 +62,7 @@ export function RouteElement({ path, alertCustom }) {
     "/create": <Login page="create" alertCustom={alertCustom} />,
     "/recover": <Login page="recover" alertCustom={alertCustom} />,
     "/change": <Login page="change" alertCustom={alertCustom} />,
-    "/onboard": <PublicPage />,
+    "/home": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
     "/barbearia": <Empresa alertCustom={alertCustom} />,
     "/dashboard": <DashBoard alertCustom={alertCustom} />,
@@ -65,6 +70,8 @@ export function RouteElement({ path, alertCustom }) {
     "/me": <UserData alertCustom={alertCustom} />,
     "/plans": <Plans alertCustom={alertCustom} onClose={handleModalClose} />,
     "/checkout": <Checkout alertCustom={alertCustom} />,
+    "/onboard": <CreateEstablishment alertCustom={alertCustom} />,
+    "/review": <Reviews alertCustom={alertCustom} />,
   };
 
   if (isLoading) {
@@ -84,10 +91,10 @@ export function RouteElement({ path, alertCustom }) {
   const lastPath = window.location.pathname;
   const pathF = pathsAllowed.find((rota) => `/${path}`.includes(rota));
   if (!pathF) {
-    localStorage.setItem("lastRoute", "/login");
-    //return <Navigate to="/login" />;
+    setLocalItem("lastRoute", "/login");
+    return <Navigate to="/login" />;
   } else {
-    localStorage.setItem("lastRoute", lastPath);
+    setLocalItem("lastRoute", lastPath);
     return paths[pathF];
   }
 }

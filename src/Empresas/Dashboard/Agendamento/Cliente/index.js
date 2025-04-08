@@ -100,7 +100,7 @@ export default function ClienteSelecionar({ formData, setFormData }) {
           <SearchField
             fields={["telefone", "nome"]}
             url={`/user`}
-            placeholder="Pesquise o nome ou telefone do cliente"
+            placeholder="Pesquise por nome ou telefone"
             setItemSelecionado={(item) =>
               setFormData((prev) => ({ ...prev, cliente: item }))
             }

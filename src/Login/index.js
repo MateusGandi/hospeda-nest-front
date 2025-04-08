@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
 import Banner from "../Assets/banner_onboard.png";
 import { Height } from "@mui/icons-material";
+import { getLocalItem } from "../Componentes/Funcoes";
 
 const LoginPage = ({ page, alertCustom }) => {
   const { hash } = useParams();
@@ -27,7 +28,11 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
+      navigate(
+        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+          ? "/home"
+          : getLocalItem("lastRoute")
+      );
       alertCustom("Login realizado com sucesso!");
     } catch (error) {
       console.log(error);
@@ -40,12 +45,21 @@ const LoginPage = ({ page, alertCustom }) => {
   const handleChangePass = async () => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
-      const { senha } = dados;
+      const { senha, confirm } = dados;
+      if (senha.length < 5 || confirm.length < 5)
+        return alertCustom("Sua senha deve conter ao menos 5 caracteres!");
+      else if (senha != confirm)
+        return alertCustom("As senhas digitadas não são iguais!");
+
       const data = await Api.query("POST", `/user/recover/change/${hash}`, {
         senha,
       });
       Api.setKey(data);
-      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
+      navigate(
+        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+          ? "/home"
+          : getLocalItem("lastRoute")
+      );
       alertCustom("Senha atualizada com sucesso!");
     } catch (error) {
       console.log(error);
@@ -82,13 +96,24 @@ const LoginPage = ({ page, alertCustom }) => {
   const handleCreate = async () => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
-      const { telefone, ...rest } = dados;
+      const { telefone, confirmarSenha, senha, ...rest } = dados;
+
+      if (senha.length < 5 || confirmarSenha.length < 5)
+        return alertCustom("Sua senha deve conter ao menos 5 caracteres!");
+      else if (senha != confirmarSenha)
+        return alertCustom("As senhas digitadas não são iguais!");
+
       const data = await Api.query("POST", "/user/register", {
         ...rest,
+        senha,
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(localStorage.lastRoute ? localStorage.lastRoute : "/onboard");
+      navigate(
+        window.navigation.currentEntry.url.includes(getLocalItem("lastRoute"))
+          ? "/home"
+          : getLocalItem("lastRoute")
+      );
       alertCustom("Conta criada com sucesso!");
     } catch (error) {
       console.log(error);
@@ -163,7 +188,7 @@ const LoginPage = ({ page, alertCustom }) => {
   }, [page, hash]);
 
   const handleClose = () => {
-    navigate("/onboard");
+    navigate("/home");
   };
 
   return (

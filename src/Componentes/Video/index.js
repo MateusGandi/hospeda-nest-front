@@ -4,47 +4,68 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseIcon from "@mui/icons-material/PauseRounded";
-
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
   Box,
   DialogContent,
   DialogTitle,
-  Grid2,
+  Grid2 as Grid,
   Typography,
 } from "@mui/material";
-import { isMobile } from "../Funcoes"; // Função que detecta dispositivos móveis
+import { isMobile } from "../Funcoes";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-const VideoPlayer = ({
-  open,
-  onClose,
-  videoList = [
-    { title: 1, src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    { title: 2, src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-  ],
-  maxWidth,
-}) => {
-  const videoRefs = useRef([]); // Ref para os vídeos
+const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
+  const videoRefs = useRef([]);
   const containerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0); // Índice do vídeo atual
-  const [playing, setPlaying] = useState(true); // Estado de reprodução do vídeo
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [playing, setPlaying] = useState(true);
   const [touchStartY, setTouchStartY] = useState(null);
+  const navigate = useNavigate();
+  const { videoPath } = useParams();
+  const location = useLocation();
+  const [internalOpen, setInternalOpen] = useState(open);
 
   useEffect(() => {
-    if (open) {
+    if (videoPath && videoList.length > 0) {
+      const index = videoList.findIndex((video) => video.id === videoPath);
+      if (index !== -1) {
+        setCurrentIndex(index);
+        setInternalOpen(true);
+      }
+    }
+  }, [videoPath, videoList]);
+
+  useEffect(() => {
+    if (internalOpen) {
+      navigate(`/plans/${videoList[currentIndex]?.id}`);
       playVideo(currentIndex);
     }
-  }, [open, currentIndex]);
+  }, [currentIndex, internalOpen]);
+
+  useEffect(() => {
+    if (internalOpen && !videoPath) {
+      handleClose();
+    }
+  }, [videoPath]);
+
+  const handleClose = () => {
+    onClose();
+    setInternalOpen(false);
+    const loc = location.pathname.split("/");
+    loc.pop();
+    navigate(loc.join("/"));
+  };
 
   const playVideo = (index) => {
     videoRefs.current.forEach((video, i) => {
       if (video) {
         if (i === index) {
-          video.currentTime = 0; // Reseta o tempo do vídeo
-          video.play(); // Reproduz o vídeo atual
+          video.currentTime = 0;
+          video.play();
         } else {
-          video.pause(); // Pausa todos os vídeos que não são o atual
+          video.pause();
         }
       }
     });
@@ -61,13 +82,25 @@ const VideoPlayer = ({
     }
   };
 
+  const handleNext = () => {
+    if (currentIndex < videoList.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  };
+
   const handleScroll = (event) => {
     if (!containerRef.current) return;
     const deltaY = event.deltaY;
     if (deltaY > 50 && currentIndex < videoList.length - 1) {
-      setCurrentIndex((prev) => prev + 1); // Avança para o próximo vídeo
+      setCurrentIndex((prev) => prev + 1);
     } else if (deltaY < -50 && currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1); // Volta para o vídeo anterior
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
@@ -81,30 +114,18 @@ const VideoPlayer = ({
     const diff = touchStartY - touchEndY;
 
     if (diff > 50 && currentIndex < videoList.length - 1) {
-      setCurrentIndex((prev) => prev + 1); // Avança para o próximo vídeo
+      setCurrentIndex((prev) => prev + 1);
     } else if (diff < -50 && currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1); // Volta para o vídeo anterior
+      setCurrentIndex((prev) => prev - 1);
     }
 
     setTouchStartY(null);
   };
 
-  const handleNext = () => {
-    if (currentIndex < videoList.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  };
-
   return (
     <Dialog
-      open={open}
-      onClose={onClose}
+      open={internalOpen}
+      onClose={handleClose}
       fullScreen={isMobile}
       maxWidth={maxWidth}
       PaperProps={{
@@ -127,12 +148,17 @@ const VideoPlayer = ({
           display: "flex",
           justifyContent: "space-between",
           zIndex: 999,
+          alignItems: "start",
         }}
       >
         <Typography variant="h6">
           {videoList[currentIndex]?.title || "Vídeo"}
         </Typography>
-        <IconButton aria-label="close" onClick={onClose} sx={{ color: "#fff" }}>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ color: "#fff" }}
+        >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -159,16 +185,16 @@ const VideoPlayer = ({
             src={video.src}
             style={{
               width: "100%",
-              height: "100vh", // Mantém o tamanho do vídeo
+              height: "100vh",
               objectFit: "cover",
               position: "absolute",
               top: 0,
-              transition: isMobile ? "transform 0.5s ease-in-out" : "none", // Efeito de transição só no celular
+              transition: isMobile ? "transform 0.5s ease-in-out" : "none",
               transform: `translateY(${(index - currentIndex) * 100}%)`,
             }}
             onPlay={() => setPlaying(true)}
             autoPlay={index === currentIndex}
-            muted={false} // Assegura que o som não estará mudo
+            muted={false}
           />
         ))}
 
@@ -189,9 +215,8 @@ const VideoPlayer = ({
           {playing ? <PauseIcon /> : <PlayArrowIcon />}
         </IconButton>
 
-        {/* Setas para navegação no PC */}
         {!isMobile && videoList.length > 1 && (
-          <Grid2
+          <Grid
             container
             spacing={2}
             sx={{
@@ -214,7 +239,7 @@ const VideoPlayer = ({
             <IconButton onClick={handleNext}>
               <ArrowDownwardIcon />
             </IconButton>
-          </Grid2>
+          </Grid>
         )}
       </DialogContent>
     </Dialog>

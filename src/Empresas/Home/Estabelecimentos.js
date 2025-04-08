@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import ConeSVG from "../../Assets/cone.svg";
+import { formatPhone } from "../../Componentes/Funcoes";
 
 const Estabelecimentos = () => {
   const navigate = useNavigate();
@@ -18,10 +19,10 @@ const Estabelecimentos = () => {
   useEffect(() => {
     setDados({
       open: true,
-      onClose: () => navigate("/onboard"),
+      onClose: () => navigate("/home"),
       onSelect: (barbearia) => navigate(`/barbearia/${barbearia.path}`),
       back: {
-        action: () => navigate("/onboard"),
+        action: () => navigate("/home"),
         titulo: "Voltar",
       },
     });
@@ -49,10 +50,14 @@ const Estabelecimentos = () => {
     return items.map((item) => ({
       ...item,
       titulo: item.nome,
-      subtitulo: `${item.endereco} ${item.telefone}`,
-      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/profile/${item.profile}`,
-      profile: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/profile/${item.profile}`,
-      banner: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/banner/${item.banner}`,
+      subtitulo: `${formatPhone(item.telefone)} | ${
+        item.endereco.length > 20
+          ? item.endereco.slice(0, 40) + "..."
+          : item.endereco
+      }`,
+      imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/profile/${item.profile}`,
+      profile: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/profile/${item.profile}`,
+      banner: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/banner/${item.banner}`,
     }));
   };
 
@@ -78,7 +83,7 @@ const Estabelecimentos = () => {
             setSearchValue={setSearchValue}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
           {empresasFiltred && empresasFiltred.length ? (
             <Rows
               items={empresasFiltred}

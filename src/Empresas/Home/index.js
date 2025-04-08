@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid2 as Grid, Typography } from "@mui/material";
+import {
+  Button,
+  FormControlLabel,
+  Grid2 as Grid,
+  Switch,
+  Typography,
+} from "@mui/material";
 import Modal from "../../Componentes/Modal";
 import Api from "../../Componentes/Api/axios";
 import BarberPresentation from "./Presentation";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import NavigationIcon from "@mui/icons-material/Navigation";
 
 import Funcioanarios from "./Funcionarios";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
+import AnimatedCheck from "../../Componentes/Motion/Icons";
+import { formatarHorario, getLocalItem } from "../../Componentes/Funcoes";
 
 const Empresa = ({ alertCustom }) => {
   const paths = [
@@ -53,12 +62,13 @@ const Empresa = ({ alertCustom }) => {
   });
 
   const handleSaveAgendamento = async () => {
+    // throw new Error("oi");
     await Api.query("POST", "/scheduling", {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
       establishmentId: empresa.id,
-      userId: localStorage.userId,
+      userId: getLocalItem("userId"),
       barberId: form.barbeiro.id,
       services: form.servicos.map(({ id }) => id),
     });
@@ -68,7 +78,9 @@ const Empresa = ({ alertCustom }) => {
     try {
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
-        return alertCustom(`Selecione ao menos 1 item antes de prosseguir!`);
+        return alertCustom(
+          `Informe as informações necessárias para prosseguir!`
+        );
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -84,8 +96,8 @@ const Empresa = ({ alertCustom }) => {
             alertCustom(
               "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
-            setTituloModal(paths[pathTo + 2].title);
-            navigate(`/barbearia/${empresa.path}/${paths[pathTo + 2].key}`);
+            // setTituloModal(paths[pathTo + 2].title);
+            // navigate(`/barbearia/${empresa.path}/${paths[pathTo + 2].key}`);
           });
       }
       setTituloModal(paths[pathTo + 1].title);
@@ -99,9 +111,8 @@ const Empresa = ({ alertCustom }) => {
   const handleBack = () => {
     try {
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      console.log("pathTo", pathTo);
       if (pathTo == 0) {
-        return navigate("/onboard");
+        return navigate("/home");
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo - 1].key}`);
@@ -138,7 +149,7 @@ const Empresa = ({ alertCustom }) => {
       open: true,
       onClose: () => {
         setPage((prev) => ({ ...prev, open: false }));
-        navigate("/onboard");
+        navigate("/home");
       },
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
@@ -146,20 +157,22 @@ const Empresa = ({ alertCustom }) => {
 
   const formatarRows = (items, pagina) => {
     if (pagina == "barbeiros") {
-      return items.map((item) => ({
-        ...item,
-        titulo: item.nome,
-        subtitulo: `${item.telefone} - Especialidades: ${
-          item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
-        }`,
-        imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
-      }));
+      return items
+        .filter((item) => !!item.servicosPrestados.length)
+        .map((item) => ({
+          ...item,
+          titulo: item.nome,
+          subtitulo: `${item.telefone} - Especialidades: ${
+            item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
+          }`,
+          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
+        }));
     }
     if (pagina == "servicos") {
       return items.map((item) => ({
         ...item,
         titulo: `R$ ${item.preco} ${item.nome}`,
-        subtitulo: `Duração: ${item.duracao}`,
+        subtitulo: `Duração: ${formatarHorario(item.tempoGasto)}`,
       }));
     }
     if (pagina == "agendamentos") {
@@ -178,7 +191,7 @@ const Empresa = ({ alertCustom }) => {
         backAction={{
           action: !["confirmacao", "error"].includes(subPath)
             ? handleBack
-            : () => navigate("/onboard"),
+            : () => navigate("/home"),
           titulo: "Voltar",
         }}
         onClose={page.onClose}
@@ -242,18 +255,71 @@ const Empresa = ({ alertCustom }) => {
               >
                 <Grid size={{ md: 12, xs: 12 }}>
                   {" "}
-                  <Typography variant="h5">Agendamento Confirmado!</Typography>
+                  <Typography variant="h4" sx={{ mb: 1 }}>
+                    Agendamento Confirmado!
+                  </Typography>
+                  <Typography variant="h5" color="warning">
+                    {format(() => {
+                      const data = new Date(form?.agendamento.id);
+                      data.setHours(data.getHours() + 3);
+                      // Adiciona 3 horas à data
+                      return data;
+                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                  </Typography>{" "}
+                </Grid>
+                <Grid
+                  size={{ md: 12, xs: 12 }}
+                  className="show-box"
+                  sx={{ textAlign: "start" }}
+                >
+                  <Typography variant="h6">
+                    🔔 Notificação
+                    <Typography variant="body1">
+                      {getLocalItem("flagWhatsapp")
+                        ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
+                        : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
+                    </Typography>
+                    {/* <Typography variant="body1" textAlign="center">
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={form.notify}
+                            onChange={(e) =>
+                              setForm((prev) => ({
+                                ...prev,
+                                notify: e.target.checked,
+                              }))
+                            }
+                            color="success"
+                          />
+                        }
+                        label="Quero ser notificado pelo WhatsApp"
+                      />
+                    </Typography> */}
+                  </Typography>
+                </Grid>
+                <Grid size={{ md: 12, xs: 12 }}>
+                  <a
+                    href={`https://www.google.com/maps?q=${form?.barbearia.endereco}`}
+                    target="_blank"
+                  >
+                    <Button
+                      disableElevation
+                      color="primary"
+                      size="large"
+                      variant="contained"
+                      startIcon={<NavigationIcon />}
+                    >
+                      Ver Localização
+                    </Button>
+                  </a>
                 </Grid>
                 <Grid size={{ md: 12, xs: 12 }}>
                   <Button
                     disableElevation
-                    variant="outlined"
-                    color="success"
+                    color="terciary"
                     size="large"
-                    onClick={() => navigate("/onboard")}
-                    sx={{
-                      border: "1px solid #484848",
-                    }}
+                    onClick={() => navigate("/home")}
                     startIcon={<ArrowBackIcon />}
                   >
                     Voltar a tela inicial
@@ -290,7 +356,7 @@ const Empresa = ({ alertCustom }) => {
                     sx={{
                       border: "1px solid #484848",
                     }}
-                    onClick={() => navigate("/onboard")}
+                    onClick={() => navigate("/home")}
                   >
                     Voltar a tela inicial
                   </Button>

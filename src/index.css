@@ -15,6 +15,28 @@ code {
     monospace;
 }
 
+.emoji-number {
+  display: flex;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(25%);
+  align-items: center;
+  border-radius: 2px;
+  background-color: #0195f7; /* Cor de fundo */
+  font-weight: bold;
+  text-align: center;
+  color: #fff; /* Cor do número */
+  font-family: "Nunito", sans-serif; /* Usando Nunito */
+}
+
+.show-art {
+  background-color: rgba(256, 256, 256, 0.1);
+  padding: 4px 8px;
+  border-radius: 10px;
+  margin-right: 5px;
+  font-weight: 600;
+}
+
 .bar {
   width: 5px;
   height: 100%;
@@ -32,7 +54,10 @@ button {
   border-radius: 50px;
 }
 
-.destaque-texto {
-  color: #0195f7;
+.show-text {
+  color: #212121;
+  background: #fff;
+  border-radius: 5px;
+  padding: 2px 5px;
   font-weight: bold;
 }

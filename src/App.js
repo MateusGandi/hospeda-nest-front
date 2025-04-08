@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ThemeProvider,
   createTheme,
@@ -9,11 +9,12 @@ import {
   Container,
 } from "@mui/material";
 
-import Alerta from "./Componentes/Alert";
+import Alerta from "./Componentes/Alert/Temp";
 import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router";
-import bgiteract from "./Assets/vt.png";
+import Permissions from "./Componentes/Permissions";
+
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -61,20 +62,22 @@ const theme = createTheme({
 function App() {
   const [page, setPage] = useState(null);
   const [paths] = useState([
-    "/onboard",
+    "/home",
     "/create",
+    "/onboard/:planId?",
     "/login",
     "/change/:hash?",
     "/recover",
-    "estabelecimentos",
+    "/estabelecimentos",
     "/barbearia/:barbeariaName/:subPath?",
     "/agendamento/:barbeariaName/:subPath?",
     "/barbearia",
-    "/dashboard/:subPath?",
+    "/dashboard/:path?/:subPath?",
     "/manager/:page?",
-    "/me",
-    "/plans",
+    "/me/:agendamentoId?",
+    "/plans/:videoPath?",
     "/checkout/:key?",
+    "/review/:barbeariaId",
   ]);
   const [alert, setAlert] = useState({
     message: "",
@@ -94,7 +97,7 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <NavigationBar logo="Tonsus App" />
-
+        <Permissions alertCustom={alertCustom} />
         <Routes>
           {paths.map((path, index) => (
             <Route

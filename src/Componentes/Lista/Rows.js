@@ -7,6 +7,7 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, Card, CardActionArea, Typography } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export const Rows = ({
   items = [],
@@ -20,6 +21,7 @@ export const Rows = ({
   styleSelect,
   actions,
   disabled = false,
+  disableGap = false,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -32,7 +34,11 @@ export const Rows = ({
         : [...selected, item];
     } else {
       updatedSelection =
-        unSelectMode && selected.some((op) => op.id === item.id) ? [] : [item];
+        unSelectMode &&
+        Array.isArray(selected) &&
+        selected?.some((op) => op.id === item.id)
+          ? []
+          : [item];
     }
 
     if (!oneTapMode) setSelected(updatedSelection);
@@ -41,13 +47,21 @@ export const Rows = ({
   };
 
   return (
-    <List sx={{ m: 0, p: 0 }}>
+    <List
+      sx={{
+        m: 0,
+        p: 0,
+        display: "flex",
+        flexWrap: "wrap",
+        gap: disableGap ? 0 : "10px",
+      }}
+    >
       {items.map((item) => (
         <>
           <CardActionArea
             key={item.id}
-            disabled={disabled}
-            sx={{ borderRadius: "10px !important", m: "10px 0" }}
+            disabled={disabled || item.disabled}
+            sx={{ borderRadius: "10px !important" }}
           >
             <Card
               onClick={() => (item.action ? item.action() : handleSelect(item))}
@@ -57,15 +71,28 @@ export const Rows = ({
                 selected?.some((opcao) => opcao.id === item.id)
                   ? {
                       ...(styleSelect
-                        ? styleSelect
+                        ? { ...styleSelect, border: "1px solid transparent" }
                         : {
+                            background: "rgba(256, 256, 256,0.1)",
                             border: "1px solid rgb(134, 134, 134)",
                             background: "rgba(256,256,256,0.05)",
                           }),
                     }
                   : { border: "1px solid transparent" }),
+                position: "relative",
               }}
             >
+              {Array.isArray(selected) &&
+                selected?.some((opcao) => opcao.id === item.id) && (
+                  <CheckCircleIcon
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: 15,
+                      transform: "translateY(-50%)",
+                    }}
+                  />
+                )}
               <ListItem
                 sx={{
                   borderRadius: "10px",
@@ -159,6 +186,7 @@ export const Rows = ({
                     ? 240
                     : 0, // Ajuste o valor conforme necessário
                 overflow: "hidden",
+                width: "100%",
                 transition: "height 0.3s ease-in-out",
               }}
             >

@@ -4,20 +4,22 @@ import { isMobile } from "../Funcoes";
 
 const TypingEffectText = () => {
   const words = [
-    "tem acesso a vários produtos de diferentes seguimentos",
-    "ganha eventuais descontos no seu corte de cabelo",
-    "agenda de qualquer lugar que estiver",
-    "agenda a hora que precisar...",
+    "tem acesso a vários produtos de diferentes seguimentos!",
+    "ganha eventuais descontos no seu corte de cabelo!",
+    "agenda de qualquer lugar que estiver!",
+    "agenda a hora que precisar!",
   ];
 
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [cursorColor, setCursorColor] = useState("#fff"); // Cor inicial do cursor
+  const [isIdle, setIsIdle] = useState(false);
+  const [cursorColor, setCursorColor] = useState("#fff"); // Cor inicial fixa
 
-  const typingSpeed = 100; // Velocidade ao digitar
+  const typingSpeed = 50; // Velocidade ao digitar
   const eraseSpeed = 30; // Velocidade ao apagar
-  const delayBeforeDeleting = 3000; // Tempo antes de apagar
+  const delayBeforeDeleting = 5000; // Tempo antes de apagar
+  const idleBlinkSpeed = 500; // Velocidade da animação quando ocioso
 
   useEffect(() => {
     const currentWord = words[currentWordIndex];
@@ -25,14 +27,20 @@ const TypingEffectText = () => {
 
     if (!isDeleting) {
       if (displayedText.length < currentWord.length) {
+        setCursorColor("#fff"); // Mantém branco ao escrever
         timeout = setTimeout(() => {
           setDisplayedText(currentWord.substring(0, displayedText.length + 1));
         }, typingSpeed);
       } else {
-        timeout = setTimeout(() => setIsDeleting(true), delayBeforeDeleting);
+        setIsIdle(true);
+        timeout = setTimeout(() => {
+          setIsDeleting(true);
+          setIsIdle(false);
+        }, delayBeforeDeleting);
       }
     } else {
       if (displayedText.length > 0) {
+        setCursorColor("#fff"); // Mantém branco ao apagar
         timeout = setTimeout(() => {
           setDisplayedText(currentWord.substring(0, displayedText.length - 1));
         }, eraseSpeed);
@@ -45,22 +53,29 @@ const TypingEffectText = () => {
     return () => clearTimeout(timeout);
   }, [displayedText, isDeleting, currentWordIndex]);
 
-  // Efeito para piscar o cursor alterando a cor
+  // Efeito para piscar o cursor quando o texto estiver ocioso
   useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setCursorColor((prev) =>
-        prev === "transparent" ? "#fff" : "transparent"
-      ); // Alterna entre preto e cinza
-    }, 500);
+    let cursorInterval;
+    if (isIdle) {
+      cursorInterval = setInterval(() => {
+        setCursorColor((prev) => (prev === "#fff" ? "transparent" : "#fff"));
+      }, idleBlinkSpeed);
+    } else {
+      setCursorColor("#fff"); // Mantém branco ao digitar ou apagar
+    }
 
     return () => clearInterval(cursorInterval);
-  }, []);
+  }, [isIdle]);
 
   return (
     <Typography
       variant={isMobile ? "h5" : "h2"}
       component="p"
-      sx={{ minHeight: isMobile ? "105px" : "145px" }}
+      sx={{
+        width: "96%",
+        minHeight: isMobile ? "135px" : "210px",
+        textAlign: "left",
+      }}
     >
       No <b>Tonsus</b> você {displayedText}
       <span

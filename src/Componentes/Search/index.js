@@ -21,6 +21,7 @@ const SearchBarWithFilters = ({
   propFilters = [],
   searchValue,
   setSearchValue,
+  fullWidth = true,
 }) => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -37,7 +38,7 @@ const SearchBarWithFilters = ({
       filterValues[prop] = uniqueValues;
     });
     setUniqueFilterValues(filterValues);
-  }, [elements, propFilters]);
+  }, [elements]);
 
   useEffect(() => {
     // Aplica os filtros e a busca
@@ -95,7 +96,7 @@ const SearchBarWithFilters = ({
 
   return (
     <Box
-      sx={{ width: "100%", maxWidth: "500px" }}
+      sx={{ width: "100%", ...(fullWidth ? {} : { maxWidth: "500px" }) }}
       onBlur={handleBlur}
       tabIndex={-1}
     >

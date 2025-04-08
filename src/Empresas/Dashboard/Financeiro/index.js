@@ -7,20 +7,23 @@ import {
   CardContent,
   CardHeader,
   Avatar,
-  List,
-  ListItem,
-  ListItemText,
   Paper,
   IconButton,
 } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Api from "../../../Componentes/Api/axios";
-import { isMobile, Saudacao } from "../../../Componentes/Funcoes";
+import {
+  formatarHorario,
+  formatCNPJ,
+  getLocalItem,
+  isMobile,
+  Saudacao,
+} from "../../../Componentes/Funcoes";
 import SearchBarWithFilters from "../../../Componentes/Search";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 
@@ -34,23 +37,38 @@ const financasMock = {
   ],
 };
 
-const ModalRelatorio = ({
-  barbearia,
-  alertCustom,
-  financas = financasMock,
-}) => {
+const ModalRelatorio = ({ barbearia, alertCustom }) => {
   const [dados, setDados] = useState(null);
   const [search, setSearch] = useState("");
   const [vendasFiltradas, setVendasFiltradas] = useState([]);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
+  const [financas, setFinancas] = useState({ vendas: [] });
 
   const handleGet = async () => {
     try {
-      const data = await Api.query(
-        "GET",
-        `/establishment/financial/${barbearia.id}`
-      );
-      setDados(financasMock);
+      const url = getLocalItem("estabelecimentoAdmin")
+        ? `/financial/establishment/${getLocalItem("establishmentId")}?data=${
+            new Date().toISOString().split("T")[0]
+          }`
+        : `/financial/employee/${getLocalItem("userId")}?data=${
+            new Date().toISOString().split("T")[0]
+          }`;
+      const data = await Api.query("GET", url);
+      const vendas = [];
+
+      Object.keys(data.estatisticasFuncionarios).forEach((funcionario) => {
+        vendas.push(
+          ...data.estatisticasFuncionarios[funcionario].map((atendimento) => ({
+            valor: atendimento.preco,
+            cliente: atendimento.nomeCliente || "Cliente não informado",
+            data: format(atendimento.data, "dd/MM/yyyy' às 'HH:mm"),
+            atendimento: funcionario,
+          }))
+        );
+      });
+
+      setVendasFiltradas(vendas);
+      setFinancas({ ...data, vendas: vendas });
     } catch (error) {
       alertCustom("Erro ao buscar balanço financeiro!");
     }
@@ -63,10 +81,11 @@ const ModalRelatorio = ({
   return (
     <>
       <Button
-        color="warning"
+        color="terciary"
         disableElevation
         onClick={() => setDados({ ...dados, modalOpen: true })}
         variant="outlined"
+        size="large"
         fullWidth
         startIcon={<AttachMoneyRoundedIcon />}
         sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
@@ -81,6 +100,7 @@ const ModalRelatorio = ({
         fullScreen="all"
         maxWidth="lg"
         disablePadding={true}
+        route="financeiro"
       >
         <Grid
           container
@@ -119,24 +139,16 @@ const ModalRelatorio = ({
                         fontSize: 30,
                         fontWeight: 600,
                       }}
-                      src={`${String(process.env.REACT_APP_BACK_TONSUS).replace(
-                        /"/g,
-                        ""
-                      )}/images/establishment/${barbearia.id}/profile/${
-                        barbearia.profile
-                      }`}
+                      src={`https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                     >
                       {barbearia.nome[0].toUpperCase()}
                     </Avatar>
                   }
-                  title={<Typography variant="body1">{Saudacao()}</Typography>}
+                  title={<Typography variant="h6">{barbearia.nome}</Typography>}
                   subheader={
-                    <>
-                      <Typography variant="h6">{barbearia.nome}</Typography>
-                      <Typography variant="body2" sx={{ mt: -0.5 }}>
-                        CNPJ: 12.345.678/0001-95
-                      </Typography>
-                    </>
+                    <Typography variant="body2" sx={{ mt: -0.5 }}>
+                      CNPJ {formatCNPJ(barbearia.cnpj)}
+                    </Typography>
                   }
                 />
               </Card>
@@ -154,9 +166,7 @@ const ModalRelatorio = ({
               <CardContent>
                 <Typography variant="h6">Saldo Geral</Typography>
                 <Typography variant="h5">
-                  {mostrarSaldo
-                    ? `R$ ${financas.approved.valor.toFixed(2)}`
-                    : "******"}
+                  {mostrarSaldo ? `R$ ${financas.ganho}` : "******"}
                 </Typography>
                 <IconButton
                   onClick={() => setMostrarSaldo(!mostrarSaldo)}
@@ -178,7 +188,7 @@ const ModalRelatorio = ({
               <CardContent>
                 <Typography variant="h6">Movimentado hoje</Typography>
                 <Typography variant="h5">
-                  {`R$ ${financas.totalDiario.valor.toFixed(2)}`}{" "}
+                  {`R$ ${financas.total}`}{" "}
                   <ArrowUpwardIcon fontSize="small" color="success" />
                 </Typography>
               </CardContent>
@@ -189,7 +199,7 @@ const ModalRelatorio = ({
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6">Perdas/Despesas</Typography>
-                <Typography variant="h5">{`R$ ${financas.cancelled.valor.toFixed(
+                <Typography variant="h5">{`R$ ${financas.perda?.toFixed(
                   2
                 )}`}</Typography>
               </CardContent>
@@ -213,15 +223,25 @@ const ModalRelatorio = ({
               label="Pesquisar vendas"
               searchValue={search}
               setSearchValue={setSearch}
+              fullWidth={false}
             />
           </Grid>
           <Grid size={12} sx={{ m: "0 10px" }}>
             <PaperList
-              items={vendasFiltradas.map((venda) => ({
-                ...venda,
-                titulo: venda.cliente,
-                subtitulo: `R$ ${venda.valor.toFixed(2)} em ${venda.data}`,
-              }))}
+              items={
+                vendasFiltradas.length > 0
+                  ? vendasFiltradas.map((venda) => ({
+                      ...venda,
+                      titulo: venda.cliente,
+                      subtitulo: `R$ ${venda.valor} em ${venda.data}`,
+                    }))
+                  : [
+                      {
+                        titulo: "🌫️ Nenhuma venda encontrada",
+                        subtitulo: "",
+                      },
+                    ]
+              }
             >
               {" "}
               <Typography
