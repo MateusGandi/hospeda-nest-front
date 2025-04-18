@@ -33,11 +33,6 @@ const Funcionario = ({
     servicosPrestados: [],
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setData({ ...data, [name]: value });
-  };
-
   useEffect(() => {
     if (formData) {
       setData({
@@ -76,7 +71,15 @@ const Funcionario = ({
   return (
     <Modal
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={() => {
+        setOpen(false);
+        setData({
+          id: null,
+          nome: "",
+          telefone: "",
+          servicosPrestados: [],
+        });
+      }}
       titulo={titulo}
       onAction={handleSave}
       actionText={actionText}

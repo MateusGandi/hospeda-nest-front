@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Children } from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "../../Modal"; // Importando o Modal já existente
 import Icon from "../../../Assets/Emojis";
+import { Box } from "@mui/material";
 
 const Confirm = ({
   open,
@@ -10,6 +11,7 @@ const Confirm = ({
   onConfirm,
   title = "Tem certeza que deseja continuar?",
   message,
+  children,
 }) => {
   return (
     <Modal
@@ -22,13 +24,14 @@ const Confirm = ({
       }
       maxWidth="xs"
       buttons={[
-        { titulo: "Cancelar", action: onClose, color: "error" },
-        { titulo: "Confirmar", action: onConfirm, color: "primary" },
+        { titulo: "Cancelar", action: onClose, color: "terciary" },
+        { titulo: "Confirmar", action: onConfirm, color: "terciary" },
       ]}
     >
-      <Typography typography="body1" sx={{ m: 2 }}>
+      <Typography typography="body1" sx={{ m: "0 20px" }}>
         {message}
       </Typography>
+      <Box sx={{ m: 2 }}>{children}</Box>
     </Modal>
   );
 };

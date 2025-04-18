@@ -26,7 +26,9 @@ const Usuarios = ({ alertCustom }) => {
       alertCustom(data);
       setRecover((prev) => ({ ...prev, open: false }));
     } catch (error) {
-      alertCustom(error.message || "Erro ao buscar agendamentos");
+      alertCustom(
+        error.response.data?.message || "Erro ao solicitar link de recuperação"
+      );
     }
   };
 
@@ -34,22 +36,20 @@ const Usuarios = ({ alertCustom }) => {
     open: false,
     message: "",
   });
-
+  const fetch = async () => {
+    setLoading(true);
+    try {
+      const data = await apiService.query(
+        "GET",
+        `/user/profile/${getLocalItem("userId")}`
+      );
+      setUserData(data);
+    } catch (error) {
+      console.error("Erro ao buscar dados da conta:", error);
+    }
+    setLoading(false);
+  };
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const data = await apiService.query(
-          "GET",
-          `/user/profile/${getLocalItem("userId")}`
-        );
-        setUserData(data);
-      } catch (error) {
-        console.error("Erro ao buscar dados da conta:", error);
-      }
-      setLoading(false);
-    };
-
     fetch().then(() => {
       setRecover({
         open: false,
@@ -96,6 +96,7 @@ const Usuarios = ({ alertCustom }) => {
       }
       {userData && (
         <EditUserModal
+          buscar={fetch}
           open={openEdit}
           onClose={() => setOpenEdit(false)}
           alertCustom={alertCustom}

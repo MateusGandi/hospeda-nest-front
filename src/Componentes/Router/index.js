@@ -17,6 +17,7 @@ import CreateEstablishment from "../../Empresas/Plans/Onboard";
 import Api from "../Api/axios";
 import { setLocalItem } from "../Funcoes";
 import Reviews from "../../Empresas/Home/Avaliacao";
+import FAC from "../Termos";
 
 export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -26,7 +27,7 @@ export function RouteElement({ path, alertCustom }) {
     const fetchRoutesAllowed = async () => {
       try {
         const paths = await Api.getAccess();
-        setPathsAllowed(paths || []);
+        setPathsAllowed([...paths, "/fac"] || []);
       } catch (error) {
         console.error("Erro ao buscar rotas permitidas:", error);
         setPathsAllowed([
@@ -35,15 +36,7 @@ export function RouteElement({ path, alertCustom }) {
           "/change",
           "/recover",
           "/home",
-          "/estabelecimentos",
-          "/barbearia",
-          "/dashboard",
-          "/manager",
-          "/me",
-          "/plans",
-          "/checkout",
-          "/onboard",
-          "/review",
+          "/fac",
         ]);
       } finally {
         setIsLoading(false);
@@ -72,6 +65,7 @@ export function RouteElement({ path, alertCustom }) {
     "/checkout": <Checkout alertCustom={alertCustom} />,
     "/onboard": <CreateEstablishment alertCustom={alertCustom} />,
     "/review": <Reviews alertCustom={alertCustom} />,
+    "/fac": <FAC />,
   };
 
   if (isLoading) {

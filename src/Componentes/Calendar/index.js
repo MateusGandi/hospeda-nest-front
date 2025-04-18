@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,9 +11,13 @@ import { format, addMonths, subMonths, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 
-const Calendario = ({ onSelect, all = false }) => {
+const Calendario = ({ onSelect, all = false, data = null }) => {
   const [mesAtual, setMesAtual] = useState(new Date());
   const [dataSelecionada, setDataSelecionada] = useState(null);
+
+  useEffect(() => {
+    setDataSelecionada(data);
+  }, [data]);
 
   const intervaloDesabilitadoInicio = new Date(2024, 9, 10);
   const intervaloDesabilitadoFim = new Date(2024, 9, 15);

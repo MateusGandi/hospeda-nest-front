@@ -15,6 +15,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Api from "../Componentes/Api/axios";
 import { isMobile, Saudacao } from "../Componentes/Funcoes";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
   const [dados, setDados] = useState(null);
@@ -70,24 +71,41 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
           title={<Typography variant="body1">{Saudacao()}</Typography>}
           subheader={
             <Typography variant="h6" sx={{ mt: "-8px" }}>
-              {usuario.nome}
+              {usuario.nome.split(" ")[0]}
             </Typography>
           }
           action={
-            isMobile ? (
-              <IconButton onClick={handleEdit}>
-                <ModeEditOutlineOutlinedIcon />
-              </IconButton>
-            ) : (
-              <Button
-                color="#fff"
-                variant="outlined"
-                sx={{ border: "1px solid rgb(98, 98, 98)" }}
-                onClick={handleEdit}
-              >
-                Editar dados
-              </Button>
-            )
+            <Grid container spacing={isMobile ? 0 : 1}>
+              {isMobile ? (
+                <>
+                  <IconButton onClick={handleEdit}>
+                    <ModeEditOutlineOutlinedIcon />
+                  </IconButton>{" "}
+                  <IconButton onClick={handleEdit}>
+                    <MoreVertIcon />
+                  </IconButton>
+                </>
+              ) : (
+                <>
+                  <Button
+                    color="#fff"
+                    variant="outlined"
+                    sx={{ border: "1px solid rgb(98, 98, 98)" }}
+                    onClick={handleEdit}
+                  >
+                    Editar dados
+                  </Button>
+                  <Button
+                    color="#fff"
+                    variant="outlined"
+                    sx={{ border: "1px solid rgb(98, 98, 98)" }}
+                    onClick={handleEdit}
+                  >
+                    Mais opções (NÃO IMPLEMENTADO)
+                  </Button>
+                </>
+              )}
+            </Grid>
           }
         />
         <CardActions

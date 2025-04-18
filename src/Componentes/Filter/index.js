@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import Modal from "../Modal";
@@ -12,7 +12,6 @@ const Filter = ({
   title,
 }) => {
   const [open, setOpen] = useState(false);
-
   const handleSelect = (value) => {
     setFilter(value);
     setOpen(false);
@@ -38,7 +37,7 @@ const Filter = ({
             id: index,
           }))}
           onSelect={handleSelect}
-          selectedItems={[filter]}
+          selectedItems={[...(Array.isArray(filter) ? filter : [filter])]}
         />
       </Modal>
     </>

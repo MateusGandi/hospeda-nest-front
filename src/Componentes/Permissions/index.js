@@ -16,29 +16,39 @@ import { useLocation } from "react-router-dom";
 
 const Permissions = ({ alertCustom }) => {
   const location = useLocation();
-  const [modal, setModal] = useState({
-    open: Cookies.get("getPermission") != "false",
-  });
-
   const [permissions, setPermissions] = useState({
     flagCookies: getLocalItem("flagCookies"),
     flagEmail: getLocalItem("flagEmail"),
     flagTermos: getLocalItem("flagTermos"),
     flagWhatsapp: getLocalItem("flagWhatsapp"),
   });
+  const [modal, setModal] = useState({
+    open: false,
+  });
+
   const acceptAll = () => {
-    setPermissions({
+    const updated = {
       flagCookies: true,
       flagEmail: true,
       flagTermos: true,
       flagWhatsapp: true,
+    };
+    setPermissions(updated);
+    handleSubmit(updated).then(() => {
+      Cookies.set("getPermission", "false", { expires: 1 });
+      setModal({ open: false });
     });
   };
 
   useEffect(() => {
     setModal((prev) => ({
       ...prev,
-      open: Cookies.get("getPermission") != "false",
+      open:
+        Cookies.get("getPermission") != "false" &&
+        getLocalItem("userId") &&
+        !Object.keys(permissions).every(
+          (key) => !!permissions[key] || key == "flagEmail"
+        ), //flagEmail opcional
     }));
   }, [location]);
 
@@ -54,16 +64,15 @@ const Permissions = ({ alertCustom }) => {
     if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 
-  const handleSubmit = async () => {
-    Object.keys(permissions).forEach((key) => {
-      localStorage.setItem(key, permissions[key].toString());
-    });
-
+  const handleSubmit = async (items) => {
     try {
+      Object.keys(permissions).map((key) =>
+        localStorage.setItem(key, permissions[key])
+      );
       await apiService.query(
         "PATCH",
         `/user/${getLocalItem("userId")}`,
-        permissions
+        items || permissions
       );
       alertCustom("Sucesso ao atualizar suas preferências");
       onClose();
@@ -79,7 +88,7 @@ const Permissions = ({ alertCustom }) => {
     <Modal
       titulo="Permissões"
       open={modal.open}
-      onClose={() => onClose(true)}
+      onClose={onClose}
       actionText="Confirmar"
       onAction={handleSubmit}
       fullScreen="mobile"
@@ -133,8 +142,8 @@ const Permissions = ({ alertCustom }) => {
           sx={{ position: "relative" }}
         >
           <Chip
-            label="Necessário"
-            color="terciary"
+            label="Opcional"
+            color="primary"
             size="small"
             sx={{ position: "absolute", right: 10, top: 10 }}
           />
@@ -181,8 +190,7 @@ const Permissions = ({ alertCustom }) => {
           <Typography variant="body2" color="textSecondary">
             Você deve aceitar nossos{" "}
             <a
-              href="/termos"
-              target="_blank"
+              href="/fac"
               rel="noopener noreferrer"
               style={{ color: "#0195F7", textDecoration: "none" }}
             >
@@ -199,8 +207,8 @@ const Permissions = ({ alertCustom }) => {
           sx={{ position: "relative" }}
         >
           <Chip
-            label="Opcional"
-            color="primary"
+            label="Necessário"
+            color="terciary"
             size="small"
             sx={{ position: "absolute", right: 10, top: 10 }}
           />

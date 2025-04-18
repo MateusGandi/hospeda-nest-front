@@ -113,7 +113,13 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
         {" "}
         {method === "pix" && (
           <>
-            <Grid size={12}>
+            <Grid
+              size={12}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <QRCodeGenerator value={paymentData.qrCode} />
             </Grid>
             <Grid size={12}>

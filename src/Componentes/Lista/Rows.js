@@ -6,8 +6,16 @@ import ListItemText from "@mui/material/ListItemText";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Card, CardActionArea, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  Grid2 as Grid,
+  Typography,
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import notFounImage from "../../Assets/vt.png";
 
 export const Rows = ({
   items = [],
@@ -22,6 +30,8 @@ export const Rows = ({
   actions,
   disabled = false,
   disableGap = false,
+  collapse = false,
+  distribution = items.length ?? 1,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -51,150 +61,162 @@ export const Rows = ({
       sx={{
         m: 0,
         p: 0,
-        display: "flex",
-        flexWrap: "wrap",
-        gap: disableGap ? 0 : "10px",
       }}
     >
-      {items.map((item) => (
-        <>
-          <CardActionArea
+      <Grid
+        container
+        spacing={disableGap ? 0 : 1}
+        sx={{ display: "flex", flexWrap: "wrap" }}
+      >
+        {items.map((item) => (
+          <Grid
+            size={collapse ? { xs: 12, md: 12 / distribution } : 12}
             key={item.id}
-            disabled={disabled || item.disabled}
-            sx={{ borderRadius: "10px !important" }}
           >
-            <Card
-              onClick={() => (item.action ? item.action() : handleSelect(item))}
-              elevation={0}
-              sx={{
-                ...(Array.isArray(selected) &&
-                selected?.some((opcao) => opcao.id === item.id)
-                  ? {
-                      ...(styleSelect
-                        ? { ...styleSelect, border: "1px solid transparent" }
-                        : {
-                            background: "rgba(256, 256, 256,0.1)",
-                            border: "1px solid rgb(134, 134, 134)",
-                            background: "rgba(256,256,256,0.05)",
-                          }),
-                    }
-                  : { border: "1px solid transparent" }),
-                position: "relative",
-              }}
+            <CardActionArea
+              key={item.id}
+              disabled={disabled || item.disabled}
+              sx={{ borderRadius: "10px !important" }}
             >
-              {Array.isArray(selected) &&
-                selected?.some((opcao) => opcao.id === item.id) && (
-                  <CheckCircleIcon
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      right: 15,
-                      transform: "translateY(-50%)",
-                    }}
-                  />
-                )}
-              <ListItem
+              <Card
+                onClick={() =>
+                  item.action ? item.action() : handleSelect(item)
+                }
+                elevation={0}
                 sx={{
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  ...sx,
+                  ...(Array.isArray(selected) &&
+                  selected?.some((opcao) => opcao.id === item.id)
+                    ? {
+                        ...(styleSelect
+                          ? { ...styleSelect, border: "1px solid transparent" }
+                          : {
+                              background: "rgba(256, 256, 256,0.1)",
+                              border: "1px solid rgb(134, 134, 134)",
+                              background: "rgba(256,256,256,0.05)",
+                            }),
+                      }
+                    : { border: "1px solid transparent" }),
+                  position: "relative",
                 }}
               >
-                {(item.icon || item.imagem) && (
-                  <ListItemAvatar>
-                    <Avatar
-                      src={item.imagem}
+                {Array.isArray(selected) &&
+                  selected?.some((opcao) => opcao.id === item.id) && (
+                    <CheckCircleIcon
                       sx={{
-                        bgcolor: "transparent",
-                        color: "#fff",
-                        width: 50,
-                        height: 50,
-                        mr: 2,
+                        position: "absolute",
+                        top: "50%",
+                        right: 15,
+                        transform: "translateY(-50%)",
                       }}
-                    >
-                      {item.icon}
-                    </Avatar>
-                  </ListItemAvatar>
-                )}
-
-                <ListItemText
-                  primary={
-                    <Typography sx={{ fontSize: "18px" }}>
-                      {item.titulo}
-                    </Typography>
-                  }
-                  secondary={item.subtitulo}
-                />
-
-                {actions &&
-                  actions.map((actionItem, index) =>
-                    !actionItem.icon ? (
-                      <Button
-                        key={index}
-                        color={actionItem.color || "primary"}
-                        disableElevation
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          actionItem.action(item.id);
-                        }}
-                        variant="outlined"
+                    />
+                  )}
+                <ListItem
+                  sx={{
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    ...sx,
+                  }}
+                >
+                  {(item.icon || item.imagem) && (
+                    <ListItemAvatar>
+                      <Avatar
+                        src={
+                          item?.imagem?.includes("undefined")
+                            ? notFounImage
+                            : item.imagem
+                        }
                         sx={{
-                          m: "0 5px",
-                          border: "1px solid #484848",
+                          bgcolor: "transparent",
+                          color: "#fff",
+                          width: 50,
+                          height: 50,
+                          mr: 2,
                         }}
                       >
-                        {actionItem.titulo}
-                      </Button>
-                    ) : (
-                      <IconButton
-                        key={index}
-                        edge="end"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          actionItem.action(item.id);
-                        }}
-                        sx={{
-                          m: "0 5px",
-                        }}
-                      >
-                        {actionItem.icon}
-                      </IconButton>
-                    )
+                        {item.icon}
+                      </Avatar>
+                    </ListItemAvatar>
                   )}
 
-                {onDelete && !item.noDelete && (
-                  <IconButton
-                    edge="end"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(item.id);
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                )}
-              </ListItem>
-            </Card>
-          </CardActionArea>
-          {item.renderDetails && (
-            <Box
-              sx={{
-                mt: 1.8,
-                height:
-                  Array.isArray(selected) &&
-                  selected.some((op) => op.id === item.id)
-                    ? 240
-                    : 0, // Ajuste o valor conforme necessário
-                overflow: "hidden",
-                width: "100%",
-                transition: "height 0.3s ease-in-out",
-              }}
-            >
-              {item.renderDetails}
-            </Box>
-          )}
-        </>
-      ))}
+                  <ListItemText
+                    primary={
+                      <Typography sx={{ fontSize: "18px" }}>
+                        {item.titulo}
+                      </Typography>
+                    }
+                    secondary={item.subtitulo}
+                  />
+
+                  {actions &&
+                    actions.map((actionItem, index) =>
+                      !actionItem.icon ? (
+                        <Button
+                          key={index}
+                          color={actionItem.color || "primary"}
+                          disableElevation
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            actionItem.action(item.id);
+                          }}
+                          variant="outlined"
+                          sx={{
+                            m: "0 5px",
+                            border: "1px solid #484848",
+                          }}
+                        >
+                          {actionItem.titulo}
+                        </Button>
+                      ) : (
+                        <IconButton
+                          key={index}
+                          edge="end"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            actionItem.action(item.id);
+                          }}
+                          sx={{
+                            m: "0 5px",
+                          }}
+                        >
+                          {actionItem.icon}
+                        </IconButton>
+                      )
+                    )}
+
+                  {onDelete && !item.noDelete && (
+                    <IconButton
+                      edge="end"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(item.id);
+                      }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  )}
+                </ListItem>
+              </Card>
+            </CardActionArea>
+            {item.renderDetails && (
+              <Box
+                sx={{
+                  mt: 1.8,
+                  height:
+                    Array.isArray(selected) &&
+                    selected.some((op) => op.id === item.id)
+                      ? 240
+                      : 0, // Ajuste o valor conforme necessário
+                  overflow: "hidden",
+                  width: "100%",
+                  transition: "height 0.3s ease-in-out",
+                }}
+              >
+                {item.renderDetails}
+              </Box>
+            )}
+          </Grid>
+        ))}
+      </Grid>
     </List>
   );
 };

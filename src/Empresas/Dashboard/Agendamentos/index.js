@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Button,
   Chip,
@@ -34,55 +34,25 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
     NOT_ATTEND: "Não Compareci",
     CANCELLED: "Cancelados",
     OK: "Concluídos",
-  });
-  const [form, setForm] = useState({
-    barbearia: barbearia,
-    servicos: null,
-    horario: null,
-    dia: null,
-    barbeiro: { id: getLocalItem("userId") },
+    "": "Todos",
   });
   const [modalConteudo, setModalConteudo] = useState({
     open: false,
     view: "agendamento",
     titulo: "",
     dados: null,
+    fullScreen: "mobile",
     agendamentos: [],
-    filter: [{ PENDING: "Agendados" }],
+    size: "md",
+    filter: { titulo: "Todos", id: 0, valor: "" },
+    action: { titulo: "Concluído", do: () => handleAction("confirm") },
   });
   const status = {
     reschedule: "reagendamento",
     cancel: "cancelamento",
     report: "reporte",
+    confirm: "confirmação",
   };
-  const buttons = [
-    {
-      titulo: "Cancelar",
-      color: "error",
-      route: "cancelled",
-      action: () => handleAction("cancel"),
-    },
-    {
-      titulo: "Reagendar",
-      color: "terciary",
-      route: "reschedule",
-      action: () =>
-        setModalConteudo((prev) => ({
-          ...prev,
-          open: true,
-          fullScreen: "all",
-          titulo: "Reagendar cliente",
-          view: "reagendar",
-        })),
-    },
-
-    {
-      titulo: "Não compareceu",
-      color: "terciary",
-      route: "report",
-      action: () => handleAction("report"),
-    },
-  ];
 
   const buscarAgendamentos = async () => {
     try {
@@ -90,7 +60,11 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
       const userId = getLocalItem("userId");
       const agendamentos = await apiService.query(
         "GET",
-        `/scheduling/employee/scheduleds/${userId}/${dataFormatted}?filter=${modalConteudo.filter.valor}`
+        `/scheduling/employee/scheduleds/${userId}/${dataFormatted}${
+          modalConteudo.filter.valor
+            ? `?status=${modalConteudo.filter.valor}`
+            : ""
+        }`
       );
 
       const agendas = agendamentos.map((item) => {
@@ -107,35 +81,16 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
         };
       });
 
-      // Simulando resposta da API
-
       const agFormatted = agendas.map((item) => {
         const status = getStatus(item.status);
         return {
           ...item,
-          servicosPrestados: [
-            {
-              nome: "Corte de Cabelo",
-              tempoGasto: "00:30:00",
-              foto: "1743085070375as2_MateusHenriqueGandi.png",
-              id: 1,
-              descricao: "",
-              preco: "35.00",
-            },
-            {
-              nome: "Barba",
-              tempoGasto: "00:10:00",
-              foto: "1743085072312Diagrama sem nome.png",
-              id: 2,
-              descricao: "",
-              preco: "10.00",
-            },
-          ].map((item) => ({
-            ...item,
-            titulo: `${item.nome} | R$ ${item.preco}`,
-            subtitulo: formatarHorario(item.tempoGasto),
+          servico: item.servico.map((service) => ({
+            ...service,
+            titulo: `${service.nome} | R$ ${service.preco}`,
+            subtitulo: formatarHorario(service.tempoGasto),
           })),
-          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/7/profile/1743508933036Imagem%20do%20WhatsApp%20de%202025-03-30%20%C3%83%C2%A0(s)%2001.jpeg`,
+          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
           titulo: (
             <Typography
               variant="h6"
@@ -174,35 +129,85 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
 
       setModalConteudo((prev) => ({
         ...prev,
+        size: "md",
         agendamentos: agFormatted,
       }));
     } catch (error) {
+      console.log(error);
       alertCustom(
         error?.response?.data?.message ?? "Erro ao buscar agendamentos!"
       );
     }
   };
 
+  const buttons = {
+    agendamento: [
+      {
+        titulo: "Cancelar",
+        color: "error",
+        route: "cancelled",
+        status: "CANCELLED",
+        action: () => handleAction("cancel"),
+      },
+      {
+        titulo: "Reagendar",
+        color: "terciary",
+        route: "reschedule",
+        status: "RESCHEDULED",
+        action: () =>
+          setModalConteudo((prev) => ({
+            ...prev,
+            open: true,
+            fullScreen: "all",
+            titulo: "Reagendar cliente",
+            view: "reagendar",
+            action: {
+              titulo: "Confirmar",
+              do: () => handleAction("reschedule"),
+            },
+          })),
+      },
+
+      {
+        titulo: "Não compareceu",
+        color: "terciary",
+        route: "report",
+        status: "NOT_ATTEND",
+        action: () => handleAction("report"),
+      },
+    ],
+    calendario: [],
+  };
+
   useEffect(() => {
     buscarAgendamentos();
   }, [modalConteudo.filter, dataSelecionada]);
 
-  const handleAction = async (acao, data) => {
+  const handleAction = async (acao) => {
     try {
+      console.log(modalConteudo.dados);
       await Api.query(
         "PATCH",
-        `/scheduling/${acao}/${modalConteudo.dados.id}`,
-        { data }
+        `/scheduling/${acao}/${modalConteudo.dados?.id}`,
+        modalConteudo.dados
       );
       alertCustom(`${status[acao]} realizado com sucesso!`);
-      setModalConteudo({ open: false, titulo: "", dados: null });
+      setModalConteudo((prev) => ({
+        ...prev,
+        open: false,
+      }));
       buscarAgendamentos();
     } catch (error) {
+      console.log(error);
       alertCustom(
         error?.response?.data?.message ?? `Erro ao realizar ${status[acao]}!`
       );
     }
   };
+
+  useEffect(() => {
+    console.log("modalConteudo.dados", modalConteudo.dados);
+  }, [modalConteudo.dados]);
 
   return (
     <Modal
@@ -243,6 +248,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
                   open: true,
                   titulo: "Selecione um dia",
                   view: "calendario",
+                  size: "xs",
                 }))
               }
             >
@@ -255,16 +261,20 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
             <Rows
               items={modalConteudo.agendamentos}
               onSelect={(item) => {
-                setForm((prev) => ({
-                  ...prev,
-                  servicos: item.servicosPrestados,
-                }));
                 setModalConteudo((prev) => ({
                   ...prev,
                   view: "agendamento",
                   open: true,
                   titulo: item.nomeCliente,
-                  dados: item,
+                  size: "md",
+                  fullScreen: "mobile",
+                  dados: {
+                    ...item,
+                    dia: item.data,
+                    barbearia: barbearia,
+                    servicos: item.servico,
+                    barbeiro: { id: getLocalItem("userId") },
+                  },
                 }));
               }}
               oneTapMode={true}
@@ -288,22 +298,20 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
         </Grid>
       </Grid>
 
-      {/* Modal reutilizável */}
       <Modal
         open={modalConteudo.open}
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
-        titulo={modalConteudo.titulo || "Agendamento"}
-        maxWidth={modalConteudo.view === "calendario" ? "xs" : "md"}
-        buttons={modalConteudo.view != "calendario" && buttons}
-        onAction={
-          modalConteudo.view == "calendario" ? null : () => console.log("oi")
-        }
-        actionText="Concluído"
-        fullScreen={modalConteudo.fullScreen || "mobile"}
+        titulo={modalConteudo.titulo}
+        maxWidth={modalConteudo.size}
+        buttons={buttons[modalConteudo.view]}
+        onAction={modalConteudo.action.do}
+        actionText={modalConteudo.action.titulo}
+        fullScreen={modalConteudo.fullScreen}
       >
         {modalConteudo.view === "calendario" ? (
           <Calendario
             all={true}
+            data={dataSelecionada}
             onSelect={(date) => {
               setDataSelecionada(date);
               setModalConteudo((prev) => ({ ...prev, open: false }));
@@ -311,14 +319,21 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
           />
         ) : modalConteudo.view === "reagendar" ? (
           <Reagendamento
-            setForm={setForm}
+            setForm={(form) =>
+              setModalConteudo((prev) => ({
+                ...prev,
+                dados: {
+                  ...prev.dados,
+                  ...form,
+                },
+              }))
+            }
             form={modalConteudo.dados}
             alertCustom={alertCustom}
-            onConfirm={(data) => handleAction("reschedule", data)}
           />
         ) : (
           modalConteudo.dados && (
-            <PaperList items={modalConteudo.dados.servicosPrestados}>
+            <PaperList items={modalConteudo.dados.servico}>
               <Typography variant="h6" sx={{ p: "5px 10px" }}>
                 Resumo do pedido
               </Typography>

@@ -37,20 +37,17 @@ const GestorSessoesWhatsApp = () => {
 
   return (
     <>
-      {["adm", "manager"].includes(getLocalItem("accessType")) && (
-        <Button
-          variant="outlined"
-          color="success"
-          startIcon={<WhatsAppIcon />}
-          onClick={() => setModalSessoes(true)}
-          sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
-          fullWidth
-          size="large"
-        >
-          Robô WhatsApp
-        </Button>
-      )}
-
+      <Button
+        variant="outlined"
+        color="success"
+        startIcon={<WhatsAppIcon />}
+        onClick={() => setModalSessoes(true)}
+        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
+        fullWidth
+        size="large"
+      >
+        Robô WhatsApp
+      </Button>
       {/* Modal de Gerenciamento de Sessões */}
       <Modal
         onClose={() => setModalSessoes(false)}
@@ -106,25 +103,28 @@ const GestorSessoesWhatsApp = () => {
 
       {/* Modal do QR Code */}
       <Modal
-        onClose={() => setModalQr({ open: false, qrData: "" })}
+        onClose={() => setModalQr((prev) => ({ ...prev, open: false }))}
         open={modalQr.open}
         titulo="Escaneie o QR Code"
         fullScreen="mobile"
         maxWidth="xs"
       >
         <Grid container spacing={3}>
-          <Grid size={12}>
+          <Grid
+            size={12}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             {" "}
             {modalQr.qrData && <QRCodeGenerator data={modalQr.qrData} />}
           </Grid>
           <Grid size={12}>
             {" "}
-            <Typography variant="h6" className="show-box">
-              Utilidade
-              <Typography variant="body1">
-                Use o scan do próprio WhatsApp para usar as automatizações para
-                WhatsApp Web.
-              </Typography>
+            <Typography variant="body1" className="show-box">
+              Use o scan do próprio WhatsApp para usar as automatizações para
+              WhatsApp Web.
             </Typography>
           </Grid>
         </Grid>

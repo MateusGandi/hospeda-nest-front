@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Chip, Typography, Box, CircularProgress } from "@mui/material";
 import Modal from "../Componentes/Modal";
 import { Rows } from "../Componentes/Lista/Rows";
@@ -10,6 +10,7 @@ import ReviewBarbershopModal from "./Evaluation";
 import Filter from "../Componentes/Filter";
 import Confirm from "../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
+import { CustomInput } from "../Componentes/Custom";
 
 const ListaAgendamentos = ({ alertCustom, usuario }) => {
   const navigate = useNavigate();
@@ -21,15 +22,21 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
     CANCELLED: "Cancelados",
     OK: "Concluídos",
   });
+
+  // Estado separado para o motivo
+  const [motivoCancelamento, setMotivoCancelamento] = useState("");
+  // Ref para guardar o ID do agendamento a ser cancelado
+  const agendamentoParaCancelar = useRef(null);
+
   const [modal, setModal] = useState({
-    confirm: { open: false },
     open: false,
-    modalActions: [],
     agendamento: null,
     ratingModal: false,
     filter: { id: 0, valor: "PENDING", titulo: "Agendados" },
     loading: false,
     update: true,
+    confirmOpen: false,
+    confirmMessage: "",
   });
 
   useEffect(() => {
@@ -46,16 +53,35 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
   const handleRatingModal = () => {
     setModal((prev) => ({
       ...prev,
-      ratingModal: !modal.ratingModal,
+      ratingModal: !prev.ratingModal,
       open: false,
     }));
   };
 
-  const handleCancel = async (id) => {
+  const handleCancel = async () => {
+    if (!motivoCancelamento.trim()) {
+      return alertCustom("Informe o motivo do cancelamento!");
+    }
     try {
-      const data = await apiService.query("PATCH", `/scheduling/cancel/${id}`);
+      await apiService.query(
+        "PATCH",
+        `/scheduling/cancel/${agendamentoParaCancelar.current}`,
+        {
+          motivoCancelamento: motivoCancelamento,
+        }
+      );
+      handleClose();
+      setModal((prev) => ({
+        ...prev,
+        update: true,
+        confirmOpen: false,
+      }));
+      setMotivoCancelamento("");
     } catch (error) {
-      alertCustom("Erro ao cancelar agendamento, comunique seu barbeiro!");
+      alertCustom(
+        error.response.data?.message ??
+          "Erro ao cancelar agendamento, comunique seu barbeiro!"
+      );
     }
   };
 
@@ -69,24 +95,15 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
             {
               titulo: "Cancelar agendamento",
               color: "error",
-              action: () =>
+              action: () => {
+                agendamentoParaCancelar.current = id;
                 setModal((prev) => ({
                   ...prev,
-                  confirm: {
-                    open: true,
-                    message:
-                      "Tem certeza que deseja cancelar este agendamento?",
-                    exec: async () => {
-                      await handleCancel(id);
-                      handleClose();
-                      setModal((prev) => ({
-                        ...prev,
-                        update: true,
-                        confirm: { ...prev.confirm, open: false },
-                      }));
-                    },
-                  },
-                })),
+                  confirmOpen: true,
+                  confirmMessage:
+                    "Tem certeza que deseja cancelar este agendamento?",
+                }));
+              },
             },
           ],
         };
@@ -119,7 +136,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
   };
 
   const handleClose = () => {
-    setModal((prev) => ({ ...prev, open: false, agendamento: null }));
+    navigate(-1);
   };
 
   const handleGetScheduling = async () => {
@@ -129,6 +146,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
         "GET",
         `/scheduling/user/${usuario.id}?status=${modal.filter.valor}`
       );
+      if (agendamentoId) navigate(-1);
       setAgendamentos(data);
     } catch (error) {
       console.log("error", error);
@@ -151,16 +169,30 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
   return (
     <>
       <Confirm
-        open={modal.confirm.open}
-        onClose={() =>
+        open={modal.confirmOpen}
+        onClose={() => {
           setModal((prev) => ({
             ...prev,
-            confirm: { ...prev.confirm, open: false },
-          }))
-        }
-        onConfirm={modal.confirm.exec}
-        message={modal.confirm.message}
-      />
+            confirmOpen: false,
+          }));
+          setMotivoCancelamento("");
+        }}
+        title="Cancelar agendamento"
+        onConfirm={handleCancel}
+        message={modal.confirmMessage}
+      >
+        <CustomInput
+          sx={{ mt: 2 }}
+          fullWidth
+          placeholder="Informe o motivo do cancelamento"
+          label="Motivo"
+          multiline
+          minRows={4}
+          value={motivoCancelamento}
+          onChange={(e) => setMotivoCancelamento(e.target.value)}
+        />
+      </Confirm>
+
       {modal.agendamento && (
         <ReviewBarbershopModal
           barbearia={modal.agendamento.barbearia}
@@ -169,6 +201,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           alertCustom={alertCustom}
         />
       )}
+
       <Typography
         variant="h6"
         sx={{
@@ -177,6 +210,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           justifyContent: "space-between",
           alignItems: "center",
           p: 1,
+          mt: 2,
         }}
       >
         Meus agendamentos
@@ -184,21 +218,14 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           title="Filtrar por"
           options={filterOptions}
           filter={modal.filter}
-          setFilter={(filter) =>
-            setModal((prev) => ({ ...prev, filter: filter }))
-          }
+          setFilter={(filter) => setModal((prev) => ({ ...prev, filter }))}
         />
       </Typography>
+
       {modal.loading ? (
-        <Typography
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <Box display="flex" justifyContent="center" alignItems="center">
           <CircularProgress />
-        </Typography>
+        </Box>
       ) : agendamentos.length > 0 ? (
         <Rows
           items={agendamentos.map((agendamento) => {
@@ -246,13 +273,11 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
                             )
                           : "Data não informada"}
                       </Typography>
-                      {
-                        <Chip
-                          label={agendamentoStatus.valor}
-                          color={agendamentoStatus.color}
-                          size="small"
-                        />
-                      }
+                      <Chip
+                        label={agendamentoStatus.valor}
+                        color={agendamentoStatus.color}
+                        size="small"
+                      />
                     </Box>
                   )}
                 </Box>
@@ -276,7 +301,6 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
                   </Typography>
                 </Box>
               ),
-
               action: () =>
                 handleOpen({
                   ...agendamento,
@@ -308,6 +332,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           agendar de forma prática, direta e com inúmeros benefícios!
         </Typography>
       )}
+
       {modal.agendamento && (
         <Modal
           open={modal.open}
@@ -321,39 +346,27 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           buttons={modal.agendamento.modalActions}
           fullScreen="mobile"
         >
-          {modal.agendamento && (
-            <>
-              <PaperList
-                items={modal.agendamento.servico.map((item) => ({
-                  titulo: item.nome,
-                  subtitulo: formatarHorario(item.tempoGasto),
-                }))}
-              >
-                <Typography variant="h6" sx={{ p: 1 }}>
-                  Produtos e serviços
-                </Typography>
-              </PaperList>
+          <PaperList
+            items={modal.agendamento.servico.map((item) => ({
+              titulo: item.nome,
+              subtitulo: formatarHorario(item.tempoGasto),
+            }))}
+          >
+            <Typography variant="h6" sx={{ p: 1 }}>
+              Produtos e serviços
+            </Typography>
+          </PaperList>
 
-              <Typography sx={{ p: 1 }}>
-                Funcionário:{" "}
-                {modal.agendamento.atendente?.nome ?? "Não informado"}
-                <Typography>
-                  Situação:{" "}
-                  <Chip
-                    label={
-                      getStatus(modal.agendamento.status, modal.agendamento.id)
-                        .valor
-                    }
-                    color={
-                      getStatus(modal.agendamento.status, modal.agendamento.id)
-                        .color
-                    }
-                    size="small"
-                  />
-                </Typography>{" "}
-              </Typography>
-            </>
-          )}
+          <Typography sx={{ p: 1 }}>
+            Funcionário: {modal.agendamento.atendente?.nome ?? "Não informado"}
+            <br />
+            Situação:{" "}
+            <Chip
+              label={getStatus(modal.agendamento.status).valor}
+              color={getStatus(modal.agendamento.status).color}
+              size="small"
+            />
+          </Typography>
         </Modal>
       )}
     </>

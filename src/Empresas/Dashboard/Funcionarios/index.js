@@ -6,6 +6,7 @@ import { Rows } from "../../../Componentes/Lista/Rows";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
+import Icon from "../../../Assets/Emojis";
 
 const GerenciarFuncionarios = ({
   dados,
@@ -26,7 +27,9 @@ const GerenciarFuncionarios = ({
   useEffect(() => {
     setFuncionarios(dados);
   }, [dados]);
+
   const handleDelete = async (item) => {
+    console.log("item", item);
     try {
       await Api.query("DELETE", `/employees/${item.id}`);
       setFuncionarios(funcionarios.filter((op) => op.id != item.id));
@@ -62,18 +65,11 @@ const GerenciarFuncionarios = ({
       actionText: "Editar",
     });
   };
+
   const addFuncionario = () => {
     setModal({
       open: true,
       titulo: "Adicionar novo funcionário",
-    });
-  };
-
-  const editFuncionario = (funcionario) => {
-    setModal({
-      open: true,
-      titulo: `Editar dados de ${funcionario.nome}`,
-      funcionarioSelecionado: funcionario,
     });
   };
 
@@ -87,6 +83,7 @@ const GerenciarFuncionarios = ({
         })),
       });
       alertCustom("Equipe atualizada!");
+      handleClose();
     } catch (error) {
       alertCustom("Erro ao cadastrar funcionários");
     }
@@ -150,7 +147,7 @@ const GerenciarFuncionarios = ({
         onAction={handleSave}
         actionText={"Salvar"}
         onSubmit={addFuncionario}
-        submitText="Adicionar Funcionário"
+        submitText="Novo Funcionário"
         fullScreen="all"
         component="view"
       >
@@ -168,12 +165,24 @@ const GerenciarFuncionarios = ({
         />{" "}
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>
+            {" "}
+            <Grid size={12}>
+              <Typography variant="body1" className="show-box">
+                <Typography variant="h6">
+                  <Icon>💡</Icon>Ajuda rápida
+                </Typography>
+                Clique sobre um funcionário para adicionar uma foto ou em{" "}
+                <b>EDITAR</b> para adicionar <b>SERVIÇOS</b> ao atendimento do
+                funcionário
+              </Typography>
+            </Grid>
             <Grid size={12}>
               <Cards
-                onEdit={editFuncionario}
+                label="funcionário"
+                onEdit={handleSelect}
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
-                onSelect={handleSelect}
+                onDelete={(item) => handleDelete({ id: item })}
                 items={funcionarios.map((item, index) => ({
                   ...item,
                   imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
@@ -185,16 +194,9 @@ const GerenciarFuncionarios = ({
                 }))}
                 keys={[
                   { label: "", value: "nome" },
-                  { label: "Tel", value: "telefone" },
+                  { label: "", value: "telefone" },
                 ]}
               />
-            </Grid>
-            <Grid size={12}>
-              <Typography variant="body1" className="show-box">
-                <Typography variant="h6">💡Ajuda rápida</Typography>
-                Clique sobre um funcionário para adicionar uma foto ou em
-                'Editar' para personalizar seu atendimento
-              </Typography>
             </Grid>
           </Grid>
         ) : (

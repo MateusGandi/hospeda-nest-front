@@ -46,13 +46,14 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
 
   const handleGet = async () => {
     try {
-      const url = getLocalItem("estabelecimentoAdmin")
-        ? `/financial/establishment/${getLocalItem("establishmentId")}?data=${
-            new Date().toISOString().split("T")[0]
-          }`
-        : `/financial/employee/${getLocalItem("userId")}?data=${
-            new Date().toISOString().split("T")[0]
-          }`;
+      const url =
+        getLocalItem("accessType") == "adm"
+          ? `/financial/establishment/${getLocalItem("establishmentId")}?data=${
+              new Date().toISOString().split("T")[0]
+            }`
+          : `/financial/employee/${getLocalItem("userId")}?data=${
+              new Date().toISOString().split("T")[0]
+            }`;
       const data = await Api.query("GET", url);
       const vendas = [];
 

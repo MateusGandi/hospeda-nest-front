@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import EditIcon from "@mui/icons-material/Edit";
+import notFounImage from "../../Assets/vt.png";
 
 export const Cards = ({
   items,
@@ -78,13 +78,18 @@ export const Cards = ({
                   objectFit: "cover",
                   cursor: selectionMode === "onTap" ? "default" : "pointer",
                 }}
-                image={previews[item.id] || item.imagem} // Mostra a imagem carregada ou a original
+                image={
+                  previews[item.id]
+                    ? previews[item.id]
+                    : item?.imagem?.includes("undefined")
+                    ? notFounImage
+                    : item.imagem
+                } // Mostra a imagem carregada ou a original
                 alt={item.titulo}
               />
               <Typography
                 sx={{
                   position: "absolute",
-                  color: "rgba(256,256,256,0.4)",
                   top: "80%",
                   width: "100%",
                   textAlign: "center",
@@ -93,9 +98,17 @@ export const Cards = ({
                 }}
                 variant="body1"
               >
-                {!item.disabled
-                  ? "Clique para mudar a imagem"
-                  : "Salve antes de adicionar imagem"}
+                <span
+                  style={{
+                    background: "rgba(0,0,0,0.3)",
+                    padding: "2px 8px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {!item.disabled
+                    ? "Clique para mudar a imagem"
+                    : "Salve antes de adicionar imagem"}
+                </span>
               </Typography>
             </label>
 
@@ -137,9 +150,9 @@ export const Cards = ({
                   left: 8,
                   borderRadius: "10px !important",
                   p: "5px 10px",
-                  background: "rgba(0,0,0,0.5)",
+                  background: "rgba(0,0,0,0.3)",
                   ":hover": {
-                    background: "rgba(0,0,0,0.8)",
+                    background: "rgba(0,0,0,0.5)",
                   },
                 }}
                 onClick={(e) => {

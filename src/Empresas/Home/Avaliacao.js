@@ -9,7 +9,7 @@ const Reviews = ({ alertCustom }) => {
   return (
     <ReviewBarbershopModal
       fullScreen={true}
-      barbearia={{ barbeariaId: barbeariaId, nome: "" }}
+      barbearia={{ id: barbeariaId, nome: "" }}
       open={true}
       onClose={() => navigate(-1)}
       alertCustom={alertCustom}

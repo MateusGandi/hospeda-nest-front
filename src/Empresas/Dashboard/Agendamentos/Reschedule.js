@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Container,
+  Grid2 as Grid,
+  Typography,
+} from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { formatarData, getLocalItem } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
@@ -7,7 +12,7 @@ import Calendario from "../../../Componentes/Calendar";
 import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 
-const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
+const Reagendamento = ({ form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
   const [loading, setLoading] = useState(false);
@@ -44,16 +49,9 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
   useEffect(() => {
     const buscar = async () => {
       if (form.dia) {
-        const id = getLocalItem("id");
-        const establishmentId = getLocalItem("establishmentId");
-        const services = await Api.query(
-          "GET",
-          `/service/${establishmentId}/${id}`
-        );
-
-        const ids = services.map(({ id }) => id).join(",");
+        const ids = form.servico.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          id,
+          form.barbeiro.idd,
           ids,
           form.dia.toISOString().split("T")[0]
         );
@@ -75,72 +73,77 @@ const Reagendamento = ({ form, setForm, alertCustom, onConfirm }) => {
     const fetch = async () => {
       const ids = form.servicos?.map(({ id }) => id).join(",");
       const dataAtual = new Date().toISOString().split("T")[0];
-      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
+      if (!ids || !form.barbeiro?.id) return;
+
+      const resp = await buscarVagas(form.barbeiro.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
     fetch();
   }, []);
 
   const handleSelect = (item) => {
-    setForm((prev) => ({ ...prev, agendamento: item }));
+    setForm({ ...form, agendamento: item });
   };
 
   return (
-    <Grid container>
-      <Grid size={{ xs: 12, md: 12 }}>
-        {vagasDisponiveis && vagasDisponiveis.length ? (
-          <Rows
-            items={[
-              {
-                titulo: "Selecionar uma data diferente",
-                id: 9999,
-                action: () => handleOpen(),
-              },
-              ...vagasDisponiveis,
-            ]}
-            onSelect={handleSelect}
-          />
-        ) : loading ? (
-          <div
-            style={{
-              width: "100%",
-              height: "80vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress />
-          </div>
-        ) : (
-          <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-            Nenhum resultado encontrado!
-          </Typography>
-        )}
-      </Grid>
-
-      <Modal
-        props={modal}
-        open={modal.open}
-        onClose={modal.onClose}
-        maxWidth={modal.maxWidth}
-        titulo={modal.titulo}
-        component="modal"
-        fullScreen="mobile"
-        loading={modal.loading}
-      >
-        {" "}
-        <Grid container spacing={1}>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <Calendario
-              onSelect={(value) => {
-                setForm((prev) => ({ ...prev, dia: value }));
-              }}
+    <Container maxWidth="sm">
+      <Grid container>
+        <Grid size={12}>
+          {vagasDisponiveis && vagasDisponiveis.length ? (
+            <Rows
+              items={[
+                {
+                  titulo: "Selecionar uma data diferente",
+                  id: 9999,
+                  action: () => handleOpen(),
+                },
+                ...vagasDisponiveis,
+              ]}
+              onSelect={handleSelect}
             />
-          </Grid>
-        </Grid>{" "}
-      </Modal>
-    </Grid>
+          ) : loading ? (
+            <div
+              style={{
+                width: "100%",
+                height: "80vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : (
+            <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
+              Nenhum resultado encontrado!
+            </Typography>
+          )}
+        </Grid>
+
+        <Modal
+          props={modal}
+          open={modal.open}
+          onClose={modal.onClose}
+          maxWidth={modal.maxWidth}
+          titulo={modal.titulo}
+          component="modal"
+          fullScreen="mobile"
+          loading={modal.loading}
+        >
+          {" "}
+          <Grid container spacing={1}>
+            <Grid size={{ xs: 12, md: 12 }}>
+              <Calendario
+                data={form.dia}
+                onSelect={(value) => {
+                  setForm({ ...form, dia: value });
+                }}
+              />
+            </Grid>
+          </Grid>{" "}
+        </Modal>
+      </Grid>
+    </Container>
   );
 };
 
