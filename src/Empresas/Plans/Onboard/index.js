@@ -106,7 +106,7 @@ const CreateEstablishment = ({ alertCustom }) => {
           ...rest,
           administrador: data.telefone,
           funcionarios: meAsEmployee ? [data.telefone] : [],
-          endereco: [bairro, cidade, estado, logradouro].join(","),
+          endereco: [bairro, cidade, estado, logradouro].join(", "),
           telefone: telefone.replace(/\D/g, ""),
           cnpj: cnpj.replace(/\D/g, ""),
           planId: +planId,

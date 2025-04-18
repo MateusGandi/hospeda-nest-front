@@ -1,23 +1,26 @@
 import React from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { Box } from "@mui/material";
 
 export const QRCodeGenerator = ({ value }) => {
   return (
-    <div
-      style={{
-        width: "100%",
+    <Box
+      sx={{
         display: "flex",
+        background: "#fff",
         justifyContent: "center",
+        borderRadius: "10px",
+        width: "300px",
+        p: "10px",
       }}
     >
       <QRCodeSVG
         value={value}
-        size={280}
-        fgColor="#FFF"
-        bgColor="#2A2A2A"
-        width={"320px"}
-        height={"320px"}
+        fgColor="#212121"
+        bgColor="#fff"
+        width={"300px"}
+        height={"300px"}
       />
-    </div>
+    </Box>
   );
 };

@@ -76,6 +76,8 @@ const Empresa = ({ alertCustom }) => {
 
   const handleNext = async () => {
     try {
+      if (subPath && ["confirmacao", "error"].includes(subPath)) return;
+
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
         return alertCustom(
@@ -110,9 +112,12 @@ const Empresa = ({ alertCustom }) => {
 
   const handleBack = () => {
     try {
+      if (!subPath || ["confirmacao", "error"].includes(subPath)) return;
+
       const pathTo = paths.findIndex((item) => item.key === subPath);
       if (pathTo == 0) {
-        return navigate("/home");
+        setTituloModal("");
+        return navigate("/barbearia/" + barbeariaName);
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo - 1].key}`);
@@ -121,10 +126,13 @@ const Empresa = ({ alertCustom }) => {
       alertCustom("Erro interno!");
     }
   };
+
   useEffect(() => {
     const buscarEmpresa = async () => {
       setLoading(true);
       try {
+        if (!form.barbearia && subPath) return navigate("/estabelecimentos");
+
         const data = await Api.query(
           "GET",
           `/establishment/client/${barbeariaName}`
@@ -149,7 +157,7 @@ const Empresa = ({ alertCustom }) => {
       open: true,
       onClose: () => {
         setPage((prev) => ({ ...prev, open: false }));
-        navigate("/home");
+        navigate(-1);
       },
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
@@ -189,22 +197,20 @@ const Empresa = ({ alertCustom }) => {
         loading={loading}
         open={page.open}
         backAction={{
-          action: !["confirmacao", "error"].includes(subPath)
-            ? handleBack
-            : () => navigate("/home"),
+          action: handleBack,
           titulo: "Voltar",
         }}
         onClose={page.onClose}
         actionText={"Próximo"}
         titulo={tituloModal}
         onAction={
-          subPath && !["confirmacao", "error"].includes(subPath) && handleNext
+          !["confirmacao", "error", undefined].includes(subPath) && handleNext
         }
         fullScreen="all"
         component="view"
       >
         <Grid container sx={{ display: "flex", justifyContent: "center" }}>
-          <Grid size={{ xs: 12, md: 8 }}>
+          <Grid size={{ xs: 12, md: !subPath ? 12 : 8 }}>
             {!subPath && (
               <BarberPresentation
                 barbearia={empresa}
@@ -279,23 +285,10 @@ const Empresa = ({ alertCustom }) => {
                         ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
                         : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
                     </Typography>
-                    {/* <Typography variant="body1" textAlign="center">
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={form.notify}
-                            onChange={(e) =>
-                              setForm((prev) => ({
-                                ...prev,
-                                notify: e.target.checked,
-                              }))
-                            }
-                            color="success"
-                          />
-                        }
-                        label="Quero ser notificado pelo WhatsApp"
-                      />
-                    </Typography> */}
+                    <Typography variant="body1">
+                      <b>Cancelamentos</b> só podem ocorrer com <b>1h</b> de
+                      antecedência.
+                    </Typography>
                   </Typography>
                 </Grid>
                 <Grid size={{ md: 12, xs: 12 }}>

@@ -25,6 +25,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
 
 import LogoImage from "../../Assets/logo_aut.png";
+import FAC from "../Termos";
 const NavigationBar = ({ logo }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -355,7 +356,7 @@ const NavigationBar = ({ logo }) => {
       <Modal
         backAction={{ action: () => setModal(false), titulo: "Voltar" }}
         open={modal}
-        titulo={"Como posso ajudar..."}
+        titulo={"Como posso ajudar?"}
         onClose={() => setModal(false)}
         fullScreen="all"
         component="view"
@@ -363,7 +364,7 @@ const NavigationBar = ({ logo }) => {
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Pesquisar"
+          placeholder="Começe a digitar..."
           size="small"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
@@ -385,6 +386,7 @@ const NavigationBar = ({ logo }) => {
             },
           }}
         />
+        <FAC filtro={searchValue} />
       </Modal>
     </>
   );

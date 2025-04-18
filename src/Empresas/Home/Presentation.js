@@ -17,7 +17,6 @@ import { Rows } from "../../Componentes/Lista/Rows";
 import { useNavigate } from "react-router-dom";
 import ContentCutRoundedIcon from "@mui/icons-material/ContentCutRounded";
 import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
-import GpsFixedRoundedIcon from "@mui/icons-material/GpsFixedRounded";
 
 const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
   const navigate = useNavigate();
@@ -85,6 +84,8 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               items={actions}
               onSelect={({ action }) => action()}
               oneTapMode={true}
+              collapse={true}
+              distribution={3}
             />
           </Grid>{" "}
         </Grid>

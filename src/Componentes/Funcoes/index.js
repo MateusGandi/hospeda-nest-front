@@ -1,3 +1,5 @@
+import ColorThief from "colorthief";
+
 export const match = () => window.innerWidth <= 600;
 
 export const isMobile = match();
@@ -251,3 +253,78 @@ export function formatDataToString(dataString) {
   const [dia, mes, ano] = dataString.split("/");
   return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
 }
+
+export function gerarGradient(hex) {
+  // Função auxiliar para converter HEX para RGBA
+  function hexToRgba(hex, alpha = 1) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  const cor1 = hexToRgba("#363636", 0.4); // cor de fundo escura
+  const cor2 = hexToRgba(hex, 0.4); // cor base com opacidade
+  const cor3 = hexToRgba(hex, 0.3); // mesma cor com mais opacidade
+
+  return `linear-gradient(-90deg, ${cor1} 0%, ${cor2} 85%, ${cor3} 100%)`;
+}
+
+export function rgbToHex(r, g, b) {
+  return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+export const getDominantColorFromURL = (imageUrl) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = imageUrl;
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        ).data;
+
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
+
+        for (let i = 0; i < imageData.length; i += 40) {
+          r += imageData[i];
+          g += imageData[i + 1];
+          b += imageData[i + 2];
+          count++;
+        }
+
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        const hex = `#${[r, g, b]
+          .map((x) => x.toString(16).padStart(2, "0"))
+          .join("")}`;
+        resolve(hex);
+      } catch (err) {
+        console.warn("Erro ao acessar pixels (possível CORS)", err);
+        resolve("#363636"); // fallback se CORS bloquear
+      }
+    };
+
+    img.onerror = (err) => {
+      console.warn("Erro ao carregar imagem (URL quebrada ou bloqueada)", err);
+      resolve("#363636"); // fallback se imagem quebrar
+    };
+  });
+};

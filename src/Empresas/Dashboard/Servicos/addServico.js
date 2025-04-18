@@ -45,7 +45,7 @@ const Servico = ({
   useEffect(() => {
     if (formData) {
       setData({
-        flagUpdate: true,
+        flag: true,
         id: formData.id,
         foto: formData.foto,
         nome: formData.nome || "",

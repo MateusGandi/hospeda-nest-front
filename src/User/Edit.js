@@ -6,7 +6,7 @@ import apiService from "../Componentes/Api/axios";
 import { getLocalItem } from "../Componentes/Funcoes";
 import { formatPhone } from "../Componentes/Funcoes";
 
-const EditUserModal = ({ open, onClose, alertCustom, userData }) => {
+const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
   const [formData, setFormData] = useState({
     nome: userData?.nome || "",
     email: userData?.email || "",
@@ -26,6 +26,7 @@ const EditUserModal = ({ open, onClose, alertCustom, userData }) => {
       });
       alertCustom("Dados atualizados com sucesso!");
       onClose();
+      buscar();
     } catch (error) {
       alertCustom("Erro ao atualizar os dados, tente novamente mais tarde.");
     }

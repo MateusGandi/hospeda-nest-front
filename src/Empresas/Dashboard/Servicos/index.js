@@ -6,14 +6,17 @@ import { Rows } from "../../../Componentes/Lista/Rows";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
+import Icon from "../../../Assets/Emojis";
 
-const GerenciarServicos = ({
-  dados,
-  barbearia,
-  open,
-  handleClose,
-  alertCustom,
-}) => {
+const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
+  const handleCancelEdit = () => {
+    setModal({
+      open: false,
+      titulo: "Adicionar novo serviço",
+      servicoSelecionado: null,
+      actionText: "Adicionar",
+    });
+  };
   const [modal, setModal] = useState({
     open: false,
     titulo: "Adicionar novo serviço",
@@ -25,7 +28,7 @@ const GerenciarServicos = ({
 
   const handleDelete = async (item) => {
     try {
-      await Api.query("DELETE", `/service/${item.id}`);
+      await Api.query("DELETE", `/service/${item.id}/${barbearia.id}`);
       setServicos(servicos.filter((op) => op.id != item.id));
       alertCustom("Serviços atualizados com sucesso!");
     } catch (error) {
@@ -34,14 +37,6 @@ const GerenciarServicos = ({
     handleCancelEdit();
   };
 
-  const handleCancelEdit = () => {
-    setModal({
-      open: false,
-      titulo: "Adicionar novo serviço",
-      servicoSelecionado: null,
-      actionText: "Adicionar",
-    });
-  };
   const handleSelect = (item) => {
     setModal({
       buttons: [
@@ -67,10 +62,12 @@ const GerenciarServicos = ({
   };
   const handleSave = async () => {
     try {
-      const servicosAtualizados = servicos.map(({ flagUpdate, ...item }) => ({
-        ...item,
-        barbeariaId: barbearia.id,
-      }));
+      const servicosAtualizados = servicos
+        .filter((item) => (!!item.flag && item.id) || !item.id)
+        .map(({ flagUpdate, ...item }) => ({
+          ...item,
+          barbeariaId: barbearia.id,
+        }));
 
       if (servicosAtualizados.length)
         await Api.query("POST", `/service`, servicosAtualizados);
@@ -85,23 +82,27 @@ const GerenciarServicos = ({
   const handleSavePreServices = async () => {
     try {
       const data = await Api.query("GET", `/service`);
-      setServicos(data);
+      setServicos(data.map(({ id, ...item }) => ({ ...item, flag: true })));
       setOpenAlertModal(false);
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
     }
   };
   const fetchServicos = async () => {
-    const dados = await Api.query("GET", `/service/${barbearia.id}`);
-    setServicos(dados);
+    try {
+      const data = await Api.query("GET", `/service/${barbearia.id}`);
+      setServicos(data);
+      console.log("dados", data);
+      if (data && !data.length) {
+        setOpenAlertModal(true);
+      }
+    } catch (error) {
+      alertCustom("Houve um problema ao buscar serviços");
+    }
   };
 
   useEffect(() => {
-    if (dados && !dados.length) {
-      return setOpenAlertModal(true);
-    }
-    setServicos(dados);
-    fetchServicos();
+    if (open) fetchServicos();
   }, [open]);
 
   const handlePhotoUpload = async (e, serviceId) => {
@@ -126,8 +127,8 @@ const GerenciarServicos = ({
         try {
           const endpoint = `/images/service/${serviceId}`;
           await Api.query("POST", endpoint, formData);
-
           alertCustom("Foto adicionada com sucesso!");
+          fetchServicos();
         } catch (uploadError) {
           alertCustom("Erro ao adicionar foto!");
           console.error("Erro ao fazer upload da imagem:", uploadError);
@@ -137,6 +138,8 @@ const GerenciarServicos = ({
       reader.readAsDataURL(file);
     } catch (error) {
       console.error("Erro ao processar o arquivo:", error);
+    } finally {
+      fetchServicos();
     }
   };
 
@@ -149,7 +152,7 @@ const GerenciarServicos = ({
         onAction={handleSave}
         actionText={"Salvar"}
         onSubmit={addItem}
-        submitText="Adicionar serviços"
+        submitText="Novo Serviço"
         fullScreen="all"
         component="view"
       >
@@ -166,12 +169,24 @@ const GerenciarServicos = ({
         />{" "}
         {servicos && servicos.length ? (
           <Grid container spacing={2}>
+            {" "}
+            <Grid size={12}>
+              {" "}
+              <Typography variant="body1" className="show-box">
+                <Typography variant="h6">
+                  <Icon>💡</Icon>Ajuda rápida
+                </Typography>
+                Clique sobre um <b>SERVIÇO</b> para adicionar uma foto ou em{" "}
+                <b>EDITAR</b> para alterar informações
+              </Typography>
+            </Grid>
             <Grid size={12}>
               {" "}
               <Cards
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
-                label="produto"
+                onDelete={(item) => handleDelete({ id: item })}
+                label="serviço"
                 keys={[
                   { label: "", value: "nome" },
                   { label: "Preço (R$)", value: "preco" },
@@ -187,12 +202,6 @@ const GerenciarServicos = ({
                       : "Sem descrição",
                 }))}
               />
-            </Grid>
-            <Grid size={12}>
-              {" "}
-              <Typography variant="body1" className="show-box">
-                💡 Clique sobre o item para trocar a imagem
-              </Typography>
             </Grid>
           </Grid>
         ) : (

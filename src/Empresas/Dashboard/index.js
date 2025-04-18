@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Avatar,
   IconButton,
@@ -25,7 +25,13 @@ import WhatsApp from "./WhatsApp";
 
 import CustomCard from "../../Componentes/Card/";
 import AgendamentoManual from "./Agendamento";
-import { getLocalItem, isMobile } from "../../Componentes/Funcoes";
+import {
+  gerarGradient,
+  getDominantColorFromURL,
+  getLocalItem,
+  getPredominantColor,
+  isMobile,
+} from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
 
 import { Edit, People, Build, CalendarMonth } from "@mui/icons-material";
@@ -43,6 +49,7 @@ const BarberShopMenu = ({ alertCustom }) => {
     plans: false,
     complete: false,
   });
+  const [color, setColor] = useState("#363636");
   const [etapa, setEtapa] = useState({
     progresso: "empresa",
     progressoAnterior: null,
@@ -131,6 +138,21 @@ const BarberShopMenu = ({ alertCustom }) => {
     if (!path) handleClose();
   }, [path]);
 
+  useEffect(() => {
+    const get = async () => {
+      if (!barbearia) return;
+      try {
+        const cor = await getDominantColorFromURL(
+          `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
+        );
+        setColor(cor);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    get();
+  }, [barbearia, profileImage]);
+
   const handleClose = () => {
     setModal((prev) => {
       return Object.keys(prev).reduce(
@@ -143,7 +165,6 @@ const BarberShopMenu = ({ alertCustom }) => {
   useEffect(() => {
     if (Object.values(modal).every((item) => !item)) navigate(`/dashboard`);
   }, [modal]);
-
   const handlePhotoUpload = async (e, type) => {
     const file = e.target.files[0];
 
@@ -169,11 +190,30 @@ const BarberShopMenu = ({ alertCustom }) => {
           }`;
           await Api.query("POST", endpoint, formData);
 
+          // Atualiza a imagem visualmente logo após upload
           if (type === "banner") {
             setBannerImage(reader.result);
           } else if (type === "profile") {
             setProfileImage(reader.result);
           }
+
+          // Recarrega dados da barbearia após upload
+          const dataAtualizada = await Api.query(
+            "GET",
+            `/establishment?establishmentId=${getLocalItem("establishmentId")}`
+          );
+          setBarbearia(dataAtualizada);
+
+          // Aguarda um pouco e pega a cor dominante da nova imagem
+          if (type === "profile") {
+            setTimeout(() => {
+              const imageUrl = `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${
+                barbearia.id
+              }/profile/${dataAtualizada.profile}?t=${Date.now()}`;
+              getDominantColorFromURL(imageUrl).then(setColor);
+            }, 1000);
+          }
+
           alertCustom("Foto adicionada com sucesso!");
         } catch (uploadError) {
           alertCustom("Erro ao adicionar foto!");
@@ -212,6 +252,7 @@ const BarberShopMenu = ({ alertCustom }) => {
         info
       );
       setBarbearia(data);
+      handleClose();
       alertCustom("Dados do estabelecimento atualizados com sucesso!");
     } catch (error) {
       alertCustom("Erro ao atualizar dados do estabelecimento");
@@ -323,6 +364,7 @@ const BarberShopMenu = ({ alertCustom }) => {
               <CardContent
                 sx={{
                   textAlign: isMobile ? "center" : "left",
+                  background: gerarGradient(color),
                 }}
               >
                 <Grid container justifyContent={"space-between"} spacing={2}>
@@ -357,7 +399,15 @@ const BarberShopMenu = ({ alertCustom }) => {
                     )}
                   </Grid>
                   <Grid size={{ xs: 12, md: 8 }} sx={{ textAlign: "right" }}>
-                    <Grid container spacing={2}>
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "end",
+                      }}
+                    >
                       <Grid size={{ xs: 12, md: 4 }}>
                         {" "}
                         <Financeiro
@@ -368,26 +418,29 @@ const BarberShopMenu = ({ alertCustom }) => {
                       {["adm", "manager"].includes(
                         getLocalItem("accessType")
                       ) && (
-                        <Grid size={{ xs: 12, md: 4 }}>
-                          {" "}
-                          <Button
-                            variant="outlined"
-                            color="terciary"
-                            size="large"
-                            startIcon={<StyleIcon />}
-                            onClick={() => navigate("/plans")}
-                            sx={{
-                              border: "1px solid rgba(256, 256, 256, 0.2)",
-                            }}
-                            fullWidth
-                          >
-                            Planos
-                          </Button>
-                        </Grid>
+                        <>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            {" "}
+                            <Button
+                              variant="outlined"
+                              color="terciary"
+                              size="large"
+                              startIcon={<StyleIcon />}
+                              onClick={() => navigate("/plans")}
+                              sx={{
+                                border: "1px solid rgba(256, 256, 256, 0.2)",
+                              }}
+                              fullWidth
+                            >
+                              Planos
+                            </Button>
+                          </Grid>
+
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <WhatsApp />
+                          </Grid>
+                        </>
                       )}
-                      <Grid size={{ xs: 12, md: 4 }}>
-                        <WhatsApp />
-                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>

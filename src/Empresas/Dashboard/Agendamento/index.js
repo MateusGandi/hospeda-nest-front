@@ -162,7 +162,7 @@ const AgendamentoManual = ({
         titulo: item.nome,
         subtitulo: `${item.telefone} - Especialidades: ${item.servicosPrestados
           .map(({ nome }) => nome)
-          .join(",")}`,
+          .join(", ")}`,
         imagem: item.foto,
       }));
     }
