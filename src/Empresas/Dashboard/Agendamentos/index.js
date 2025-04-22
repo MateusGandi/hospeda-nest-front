@@ -30,11 +30,11 @@ import Filter from "../../../Componentes/Filter";
 const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
   const [filterOptions] = useState({
+    "": "Todos",
     PENDING: "Agendados",
     NOT_ATTEND: "Não Compareci",
     CANCELLED: "Cancelados",
     OK: "Concluídos",
-    "": "Todos",
   });
   const [modalConteudo, setModalConteudo] = useState({
     open: false,
