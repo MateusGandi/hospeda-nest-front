@@ -437,7 +437,10 @@ const BarberShopMenu = ({ alertCustom }) => {
                           </Grid>
 
                           <Grid size={{ xs: 12, md: 4 }}>
-                            <WhatsApp />
+                            <WhatsApp
+                              barbearia={barbearia}
+                              alertCustom={alertCustom}
+                            />
                           </Grid>
                         </>
                       )}

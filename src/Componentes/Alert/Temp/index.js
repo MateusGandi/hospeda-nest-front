@@ -7,7 +7,7 @@ const Alerta = ({ alert, setAlert }) => {
 
   return (
     <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       open={alert.open}
       message={alert.message}
       onClose={handleClose}
