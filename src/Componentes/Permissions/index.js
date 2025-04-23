@@ -16,66 +16,107 @@ import { useLocation } from "react-router-dom";
 
 const Permissions = ({ alertCustom }) => {
   const location = useLocation();
-  const [permissions, setPermissions] = useState({
-    flagCookies: getLocalItem("flagCookies"),
-    flagEmail: getLocalItem("flagEmail"),
-    flagTermos: getLocalItem("flagTermos"),
-    flagWhatsapp: getLocalItem("flagWhatsapp"),
-  });
-  const [modal, setModal] = useState({
-    open: false,
-  });
+  const [modal, setModal] = useState({ open: false });
+  const [showBottomPopup, setShowBottomPopup] = useState(false);
+
+  const initialPermissions = [
+    {
+      name: "flagCookies",
+      label: "Permitir Cookies",
+      description:
+        "Cookies são utilizados para melhorar a sua experiência no site.",
+      required: true,
+      value: getLocalItem("flagCookies") || false,
+    },
+    {
+      name: "flagEmail",
+      label: "Permitir E-mail",
+      description:
+        "Precisamos do seu e-mail para enviar informações formais, recuperar sua conta e manter você informado sobre atualizações.",
+      required: false,
+      value: getLocalItem("flagEmail") || false,
+    },
+    {
+      name: "flagTermos",
+      label: "Aceitar Termos",
+      description: (
+        <>
+          Você deve aceitar nossos{" "}
+          <a
+            href="/fac"
+            rel="noopener noreferrer"
+            style={{ color: "#0195F7", textDecoration: "none" }}
+          >
+            Termos de Serviço
+          </a>{" "}
+          para continuar.
+        </>
+      ),
+      required: true,
+      value: getLocalItem("flagTermos") || false,
+    },
+    {
+      name: "flagWhatsapp",
+      label: "Permitir WhatsApp",
+      description:
+        "Ao permitir o WhatsApp, você concorda em receber informações, notificações e utilizar o WhatsApp como meio de recuperação de conta e automações no futuro.",
+      required: true,
+      value: getLocalItem("flagWhatsapp") || false,
+    },
+  ];
+
+  const [permissionsList, setPermissionsList] = useState(initialPermissions);
 
   const acceptAll = () => {
-    const updated = {
-      flagCookies: true,
-      flagEmail: true,
-      flagTermos: true,
-      flagWhatsapp: true,
-    };
-    setPermissions(updated);
-    handleSubmit(updated).then(() => {
-      Cookies.set("getPermission", "false", { expires: 1 });
-      setModal({ open: false });
-    });
+    const updated = permissionsList.map((perm) => ({
+      ...perm,
+      value: true,
+    }));
+    setPermissionsList(updated);
+    handleSubmit(updated);
   };
 
-  useEffect(() => {
-    setModal((prev) => ({
-      ...prev,
-      open:
-        Cookies.get("getPermission") != "false" &&
-        getLocalItem("userId") &&
-        !Object.keys(permissions).every(
-          (key) => !!permissions[key] || key == "flagEmail"
-        ), //flagEmail opcional
-    }));
-  }, [location]);
-
   const handlePermissionChange = (event) => {
-    setPermissions({
-      ...permissions,
-      [event.target.name]: event.target.checked,
-    });
+    const updated = permissionsList.map((perm) =>
+      perm.name === event.target.name
+        ? { ...perm, value: event.target.checked }
+        : perm
+    );
+    setPermissionsList(updated);
   };
 
   const onClose = (force) => {
-    setModal((prev) => ({ ...prev, open: false }));
+    setModal({ open: false });
     if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 
-  const handleSubmit = async (items) => {
+  const handleSubmit = async (customPermissions) => {
+    const permissionsToCheck = customPermissions || permissionsList;
+
+    const allRequiredChecked = permissionsToCheck.every(
+      (perm) => !perm.required || perm.value
+    );
+
+    if (!allRequiredChecked) {
+      alertCustom("Você precisa aceitar todas as permissões obrigatórias.");
+      return;
+    }
+
     try {
-      Object.keys(permissions).map((key) =>
-        localStorage.setItem(key, permissions[key])
-      );
+      const objToSave = {};
+      permissionsToCheck.forEach((perm) => {
+        objToSave[perm.name] = perm.value;
+        localStorage.setItem(perm.name, perm.value);
+      });
+
       await apiService.query(
         "PATCH",
         `/user/${getLocalItem("userId")}`,
-        items || permissions
+        objToSave
       );
       alertCustom("Sucesso ao atualizar suas preferências");
-      onClose();
+      Cookies.set("getPermission", "false", { expires: 1 });
+      setModal({ open: false });
     } catch (error) {
       onClose();
       alertCustom(
@@ -84,155 +125,125 @@ const Permissions = ({ alertCustom }) => {
     }
   };
 
+  useEffect(() => {
+    const shouldPrompt =
+      Cookies.get("getPermission") !== "false" &&
+      getLocalItem("userId") &&
+      !getLocalItem("flagEmail");
+
+    if (shouldPrompt) {
+      setShowBottomPopup(true);
+    }
+  }, [location]);
+
   return (
-    <Modal
-      titulo="Permissões"
-      open={modal.open}
-      onClose={onClose}
-      actionText="Confirmar"
-      onAction={handleSubmit}
-      fullScreen="mobile"
-      buttons={[
-        {
-          titulo: "Perguntar Depois",
-          action: () => onClose(true),
-          color: "terciary",
-        },
-        { titulo: "Aceitar tudo", action: acceptAll, color: "terciary" },
-      ]}
-    >
-      <Grid container spacing={2} sx={{ p: "0 8px" }}>
-        <Grid size={{ xs: 12, md: 12 }}>
-          {" "}
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Para continuar, por favor, forneça as permissões necessárias:
-          </Typography>
-        </Grid>
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          className="show-box"
-          sx={{ position: "relative" }}
-        >
-          <Chip
-            label="Necessário"
-            color="terciary"
-            size="small"
-            sx={{ position: "absolute", right: 10, top: 10 }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={permissions.flagCookies}
-                onChange={handlePermissionChange}
-                name="flagCookies"
-                color="primary"
-              />
-            }
-            label="Permitir Cookies"
-          />
-          <Typography variant="body2" color="textSecondary">
-            Cookies são utilizados para melhorar a sua experiência no site.
-          </Typography>
-        </Grid>
+    <>
+      <Modal
+        titulo="Permissões"
+        open={modal.open}
+        onClose={onClose}
+        actionText="Confirmar"
+        onAction={() => handleSubmit()}
+        fullScreen="mobile"
+        buttons={[
+          {
+            titulo: "Perguntar Depois",
+            action: () => onClose(true),
+            color: "terciary",
+          },
+          { titulo: "Aceitar tudo", action: acceptAll, color: "terciary" },
+        ]}
+      >
+        <Grid container spacing={2} sx={{ p: "0 8px" }}>
+          <Grid xs={12}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Para continuar, por favor, forneça as permissões necessárias:
+            </Typography>
+          </Grid>
 
-        {/* Permissão para E-mail */}
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          className="show-box"
-          sx={{ position: "relative" }}
-        >
-          <Chip
-            label="Opcional"
-            color="primary"
-            size="small"
-            sx={{ position: "absolute", right: 10, top: 10 }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={permissions.flagEmail}
-                onChange={handlePermissionChange}
-                name="flagEmail"
-                color="primary"
-              />
-            }
-            label="Permitir E-mail"
-          />
-          <Typography variant="body2" color="textSecondary">
-            Precisamos do seu e-mail para enviar informações formais, recuperar
-            sua conta e manter você informado sobre atualizações.
-          </Typography>
-        </Grid>
-
-        {/* Aceitar Termos */}
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          className="show-box"
-          sx={{ position: "relative" }}
-        >
-          <Chip
-            label="Necessário"
-            color="terciary"
-            size="small"
-            sx={{ position: "absolute", right: 10, top: 10 }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={permissions.flagTermos}
-                onChange={handlePermissionChange}
-                name="flagTermos"
-                color="primary"
-              />
-            }
-            label="Aceitar Termos"
-          />
-          <Typography variant="body2" color="textSecondary">
-            Você deve aceitar nossos{" "}
-            <a
-              href="/fac"
-              rel="noopener noreferrer"
-              style={{ color: "#0195F7", textDecoration: "none" }}
+          {permissionsList.map((perm) => (
+            <Grid
+              key={perm.name}
+              size={{ xs: 12, md: 6 }}
+              className="show-box"
+              sx={{ position: "relative" }}
             >
-              Termos de Serviço
-            </a>{" "}
-            para continuar.
-          </Typography>
-        </Grid>
-
-        {/* Permissão para WhatsApp */}
-        <Grid
-          size={{ xs: 12, md: 6 }}
-          className="show-box"
-          sx={{ position: "relative" }}
-        >
-          <Chip
-            label="Necessário"
-            color="terciary"
-            size="small"
-            sx={{ position: "absolute", right: 10, top: 10 }}
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={permissions.flagWhatsapp}
-                onChange={handlePermissionChange}
-                name="flagWhatsapp"
-                color="primary"
+              <Chip
+                label={perm.required ? "Necessário" : "Opcional"}
+                color={perm.required ? "terciary" : "primary"}
+                size="small"
+                sx={{ position: "absolute", right: 10, top: 10 }}
               />
-            }
-            label="Permitir WhatsApp"
-          />
-          <Typography variant="body2" color="textSecondary">
-            Ao permitir o WhatsApp, você concorda em receber informações,
-            notificações e utilizar o WhatsApp como meio de recuperação de conta
-            e automações no futuro.
-          </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={perm.value}
+                    onChange={handlePermissionChange}
+                    name={perm.name}
+                    color="primary"
+                  />
+                }
+                label={perm.label}
+              />
+              <Typography variant="body2" color="textSecondary">
+                {perm.description}
+              </Typography>
+            </Grid>
+          ))}
         </Grid>
-      </Grid>
+      </Modal>
 
-      {/* Botão de ação */}
-    </Modal>
+      {showBottomPopup && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            background: "#363636",
+            zIndex: 9999,
+            p: 2,
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Typography variant="body2">
+                O Tonsus usa cookies para fazer o site funcionar da maneira
+                esperada e para entender melhor como nossos usuários acessam o
+                site. Para ver mais informações de como o Tonsus usa cookies,
+                clique em saiba mais e personalize suas permissões.
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, md: 2 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="terciary"
+                onClick={() => {
+                  setShowBottomPopup(false);
+                  setModal((prev) => ({ ...prev, open: true }));
+                }}
+              >
+                Saiba mais
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 2 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  setShowBottomPopup(false);
+                  acceptAll();
+                }}
+              >
+                Aceitar tudo
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      )}
+    </>
   );
 };
 

@@ -58,73 +58,97 @@ const BarberShopMenu = ({ alertCustom }) => {
   const [barbearia, setBarbearia] = useState(null);
   const [bannerImage, setBannerImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
-  const cards = {
-    employee: [
-      {
-        action: "agendamento/cliente",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Agendar Cliente",
-      },
-      {
-        action: "agendamentos",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Minha Agenda",
-      },
-    ],
-    manager: [
-      {
-        action: "edicao",
-        icon: <Edit sx={{ mr: 1 }} />,
-        title: "Editar dados da barbearia",
-      },
-      {
-        action: "funcionarios",
-        icon: <People sx={{ mr: 1 }} />,
-        title: "Funcionários",
-      },
-      {
-        action: "servicos",
-        icon: <Build sx={{ mr: 1 }} />,
-        title: "Serviços",
-      },
-      {
-        action: "agendamento/cliente",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Agendar Cliente",
-      },
-      {
-        action: "agendamentos",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Minha Agenda",
-      },
-    ],
-    adm: [
-      {
-        action: "edicao",
-        icon: <Edit sx={{ mr: 1 }} />,
-        title: "Editar dados da barbearia",
-      },
-      {
-        action: "funcionarios",
-        icon: <People sx={{ mr: 1 }} />,
-        title: "Funcionários",
-      },
-      {
-        action: "servicos",
-        icon: <Build sx={{ mr: 1 }} />,
-        title: "Serviços",
-      },
-      {
-        action: "agendamento/cliente",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Agendar Cliente",
-      },
-      {
-        action: "agendamentos",
-        icon: <CalendarMonth sx={{ mr: 1 }} />,
-        title: "Minha Agenda",
-      },
-    ],
+  const cards = (user) => {
+    if (!user) return [];
+    if (user === "adm")
+      user += +getLocalItem("funcionario") ? "funcionario" : "";
+
+    const perm = {
+      employee: [
+        {
+          action: "agendamento/cliente",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Agendar Cliente",
+        },
+        {
+          action: "agendamentos",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Minha Agenda",
+        },
+      ],
+      manager: [
+        {
+          action: "edicao",
+          icon: <Edit sx={{ mr: 1 }} />,
+          title: "Editar dados da barbearia",
+        },
+        {
+          action: "funcionarios",
+          icon: <People sx={{ mr: 1 }} />,
+          title: "Funcionários",
+        },
+        {
+          action: "servicos",
+          icon: <Build sx={{ mr: 1 }} />,
+          title: "Serviços",
+        },
+        {
+          action: "agendamento/cliente",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Agendar Cliente",
+        },
+        {
+          action: "agendamentos",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Minha Agenda",
+        },
+      ],
+      adm: [
+        {
+          action: "edicao",
+          icon: <Edit sx={{ mr: 1 }} />,
+          title: "Editar dados da barbearia",
+        },
+        {
+          action: "funcionarios",
+          icon: <People sx={{ mr: 1 }} />,
+          title: "Funcionários",
+        },
+        {
+          action: "servicos",
+          icon: <Build sx={{ mr: 1 }} />,
+          title: "Serviços",
+        },
+      ],
+      admfuncionario: [
+        {
+          action: "edicao",
+          icon: <Edit sx={{ mr: 1 }} />,
+          title: "Editar dados da barbearia",
+        },
+        {
+          action: "funcionarios",
+          icon: <People sx={{ mr: 1 }} />,
+          title: "Funcionários",
+        },
+        {
+          action: "servicos",
+          icon: <Build sx={{ mr: 1 }} />,
+          title: "Serviços",
+        },
+        {
+          action: "agendamento/cliente",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Agendar Cliente",
+        },
+        {
+          action: "agendamentos",
+          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          title: "Minha Agenda",
+        },
+      ],
+    };
+    return perm[user];
   };
 
   const handleOpen = (to) => {
@@ -451,7 +475,7 @@ const BarberShopMenu = ({ alertCustom }) => {
             </Card>
           </Grid>
 
-          {cards[getLocalItem("accessType")].map(
+          {cards(getLocalItem("accessType")).map(
             ({ action, icon, title }, i) => (
               <Grid item key={i} size={{ xs: 12, md: 3 }}>
                 <CustomCard onClick={() => handleOpen(action)}>
@@ -462,7 +486,7 @@ const BarberShopMenu = ({ alertCustom }) => {
             )
           )}
 
-          {barbearia && (
+          {barbearia && modal.agendamentos && (
             <Agendamentos
               barbearia={barbearia}
               open={modal.agendamentos}

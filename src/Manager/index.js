@@ -58,6 +58,7 @@ export default function Layout() {
       >
         <Toolbar></Toolbar>
         <Rows
+          focusInItem={false}
           selectedItems={[paginaAtual]}
           unSelectMode={false}
           items={paginas}

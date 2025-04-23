@@ -59,6 +59,9 @@ const Empresa = ({ alertCustom }) => {
   });
   const [page, setPage] = useState({
     open: false,
+    onClose: () => {
+      navigate(-1);
+    },
   });
 
   const handleSaveAgendamento = async () => {
@@ -112,7 +115,8 @@ const Empresa = ({ alertCustom }) => {
 
   const handleBack = () => {
     try {
-      if (!subPath || ["confirmacao", "error"].includes(subPath)) return;
+      if (!subPath || ["confirmacao", "error"].includes(subPath))
+        return navigate("/estabelecimentos");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
       if (pathTo == 0) {
@@ -155,10 +159,6 @@ const Empresa = ({ alertCustom }) => {
     setPage((prev) => ({
       ...prev,
       open: true,
-      onClose: () => {
-        setPage((prev) => ({ ...prev, open: false }));
-        navigate(-1);
-      },
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
   }, [empresa]);
