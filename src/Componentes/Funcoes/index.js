@@ -211,7 +211,7 @@ export const getStatus = (status) => {
   switch (status) {
     case "PENDING":
       return {
-        color: "success",
+        color: "primary",
         valor: "Agendado",
       };
     case "NOT_ATTEND":
@@ -221,12 +221,12 @@ export const getStatus = (status) => {
       };
     case "CANCELLED":
       return {
-        color: "terciary",
+        color: "warning",
         valor: "Cancelado",
       };
     case "OK":
       return {
-        color: "primary",
+        color: "success",
         valor: "Concluído",
       };
     default:

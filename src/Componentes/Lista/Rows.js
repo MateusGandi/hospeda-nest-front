@@ -32,6 +32,7 @@ export const Rows = ({
   disableGap = false,
   collapse = false,
   distribution = items.length ?? 1,
+  focusInItem = true,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -100,6 +101,7 @@ export const Rows = ({
                 }}
               >
                 {Array.isArray(selected) &&
+                  focusInItem &&
                   selected?.some((opcao) => opcao.id === item.id) && (
                     <CheckCircleIcon
                       sx={{

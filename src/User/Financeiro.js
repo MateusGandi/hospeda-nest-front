@@ -9,18 +9,22 @@ import {
   Avatar,
   IconButton,
   CardActions,
+  Box,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Api from "../Componentes/Api/axios";
 import { isMobile, Saudacao } from "../Componentes/Funcoes";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
+import Cookies from "js-cookie";
+import OptionsPopover from "../Componentes/Popover";
+import { useNavigate } from "react-router-dom";
 
 const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
   const [dados, setDados] = useState(null);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
-
+  const navigate = useNavigate();
   const handleGet = async () => {
     try {
       const data = await Api.query(
@@ -57,11 +61,11 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
           avatar={
             <Avatar
               sx={{
-                bgcolor: "#fff",
+                bgcolor: "#0195F7",
                 width: "50px",
                 height: "50px",
                 fontSize: 30,
-                color: "#212121",
+                color: "#fff",
                 fontWeight: 600,
               }}
             >
@@ -81,9 +85,6 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                   <IconButton onClick={handleEdit}>
                     <ModeEditOutlineOutlinedIcon />
                   </IconButton>{" "}
-                  <IconButton onClick={handleEdit}>
-                    <MoreVertIcon />
-                  </IconButton>
                 </>
               ) : (
                 <>
@@ -95,16 +96,18 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                   >
                     Editar dados
                   </Button>
-                  <Button
-                    color="#fff"
-                    variant="outlined"
-                    sx={{ border: "1px solid rgb(98, 98, 98)" }}
-                    onClick={handleEdit}
-                  >
-                    Mais opções (NÃO IMPLEMENTADO)
-                  </Button>
                 </>
               )}
+              <OptionsPopover
+                options={[
+                  {
+                    title: "Gerenciar permissões",
+                    action: () => {
+                      Cookies.remove("getPermission");
+                    },
+                  },
+                ]}
+              />
             </Grid>
           }
         />
@@ -130,17 +133,34 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                   ? `R$ ${dados.approved.valor.toFixed(2)}`
                   : "******"}
               </Typography>
-              <IconButton
-                onClick={() => setMostrarSaldo(!mostrarSaldo)}
+              <Box
                 sx={{
                   position: "absolute",
                   top: 10,
                   right: 10,
-                  color: "#fff",
                 }}
               >
-                {mostrarSaldo ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
+                <IconButton
+                  onClick={() => setMostrarSaldo(!mostrarSaldo)}
+                  sx={{
+                    color: "#fff",
+                  }}
+                >
+                  {mostrarSaldo ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+
+                <OptionsPopover
+                  icon={<HelpRoundedIcon />}
+                  options={[
+                    {
+                      title: "O que é Cash Back?",
+                      action: () => {
+                        navigate("/fac/cashback");
+                      },
+                    },
+                  ]}
+                />
+              </Box>
             </CardContent>
           </Card>
         </CardActions>

@@ -8,10 +8,37 @@ import {
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import LogoImage from "../Assets/plus_banner.png";
-import TypingEffectText from "../Componentes/Effects";
-import { isMobile } from "../Componentes/Funcoes";
+import { getLocalItem } from "../Componentes/Funcoes";
 
-const PublicPage = ({}) => {
+const PublicPage = () => {
+  const items = {
+    default: [
+      { title: "Sua primeira vez aqui?", action: "/create" },
+      {
+        title: "Agendar um horário",
+        action: "/estabelecimentos",
+        force: true,
+      },
+    ],
+    client: [
+      { title: "Meus agendamentos", action: "/me" },
+      {
+        title: "Agendar um horário",
+        action: "/estabelecimentos",
+        force: true,
+      },
+    ],
+    manager: [],
+    adm: [
+      { title: "Ver planos", action: "/plans" },
+      { title: "Gerenciar", action: "/dashboard", force: true },
+    ],
+    employee: [
+      { title: "Veja os termos", action: "/fac" },
+      { title: "Comece a atender", action: "/dashboard", force: true },
+    ],
+  };
+
   const navigate = useNavigate();
   return (
     <Container
@@ -34,7 +61,7 @@ const PublicPage = ({}) => {
         }}
       >
         {/* Texto principal */}
-        <Grid size={12}>
+        {/* <Grid size={12}>
           <Typography
             variant="h2"
             sx={{
@@ -49,7 +76,7 @@ const PublicPage = ({}) => {
           >
             <TypingEffectText />
           </Typography>
-        </Grid>
+        </Grid> */}
 
         {/* Texto descritivo */}
         <Grid size={12}>
@@ -70,42 +97,28 @@ const PublicPage = ({}) => {
             </span>
           </Typography>
         </Grid>
-
-        {/* Botões */}
-        {/* Criar */}
-        <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 2, md: 1 } }}>
-          <Button
-            variant="outlined"
-            fullWidth
-            size="large"
-            color="secondary"
-            disableElevation
-            style={{
-              border: "1px solid #fff",
-              color: "#FFFFFF",
-            }}
-            onClick={() => navigate("/create")}
-          >
-            Sua primeira vez aqui ?
-          </Button>
-        </Grid>
-        {/* Login */}
-        <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 1, md: 2 } }}>
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            color="primary"
-            disableElevation
-            style={{
-              fontWeight: "bold",
-              color: "#FFFFFF",
-            }}
-            onClick={() => navigate("/estabelecimentos")}
-          >
-            Agendar um horário
-          </Button>
-        </Grid>
+        {items[
+          getLocalItem("accessType") ? getLocalItem("accessType") : "default"
+        ].map((item) => (
+          <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 1, md: 2 } }}>
+            <Button
+              fullWidth
+              variant={item.force ? "contained" : "outlined"}
+              size="large"
+              color={item.force ? "primary" : "secondary"}
+              disableElevation
+              style={{
+                ...(item.force
+                  ? { fontWeight: "bold" }
+                  : { border: "1px solid #fff" }),
+                color: "#FFFFFF",
+              }}
+              onClick={() => navigate(item.action)}
+            >
+              {item.title}
+            </Button>
+          </Grid>
+        ))}
       </Grid>
     </Container>
   );

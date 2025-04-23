@@ -27,9 +27,8 @@ export function RouteElement({ path, alertCustom }) {
     const fetchRoutesAllowed = async () => {
       try {
         const paths = await Api.getAccess();
-        setPathsAllowed([...paths, "/fac"] || []);
+        setPathsAllowed(paths);
       } catch (error) {
-        console.error("Erro ao buscar rotas permitidas:", error);
         setPathsAllowed([
           "/login",
           "/create",
@@ -85,7 +84,6 @@ export function RouteElement({ path, alertCustom }) {
   const lastPath = window.location.pathname;
   const pathF = pathsAllowed.find((rota) => `/${path}`.includes(rota));
   if (!pathF) {
-    setLocalItem("lastRoute", "/login");
     return <Navigate to="/login" />;
   } else {
     setLocalItem("lastRoute", lastPath);

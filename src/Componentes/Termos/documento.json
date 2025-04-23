@@ -1,0 +1,87 @@
+[
+  {
+    "title": "Termos de uso",
+    "sections": [
+      {
+        "heading": "TERMOS DE USO DO TONSUS APP",
+        "text": "Última atualização: 17 de Abril de 2025"
+      },
+      {
+        "heading": "1. ACEITAÇÃO DOS TERMOS",
+        "text": "Ao utilizar o sistema de gestão/agendamento para barbearias (doravante \"Sistema\"), você concorda com estes Termos de Uso e com a Política de Privacidade..."
+      },
+      {
+        "heading": "2. DEFINIÇÕES",
+        "text": "**Usuário Cliente:** Pessoa física que agenda serviços nas barbearias...\n\n**Assinatura:** Pagamento mensal obrigatório para acesso contínuo ao Sistema."
+      },
+      {
+        "heading": "3. CADASTRO E USO DO SISTEMA",
+        "text": "**3.1 Requisitos para Cadastro**\n- Todos os usuários devem fornecer e-mail, telefone e senha válidos...\n\n**3.2 Responsabilidades do Usuário**\n- Manter a confidencialidade da senha..."
+      },
+      {
+        "heading": "4. FUNCIONALIDADES",
+        "text": "**4.1 Clientes**\n- Agendar, cancelar ou reagendar horários...\n\n**4.2 Barbeiros e Administradores**\n- Cancelar agendamentos, marcar atendimentos como concluídos..."
+      },
+      {
+        "heading": "5. ASSINATURA E PAGAMENTO",
+        "text": "**Pagamento Mensal:** Barbearias devem pagar a assinatura...\n**Reembolsos:** Não há reembolso por períodos não utilizados após o pagamento."
+      },
+      {
+        "heading": "7. PROPRIEDADE INTELECTUAL",
+        "text": "O Sistema é propriedade exclusiva da equipe Tonsus..."
+      },
+      {
+        "heading": "8. LIMITAÇÃO DE RESPONSABILIDADE",
+        "text": "Não nos responsabilizamos por danos indiretos, conteúdo de terceiros ou interrupções temporárias do Sistema."
+      },
+      {
+        "heading": "9. RESCISÃO",
+        "text": "Podemos suspender ou encerrar contas em caso de violação dos termos..."
+      },
+      {
+        "heading": "10. DISPOSIÇÕES GERAIS",
+        "text": "**Canais de Comunicação**\n- Contato via e-mail e WhatsApp para notificações..."
+      }
+    ]
+  },
+  {
+    "title": "Ferramentas de terceiros",
+    "sections": [
+      {
+        "heading": "6. PRIVACIDADE E DADOS",
+        "text": "Coletamos dados pessoais (e-mail, telefone) para operar o Sistema, em conformidade com a LGPD...",
+        "links": [
+          {
+            "label": "Lei Geral de Proteção de Dados (LGPD)",
+            "href": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
+          }
+        ]
+      },
+      {
+        "heading": "ADENDOS IMPORTANTES",
+        "text": "**Consentimento para WhatsApp**\n- Ao fornecer o número de telefone, o usuário autoriza o contato via WhatsApp...\n\n**Custos de Comunicação**\n- O usuário é responsável por eventuais custos de dados."
+      }
+    ]
+  },
+  {
+    "title": "Dúvidas: cashback, pagamentos, descontos, políticas de incentivo",
+    "sections": [
+      {
+        "heading": "Como funciona o cashback?",
+        "text": "O cashback é um retorno parcial em créditos para próximas compras, válido apenas em serviços selecionados e não acumulativo."
+      },
+      {
+        "heading": "Quais são as formas de pagamento aceitas?",
+        "text": "Aceitamos Pix, cartão de crédito, débito e pagamento via plataforma. Pagamentos presenciais dependem da barbearia."
+      },
+      {
+        "heading": "Há descontos para clientes recorrentes?",
+        "text": "Sim, oferecemos descontos progressivos para clientes frequentes, conforme política de fidelidade definida pela barbearia."
+      },
+      {
+        "heading": "O que são políticas de incentivo?",
+        "text": "São regras de bonificação para clientes, baseadas em frequência de uso e valor gasto. De caracter sortido, podem incluir cashback, descontos e promoções. Incentivando novos e antigos clientes a visitarem diferentes barbearias."
+      }
+    ]
+  }
+]

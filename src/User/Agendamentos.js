@@ -11,6 +11,7 @@ import Filter from "../Componentes/Filter";
 import Confirm from "../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
 import { CustomInput } from "../Componentes/Custom";
+import Icon from "../Assets/Emojis";
 
 const ListaAgendamentos = ({ alertCustom, usuario }) => {
   const navigate = useNavigate();
@@ -84,12 +85,11 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
       );
     }
   };
-
   const getStatus = (status, id) => {
     switch (status) {
       case "PENDING":
         return {
-          color: "success",
+          color: "primary",
           valor: "Agendado",
           buttons: [
             {
@@ -115,13 +115,13 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
         };
       case "CANCELLED":
         return {
-          color: "terciary",
+          color: "warning",
           valor: "Cancelado",
           buttons: [],
         };
       case "OK":
         return {
-          color: "primary",
+          color: "success",
           valor: "Concluído",
           buttons: [],
         };
@@ -321,7 +321,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           sx={{ m: "10px 0" }}
         >
           <Typography variant="h6">
-            🎯
+            <Icon>🎯</Icon>{" "}
             {modal.filter?.valor
               ? `Nenhum registro ${modal.filter?.titulo
                   .toLowerCase()

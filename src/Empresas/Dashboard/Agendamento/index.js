@@ -286,22 +286,7 @@ const AgendamentoManual = ({
                     </Typography> */}
                   </Typography>
                 </Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <a
-                    href="https://www.google.com/maps?q=Av. Paulista, São Paulo"
-                    target="_blank"
-                  >
-                    <Button
-                      disableElevation
-                      color="primary"
-                      size="large"
-                      variant="contained"
-                      startIcon={<NavigationIcon />}
-                    >
-                      Ver Localização
-                    </Button>
-                  </a>
-                </Grid>
+                <Grid size={{ md: 12, xs: 12 }}></Grid>
                 <Grid size={{ md: 12, xs: 12 }}>
                   <Button
                     disableElevation
