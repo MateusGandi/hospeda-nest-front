@@ -134,7 +134,6 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                   avatar={
                     <Avatar
                       sx={{
-                        bgcolor: "#fff",
                         width: "50px",
                         height: "50px",
                         fontSize: 30,

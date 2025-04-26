@@ -73,7 +73,7 @@ const Empresa = ({ alertCustom }) => {
       establishmentId: empresa.id,
       userId: getLocalItem("userId"),
       barberId: form.barbeiro.id,
-      services: form.servicos.map(({ id }) => id),
+      services: form.servicos?.map(({ id }) => id),
     });
   };
 
@@ -97,9 +97,9 @@ const Empresa = ({ alertCustom }) => {
             navigate(`/barbearia/${empresa.path}/${paths[pathTo + 1].key}`);
           })
           .catch((error) => {
-            console.log(error);
             alertCustom(
-              "Erro ao confirmar agendamento, favor, tente mais tarde!"
+              error.response.data.message ??
+                "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
             // setTituloModal(paths[pathTo + 2].title);
             // navigate(`/barbearia/${empresa.path}/${paths[pathTo + 2].key}`);

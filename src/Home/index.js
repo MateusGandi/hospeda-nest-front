@@ -9,6 +9,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import LogoImage from "../Assets/plus_banner.png";
 import { getLocalItem } from "../Componentes/Funcoes";
+import { TypingEffectText } from "../Componentes/Effects";
 
 const PublicPage = () => {
   const items = {
@@ -61,7 +62,7 @@ const PublicPage = () => {
         }}
       >
         {/* Texto principal */}
-        {/* <Grid size={12}>
+        <Grid size={12}>
           <Typography
             variant="h2"
             sx={{
@@ -76,7 +77,7 @@ const PublicPage = () => {
           >
             <TypingEffectText />
           </Typography>
-        </Grid> */}
+        </Grid>
 
         {/* Texto descritivo */}
         <Grid size={12}>

@@ -37,10 +37,6 @@ const GestorSessoesWhatsApp = ({ barbearia, alertCustom }) => {
 Em breve lhe atenderemos, mas se quiser ajuda a qualquer momento, conte com o nosso atendente virtual para te ajudar com agendamentos, horários e informações, está sempre disponível.
 Basta clicar no link abaixo e começar a conversar com a gente!
 https://api.whatsapp.com/send?phone=556292324267`;
-  const handleCopy = async () => {
-    navigator.clipboard.writeText(mensagemBoasVindas);
-    alertCustom("Mensagem copiada!");
-  };
 
   return (
     <>

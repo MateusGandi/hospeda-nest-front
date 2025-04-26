@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import { isMobile } from "../Funcoes";
 
-const TypingEffectText = () => {
+export const TypingEffectText = () => {
   const words = [
     "tem acesso a vários produtos de diferentes seguimentos!",
     "ganha eventuais descontos no seu corte de cabelo!",
@@ -89,5 +89,3 @@ const TypingEffectText = () => {
     </Typography>
   );
 };
-
-export default TypingEffectText;

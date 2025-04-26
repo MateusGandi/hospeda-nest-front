@@ -10,10 +10,11 @@ import {
   Rating,
   Avatar,
   CardHeader,
-  Tooltip,
+  Stack,
+  Box,
 } from "@mui/material";
 import Modal from "../../Componentes/Modal";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import VideoPlayer from "../../Componentes/Video";
@@ -24,8 +25,27 @@ import {
   isMobile,
 } from "../../Componentes/Funcoes";
 import LogoPartners from "../../Assets/logo_partners.png";
+import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
+import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
+import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.jpg";
+import Icon from "../../Assets/Emojis";
 
 const ModalPlanos = ({ alertCustom }) => {
+  const [mensagensChat] = useState([
+    { remetente: "cliente", texto: "Olá, bom dia." },
+    {
+      remetente: "bot",
+      texto:
+        "🤝 Olá Edu, como podemos te ajudar hoje?\n\nPor hora, podemos te ajudar com:\n- Notificações\n- Cancelamentos\n- Agendamentos\n- Dúvidas sobre o app\n- Recuperar sua conta perdida",
+    },
+    { remetente: "cliente", texto: "Estou com algumas dúvidas..." },
+    {
+      remetente: "bot",
+      texto:
+        "Vamos lá, sobre o que quer saber mais?\n- Como funciona o app\n- Como funciona o CashBack",
+    },
+  ]);
+
   const periodicidade = {
     SEMANAL: "/ semana",
     DIARIO: "/ dia",
@@ -70,8 +90,13 @@ const ModalPlanos = ({ alertCustom }) => {
         apiService.query("GET", "/plan"),
         apiService.query("GET", "/evaluation?page=1&pageSize=3"),
       ]);
-
-      setModal((prev) => ({ ...prev, planos, depoimentos, avaliacao: media }));
+      const [t1, t2] = planos;
+      setModal((prev) => ({
+        ...prev,
+        planos: [t2, { ...t1, destaque: true }],
+        depoimentos,
+        avaliacao: media,
+      }));
     } catch (error) {
       console.log(error);
       alertCustom(
@@ -116,17 +141,20 @@ const ModalPlanos = ({ alertCustom }) => {
         }
         loading={modal.loading}
         onClose={modal.onClose}
-        sx={{ background: "#212121" }}
+        sx={{
+          backgroundColor: "#212121",
+          backgroundImage: `url(${gradienteAzul})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+        }}
       >
-        <Grid
-          container
-          spacing={3}
-          sx={{ height: "calc(100vh - 100px)", m: 1 }}
-        >
+        <Grid container spacing={3} sx={{ m: 1 }}>
           <Grid size={{ xs: 12, md: 6 }} order={{ xs: 1, md: 1 }}>
             <Grid
               container
-              sx={{ height: { md: "100%", xs: "500px" }, textAlign: "center" }}
+              sx={{
+                height: { md: "60vh", xs: "500px" },
+              }}
             >
               <Grid size={12}>
                 <Typography variant="h5">Bem vindo Empreendedor!</Typography>
@@ -138,14 +166,14 @@ const ModalPlanos = ({ alertCustom }) => {
               </Grid>
               <Grid size={12}>
                 <Typography variant="h6">
-                  Quer saber como? Veja o vídeo abaixo 👇
+                  Veja um pequeno vídeo e descubra como revolucionar sua gestão
+                  e use na prática ferramentas para atrair mais clientes
                 </Typography>
               </Grid>
               <Grid size={12}>
                 <Button
-                  endIcon={<EastRoundedIcon />}
                   variant="contained"
-                  color="force"
+                  color="secondary"
                   disableElevation
                   size="large"
                   onClick={() => navigate(modal.videos[0].id)}
@@ -159,7 +187,6 @@ const ModalPlanos = ({ alertCustom }) => {
               </Grid>
             </Grid>
           </Grid>
-
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}
@@ -174,17 +201,17 @@ const ModalPlanos = ({ alertCustom }) => {
 
             {modal.planos.map((plano) => (
               <Card
-                disableElevation
-                variant="outlined"
+                elevation={0}
                 sx={{
                   p: "1%",
                   borderRadius: 3,
-                  boxShadow: 3,
                   width: { xs: "100%", md: "47%" },
                   display: "flex",
                   justifyContent: "space-between",
                   flexDirection: "column",
-                  backgroundColor: plano.destaque ? "#012FE5" : "transparent",
+
+                  backgroundColor: "#fff",
+                  color: "#000 !important",
                 }}
               >
                 <CardContent sx={{ height: "100%" }}>
@@ -194,13 +221,12 @@ const ModalPlanos = ({ alertCustom }) => {
                   <Typography variant="body1">{plano.descricao}</Typography>
                   <Typography
                     variant="h4"
-                    color="primary"
+                    color={plano.destaque ? "warning" : "primary"}
                     sx={{
                       fontWeight: 600,
                       mt: 3,
                       display: "flex",
                       alignItems: "flex-end",
-                      color: plano.destaque ? "#fff" : "#f0f0f0",
                     }}
                   >
                     {plano.preco == 0
@@ -246,7 +272,6 @@ const ModalPlanos = ({ alertCustom }) => {
               </Card>
             ))}
           </Grid>
-
           <Grid
             size={{ xs: 12, md: 12 }}
             sx={{ flex: 1, display: "flex" }}
@@ -285,12 +310,12 @@ const ModalPlanos = ({ alertCustom }) => {
                   readOnly
                   sx={{ color: "#ffb200" }}
                 />
-                <span>{modal.avaliacao}/5</span>
+                <span>{modal.avaliacao.toFixed(2)}/5</span>
               </Typography>
             </Typography>
           </Grid>
           {/* Depoimentos de clientes */}
-          <Grid size={{ xs: 12, md: 12 }} order={{ xs: 2, md: 10 }}>
+          <Grid size={12} order={{ xs: 2, md: 10 }}>
             <Grid
               container
               spacing={2}
@@ -310,7 +335,8 @@ const ModalPlanos = ({ alertCustom }) => {
                       borderRadius: "10px",
                       display: "flex",
                       flexDirection: "column",
-                      flex: 1, // 🔹 Faz o card ocupar todo o espaço verticalmente
+                      flex: 1,
+                      background: "rgba(255, 255, 255, 0.1)",
                     }}
                   >
                     <CardHeader
@@ -339,6 +365,103 @@ const ModalPlanos = ({ alertCustom }) => {
                   </Card>
                 </Grid>
               ))}
+            </Grid>
+          </Grid>{" "}
+          <Grid size={12} order={998} sx={{ textAlign: "center", mb: -7 }}>
+            <Typography variant={"h6"}>
+              Atendimento Automático WhatsApp
+              <Typography variant={"body1"}>
+                Um Atendente Virtual para atender aos seus clientes até mesmo
+                fora do expediente!
+              </Typography>
+            </Typography>
+          </Grid>
+          <Grid size={12} order={999}>
+            <Grid container>
+              <Grid size={{ xs: 12, md: 7 }} sx={{ position: "relative" }}>
+                <img
+                  src={isMobile ? barbeiroConfusoLeft : barbeiroConfuso}
+                  style={{ width: "100%", marginBottom: "-16px", zIndex: 998 }}
+                />
+
+                <Card
+                  disableElevation
+                  variant="outlined"
+                  sx={{
+                    background: "transparent",
+                    borderRadius: "10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    background: "rgba(255, 255, 255, 0.1)",
+                    fontSize: { xs: "5px", md: "16px" },
+                    position: "absolute",
+                    width: { xs: "45%", md: "250px" },
+
+                    zIndex: 997,
+                    ...(isMobile
+                      ? { top: 90, left: 10 }
+                      : { top: 220, right: 70 }),
+                  }}
+                >
+                  <CardHeader
+                    title={
+                      <Typography variant={isMobile ? "body2" : "h6"}>
+                        <Icon>🔥</Icon> Chega de confusão para responder seus
+                        clientes no WhatsApp!
+                      </Typography>
+                    }
+                  />
+                </Card>
+              </Grid>
+              <Grid
+                size={{ xs: 12, md: 5 }}
+                sx={{ mt: isMobile ? -9 : 8, zIndex: 999 }}
+              >
+                <Stack>
+                  <Card elevation={0} sx={{ background: "transparent" }}>
+                    <CardContent>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                          borderRadius: 2,
+                          padding: 1.5,
+                          fontSize: "0.9rem",
+                          height: "100%",
+                        }}
+                      >
+                        {mensagensChat.map((mensagem, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              alignSelf:
+                                mensagem.remetente === "bot"
+                                  ? "flex-end"
+                                  : "flex-start",
+                              background:
+                                mensagem.remetente === "bot"
+                                  ? "#d1f7d6"
+                                  : "#ffffff",
+                              borderRadius:
+                                mensagem.remetente === "bot"
+                                  ? "10px 10px 0px 10px"
+                                  : "10px 10px 10px 0px",
+                              padding: "8px 12px",
+                              maxWidth: "80%",
+                              whiteSpace: "pre-line",
+                              color: "#000",
+                            }}
+                          >
+                            {mensagem.texto}
+                          </Box>
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>{" "}
+                </Stack>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

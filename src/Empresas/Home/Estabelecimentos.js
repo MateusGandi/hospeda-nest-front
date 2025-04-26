@@ -7,10 +7,14 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import ConeSVG from "../../Assets/cone.svg";
 import { formatPhone } from "../../Componentes/Funcoes";
+import GetUserLocation from "../../Componentes/Location";
 
-const Estabelecimentos = () => {
+const Estabelecimentos = ({ alertCustom }) => {
   const navigate = useNavigate();
+
+  const [loadingLocation, setLoadingLocation] = useState(false);
   const [empresas, setEmpresas] = useState([]);
+  const [location, setLocation] = useState(null);
   const [empresasFiltred, setEmpresasFiltred] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -30,9 +34,16 @@ const Estabelecimentos = () => {
 
   useEffect(() => {
     const buscarDados = async () => {
-      setLoading(true);
+      !empresas.length && setLoading(true);
       try {
-        const data = await Api.query("GET", "/establishment/all");
+        const data = await Api.query(
+          "GET",
+          `/establishment/all${
+            location
+              ? `?location=${location && Object.values(location).join(",")}`
+              : ""
+          }`
+        );
 
         const dados = formatarRows(data);
         setEmpresas(dados || []);
@@ -40,11 +51,11 @@ const Estabelecimentos = () => {
       } catch (error) {
         console.error("Erro ao buscar empresas:", error);
       } finally {
-        setLoading(false);
+        !empresas.length && setLoading(false);
       }
     };
     buscarDados();
-  }, []);
+  }, [location]);
 
   const formatarRows = (items) => {
     return items.map((item) => ({
@@ -81,6 +92,15 @@ const Estabelecimentos = () => {
             propFilters={["nome"]}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            aditionalFilters={
+              <GetUserLocation
+                setLoading={setLoadingLocation}
+                loading={loadingLocation}
+                alertCustom={alertCustom}
+                setLocation={setLocation}
+              />
+            }
+            aditionalFiltersFocus={!!location || loadingLocation}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>

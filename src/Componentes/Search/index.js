@@ -22,6 +22,8 @@ const SearchBarWithFilters = ({
   searchValue,
   setSearchValue,
   fullWidth = true,
+  aditionalFilters = null,
+  aditionalFiltersFocus = false,
 }) => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -68,10 +70,17 @@ const SearchBarWithFilters = ({
     setFiltersVisible(true);
   };
 
+  useEffect(() => {
+    if (aditionalFiltersFocus) {
+      setFiltersVisible(true);
+    }
+  }, [aditionalFiltersFocus]);
+
   const handleBlur = (event) => {
     if (
       !event.currentTarget.contains(event.relatedTarget) &&
-      selectedFilters.length === 0
+      selectedFilters.length === 0 &&
+      !aditionalFiltersFocus
     ) {
       setFiltersVisible(false);
     }
@@ -165,6 +174,7 @@ const SearchBarWithFilters = ({
                 />
               ))
             )}
+            {aditionalFilters ? aditionalFilters : null}
           </Box>
 
           <Box>

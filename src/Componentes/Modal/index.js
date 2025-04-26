@@ -40,7 +40,7 @@ const Modal = ({
   component = "modal", //modal, view, form
   fullScreen,
   loading = false,
-  buttons, //{titulo, action, color}
+  buttons = [], //{titulo, action, color}
   buttonStyle,
   modalStyle,
   image,
@@ -254,7 +254,7 @@ const Modal = ({
               </Grid>
             </Container>
           </DialogContent>{" "}
-          {component != "form" && (
+          {component != "form" && (buttons.length || onAction || onSubmit) ? (
             <DialogActions
               disableSpacing={
                 (["form", "view"].includes(component) || fullScreen) && isMobile
@@ -313,7 +313,7 @@ const Modal = ({
                 </Button>
               )}
             </DialogActions>
-          )}
+          ) : null}
         </>
       )}
     </Dialog>
