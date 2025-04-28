@@ -14,6 +14,7 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router";
 import Permissions from "./Componentes/Permissions";
+import BetaInfoButton from "./Componentes/Alert/Beta";
 
 const theme = createTheme({
   palette: {
@@ -28,7 +29,7 @@ const theme = createTheme({
       main: "#fff",
     },
     warning: {
-      main: "#ffb200",
+      main: "#EA7E11",
     },
     background: {
       default: "#000",
@@ -97,6 +98,7 @@ function App() {
       <Alerta alert={alert} setAlert={setAlert} />
       <CssBaseline />
       <BrowserRouter>
+        <BetaInfoButton />
         <NavigationBar logo="Tonsus App" />
         <Permissions alertCustom={alertCustom} />
         <Routes>

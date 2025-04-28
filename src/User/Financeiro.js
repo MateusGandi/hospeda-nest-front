@@ -20,10 +20,12 @@ import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import Cookies from "js-cookie";
 import OptionsPopover from "../Componentes/Popover";
 import { useNavigate } from "react-router-dom";
+import Permissions from "../Componentes/Permissions";
 
 const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
   const [dados, setDados] = useState(null);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
+  const [openPermissions, setOpenPermissions] = useState(false);
   const navigate = useNavigate();
   const handleGet = async () => {
     try {
@@ -103,6 +105,7 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                   {
                     title: "Gerenciar permissões",
                     action: () => {
+                      setOpenPermissions(true);
                       Cookies.remove("getPermission");
                     },
                   },
@@ -127,7 +130,7 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
             }}
           >
             <CardContent>
-              <Typography variant="h6">Total Cash Back</Typography>
+              <Typography variant="h6">Total Bônus</Typography>
               <Typography variant="h5">
                 {mostrarSaldo
                   ? `R$ ${dados.approved.valor.toFixed(2)}`
@@ -165,6 +168,11 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
           </Card>
         </CardActions>
       </Card>
+      <Permissions
+        type="view"
+        open={openPermissions}
+        alertCustom={alertCustom}
+      />
     </Grid>
   );
 };

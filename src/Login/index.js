@@ -11,7 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
 import Banner from "../Assets/banner_onboard.png";
 import { Height } from "@mui/icons-material";
-import { getLocalItem } from "../Componentes/Funcoes";
+import { getLocalItem, isMobile } from "../Componentes/Funcoes";
 
 const LoginPage = ({ page, alertCustom }) => {
   const { hash } = useParams();
@@ -28,11 +28,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(
-        window.location.href.includes(getLocalItem("lastRoute"))
-          ? "/home"
-          : getLocalItem("lastRoute")
-      );
+      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
       alertCustom("Login realizado com sucesso!");
     } catch (error) {
       console.log(error);
@@ -55,11 +51,7 @@ const LoginPage = ({ page, alertCustom }) => {
         senha,
       });
       Api.setKey(data);
-      navigate(
-        window.location.href.includes(getLocalItem("lastRoute"))
-          ? "/home"
-          : getLocalItem("lastRoute")
-      );
+      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
       alertCustom("Senha atualizada com sucesso!");
     } catch (error) {
       console.log(error);
@@ -109,11 +101,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(
-        window.location.href.includes(getLocalItem("lastRoute"))
-          ? "/home"
-          : getLocalItem("lastRoute")
-      );
+      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
       alertCustom("Conta criada com sucesso!");
     } catch (error) {
       console.log(error);
@@ -125,18 +113,17 @@ const LoginPage = ({ page, alertCustom }) => {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
     }
   };
-
+  const handleClose = () => {
+    navigate("/home");
+  };
   const paginas = {
     login: {
       titulo: "Acesse sua conta",
       actionText: "Entrar",
       componente: "login",
       backAction: {
-        titulo: "Criar uma conta",
-        action: () => {
-          setDados({});
-          navigate("/create");
-        },
+        titulo: "Voltar",
+        action: handleClose,
       },
     },
 
@@ -145,11 +132,8 @@ const LoginPage = ({ page, alertCustom }) => {
       actionText: "Criar",
       componente: "create",
       backAction: {
-        titulo: "Já tenho uma conta",
-        action: () => {
-          setDados({});
-          navigate("/login");
-        },
+        titulo: "Voltar",
+        action: handleClose,
       },
     },
     change: {
@@ -158,10 +142,7 @@ const LoginPage = ({ page, alertCustom }) => {
       componente: "change",
       backAction: {
         titulo: "Voltar",
-        action: () => {
-          setDados({});
-          navigate("/login");
-        },
+        action: handleClose,
       },
     },
     recover: {
@@ -170,10 +151,7 @@ const LoginPage = ({ page, alertCustom }) => {
       componente: "recover",
       backAction: {
         titulo: "Voltar",
-        action: () => {
-          setDados({});
-          navigate("/login");
-        },
+        action: handleClose,
       },
     },
   };
@@ -186,10 +164,6 @@ const LoginPage = ({ page, alertCustom }) => {
       });
     else setInicialState(null);
   }, [page, hash]);
-
-  const handleClose = () => {
-    navigate("/home");
-  };
 
   return (
     inicialState && (
@@ -206,8 +180,7 @@ const LoginPage = ({ page, alertCustom }) => {
           inicialState.componente == "change" && handleChangePass();
         }}
         buttonStyle={{ variant: "contained" }}
-        maxWidth="md"
-        modalStyle={{ minWidth: "360px !important" }}
+        maxWidth={"md"}
         component="form"
         fullScreen="all"
         backAction={inicialState.backAction}

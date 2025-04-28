@@ -1,5 +1,5 @@
 import React from "react";
-import ReviewBarbershopModal from "../../User/Evaluation";
+import ReviewBarbershopModal from "../../Evaluation";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Reviews = ({ alertCustom }) => {

@@ -49,7 +49,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
   useEffect(() => {
     const buscar = async () => {
       if (data.dia) {
-        const ids = form.servicos.map(({ id }) => id).join(",");
+        const ids = form.servicos?.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
           form.barbeiro.id,
           ids,
@@ -71,9 +71,9 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
 
   useEffect(() => {
     const fetch = async () => {
-      const ids = form.servicos.map(({ id }) => id).join(",");
+      const ids = form.servicos?.map(({ id }) => id).join(",");
       const dataAtual = new Date().toISOString().split("T")[0];
-      const resp = await buscarVagas(form.barbeiro.id, ids, dataAtual);
+      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
     fetch();

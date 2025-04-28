@@ -10,6 +10,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { CustomInput } from "../Componentes/Custom";
 import { formatPhone } from "../Componentes/Funcoes";
+import { Link } from "react-router-dom";
 
 const Create = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -116,7 +117,8 @@ const Create = ({ dados, setDados }) => {
           }
         />
       </Grid>{" "}
-      <Grid size={12} sx={{ height: 0 }}>
+      <Grid item size={12} sx={{ height: 0 }}>
+        <a href="/login">Já possui uma conta? Acesse</a>
         <Typography color="error" variant="body1">
           {feedback}
         </Typography>

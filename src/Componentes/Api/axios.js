@@ -25,13 +25,25 @@ class ApiService {
       authorization: `Bearer ${getLocalItem("token")}`,
     };
 
-    const response = await this.api({
-      method,
-      url: route,
-      headers: { ...defaultHeaders, ...headers },
-      ...(body ? { data: body } : {}),
-    });
-    return response.data;
+    try {
+      const response = await this.api({
+        method,
+        url: route,
+        headers: { ...defaultHeaders, ...headers },
+        ...(body ? { data: body } : {}),
+      });
+      return response.data;
+    } catch (error) {
+      const status = error?.response?.status;
+
+      if (status === 401 || status === 403) {
+        const lastPath = getLocalItem("lastRoute");
+        localStorage.clear();
+        setLocalItem("lastRoute", lastPath);
+        window.location.href = "/login";
+      }
+      throw error;
+    }
   }
 }
 

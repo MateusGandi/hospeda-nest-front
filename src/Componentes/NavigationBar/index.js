@@ -8,12 +8,12 @@ import {
   Button,
   TextField,
   Avatar,
+  Badge,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import Modal from "../Modal";
 import { Rows } from "../Lista/Rows";
@@ -26,13 +26,34 @@ import Cookies from "js-cookie";
 
 import LogoImage from "../../Assets/logo_aut.png";
 import FAC from "../Termos";
-const NavigationBar = ({ logo }) => {
+import apiService from "../Api/axios";
+const NavigationBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(false);
+  const [hasScheduling, setHasScheduling] = useState(false);
+  const [actions, setActions] = useState([]);
   const accessType = getLocalItem("accessType");
+
+  const handleGetScheduling = async () => {
+    try {
+      if (!getLocalItem("userId")) return;
+      const data = await apiService.query(
+        "GET",
+        `/scheduling/user/${getLocalItem("userId")}?status=PENDING`
+      );
+
+      data.length ? setHasScheduling(true) : setHasScheduling(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetScheduling();
+  }, [location]);
 
   const actionsMap = {
     null: [
@@ -129,6 +150,7 @@ const NavigationBar = ({ logo }) => {
             {(getLocalItem("nome") ?? "T")[0]}
           </Avatar>
         ),
+        notification: hasScheduling ? 1 : null,
         type: "button",
         action: () => navigate("/me"),
         route: "/me",
@@ -227,7 +249,9 @@ const NavigationBar = ({ logo }) => {
     ],
   };
 
-  const actions = actionsMap[accessType] || [];
+  useEffect(() => {
+    setActions(actionsMap[accessType]);
+  }, [hasScheduling, location]);
 
   return (
     <>
@@ -332,18 +356,24 @@ const NavigationBar = ({ logo }) => {
                             {item.titulo}
                           </Typography>
                         ) : (
-                          <Button
-                            key={index}
-                            variant="outlined"
-                            sx={{
-                              borderColor: "#303030",
-                              color: "#FFFFFF",
-                              fontWeight: "bold",
-                            }}
-                            onClick={item.action}
+                          <Badge
+                            badgeContent={item.notification ?? null}
+                            color="warning"
+                            showZero={false}
                           >
-                            {item.titulo}
-                          </Button>
+                            <Button
+                              key={index}
+                              variant="outlined"
+                              sx={{
+                                borderColor: "#303030",
+                                color: "#FFFFFF",
+                                fontWeight: "bold",
+                              }}
+                              onClick={item.action}
+                            >
+                              {item.titulo}
+                            </Button>
+                          </Badge>
                         )
                       )}
                   </Grid>

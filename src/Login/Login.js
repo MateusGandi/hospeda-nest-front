@@ -60,8 +60,9 @@ const Login = ({ dados, setDados }) => {
           }
         />
       </Grid>
-      <Grid item size={{ xs: 12 }}>
+      <Grid item size={{ xs: 12 }} sx={{ display: "flex", flexWrap: "wrap" }}>
         <Link href="/recover">Esqueceu sua senha?</Link>
+        <Link href="/create">Não tem uma conta? Crie uma</Link>
       </Grid>
     </>
   );

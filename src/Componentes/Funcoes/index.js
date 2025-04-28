@@ -207,6 +207,9 @@ export const getLocalItem = (key) => {
   }
 };
 
+export const primeiraMaiuscula = (str) =>
+  str.charAt(0).toUpperCase() + str.slice(1);
+
 export const getStatus = (status) => {
   switch (status) {
     case "PENDING":

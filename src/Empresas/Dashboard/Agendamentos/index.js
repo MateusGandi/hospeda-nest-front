@@ -19,6 +19,7 @@ import {
   getLocalItem,
   getStatus,
   isMobile,
+  primeiraMaiuscula,
 } from "../../../Componentes/Funcoes";
 import Reagendamento from "./Reschedule";
 import apiService from "../../../Componentes/Api/axios";
@@ -191,7 +192,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
         `/scheduling/${acao}/${modalConteudo.dados?.id}`,
         modalConteudo.dados
       );
-      alertCustom(`${status[acao]} realizado com sucesso!`);
+      alertCustom(`${primeiraMaiuscula(status[acao])} realizado com sucesso!`);
       setModalConteudo((prev) => ({
         ...prev,
         open: false,
@@ -228,7 +229,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
           }}
         >
           <Typography variant="h6">
-            <span className="show-text">
+            <span>
               {formatDataToString(dataSelecionada.toLocaleDateString())}
             </span>
           </Typography>
@@ -274,6 +275,11 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
                     barbearia: barbearia,
                     servicos: item.servico,
                     barbeiro: { id: getLocalItem("userId") },
+                  },
+
+                  action: {
+                    titulo: "Concluído",
+                    do: () => handleAction("confirm"),
                   },
                 }));
               }}

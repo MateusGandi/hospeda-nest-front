@@ -14,11 +14,14 @@ import Modal from "../Modal";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
 
-const Permissions = ({ alertCustom }) => {
+const Permissions = ({ type = "popup", open = false, alertCustom }) => {
   const location = useLocation();
-  const [modal, setModal] = useState({ open: false });
+  const [modal, setModal] = useState({ open: open });
   const [showBottomPopup, setShowBottomPopup] = useState(false);
 
+  useEffect(() => {
+    setModal((prev) => ({ ...prev, open: open }));
+  }, [open]);
   const initialPermissions = [
     {
       name: "flagCookies",
@@ -126,13 +129,17 @@ const Permissions = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    const shouldPrompt =
-      Cookies.get("getPermission") !== "false" &&
-      getLocalItem("userId") &&
-      !getLocalItem("flagEmail");
+    if (type == "popup") {
+      const shouldPrompt =
+        Cookies.get("getPermission") !== "false" &&
+        getLocalItem("userId") &&
+        (!getLocalItem("flagWhatsapp") ||
+          !getLocalItem("flagTermos") ||
+          !getLocalItem("flagCookies"));
 
-    if (shouldPrompt) {
-      setShowBottomPopup(true);
+      if (shouldPrompt) {
+        setShowBottomPopup(true);
+      }
     }
   }, [location]);
 

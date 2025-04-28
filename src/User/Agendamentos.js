@@ -6,7 +6,7 @@ import apiService from "../Componentes/Api/axios";
 import { format } from "date-fns";
 import { PaperList } from "../Componentes/Lista/Paper";
 import { formatarHorario, isMobile } from "../Componentes/Funcoes";
-import ReviewBarbershopModal from "./Evaluation";
+import ReviewBarbershopModal from "../Evaluation";
 import Filter from "../Componentes/Filter";
 import Confirm from "../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
