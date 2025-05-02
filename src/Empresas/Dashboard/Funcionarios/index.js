@@ -29,11 +29,11 @@ const GerenciarFuncionarios = ({
   }, [dados]);
 
   const handleDelete = async (item) => {
-    console.log("item", item);
     try {
-      await Api.query("DELETE", `/employees/${item.id}`);
+      //await Api.query("DELETE", `/employees/${item.id}`);
       setFuncionarios(funcionarios.filter((op) => op.id != item.id));
-      alertCustom("Funcionários atualizados com sucesso!");
+      await handleSave(false);
+      alertCustom("Funcionário removido com sucesso!");
     } catch (error) {
       alertCustom("Erro ao remover funcionário!");
     }
@@ -48,6 +48,7 @@ const GerenciarFuncionarios = ({
       actionText: "Adicionar",
     });
   };
+
   const handleSelect = (item) => {
     setModal({
       open: true,
@@ -73,7 +74,7 @@ const GerenciarFuncionarios = ({
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = async (omit = true) => {
     //envio para a api
     try {
       await Api.query("PATCH", `/establishment/${barbearia.id}`, {
@@ -82,10 +83,10 @@ const GerenciarFuncionarios = ({
           servicesId: item.servicosPrestados.map((service) => service.id),
         })),
       });
-      alertCustom("Equipe atualizada!");
+      omit && alertCustom("Equipe atualizada!");
       handleClose();
     } catch (error) {
-      alertCustom("Erro ao cadastrar funcionários");
+      omit && alertCustom("Erro ao atualizar funcionários");
     }
   };
 
@@ -162,6 +163,7 @@ const GerenciarFuncionarios = ({
           titulo={modal.titulo}
           servicos={servicos}
           buttons={modal.buttons}
+          handleSavefull={handleSave}
         />{" "}
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>

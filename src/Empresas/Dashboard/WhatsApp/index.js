@@ -11,10 +11,10 @@ import {
   Stack,
 } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import Icon from "../../../Assets/Emojis";
 import LogoTonsus from "../../../Assets/tonsus_logo.png";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const GestorSessoesWhatsApp = ({ barbearia, alertCustom }) => {
   const [mensagensChat] = useState([
@@ -33,10 +33,14 @@ const GestorSessoesWhatsApp = ({ barbearia, alertCustom }) => {
   ]);
 
   const [modalSessoes, setModalSessoes] = useState(false);
-  const mensagemBoasVindas = `Olá! 👋 Seja bem-vindo à ${barbearia.nome}. 
+  const mensagemBoasVindas = `Olá! 👋 Seja bem-vindo à *${barbearia.nome}*. 
+
 Em breve lhe atenderemos, mas se quiser ajuda a qualquer momento, conte com o nosso atendente virtual para te ajudar com agendamentos, horários e informações, está sempre disponível.
-Basta clicar no link abaixo e começar a conversar com a gente!
-https://api.whatsapp.com/send?phone=556292324267`;
+Basta clicar no link abaixo e começar a conversar
+👉 api.whatsapp.com/send?phone=556292324267
+
+Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
+👉 tonsus.com.br`;
 
   return (
     <>
@@ -116,7 +120,7 @@ https://api.whatsapp.com/send?phone=556292324267`;
                   color="success"
                   variant="contained"
                   disableElevation
-                  endIcon={<ArrowForwardRoundedIcon />}
+                  endIcon={<ContentCopyIcon />}
                   sx={{ maxWidth: "300px", color: "#fff" }}
                 >
                   Copiar mensagem
@@ -183,7 +187,7 @@ https://api.whatsapp.com/send?phone=556292324267`;
             </Stack>
           </Grid>
           <Grid size={12}>
-            <Typography variant="h6">
+            <Typography variant="h6" className="show-box">
               <Icon>📌</Icon> Como começar
               <Typography variant="body1">
                 Copie a mensagem de <b>boas-vindas</b> e use no seu{" "}

@@ -293,7 +293,7 @@ const NavigationBar = () => {
                 {isMobile ? (
                   <>
                     <IconButton onClick={() => setMenuOpen((prev) => !prev)}>
-                      <MenuRoundedIcon />
+                      <MenuRoundedIcon size="large" />
                     </IconButton>
                     <Modal
                       open={menuOpen}

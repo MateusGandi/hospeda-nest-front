@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import LogoImage from "../Assets/plus_banner.png";
 import { getLocalItem } from "../Componentes/Funcoes";
 import { TypingEffectText } from "../Componentes/Effects";
+import Footer from "../Componentes/Footer";
 
 const PublicPage = () => {
   const items = {
@@ -42,86 +43,94 @@ const PublicPage = () => {
 
   const navigate = useNavigate();
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        background: `url(${LogoImage})`,
-        backgroundSize: "cover",
-        display: "flex",
-        alignItems: "center",
-        height: "calc(100vh - 65px)",
-      }}
-    >
-      <Grid
-        container
-        spacing={2}
+    <>
+      <Container
+        maxWidth="lg"
         sx={{
-          textAlign: "center",
-          justifyContent: "center",
-          flexWrap: "wrap",
+          background: `url(${LogoImage})`,
+          backgroundSize: "cover",
+          display: "flex",
+          alignItems: "center",
+          height: "calc(100vh - 65px)",
         }}
       >
-        {/* Texto principal */}
-        <Grid size={12}>
-          <Typography
-            variant="h2"
-            sx={{
-              marginBottom: "20px",
-              fontWeight: "bold",
-              color: "#fff",
-              display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              m: "0 2%",
-            }}
-          >
-            <TypingEffectText />
-          </Typography>
-        </Grid>
-
-        {/* Texto descritivo */}
-        <Grid size={12}>
-          <Typography
-            variant={"h5"}
-            style={{
-              marginBottom: "40px",
-              color: "#fff",
-            }}
-          >
-            <span
-              style={{
-                borderRadius: "10px",
-                padding: "3px 10px",
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            textAlign: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {/* Texto principal */}
+          <Grid size={12}>
+            <Typography
+              variant="h2"
+              sx={{
+                marginBottom: "20px",
+                fontWeight: "bold",
+                color: "#fff",
+                display: "flex",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                m: "0 2%",
               }}
             >
-              Os serviços da sua barberia e tudo mais em um só lugar, agente já!
-            </span>
-          </Typography>
-        </Grid>
-        {items[
-          getLocalItem("accessType") ? getLocalItem("accessType") : "default"
-        ].map((item) => (
-          <Grid item size={{ xs: 12, md: 3 }} sx={{ order: { xs: 1, md: 2 } }}>
-            <Button
-              fullWidth
-              variant={item.force ? "contained" : "outlined"}
-              size="large"
-              color={item.force ? "primary" : "secondary"}
-              disableElevation
-              style={{
-                ...(item.force
-                  ? { fontWeight: "bold" }
-                  : { border: "1px solid #fff" }),
-                color: "#FFFFFF",
-              }}
-              onClick={() => navigate(item.action)}
-            >
-              {item.title}
-            </Button>
+              <TypingEffectText />
+            </Typography>
           </Grid>
-        ))}
-      </Grid>
-    </Container>
+
+          {/* Texto descritivo */}
+          <Grid size={12}>
+            <Typography
+              variant={"h5"}
+              style={{
+                marginBottom: "40px",
+                color: "#fff",
+              }}
+            >
+              <span
+                style={{
+                  borderRadius: "10px",
+                  padding: "3px 10px",
+                }}
+              >
+                Os serviços da sua barberia e tudo mais em um só lugar, agente
+                já!
+              </span>
+            </Typography>
+          </Grid>
+          {items[
+            getLocalItem("accessType") ? getLocalItem("accessType") : "default"
+          ].map((item) => (
+            <Grid
+              item
+              size={{ xs: 12, md: 3 }}
+              sx={{ order: { xs: 1, md: 2 } }}
+            >
+              <Button
+                fullWidth
+                variant={item.force ? "contained" : "outlined"}
+                size="large"
+                color={item.force ? "primary" : "secondary"}
+                disableElevation
+                style={{
+                  ...(item.force
+                    ? { fontWeight: "bold" }
+                    : { border: "1px solid #fff" }),
+                  color: "#FFFFFF",
+                }}
+                onClick={() => navigate(item.action)}
+              >
+                {item.title}
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+      <Footer />
+    </>
   );
 };
 export default PublicPage;

@@ -118,7 +118,9 @@ const Create = ({ dados, setDados }) => {
         />
       </Grid>{" "}
       <Grid item size={12} sx={{ height: 0 }}>
-        <a href="/login">Já possui uma conta? Acesse</a>
+        <a href="/login" className="show-link">
+          Já possui uma conta? Acesse-a
+        </a>
         <Typography color="error" variant="body1">
           {feedback}
         </Typography>

@@ -10,15 +10,20 @@ const BetaInfoButton = () => {
       <Box
         sx={{
           position: "fixed",
-          bottom: 16,
-          left: 16,
+          bottom: 100,
+          left: -53,
           zIndex: 1300,
+          rotate: "-90deg",
         }}
       >
         <Button
           variant="text"
           color="secondary"
           size="small"
+          sx={{
+            p: "5px 10px",
+            borderRadius: "0 0 10px 10px !important",
+          }}
           onClick={() => setOpen(true)}
         >
           Versão Beta 1.0.1
