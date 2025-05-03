@@ -107,16 +107,14 @@ const Estabelecimentos = ({ alertCustom }) => {
             propFilters={["nome"]}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
-            aditionalFilters={
-              <GetUserLocation
-                setLoading={setLoadingLocation}
-                loading={loadingLocation}
-                alertCustom={alertCustom}
-                setLocation={setLocation}
-              />
-            }
-            aditionalFiltersFocus={!!location || loadingLocation}
-          />
+          >
+            <GetUserLocation
+              setLoading={setLoadingLocation}
+              loading={loadingLocation}
+              alertCustom={alertCustom}
+              setLocation={setLocation}
+            />
+          </SearchBarWithFilters>
         </Grid>
         <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
           {empresasFiltred && empresasFiltred.length ? (
