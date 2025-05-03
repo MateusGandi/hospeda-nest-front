@@ -33,6 +33,11 @@ const Recover = ({ dados, setDados }) => {
           variant="outlined"
         />
       </Grid>
+      <Grid item size={{ xs: 12 }}>
+        <Link href="/login" className="show-link">
+          Já possui uma conta? Acesse-a
+        </Link>
+      </Grid>
     </>
   );
 };

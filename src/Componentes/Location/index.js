@@ -1,7 +1,21 @@
 import React, { useState } from "react";
-import { Button, Chip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import PlaceIcon from "@mui/icons-material/Place";
 
-const GetUserLocation = ({ alertCustom, setLocation, setLoading, loading }) => {
+const GetUserLocation = ({
+  alertCustom,
+  setLocation,
+  setLoading,
+  loading,
+  children,
+}) => {
   const [address, setAddress] = useState("");
 
   const handleGetLocation = () => {
@@ -41,20 +55,41 @@ const GetUserLocation = ({ alertCustom, setLocation, setLoading, loading }) => {
   };
 
   return (
-    <Chip
-      color={address ? "warning" : "inherit"}
-      label={loading ? "Carregando..." : address || "Usar minha Localização"}
-      disabled={loading}
-      onClick={
-        address
-          ? () => {
-              setAddress("");
-              setLocation(null);
-            }
-          : () => handleGetLocation()
-      }
-      size="large"
-    />
+    <>
+      {" "}
+      <Typography
+        variant="body2"
+        sx={{
+          width: "100%",
+          p: 1,
+          textAlign: "center",
+        }}
+      >
+        {address}
+      </Typography>
+      <IconButton
+        disabled={loading}
+        onClick={
+          address
+            ? () => {
+                setAddress("");
+                setLocation(null);
+              }
+            : () => handleGetLocation()
+        }
+        size="large"
+        sx={{ background: "#363636", maxWidth: "50px" }}
+      >
+        {loading ? (
+          <CircularProgress sx={{ color: "#fff" }} size={28} />
+        ) : (
+          <PlaceIcon
+            sx={{ width: 28, height: 28 }}
+            color={address ? "success" : "secondary"}
+          />
+        )}
+      </IconButton>
+    </>
   );
 };
 

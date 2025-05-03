@@ -86,7 +86,9 @@ export function RouteElement({ path, alertCustom }) {
   if (!pathF) {
     return <Navigate to="/login" />;
   } else {
-    lastPath != "/login" && setLocalItem("lastRoute", lastPath);
+    console.log("testeetstetetee", lastPath);
+    !"login create recover change".includes(lastPath.split("/")[0]) &&
+      setLocalItem("lastRoute", lastPath);
     return paths[pathF];
   }
 }

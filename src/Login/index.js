@@ -48,11 +48,11 @@ const LoginPage = ({ page, alertCustom }) => {
         return alertCustom("As senhas digitadas não são iguais!");
 
       const data = await Api.query("POST", `/user/recover/change/${hash}`, {
-        senha,
+        password: senha,
       });
       Api.setKey(data);
-      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
-      alertCustom("Senha atualizada com sucesso!");
+      navigate("/login");
+      alertCustom("Senha atualizada com sucesso, faça login novamente!");
     } catch (error) {
       console.log(error);
       alertCustom(
@@ -73,7 +73,9 @@ const LoginPage = ({ page, alertCustom }) => {
         `/user/recover/${telefone.replace(/\D/g, "")}`
       );
 
-      alertCustom(data.message ?? "Solicitação enviada!");
+      alertCustom(
+        "Um link de recuperação será enviado para seu e-mail e WhatsApp!"
+      );
     } catch (error) {
       console.log(error);
       alertCustom(

@@ -70,24 +70,20 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
       </Modal>
       <Grid container alignItems="center">
         {" "}
-        <Typography
-          variant="body1"
-          sx={{
-            minWidth: "200px",
-            borderRadius: "5px",
-            textAlign: "left",
-          }}
-        >
-          <Switch
-            checked={formData.aberto}
-            onChange={async (e) => {
-              setFormData({ ...formData, aberto: e.target.checked });
-              await onChangeAndSave(e.target.checked);
-            }}
-            color="primary"
-          />
-
-          {formData.aberto ? "Aberto" : "Fechado"}
+        <Typography variant="body1">
+          <span style={{ width: "30px" }}>
+            <Switch
+              checked={formData.aberto}
+              onChange={async (e) => {
+                setFormData({ ...formData, aberto: e.target.checked });
+                await onChangeAndSave(e.target.checked);
+              }}
+              color="primary"
+            />
+          </span>
+          <span style={{ minWidth: "700px" }}>
+            {formData.aberto ? "Aberto" : "Fechado"}
+          </span>
         </Typography>{" "}
       </Grid>
     </>

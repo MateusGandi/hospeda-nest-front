@@ -18,7 +18,11 @@ import Funcioanarios from "./Funcionarios";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
 import AnimatedCheck from "../../Componentes/Motion/Icons";
-import { formatarHorario, getLocalItem } from "../../Componentes/Funcoes";
+import {
+  formatarHorario,
+  formatPhone,
+  getLocalItem,
+} from "../../Componentes/Funcoes";
 
 const Empresa = ({ alertCustom }) => {
   const paths = [
@@ -170,7 +174,7 @@ const Empresa = ({ alertCustom }) => {
         .map((item) => ({
           ...item,
           titulo: item.nome,
-          subtitulo: `${item.telefone} - Especialidades: ${
+          subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
             item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
           }`,
           imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,

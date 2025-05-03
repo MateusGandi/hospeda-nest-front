@@ -204,7 +204,8 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
               >
                 <Button
                   variant="text"
-                  sx={{ color: "#FFFFFF", mt: 3 }}
+                  color="secondary"
+                  sx={{ m: "10px 0", p: "5px 15px" }}
                   onClick={handleSubmit}
                   endIcon={<ArrowForwardRoundedIcon />}
                 >

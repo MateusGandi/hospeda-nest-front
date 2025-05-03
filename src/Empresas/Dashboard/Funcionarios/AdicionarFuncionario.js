@@ -26,6 +26,7 @@ const Funcionario = ({
   submitText,
   actionText,
   buttons,
+  handleSavefull,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -49,7 +50,7 @@ const Funcionario = ({
     }
   }, [formData]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData) {
       setFormData((prev) => [
         ...prev.filter((item) => item.id !== formData?.id),
@@ -65,6 +66,7 @@ const Funcionario = ({
       telefone: "",
       servicosPrestados: [],
     });
+    await handleSavefull(true);
     setOpen(false);
   };
 

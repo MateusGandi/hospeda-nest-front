@@ -3,7 +3,7 @@ import Api from "../../Componentes/Api/axios";
 import SearchBarWithFilters from "../../Componentes/Search";
 import Modal from "../../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
-import { Grid2 as Grid, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import ConeSVG from "../../Assets/cone.svg";
 import { formatPhone } from "../../Componentes/Funcoes";
@@ -18,6 +18,7 @@ const Estabelecimentos = ({ alertCustom }) => {
   const [empresasFiltred, setEmpresasFiltred] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [page, setPage] = useState({ size: 10, page: 1 });
   const [dados, setDados] = useState({ open: true });
 
   useEffect(() => {
@@ -36,13 +37,23 @@ const Estabelecimentos = ({ alertCustom }) => {
     const buscarDados = async () => {
       !empresas.length && setLoading(true);
       try {
+        let query = [];
+        if (location) {
+          query.push(
+            `location=${location && Object.values(location).join(",")}`
+          );
+        }
+        if (searchValue) {
+          query.push(`estabilishment=${searchValue}`);
+        }
+        if (page) {
+          query.push(`page=${page.page}`);
+          query.push(`pageSize=${page.size}`);
+        }
+
         const data = await Api.query(
           "GET",
-          `/establishment/all${
-            location
-              ? `?location=${location && Object.values(location).join(",")}`
-              : ""
-          }`
+          `/establishment/all${query.length ? "?" + query.join("&") : ""}`
         );
 
         const dados = formatarRows(data);
@@ -55,13 +66,17 @@ const Estabelecimentos = ({ alertCustom }) => {
       }
     };
     buscarDados();
-  }, [location]);
+  }, [location, searchValue]);
 
   const formatarRows = (items) => {
     return items.map((item) => ({
       ...item,
       titulo: item.nome,
-      subtitulo: `${formatPhone(item.telefone)} | ${
+      subtitulo: `${
+        item.distancia && item.distancia != 99999
+          ? item.distancia?.toFixed(0) + " km | "
+          : ""
+      }${formatPhone(item.telefone)} | ${
         item.endereco.length > 20
           ? item.endereco.slice(0, 40) + "..."
           : item.endereco
@@ -92,16 +107,14 @@ const Estabelecimentos = ({ alertCustom }) => {
             propFilters={["nome"]}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
-            aditionalFilters={
-              <GetUserLocation
-                setLoading={setLoadingLocation}
-                loading={loadingLocation}
-                alertCustom={alertCustom}
-                setLocation={setLocation}
-              />
-            }
-            aditionalFiltersFocus={!!location || loadingLocation}
-          />
+          >
+            <GetUserLocation
+              setLoading={setLoadingLocation}
+              loading={loadingLocation}
+              alertCustom={alertCustom}
+              setLocation={setLocation}
+            />
+          </SearchBarWithFilters>
         </Grid>
         <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
           {empresasFiltred && empresasFiltred.length ? (
@@ -133,6 +146,18 @@ const Estabelecimentos = ({ alertCustom }) => {
               <div style={{ width: "100%" }}>Nenhum resultado encontrado!</div>
             </Typography>
           )}
+          <Typography sx={{ textAlign: "center", m: 1 }}>
+            <Button
+              disableElevation
+              variant="text"
+              color="secondary"
+              onClick={() =>
+                setPage((prev) => ({ ...prev, page: prev.size + 10 }))
+              }
+            >
+              Ver mais
+            </Button>
+          </Typography>
         </Grid>
       </Grid>
     </Modal>

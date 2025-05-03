@@ -34,11 +34,11 @@ const ChangePassword = ({ dados, setDados }) => {
     if (
       dados.senha &&
       dados.confirm &&
-      dados.senha.length <= dados.confirm.length &&
+      dados.senha?.length <= dados.confirm?.length &&
       dados.senha != dados.confirm
     )
       setFeedback("●\tSenhas devem ser iguais");
-    else if (dados.senha.length < 5)
+    else if (dados.senha && dados.senha.length < 5)
       setFeedback("●\tSua senha deve conter ao menos 5 caracteres!");
     else setFeedback(null);
   }, [dados]);
@@ -56,7 +56,7 @@ const ChangePassword = ({ dados, setDados }) => {
           label="Senha"
           name="senha"
           type={showPassword ? "text" : "password"}
-          value={dados.senha || ""}
+          value={dados?.senha || ""}
           onChange={handleChange}
           variant="outlined"
           endIcon={
@@ -70,10 +70,10 @@ const ChangePassword = ({ dados, setDados }) => {
         <CustomInput
           fullWidth
           placeholder="Confirme a nova senha"
-          label="Confirmer Senha"
+          label="Confirmar Senha"
           name="confirm"
           type={showConfirm ? "text" : "password"}
-          value={dados.confirm || ""}
+          value={dados?.confirm || ""}
           onChange={handleChange}
           variant="outlined"
           endIcon={

@@ -309,8 +309,13 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.size}
-        buttons={buttons[modalConteudo.view]}
-        onAction={modalConteudo.action.do}
+        buttons={buttons[modalConteudo.view].filter(
+          ({ status }) =>
+            status != modalConteudo.dados?.status && status == "CANCELLED"
+        )}
+        onAction={
+          modalConteudo.dados?.status == "PENDING" && modalConteudo.action.do
+        }
         actionText={modalConteudo.action.titulo}
         fullScreen={modalConteudo.fullScreen}
       >
@@ -339,11 +344,29 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
           />
         ) : (
           modalConteudo.dados && (
-            <PaperList items={modalConteudo.dados.servico}>
-              <Typography variant="h6" sx={{ p: "5px 10px" }}>
-                Resumo do pedido
-              </Typography>
-            </PaperList>
+            <>
+              <PaperList items={modalConteudo.dados.servico}>
+                <Typography variant="h6" sx={{ p: "5px 10px" }}>
+                  Resumo do pedido
+                </Typography>
+              </PaperList>
+              {modalConteudo.dados.motivoCancelamento && (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    width: "100%",
+                    marginTop: "20vh",
+                    alignContent: "center",
+                  }}
+                  className="show-box"
+                >
+                  <Icon>🔍</Icon> Motivo do cancelamento:
+                  <Typography variant="body1">
+                    {modalConteudo.dados.motivoCancelamento}
+                  </Typography>
+                </Typography>
+              )}
+            </>
           )
         )}
       </Modal>

@@ -24,6 +24,7 @@ const SearchBarWithFilters = ({
   fullWidth = true,
   aditionalFilters = null,
   aditionalFiltersFocus = false,
+  children,
 }) => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -45,19 +46,12 @@ const SearchBarWithFilters = ({
   useEffect(() => {
     // Aplica os filtros e a busca
     const filteredElements = initial.filter((element) => {
-      // Verifica se o elemento corresponde ao valor de busca
-      const matchesSearch = searchValue
-        ? Object.values(element).some((value) =>
-            String(value).toLowerCase().includes(searchValue.toLowerCase())
-          )
-        : true;
-
       // Verifica se o elemento corresponde aos filtros selecionados
       const matchesFilters = selectedFilters.every((filter) =>
         propFilters.some((prop) => element[prop] === filter)
       );
 
-      return matchesSearch && matchesFilters;
+      return matchesFilters;
     });
     setElements(filteredElements);
   }, [searchValue, selectedFilters]);
@@ -109,45 +103,50 @@ const SearchBarWithFilters = ({
       onBlur={handleBlur}
       tabIndex={-1}
     >
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder={label}
-        size="small"
-        value={searchValue}
-        onFocus={handleFocus}
-        onChange={handleInputChange}
-        inputRef={textFieldRef}
-        InputProps={{
-          endAdornment: (
-            <>
-              {" "}
-              {searchValue.length > 0 && (
-                <IconButton onClick={handleClearFilters}>
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              )}
-              <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
-            </>
-          ),
-          sx: {
-            "& .MuiOutlinedInput-notchedOutline": {
-              border: "none",
-            },
-            p: "5px 10px",
-            background: "#363636",
-            borderRadius: "100px",
-          },
-        }}
-      />
+      <Box
+        sx={{ display: "flex", gap: 1, alignItems: "start", flexWrap: "wrap" }}
+      >
+        {children}
 
+        <TextField
+          variant="outlined"
+          placeholder={label}
+          size="small"
+          value={searchValue}
+          onFocus={handleFocus}
+          onChange={handleInputChange}
+          inputRef={textFieldRef}
+          sx={{ width: "calc(100% - 60px)" }}
+          InputProps={{
+            endAdornment: (
+              <>
+                {" "}
+                {searchValue.length > 0 && (
+                  <IconButton onClick={handleClearFilters}>
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                )}
+                <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
+              </>
+            ),
+            sx: {
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
+              p: "5px 10px",
+              background: "#363636",
+              borderRadius: "100px",
+            },
+          }}
+        />
+      </Box>
       <Collapse
         in={filtersVisible && !!uniqueFilterValues[propFilters[0]]?.length}
       >
         <Paper
           elevation={0}
           sx={{
-            mt: 2,
+            mt: 1,
             p: 2,
             background: "#363636",
             borderRadius: "10px",
