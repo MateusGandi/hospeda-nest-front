@@ -12,9 +12,21 @@ import {
   Button,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+
 import Modal from "../../Componentes/Modal";
 import Onboarding from "./Onboarding";
+import CustomCard from "../../Componentes/Card/";
+import {
+  formatPhone,
+  gerarGradient,
+  getDominantColorFromURL,
+  getLocalItem,
+  isMobile,
+} from "../../Componentes/Funcoes";
+import Api from "../../Componentes/Api/axios";
+
 import StyleIcon from "@mui/icons-material/Style";
+import PersonIcon from "@mui/icons-material/Person";
 
 import EditData from "./Edit";
 import EditFuncionarios from "./Funcionarios";
@@ -22,24 +34,23 @@ import EditServicos from "./Servicos";
 import Agendamentos from "./Agendamentos";
 import Financeiro from "./Financeiro";
 import WhatsApp from "./WhatsApp";
-
-import CustomCard from "../../Componentes/Card/";
 import AgendamentoManual from "./Agendamento";
-import {
-  gerarGradient,
-  getDominantColorFromURL,
-  getLocalItem,
-  getPredominantColor,
-  isMobile,
-} from "../../Componentes/Funcoes";
-import Api from "../../Componentes/Api/axios";
+import WorkSchedule from "./Escala";
+import GetUserLocation from "../../Componentes/Location/Modal";
 
-import { Edit, People, Build, CalendarMonth } from "@mui/icons-material";
+import {
+  Store,
+  Settings,
+  People,
+  Build,
+  CalendarMonth,
+} from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 
 const BarberShopMenu = ({ alertCustom }) => {
   const navigate = useNavigate();
   const { path } = useParams();
+
   const [modal, setModal] = useState({
     funcionarios: false,
     servicos: false,
@@ -48,6 +59,8 @@ const BarberShopMenu = ({ alertCustom }) => {
     agendamentos: false,
     plans: false,
     complete: false,
+    profile: false,
+    location: false,
   });
   const [color, setColor] = useState("#363636");
   const [etapa, setEtapa] = useState({
@@ -75,11 +88,23 @@ const BarberShopMenu = ({ alertCustom }) => {
           icon: <CalendarMonth sx={{ mr: 1 }} />,
           title: "Minha Agenda",
         },
+        {
+          action: "profile",
+          icon: <Settings sx={{ mr: 1 }} />,
+          title: "Minha Escala",
+        },
+        {
+          to: "/me",
+          action: "me",
+          icon: <PersonIcon sx={{ mr: 1 }} />,
+          title: "Meu perfil",
+        },
       ],
+
       manager: [
         {
           action: "edicao",
-          icon: <Edit sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: 1 }} />,
           title: "Editar dados da barbearia",
         },
         {
@@ -106,7 +131,7 @@ const BarberShopMenu = ({ alertCustom }) => {
       adm: [
         {
           action: "edicao",
-          icon: <Edit sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: 1 }} />,
           title: "Editar dados da barbearia",
         },
         {
@@ -119,11 +144,17 @@ const BarberShopMenu = ({ alertCustom }) => {
           icon: <Build sx={{ mr: 1 }} />,
           title: "Serviços",
         },
+        {
+          to: "/me",
+          action: "me",
+          icon: <PersonIcon sx={{ mr: 1 }} />,
+          title: "Meu perfil",
+        },
       ],
       admfuncionario: [
         {
           action: "edicao",
-          icon: <Edit sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: 1 }} />,
           title: "Editar dados da barbearia",
         },
         {
@@ -145,6 +176,17 @@ const BarberShopMenu = ({ alertCustom }) => {
           action: "agendamentos",
           icon: <CalendarMonth sx={{ mr: 1 }} />,
           title: "Minha Agenda",
+        },
+        {
+          action: "profile",
+          icon: <Settings sx={{ mr: 1 }} />,
+          title: "Minha Escala",
+        },
+        {
+          to: "/me",
+          action: "me",
+          icon: <PersonIcon sx={{ mr: 1 }} />,
+          title: "Meu perfil",
         },
       ],
     };
@@ -189,6 +231,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   useEffect(() => {
     if (Object.values(modal).every((item) => !item)) navigate(`/dashboard`);
   }, [modal]);
+
   const handlePhotoUpload = async (e, type) => {
     const file = e.target.files[0];
 
@@ -226,7 +269,12 @@ const BarberShopMenu = ({ alertCustom }) => {
             "GET",
             `/establishment?establishmentId=${getLocalItem("establishmentId")}`
           );
-          setBarbearia(dataAtualizada);
+          const [latitude, longitude] = dataAtualizada.longitudeAndLatitude;
+
+          setBarbearia({
+            ...dataAtualizada,
+            location: { latitude, longitude },
+          });
 
           // Aguarda um pouco e pega a cor dominante da nova imagem
           if (type === "profile") {
@@ -258,9 +306,19 @@ const BarberShopMenu = ({ alertCustom }) => {
           "GET",
           `/establishment?establishmentId=${getLocalItem("establishmentId")}`
         );
-        console.log(data);
+        // const teste = await Api.query(
+        //   "GET",
+        //   `/plan/hire-plan/${getLocalItem("establishmentId")}`
+        // );
+        // console.log("teste", teste);
         //setModal() se o cadastro não estiver completo, so abrir
-        setBarbearia(data);
+
+        const [latitude, longitude] = data.longitudeAndLatitude;
+
+        setBarbearia({
+          ...data,
+          location: { latitude, longitude },
+        });
       } catch (error) {
         alertCustom("Erro ao buscar informações do estabelecimento!");
       }
@@ -275,13 +333,23 @@ const BarberShopMenu = ({ alertCustom }) => {
         `/establishment/${barbearia.id}`,
         info
       );
-      setBarbearia(data);
+      const [latitude, longitude] = data.longitudeAndLatitude;
+      setBarbearia({
+        ...data,
+        location: { latitude, longitude },
+      });
+
       handleClose();
       alertCustom("Dados do estabelecimento atualizados com sucesso!");
     } catch (error) {
+      console.log(error);
       alertCustom("Erro ao atualizar dados do estabelecimento");
     }
   };
+
+  useEffect(() => {
+    !barbearia?.location && setModal((prev) => ({ ...prev, location: true }));
+  }, [barbearia]);
 
   return (
     <Container maxWidth="lg" sx={{ p: "10px" }}>
@@ -398,7 +466,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                       {barbearia.endereco}
                     </Typography>{" "}
                     <Typography variant="body1">
-                      Telefone: {barbearia.telefone}
+                      Telefone: {formatPhone(barbearia.telefone)}
                     </Typography>
                     {["adm", "manager"].includes(
                       getLocalItem("accessType")
@@ -476,9 +544,11 @@ const BarberShopMenu = ({ alertCustom }) => {
           </Grid>
 
           {cards(getLocalItem("accessType")).map(
-            ({ action, icon, title }, i) => (
+            ({ action, icon, title, to }, i) => (
               <Grid item key={i} size={{ xs: 12, md: 3 }}>
-                <CustomCard onClick={() => handleOpen(action)}>
+                <CustomCard
+                  onClick={() => (to ? navigate(to) : handleOpen(action))}
+                >
                   {icon}
                   <Typography variant="body1">{title}</Typography>
                 </CustomCard>
@@ -497,18 +567,31 @@ const BarberShopMenu = ({ alertCustom }) => {
 
           <EditFuncionarios
             barbearia={barbearia}
-            dados={barbearia.funcionarios}
             open={modal.funcionarios}
             handleClose={handleClose}
             alertCustom={alertCustom}
           />
           <EditServicos
             barbearia={barbearia}
-            dados={barbearia.servicos}
             open={modal.servicos}
             handleClose={handleClose}
             alertCustom={alertCustom}
           />
+          <WorkSchedule
+            type="modal"
+            openModal={modal.profile}
+            alertCustom={alertCustom}
+            handleCloseModal={handleClose}
+          />
+          {modal.location && (
+            <GetUserLocation
+              alertCustom={alertCustom}
+              address={barbearia.endereco}
+              onLocationSelected={({ coordinates }) =>
+                handleSave({ longitudeAndLatitude: Object.values(coordinates) })
+              }
+            />
+          )}
           {barbearia && barbearia.funcionarios && (
             <AgendamentoManual
               onClose={handleClose}

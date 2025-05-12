@@ -25,6 +25,19 @@ class ApiService {
       authorization: `Bearer ${getLocalItem("token")}`,
     };
 
+    const cacheKey = `${method}_${route}`;
+
+    // 👉 Se estiver offline, tenta retornar do cache
+    if (!navigator.onLine) {
+      const cached = getLocalItem(cacheKey);
+      if (cached) {
+        console.warn("🔁 Usando cache local offline:", cacheKey);
+        return JSON.parse(cached);
+      } else {
+        throw new Error(`Sem conexão e sem cache para: ${route}`);
+      }
+    }
+
     try {
       const response = await this.api({
         method,
@@ -32,6 +45,9 @@ class ApiService {
         headers: { ...defaultHeaders, ...headers },
         ...(body ? { data: body } : {}),
       });
+
+      // Salva resposta no cache
+      setLocalItem(cacheKey, JSON.stringify(response.data));
       return response.data;
     } catch (error) {
       const status = error?.response?.status;
@@ -42,6 +58,7 @@ class ApiService {
         setLocalItem("lastRoute", lastPath);
         window.location.href = "/login";
       }
+
       throw error;
     }
   }

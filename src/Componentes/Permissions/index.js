@@ -157,8 +157,14 @@ const Permissions = ({ type = "popup", open = false, alertCustom }) => {
             titulo: "Perguntar Depois",
             action: () => onClose(true),
             color: "terciary",
+            variant: "outlined",
           },
-          { titulo: "Aceitar tudo", action: acceptAll, color: "terciary" },
+          {
+            titulo: "Aceitar tudo",
+            variant: "outlined",
+            action: acceptAll,
+            color: "terciary",
+          },
         ]}
       >
         <Grid container spacing={2} sx={{ p: "0 8px" }}>

@@ -81,7 +81,8 @@ export const Cards = ({
                 image={
                   previews[item.id]
                     ? previews[item.id]
-                    : item?.imagem?.includes("undefined")
+                    : item?.imagem?.includes("undefined") ||
+                      item?.imagem?.includes("null")
                     ? notFounImage
                     : item.imagem
                 } // Mostra a imagem carregada ou a original

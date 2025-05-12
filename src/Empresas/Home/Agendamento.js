@@ -99,21 +99,35 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
             onSelect={handleSelect}
           />
         ) : loading ? (
-          <div
-            style={{
-              width: "100%",
-              height: "80vh",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress />
-          </div>
+          <>
+            <div
+              style={{
+                width: "100%",
+                height: "60vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          </>
         ) : (
-          <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-            Nenhum resultado encontrado!
-          </Typography>
+          <>
+            <Rows
+              items={[
+                {
+                  titulo: "Selecionar uma data diferente",
+                  id: 9999,
+                  action: () => handleOpen(),
+                },
+              ]}
+              onSelect={handleSelect}
+            />
+            <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
+              Nenhum resultado encontrado!
+            </Typography>
+          </>
         )}
       </Grid>
 
@@ -133,6 +147,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
         <Grid container spacing={1}>
           <Grid size={{ xs: 12, md: 12 }}>
             <Calendario
+              data={data.dia}
               onSelect={(value) => setData((prev) => ({ ...prev, dia: value }))}
             />
           </Grid>

@@ -104,7 +104,13 @@ const SearchBarWithFilters = ({
       tabIndex={-1}
     >
       <Box
-        sx={{ display: "flex", gap: 1, alignItems: "start", flexWrap: "wrap" }}
+        sx={{
+          display: "flex",
+          gap: 1,
+          alignItems: "start",
+          justifyContent: "end",
+          flexWrap: "wrap",
+        }}
       >
         {children}
 

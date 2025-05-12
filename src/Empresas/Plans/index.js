@@ -29,6 +29,8 @@ import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
 import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
 import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.jpg";
 import Icon from "../../Assets/Emojis";
+import { Rows } from "../../Componentes/Lista/Rows";
+import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
 
 const ModalPlanos = ({ alertCustom }) => {
   const [mensagensChat] = useState([
@@ -81,6 +83,7 @@ const ModalPlanos = ({ alertCustom }) => {
         src: "https://www.w3schools.com/html/mov_bbb.mp4",
       },
     ],
+    detalhes: [],
   });
 
   const fetchData = async () => {
@@ -123,6 +126,55 @@ const ModalPlanos = ({ alertCustom }) => {
         onClose={() => setModal((prev) => ({ ...prev, video: false }))}
       />
       <Modal
+        open={modal.detalhes.length > 0}
+        onClose={() => setModal((prev) => ({ ...prev, detalhes: [] }))}
+        maxWidth="md"
+        titulo={
+          <Typography variant="h5">
+            <Icon>✨</Icon> Ao contratar este plano você terá acesso a:
+          </Typography>
+        }
+        component="modal"
+      >
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            {" "}
+            <Rows
+              items={modal.detalhes.map((detalhe, i) => ({
+                id: i,
+                icon: (
+                  <Avatar
+                    sx={{
+                      bgcolor: "primary.light",
+                      color: "#fff",
+                      width: 32,
+                      height: 32,
+
+                      fontSize: "1rem",
+                    }}
+                  >
+                    {i + 1}
+                  </Avatar>
+                ),
+                titulo: detalhe.nome,
+                subtitulo: detalhe.descricao,
+              }))}
+              disabled={true}
+            />
+          </Grid>
+          <Grid size={12}>
+            {" "}
+            <Typography variant="h6" className="show-box">
+              <Icon>💡</Icon> Benefícios
+              <Typography variant="body1">
+                Todos os benefícios estão sujeitos aos termos de uso da
+                plataforma
+              </Typography>
+            </Typography>
+          </Grid>
+        </Grid>
+      </Modal>
+      <Modal
         open={modal.open}
         component="view"
         fullScreen="all"
@@ -130,13 +182,36 @@ const ModalPlanos = ({ alertCustom }) => {
         titulo={
           <Typography
             variant="h6"
-            sx={{ fontWeight: 600, cursor: "pointer" }}
-            onClick={() => navigate("/home")}
+            sx={{
+              width: "calc(100vw - 100px)",
+              position: "relative", // Container relativo para posicionamento absoluto do filho
+              display: "inline-flex", // Mantém o comportamento inline mas permite posicionamento
+            }}
           >
             <img
+              onClick={() => navigate("/home")}
               src={LogoPartners}
-              style={{ height: "37px", marginLeft: isMobile ? 0 : "8px" }}
+              style={{
+                cursor: "pointer",
+                height: "37px",
+                marginLeft: isMobile ? 0 : "8px",
+              }}
             />
+            {!isMobile && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/login")}
+                sx={{
+                  position: "absolute",
+                  right: "0", // Alinha à direita do container
+                  top: "60%", // Centraliza verticalmente
+                  transform: "translateY(-50%)", // Ajuste fino para centralização perfeita
+                }}
+              >
+                Acesse sua conta
+              </Button>
+            )}
           </Typography>
         }
         loading={modal.loading}
@@ -148,8 +223,13 @@ const ModalPlanos = ({ alertCustom }) => {
           backgroundSize: "cover",
         }}
       >
+        <WhatsAppButton />
         <Grid container spacing={3} sx={{ m: 1 }}>
-          <Grid size={{ xs: 12, md: 6 }} order={{ xs: 1, md: 1 }}>
+          <Grid
+            size={{ xs: 12, md: 6 }}
+            order={{ xs: 1, md: 1 }}
+            sx={{ display: "flex", alignItems: "center" }}
+          >
             <Grid
               container
               sx={{
@@ -157,32 +237,32 @@ const ModalPlanos = ({ alertCustom }) => {
               }}
             >
               <Grid size={12}>
-                <Typography variant="h5">Bem vindo Empreendedor!</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Typography variant="h4">
-                  Aumente seu faturamento e visibilidade por um preço justo!
+                <Typography variant="h3">
+                  Aumente seu <b>faturamento</b> e visibilidade por um preço
+                  justo!
                 </Typography>
               </Grid>
               <Grid size={12}>
                 <Typography variant="h6">
-                  Veja um pequeno vídeo e descubra como revolucionar sua gestão
-                  e use na prática ferramentas para atrair mais clientes
+                  Descubra na prática como revolucionar sua gestão com nossas
+                  ferramentas para atrair mais clientes
                 </Typography>
               </Grid>
               <Grid size={12}>
                 <Button
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                   disableElevation
                   size="large"
                   onClick={() => navigate(modal.videos[0].id)}
                   sx={{
+                    mt: 2,
                     width: { xs: "100%", md: "300px" },
                     fontWeight: 600,
                   }}
+                  endIcon={<EastRoundedIcon />}
                 >
-                  Clique para ver
+                  Entenda como funciona
                 </Button>
               </Grid>
             </Grid>
@@ -192,13 +272,6 @@ const ModalPlanos = ({ alertCustom }) => {
             sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}
             order={{ xs: 1, md: 1 }}
           >
-            <Typography
-              variant="h5"
-              sx={{ width: "100%", textAlign: "center" }}
-            >
-              Como começar?
-            </Typography>
-
             {modal.planos.map((plano) => (
               <Card
                 elevation={0}
@@ -221,7 +294,7 @@ const ModalPlanos = ({ alertCustom }) => {
                   <Typography variant="body1">{plano.descricao}</Typography>
                   <Typography
                     variant="h4"
-                    color={plano.destaque ? "warning" : "primary"}
+                    color={plano.destaque ? "success" : "primary"}
                     sx={{
                       fontWeight: 600,
                       mt: 3,
@@ -237,7 +310,7 @@ const ModalPlanos = ({ alertCustom }) => {
                     </Typography>
                   </Typography>
                   <Divider sx={{ m: "10px 0" }} />
-                  {plano?.produtos?.map((produto, i) => (
+                  {plano?.produtosContratados?.map((produto, i) => (
                     <>
                       <Typography
                         key={i}
@@ -253,21 +326,36 @@ const ModalPlanos = ({ alertCustom }) => {
                         <CheckIcon />
                         {produto.nome}
                       </Typography>
-                      <Typography variant="body2">
+                      {/* <Typography variant="body2">
                         {produto.descricao}
-                      </Typography>
+                      </Typography> */}
                     </>
                   ))}
                 </CardContent>
-                <CardActions sx={{ justifyContent: "center" }}>
-                  <Button
-                    variant="outlined"
-                    color="#fff"
-                    fullWidth
-                    onClick={() => handleSelectPlan(plano.id)}
-                  >
-                    Começar
-                  </Button>
+                <CardActions sx={{}}>
+                  <Stack sx={{ width: "100%", gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      color="#fff"
+                      fullWidth
+                      onClick={() => handleSelectPlan(plano.id)}
+                    >
+                      Começar
+                    </Button>
+                    <Button
+                      variant="text"
+                      color={plano.destaque ? "success" : "primary"}
+                      fullWidth
+                      onClick={() =>
+                        setModal((prev) => ({
+                          ...prev,
+                          detalhes: plano.produtosContratados,
+                        }))
+                      }
+                    >
+                      ver mais detalhes
+                    </Button>
+                  </Stack>
                 </CardActions>
               </Card>
             ))}
@@ -368,9 +456,9 @@ const ModalPlanos = ({ alertCustom }) => {
             </Grid>
           </Grid>{" "}
           <Grid size={12} order={998} sx={{ textAlign: "center", mb: -7 }}>
-            <Typography variant={"h6"}>
+            <Typography variant={"h4"}>
               Atendimento Automático WhatsApp
-              <Typography variant={"body1"}>
+              <Typography variant={"h6"}>
                 Um Atendente Virtual para atender aos seus clientes até mesmo
                 fora do expediente!
               </Typography>
@@ -381,7 +469,14 @@ const ModalPlanos = ({ alertCustom }) => {
               <Grid size={{ xs: 12, md: 7 }} sx={{ position: "relative" }}>
                 <img
                   src={isMobile ? barbeiroConfusoLeft : barbeiroConfuso}
-                  style={{ width: "100%", marginBottom: "-16px", zIndex: 998 }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "76%",
+                    marginBottom: "-24px",
+                    zIndex: 998,
+                  }}
                 />
 
                 <Card
@@ -401,7 +496,7 @@ const ModalPlanos = ({ alertCustom }) => {
                     zIndex: 997,
                     ...(isMobile
                       ? { top: 90, left: 10 }
-                      : { top: 220, right: 70 }),
+                      : { top: 180, right: 140 }),
                   }}
                 >
                   <CardHeader

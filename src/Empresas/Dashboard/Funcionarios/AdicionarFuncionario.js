@@ -1,32 +1,27 @@
 import React, { useEffect, useState } from "react";
-import {
-  Grid2 as Grid,
-  MenuItem,
-  Select,
-  Typography,
-  Checkbox,
-  ListItemText,
-  InputLabel,
-  FormControl,
-} from "@mui/material";
+import { Grid2 as Grid, Icon, Typography } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
-import { CustomInput, CustomSelect } from "../../../Componentes/Custom";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarHorario, formatPhone } from "../../../Componentes/Funcoes";
+import { formatarHorario } from "../../../Componentes/Funcoes";
 import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
+import apiService from "../../../Componentes/Api/axios";
+import WorkSchedule from "../Escala";
 
 const Funcionario = ({
-  formData,
-  setFormData,
+  funcionario, //funcionário selecionado
+  setFuncionarios,
+  funcionarios,
+  barbearia,
   open,
-  setOpen,
+  onClose,
   servicos,
   titulo,
   onSubmit,
   submitText,
   actionText,
   buttons,
-  handleSavefull,
+  alertCustom,
+  buscarDados,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -35,48 +30,46 @@ const Funcionario = ({
   });
 
   useEffect(() => {
-    if (formData) {
+    if (funcionario && open) {
       setData({
-        id: formData.id,
-        title: `${formData.nome} - ${formData.telefone}`,
-        nome: formData.nome || "",
-        telefone: formData.telefone || "",
-        servicosPrestados: formData.servicosPrestados || [],
-        foto: formData.foto || null,
-        imagem: formData.foto
-          ? `https://srv744360.hstgr.cloud/tonsus/api/images/user/${formData.id}/${formData.foto}`
-          : null,
+        ...funcionario,
+        idOrig: funcionario.id,
+        title: `${funcionario.nome} - ${funcionario.telefone}`,
       });
     }
-  }, [formData]);
+  }, [open]);
 
   const handleSave = async () => {
-    if (formData) {
-      setFormData((prev) => [
-        ...prev.filter((item) => item.id !== formData?.id),
-        data,
-      ]);
-    } else {
-      setFormData((prev) => [...prev, data]);
-    }
+    const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
+    const funcionariosFinais = [...semAtual, data];
 
+    await apiService.query("PATCH", `/establishment/${barbearia.id}`, {
+      funcionarios: funcionariosFinais.map((item) => ({
+        userId: item.id,
+        servicesId: item.servicosPrestados.map((service) => service.id),
+      })),
+    });
+
+    await buscarDados();
+    onClose();
     setData({
-      id: null,
       nome: "",
       telefone: "",
       servicosPrestados: [],
     });
-    await handleSavefull(true);
-    setOpen(false);
+    alertCustom(
+      data.id
+        ? "Funcionário adicionado com sucesso!"
+        : "Funcionário atualizado com sucesso!"
+    );
   };
 
   return (
     <Modal
       open={open}
       onClose={() => {
-        setOpen(false);
+        onClose();
         setData({
-          id: null,
           nome: "",
           telefone: "",
           servicosPrestados: [],
@@ -92,71 +85,87 @@ const Funcionario = ({
       buttons={buttons}
     >
       <Grid container spacing={4} sx={{ mt: 4 }}>
-        <Grid item size={{ xs: 12, md: 6 }}>
-          <Typography variant="body1">Funcionário</Typography>
+        <Grid size={12}>
+          <Typography variant="body1" className="show-box">
+            <Typography variant="h6">
+              <Icon>💡</Icon> Aviso
+            </Typography>
+            Para cadastrar um novo funcionário, o mesmo precisa estar
+            previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
+            <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
+            cargo. Além disso você pode configurar a escala de trabalho:{" "}
+            <WorkSchedule alertCustom={alertCustom} dados={data} />
+          </Typography>
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body1">Pesquise pelo funcionário</Typography>
           <SearchField
             fields={["telefone", "nome"]}
             url={`/user`}
             placeholder="Pesquise por nome ou telefone"
             setItemSelecionado={(item) => {
-              if (!item)
-                return setData({
+              if (!item) {
+                return setData((prev) => ({
+                  ...prev,
                   id: null,
                   nome: "",
                   telefone: "",
                   servicosPrestados: [],
-                });
-              setData({
-                ...data,
+                }));
+              }
+
+              setData((prev) => ({
+                ...prev,
+                id: item.id,
                 nome: item.nome,
                 telefone: item.telefone,
-                id: item.id,
-                imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
-              });
+                foto: item.foto,
+              }));
             }}
             itemSelecionado={data}
           />
-          {/* <CustomInput
-            label="Nome do Funcionário"
-            name="nome"
-            value={data.nome}
-            onChange={handleChange}
-            variant="outlined"
-            fullWidth
-          /> */}
         </Grid>{" "}
-        {/* <Grid item size={{ xs: 12, md: 6 }}>
-          <CustomInput
-            label="Número de Telefone"
-            name="telefone"
-            value={formatPhone(data.telefone)}
-            onChange={handleChange}
-            variant="outlined"
-            fullWidth
-          />
-        </Grid> */}
-        <Grid item size={{ xs: 12, md: 6 }}>
-          <Typography variant="body1" sx={{ top: 0 }}>
-            Selecione serviços para o funcionário
-          </Typography>
+        <Grid size={{ xs: 12, md: 6 }}>
+          {servicos && servicos.length ? (
+            <>
+              <Typography variant="body1" sx={{ top: 0 }}>
+                Selecione serviços para o funcionário
+              </Typography>
 
-          <Rows
-            items={servicos?.map((item) => ({
-              ...item,
-              titulo: item.nome,
-              subtitulo: `R$ ${item.preco} | Duração: ${formatarHorario(
-                item.tempoGasto
-              )}`,
-            }))}
-            onSelect={(value) =>
-              setData({
-                ...data,
-                servicosPrestados: value,
-              })
-            }
-            selectedItems={data.servicosPrestados}
-            multipleSelect={true}
-          />
+              <Rows
+                items={servicos.map((item) => ({
+                  ...item,
+                  titulo: item.nome,
+                  subtitulo: `R$ ${item.preco} | Duração: ${formatarHorario(
+                    item.tempoGasto
+                  )}`,
+                }))}
+                onSelect={(value) =>
+                  setData({
+                    ...data,
+                    servicosPrestados: value,
+                  })
+                }
+                selectedItems={data.servicosPrestados}
+                multipleSelect={true}
+              />
+            </>
+          ) : (
+            <Typography
+              variant="h5"
+              sx={{
+                width: "100%",
+                alignContent: "center",
+                textAlign: "center",
+              }}
+            >
+              Opps!
+              <Typography variant="body1">
+                Nenhum serviço cadastrado. Cadastre alguns antes de
+                prosseguir...
+              </Typography>
+            </Typography>
+          )}
         </Grid>
       </Grid>
     </Modal>

@@ -181,12 +181,11 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   };
 
   useEffect(() => {
-    buscarAgendamentos();
-  }, [modalConteudo.filter, dataSelecionada]);
+    open && buscarAgendamentos();
+  }, [modalConteudo.filter, dataSelecionada, open]);
 
   const handleAction = async (acao) => {
     try {
-      console.log(modalConteudo.dados);
       await Api.query(
         "PATCH",
         `/scheduling/${acao}/${modalConteudo.dados?.id}`,
@@ -205,10 +204,6 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
       );
     }
   };
-
-  useEffect(() => {
-    console.log("modalConteudo.dados", modalConteudo.dados);
-  }, [modalConteudo.dados]);
 
   return (
     <Modal

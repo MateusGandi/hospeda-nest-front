@@ -7,6 +7,7 @@ import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
+import Confirm from "../../../Componentes/Alert/Confirm";
 
 const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   const handleCancelEdit = () => {
@@ -22,6 +23,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     titulo: "Adicionar novo serviço",
     servicoSelecionado: null,
     actionText: "Adicionar",
+    loading: false,
   });
   const [servicos, setServicos] = useState([]);
   const [openAlertModal, setOpenAlertModal] = useState(false);
@@ -30,7 +32,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     try {
       await Api.query("DELETE", `/service/${item.id}/${barbearia.id}`);
       setServicos(servicos.filter((op) => op.id != item.id));
-      alertCustom("Serviços atualizados com sucesso!");
+      alertCustom("Serviço deletado com sucesso!");
     } catch (error) {
       alertCustom("Erro ao deletar serviço!");
     }
@@ -42,6 +44,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
       buttons: [
         {
           color: "error",
+          variant: "outlined",
           titulo: "Deletar serviço",
           action: () => handleDelete(item),
         },
@@ -60,7 +63,8 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
       titulo: "Adicionar novo serviço",
     });
   };
-  const handleSave = async () => {
+
+  const handleSave = async (apenasSalvar = false) => {
     try {
       const servicosAtualizados = servicos
         .filter((item) => (!!item.flag && item.id) || !item.id)
@@ -73,37 +77,42 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
         await Api.query("POST", `/service`, servicosAtualizados);
 
       await fetchServicos();
-      alertCustom("Serviços atualizados atualizada!");
+      !apenasSalvar && alertCustom("Serviços atualizados atualizada!");
     } catch (error) {
-      alertCustom("Erro ao cadastrar serviços!");
+      !apenasSalvar && alertCustom("Erro ao cadastrar serviços!");
     }
   };
 
   const handleSavePreServices = async () => {
+    setModal((prev) => ({ ...prev, loading: true }));
     try {
       const data = await Api.query("GET", `/service`);
       setServicos(data.map(({ id, ...item }) => ({ ...item, flag: true })));
+      handleSave(false);
       setOpenAlertModal(false);
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
     }
+    setModal((prev) => ({ ...prev, loading: false }));
   };
+
   const fetchServicos = async () => {
+    setModal((prev) => ({ ...prev, loading: true }));
     try {
       const data = await Api.query("GET", `/service/${barbearia.id}`);
       setServicos(data);
-      console.log("dados", data);
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
     } catch (error) {
       alertCustom("Houve um problema ao buscar serviços");
     }
+    setModal((prev) => ({ ...prev, loading: false }));
   };
 
   useEffect(() => {
     if (open) fetchServicos();
-  }, [open]);
+  }, [open, modal.open]);
 
   const handlePhotoUpload = async (e, serviceId) => {
     const file = e.target.files[0];
@@ -149,12 +158,11 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
         open={open}
         onClose={handleClose}
         titulo={"Gerenciar serviços"}
-        onAction={handleSave}
-        actionText={"Salvar"}
         onSubmit={addItem}
         submitText="Novo Serviço"
         fullScreen="all"
         component="view"
+        loading={modal.loading}
       >
         <ServicoForm
           formData={modal.servicoSelecionado}
@@ -166,6 +174,9 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
           setOpen={(e) => setModal((prev) => ({ ...prev, open: e }))}
           titulo={modal.titulo}
           buttons={modal.buttons}
+          barbearia={barbearia}
+          servicos={servicos}
+          alertCustom={alertCustom}
         />{" "}
         {servicos && servicos.length ? (
           <Grid container spacing={2}>
@@ -215,26 +226,20 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
             }}
           >
             Opps!
-            <Typography variant="body1">Nenhum serviço cadastrado</Typography>
+            <Typography variant="body1">
+              Nenhum serviço cadastrado ainda...
+            </Typography>
           </Typography>
         )}
       </Modal>
-      <Modal
+
+      <Confirm
         open={openAlertModal}
         onClose={() => setOpenAlertModal(false)}
-        titulo={"Começar com pré-definidos"}
         onAction={handleSavePreServices}
-        actionText={"Quero usar"}
-        onSubmit={() => setOpenAlertModal(false)}
-        submitText="Quero cadastrar os meus"
-        maxWidth="xs"
-        fullScreen="mobile"
-        component="modal"
-      >
-        <Typography variant="body1" sx={{ m: 1 }} color="GrayColor">
-          Gostaria de usar e editar serviços pré-definidos?
-        </Typography>
-      </Modal>
+        title={"Começar com pré-definidos"}
+        message="Gostaria de usar e editar serviços pré-definidos?"
+      />
     </>
   );
 };

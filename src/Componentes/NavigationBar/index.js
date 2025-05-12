@@ -52,7 +52,7 @@ const NavigationBar = () => {
   };
 
   useEffect(() => {
-    handleGetScheduling();
+    getLocalItem("accessType") == "client" && handleGetScheduling();
   }, [location]);
 
   const actionsMap = {

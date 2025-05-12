@@ -1,13 +1,13 @@
 import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import apiService from "../Api/axios";
-import { Box, TextField, styled, Popper } from "@mui/material";
+import { Box, TextField, styled, Popper, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 const CustomPopper = styled(Popper)({
   "& .MuiPaper-root": {
     marginTop: 10,
-    backgroundColor: "#303030", // Define o fundo do popover como verde
+    backgroundColor: "#303030",
   },
 });
 
@@ -19,12 +19,40 @@ export default function FreeSolo({
   searchField,
   setItemSelecionado,
   itemSelecionado,
+  minDigitsForSearch = 6, // Valor padrão: 6 dígitos
 }) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
+  // Função para contar dígitos numéricos na string
+  const countDigits = (str) => {
+    return str.match(/\d/g)?.length || 0;
+  };
+
+  // Função para verificar se deve fazer a busca
+  const shouldSearch = (value) => {
+    if (!value.trim()) return false;
+
+    const digitCount = countDigits(value);
+    const hasOnlyNumbers = /^\d+$/.test(value);
+
+    // Se for apenas números, verifica se tem dígitos suficientes
+    if (hasOnlyNumbers) {
+      return digitCount >= minDigitsForSearch;
+    }
+
+    // Se contém letras, permite a busca independente dos números
+    return true;
+  };
+
   const fetchData = async () => {
+    if (!shouldSearch(inputValue)) {
+      setOptions([]);
+
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await apiService.query(
@@ -46,22 +74,50 @@ export default function FreeSolo({
   };
 
   React.useEffect(() => {
-    fetchData();
+    if (inputValue.trim() !== "") {
+      const timer = setTimeout(() => {
+        fetchData();
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setOptions([]);
+    }
   }, [inputValue]);
 
   return (
     <Autocomplete
       id="free-solo-demo"
       freeSolo
-      value={itemSelecionado?.title}
-      options={options.map((option) => option.title)}
+      value={itemSelecionado?.title || ""}
+      options={
+        options.length ? options : [{ title: "Nenhum resultado encontrado" }]
+      }
+      getOptionDisabled={(option) =>
+        option.title.includes("Nenhum resultado encontrado")
+      }
+      getOptionLabel={(option) =>
+        typeof option === "string" ? option : option.title
+      }
+      isOptionEqualToValue={(option, value) => option.title === value?.title}
       onChange={(event, newValue) => {
-        const item = options.find((option) => option.title === newValue);
-        setItemSelecionado(item);
+        if (typeof newValue === "string") {
+          setItemSelecionado({ title: newValue });
+        } else if (newValue && newValue.title) {
+          setItemSelecionado(newValue);
+        }
       }}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
+      filterOptions={(options, state) => options}
       fullWidth
       loading={loading}
       PopperComponent={CustomPopper}
+      renderOption={(props, option) => (
+        <li {...props} key={option.id || option.title}>
+          {option.title}
+        </li>
+      )}
       renderInput={(params) => (
         <Box
           sx={{
@@ -73,7 +129,6 @@ export default function FreeSolo({
           <TextField
             {...params}
             variant="outlined"
-            onInput={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
             fullWidth
             sx={{

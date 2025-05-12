@@ -32,12 +32,12 @@ const PublicPage = () => {
     ],
     manager: [],
     adm: [
-      { title: "Ver planos", action: "/plans" },
-      { title: "Gerenciar", action: "/dashboard", force: true },
+      { title: "Ver planos disponíveis", action: "/plans" },
+      { title: "Gerenciar barbearia", action: "/dashboard", force: true },
     ],
     employee: [
-      { title: "Veja os termos", action: "/fac" },
-      { title: "Comece a atender", action: "/dashboard", force: true },
+      { title: "Veja os termos de uso", action: "/fac" },
+      { title: "Comece a atender clientes", action: "/dashboard", force: true },
     ],
   };
 
@@ -96,7 +96,7 @@ const PublicPage = () => {
                   padding: "3px 10px",
                 }}
               >
-                Os serviços da sua barberia e tudo mais em um só lugar, agente
+                Os serviços da sua barberia e tudo mais em um só lugar, agende
                 já!
               </span>
             </Typography>

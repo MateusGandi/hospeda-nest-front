@@ -27,16 +27,6 @@ import {
 import SearchBarWithFilters from "../../../Componentes/Search";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 
-const financasMock = {
-  approved: { valor: 12500.75 },
-  totalDiario: { valor: 850.0 },
-  cancelled: { valor: 780.0 },
-  vendas: [
-    { id: 1, cliente: "João Silva", valor: 120.5, data: "10/02/2025" },
-    { id: 2, cliente: "Maria Souza", valor: 85.0, data: "12/02/2025" },
-  ],
-};
-
 const ModalRelatorio = ({ barbearia, alertCustom }) => {
   const [dados, setDados] = useState(null);
   const [search, setSearch] = useState("");
@@ -46,29 +36,29 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
 
   const handleGet = async () => {
     try {
-      const url =
-        getLocalItem("accessType") == "adm"
-          ? `/financial/establishment/${getLocalItem("establishmentId")}?data=${
-              new Date().toISOString().split("T")[0]
-            }`
-          : `/financial/employee/${getLocalItem("userId")}?data=${
-              new Date().toISOString().split("T")[0]
-            }`;
+      let url = "";
+      const dataAtual = new Date().toISOString().split("T")[0];
+      const userId = getLocalItem("userId");
+      if (getLocalItem("accessType") == "adm") {
+        url = `/financial/establishment/${userId}?data=${dataAtual}`;
+      } else {
+        url = `/financial/employee/${userId}?data=${dataAtual}`;
+      }
       const data = await Api.query("GET", url);
       const vendas = [];
 
-      Object.keys(data.estatisticasFuncionarios).forEach((funcionario) => {
-        vendas.push(
-          ...data.estatisticasFuncionarios[funcionario].map((atendimento) => ({
-            valor: atendimento.preco,
-            cliente: atendimento.nomeCliente || "Cliente não informado",
-            data: format(atendimento.data, "dd/MM/yyyy' às 'HH:mm"),
-            atendimento: funcionario,
-          }))
-        );
-      });
+      // Object.keys(data.estatisticasFuncionarios).forEach((funcionario) => {
+      //   vendas.push(
+      //     ...data.estatisticasFuncionarios[funcionario].map((atendimento) => ({
+      //       valor: atendimento.preco,
+      //       cliente: atendimento.nomeCliente || "Cliente não informado",
+      //       data: format(atendimento.data, "dd/MM/yyyy' às 'HH:mm"),
+      //       atendimento: funcionario,
+      //     }))
+      //   );
+      // });
 
-      setVendasFiltradas(vendas);
+      // setVendasFiltradas(vendas);
       setFinancas({ ...data, vendas: vendas });
     } catch (error) {
       alertCustom("Erro ao buscar balanço financeiro!");
@@ -76,8 +66,8 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
   };
 
   useEffect(() => {
-    handleGet();
-  }, []);
+    dados?.modalOpen && handleGet();
+  }, [dados?.modalOpen]);
 
   return (
     <>
@@ -99,7 +89,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         open={dados?.modalOpen}
         titulo="Financeiro"
         fullScreen="all"
-        maxWidth="lg"
+        maxWidth="md"
         disablePadding={true}
         route="financeiro"
       >
@@ -166,7 +156,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
               <CardContent>
                 <Typography variant="h6">Saldo Geral</Typography>
                 <Typography variant="h5">
-                  {mostrarSaldo ? `R$ ${financas.ganho}` : "******"}
+                  {mostrarSaldo ? `R$ ${financas.ganho?.toFixed(2)}` : "******"}
                 </Typography>
                 <IconButton
                   onClick={() => setMostrarSaldo(!mostrarSaldo)}
@@ -188,8 +178,8 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
               <CardContent>
                 <Typography variant="h6">Movimentado hoje</Typography>
                 <Typography variant="h5">
-                  {`R$ ${financas.total}`}{" "}
-                  <ArrowUpwardIcon fontSize="small" color="success" />
+                  {`R$ ${financas.total?.toFixed(2)}`}{" "}
+                  {/* <ArrowUpwardIcon fontSize="small" color="success" /> */}
                 </Typography>
               </CardContent>
             </Card>
@@ -207,7 +197,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
           </Grid>
 
           <Grid
-            size={{ xs: 12, md: 12 }}
+            size={12}
             sx={{
               m: "0 10px",
               mt: "30px",
@@ -237,7 +227,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                     }))
                   : [
                       {
-                        titulo: "🌫️ Nenhuma venda encontrada",
+                        titulo: "Nenhuma venda encontrada...",
                         subtitulo: "",
                       },
                     ]

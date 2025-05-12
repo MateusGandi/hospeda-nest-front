@@ -105,7 +105,9 @@ const Usuarios = ({ alertCustom }) => {
       )}
       <Modal
         open={true}
-        onClose={() => navigate("/home")}
+        onClose={() =>
+          navigate(getLocalItem("establishmentId") ? "/dashboard" : "/home")
+        }
         titulo={"Meu perfil"}
         fullScreen="all"
         component="view"
@@ -114,6 +116,7 @@ const Usuarios = ({ alertCustom }) => {
         buttons={[
           {
             color: "error",
+            variant: "outlined",
             action: () => setRecover((prev) => ({ ...prev, open: true })),
             titulo: "Resetar Senha",
           },
