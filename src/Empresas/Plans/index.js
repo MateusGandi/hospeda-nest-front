@@ -200,6 +200,7 @@ const ModalPlanos = ({ alertCustom }) => {
             {!isMobile && (
               <Button
                 variant="outlined"
+                disableElevation
                 color="secondary"
                 onClick={() => navigate("/login")}
                 sx={{

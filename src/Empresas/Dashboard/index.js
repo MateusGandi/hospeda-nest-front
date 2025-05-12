@@ -269,7 +269,9 @@ const BarberShopMenu = ({ alertCustom }) => {
             "GET",
             `/establishment?establishmentId=${getLocalItem("establishmentId")}`
           );
-          const [latitude, longitude] = dataAtualizada.longitudeAndLatitude;
+          const [latitude, longitude] = dataAtualizada.longitudeAndLatitude
+            ? dataAtualizada.longitudeAndLatitude
+            : [];
 
           setBarbearia({
             ...dataAtualizada,
@@ -313,7 +315,9 @@ const BarberShopMenu = ({ alertCustom }) => {
         // console.log("teste", teste);
         //setModal() se o cadastro não estiver completo, so abrir
 
-        const [latitude, longitude] = data.longitudeAndLatitude;
+        const [latitude, longitude] = data.longitudeAndLatitude
+          ? data.longitudeAndLatitude
+          : [];
 
         setBarbearia({
           ...data,
@@ -333,7 +337,9 @@ const BarberShopMenu = ({ alertCustom }) => {
         `/establishment/${barbearia.id}`,
         info
       );
-      const [latitude, longitude] = data.longitudeAndLatitude;
+      const [latitude, longitude] = data.longitudeAndLatitude
+        ? data.longitudeAndLatitude
+        : [];
       setBarbearia({
         ...data,
         location: { latitude, longitude },
@@ -348,7 +354,8 @@ const BarberShopMenu = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    !barbearia?.location && setModal((prev) => ({ ...prev, location: true }));
+    Object.values(barbearia?.location ?? {}).some((item) => !item) &&
+      setModal((prev) => ({ ...prev, location: true }));
   }, [barbearia]);
 
   return (

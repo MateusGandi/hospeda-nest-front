@@ -125,7 +125,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
               onSelect={handleSelect}
             />
             <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-              Nenhum resultado encontrado!
+              Nenhum vaga disponível para esse dia, escolha outro!
             </Typography>
           </>
         )}

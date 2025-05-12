@@ -109,7 +109,7 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
     <Modal
       open={showModal}
       onClose={() => setShowModal(false)}
-      titulo="Sua localização"
+      titulo=" "
       component="modal"
       maxWidth="xs"
       buttons={[
@@ -132,10 +132,16 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
       }}
       loading={loading.currentLocation || loading.addressLocation}
     >
-      <Typography variant="body1" sx={{ mb: "10px", textAlign: "center" }}>
-        Ajude seus clientes a encontrarem você! Qual localização você deseja
-        usar?
-      </Typography>{" "}
+      <Stack spacing={1} sx={{ width: "100%", textAlign: "center" }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Sua localização
+        </Typography>
+
+        <Typography variant="body1" sx={{ pb: 4 }}>
+          Ajude seus clientes a encontrarem você! Qual localização você deseja
+          usar?
+        </Typography>
+      </Stack>
     </Modal>
   );
 };

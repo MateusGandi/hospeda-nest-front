@@ -35,7 +35,7 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
       );
       return info;
     } catch (error) {
-      console.error("Erro ao buscar vagas:", error);
+      console.error("Erro ao buscar vagas:", error.response.data);
       //setError("Não há vagas disponíveis");
       alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
       return [];
@@ -109,9 +109,21 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
             <CircularProgress />
           </div>
         ) : (
-          <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-            Nenhum resultado encontrado!
-          </Typography>
+          <>
+            <Rows
+              items={[
+                {
+                  titulo: "Selecionar uma data diferente",
+                  id: 9999,
+                  action: () => handleOpen(),
+                },
+              ]}
+              onSelect={handleSelect}
+            />
+            <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
+              Nenhum vaga disponível para esse dia, escolha outro!
+            </Typography>
+          </>
         )}
       </Grid>
 

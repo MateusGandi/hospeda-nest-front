@@ -8,8 +8,11 @@ import {
 } from "@mui/material";
 import { CustomInput } from "../Componentes/Custom";
 import { formatPhone } from "../Componentes/Funcoes";
+import { useNavigate } from "react-router-dom";
 
 const Recover = ({ dados, setDados }) => {
+  const navigate = useNavigate();
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -34,9 +37,9 @@ const Recover = ({ dados, setDados }) => {
         />
       </Grid>
       <Grid item size={{ xs: 12 }}>
-        <Link href="/login" className="show-link">
+        <a onClick={() => navigate("/login")} className="show-link">
           Já possui uma conta? Acesse-a
-        </Link>
+        </a>
       </Grid>
     </>
   );

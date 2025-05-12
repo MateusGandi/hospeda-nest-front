@@ -32,7 +32,7 @@ const NavigationBar = () => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(false);
-  const [searchValue, setSearchValue] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [hasScheduling, setHasScheduling] = useState(false);
   const [actions, setActions] = useState([]);
   const accessType = getLocalItem("accessType");

@@ -32,7 +32,13 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
   const [search, setSearch] = useState("");
   const [vendasFiltradas, setVendasFiltradas] = useState([]);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
-  const [financas, setFinancas] = useState({ vendas: [] });
+  const [financas, setFinancas] = useState({
+    ganho: 0,
+    perda: 0,
+    total: 0,
+    previsto: 0,
+    vendas: [],
+  });
 
   const handleGet = async () => {
     try {

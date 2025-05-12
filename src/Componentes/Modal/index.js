@@ -148,7 +148,7 @@ const Modal = ({
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                onAction();
+                onAction && onAction();
               }}
               component="form"
             >
@@ -218,7 +218,7 @@ const Modal = ({
                               fullWidth
                               size="large"
                               disableElevation
-                              onClick={() => onAction()}
+                              onClick={() => onAction && onAction()}
                               variant="contained"
                               color={color}
                               disabled={loadingButton}

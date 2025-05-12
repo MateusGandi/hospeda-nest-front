@@ -17,7 +17,7 @@ import { CustomInput } from "../Custom";
 
 export default function Footer() {
   return (
-    <Box sx={{ mt: 4, pt: 6, pb: 2 }}>
+    <Box sx={{ pt: 6, pb: 2, backgroundColor: "#212121" }}>
       <Container maxWidth="lg">
         <Grid
           container
@@ -120,9 +120,12 @@ export default function Footer() {
               Formas de pagamento
             </Typography>{" "}
             <Typography variant="body2">
-              Integração realizada com Asaas
+              Integração com{" "}
+              <a about="_blank" href="https://asaas.com">
+                Asaas
+              </a>
             </Typography>
-            <Box display="flex" alignItems="center" justifyContent={"center"}>
+            <Box display="flex" alignItems="center" justifyContent={"left"}>
               <img
                 src={PaymentMethods}
                 alt="Formas de pagamento"
@@ -145,15 +148,15 @@ export default function Footer() {
             reservados.
           </Typography>
           <Box display="flex" gap={1}>
-            <IconButton size="small" color="inherit">
+            {/* <IconButton size="small" color="inherit">
               <Facebook />
-            </IconButton>
+            </IconButton> */}
             <IconButton size="small" color="inherit">
               <Instagram />
             </IconButton>
-            <IconButton size="small" color="inherit">
+            {/* <IconButton size="small" color="inherit">
               <YouTube />
-            </IconButton>
+            </IconButton> */}
           </Box>
         </Box>
       </Container>

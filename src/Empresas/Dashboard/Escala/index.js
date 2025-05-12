@@ -180,6 +180,9 @@ const WorkSchedule = ({
                 <Button
                   variant="outlined"
                   color="secondary"
+                  sx={{
+                    border: "1px solid rgb(134, 134, 134)",
+                  }}
                   onClick={() => setDefaultSchedule("6x1")}
                 >
                   Configurar 6x1 (Seg-Sáb)
@@ -187,13 +190,19 @@ const WorkSchedule = ({
                 <Button
                   variant="outlined"
                   color="secondary"
+                  sx={{
+                    border: "1px solid rgb(134, 134, 134)",
+                  }}
                   onClick={() => setDefaultSchedule("5x2")}
                 >
                   Configurar 5x2 (Seg-Sex)
                 </Button>
                 <Button
                   variant="outlined"
-                  color="secondary"
+                  color="error"
+                  sx={{
+                    border: "1px solid rgb(134, 134, 134)",
+                  }}
                   onClick={() => setDefaultSchedule("default")}
                 >
                   Limpar
