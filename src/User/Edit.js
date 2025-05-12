@@ -20,10 +20,27 @@ const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
 
   const handleSubmit = async () => {
     try {
-      await apiService.query("PATCH", `/user/${getLocalItem("userId")}`, {
-        ...formData,
-        telefone: formData.telefone.replace(/\D/g, ""),
+      // Cria um objeto apenas com os campos alterados
+      const changedData = {};
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] !== userData[key]) {
+          changedData[key] =
+            key === "telefone"
+              ? formData[key].replace(/\D/g, "")
+              : formData[key];
+        }
       });
+
+      if (Object.keys(changedData).length === 0) {
+        alertCustom("Nenhuma alteração foi feita.");
+        return;
+      }
+
+      await apiService.query(
+        "PATCH",
+        `/user/${getLocalItem("userId")}`,
+        changedData
+      );
       alertCustom("Dados atualizados com sucesso!");
       onClose();
       buscar();

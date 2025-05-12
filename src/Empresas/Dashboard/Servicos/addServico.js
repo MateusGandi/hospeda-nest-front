@@ -3,10 +3,11 @@ import { Grid2 as Grid } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatMoney, formatTime } from "../../../Componentes/Funcoes";
+import apiService from "../../../Componentes/Api/axios";
 
 const Servico = ({
   formData,
-  setFormData,
+  servicos,
   open,
   setOpen,
   titulo,
@@ -14,6 +15,8 @@ const Servico = ({
   submitText,
   actionText,
   buttons,
+  barbearia,
+  alertCustom,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -56,21 +59,40 @@ const Servico = ({
     }
   }, [formData]);
 
-  const handleSave = () => {
-    if (formData) {
-      setFormData((prev) => [
-        ...prev.filter((item) => item.id !== formData.id),
-        { ...data, preco: +data.preco },
-      ]);
-    } else {
-      setFormData((prev) => [
-        ...prev,
-        { ...data, preco: +data.preco, disabled: true },
-      ]);
-    }
+  const handleSave = async () => {
+    try {
+      let servicosAtualizados;
+      if (formData) {
+        servicosAtualizados = [
+          ...servicos.filter((item) => item.id !== formData.id),
+          { ...data, barbeariaId: barbearia.id, preco: +data.preco },
+        ];
+      } else {
+        servicosAtualizados = [
+          ...servicos.map((item) => ({ ...item, barbeariaId: barbearia.id })),
+          {
+            ...data,
+            barbeariaId: barbearia.id,
+            preco: +data.preco,
+            disabled: true,
+          },
+        ];
+      }
 
-    setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
-    setOpen(false);
+      await apiService.query("POST", `/service`, servicosAtualizados);
+
+      setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
+      setOpen(false);
+      alertCustom(
+        formData
+          ? "Serviço atualizado com sucesso!"
+          : "Serviço cadastrado com sucesso!"
+      );
+    } catch (error) {
+      alertCustom(
+        formData ? "Erro ao atualizar serviço!" : "Erro ao cadastrar serviço!"
+      );
+    }
   };
 
   return (
@@ -100,7 +122,7 @@ const Servico = ({
         </Grid>
         <Grid item size={{ xs: 12, md: 4 }}>
           <CustomInput
-            label="Duração média"
+            label="Duração média (hh:mm)"
             placeholder="Duração média"
             name="tempoGasto"
             value={data.tempoGasto}

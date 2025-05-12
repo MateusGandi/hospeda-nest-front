@@ -7,7 +7,7 @@ import { Button, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import ConeSVG from "../../Assets/cone.svg";
 import { formatPhone } from "../../Componentes/Funcoes";
-import GetUserLocation from "../../Componentes/Location";
+import GetUserLocation from "../../Componentes/Location/Button";
 
 const Estabelecimentos = ({ alertCustom }) => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   Grid2 as Grid,
   TextField,
@@ -10,9 +10,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { CustomInput } from "../Componentes/Custom";
 import { formatPhone } from "../Componentes/Funcoes";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -61,12 +63,12 @@ const Login = ({ dados, setDados }) => {
         />
       </Grid>
       <Grid item size={{ xs: 12 }} sx={{ display: "flex", flexWrap: "wrap" }}>
-        <Link href="/recover" className="show-link">
+        <a onClick={() => navigate("/recover")} className="show-link">
           Esqueceu sua senha?
-        </Link>
-        <Link href="/create" className="show-link">
+        </a>
+        <a onClick={() => navigate("/create")} className="show-link">
           Não tem uma conta? Crie uma
-        </Link>
+        </a>
       </Grid>
     </>
   );

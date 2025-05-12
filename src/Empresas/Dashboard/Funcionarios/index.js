@@ -7,9 +7,9 @@ import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
+import { getLocalItem } from "../../../Componentes/Funcoes";
 
 const GerenciarFuncionarios = ({
-  dados,
   barbearia,
   open,
   handleClose,
@@ -20,23 +20,28 @@ const GerenciarFuncionarios = ({
     titulo: "Adicionar novo funcionário",
     funcionarioSelecionado: null,
     actionText: "Adicionar",
+    loading: false,
   });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
-  useEffect(() => {
-    setFuncionarios(dados);
-  }, [dados]);
-
   const handleDelete = async (item) => {
+    // await Api.query("DELETE", `/employees/${item.id}`);
     try {
-      //await Api.query("DELETE", `/employees/${item.id}`);
+      await Api.query("PATCH", `/establishment/${barbearia.id}`, {
+        funcionarios: funcionarios
+          .filter((op) => op.id != item.id)
+          .map((item) => ({
+            userId: item.id,
+            servicesId: item.servicosPrestados.map((service) => service.id),
+          })),
+      });
       setFuncionarios(funcionarios.filter((op) => op.id != item.id));
-      await handleSave(false);
       alertCustom("Funcionário removido com sucesso!");
     } catch (error) {
-      alertCustom("Erro ao remover funcionário!");
+      alertCustom("Erro ao remover funcionários");
     }
+
     handleCancelEdit();
   };
 
@@ -55,6 +60,7 @@ const GerenciarFuncionarios = ({
       buttons: [
         {
           color: "error",
+          variant: "outlined",
           titulo: "Remover funcionário",
           action: () => handleDelete(item),
         },
@@ -73,23 +79,28 @@ const GerenciarFuncionarios = ({
       titulo: "Adicionar novo funcionário",
     });
   };
-
-  const handleSave = async (omit = true) => {
-    //envio para a api
+  const fetchFuncionarios = async () => {
     try {
-      await Api.query("PATCH", `/establishment/${barbearia.id}`, {
-        funcionarios: funcionarios.map((item) => ({
-          userId: item.id,
-          servicesId: item.servicosPrestados.map((service) => service.id),
-        })),
-      });
-      omit && alertCustom("Equipe atualizada!");
-      handleClose();
+      const { funcionarios } = await Api.query(
+        "GET",
+        `/establishment?establishmentId=${barbearia.id}`
+      );
+      setFuncionarios(
+        funcionarios.map((item) => ({
+          ...item,
+          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${
+            item.idOrig || item.id
+          }/${item.foto}`,
+          titulo: `${item.nome} - ${item.telefone}`,
+          subtitulo: item.servicosPrestados?.length
+            ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
+            : "Sem serviços cadastrados",
+        }))
+      );
     } catch (error) {
-      omit && alertCustom("Erro ao atualizar funcionários");
+      alertCustom("Erro ao buscar funcionários!");
     }
   };
-
   useEffect(() => {
     const fetchServicos = async () => {
       try {
@@ -100,8 +111,11 @@ const GerenciarFuncionarios = ({
       }
     };
 
-    fetchServicos();
-  }, [barbearia.id]);
+    setModal((prev) => ({ ...prev, loading: true }));
+    Promise.all([fetchServicos(), fetchFuncionarios()]).finally(() => {
+      setModal((prev) => ({ ...prev, loading: false }));
+    });
+  }, [open]);
 
   const handlePhotoUpload = async (e, userId) => {
     const file = e.target.files[0];
@@ -142,29 +156,16 @@ const GerenciarFuncionarios = ({
   return (
     <>
       <Modal
+        loading={modal.loading}
         open={open}
         onClose={handleClose}
         titulo={"Gerenciar funcionários"}
-        onAction={handleSave}
-        actionText={"Salvar"}
         onSubmit={addFuncionario}
-        submitText="Novo Funcionário"
+        submitText="Adicionar Funcionário"
         fullScreen="all"
         component="view"
       >
-        <FuncionarioForm
-          formData={modal.funcionarioSelecionado}
-          setFormData={setFuncionarios}
-          actionText={modal.actionText}
-          open={modal.open}
-          onSubmit={modal.onSubmit}
-          submitText={modal.submitText}
-          setOpen={(e) => setModal((prev) => ({ ...prev, open: e }))}
-          titulo={modal.titulo}
-          servicos={servicos}
-          buttons={modal.buttons}
-          handleSavefull={handleSave}
-        />{" "}
+        {" "}
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>
             {" "}
@@ -185,15 +186,7 @@ const GerenciarFuncionarios = ({
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
                 onDelete={(item) => handleDelete({ id: item })}
-                items={funcionarios.map((item, index) => ({
-                  ...item,
-                  imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
-                  titulo: `${item.nome} - ${item.telefone}`,
-
-                  subtitulo: item.servicosPrestados?.length
-                    ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
-                    : "Sem serviços cadastrados",
-                }))}
+                items={funcionarios}
                 keys={[
                   { label: "", value: "nome" },
                   { label: "", value: "telefone" },
@@ -218,6 +211,22 @@ const GerenciarFuncionarios = ({
           </Typography>
         )}
       </Modal>
+      <FuncionarioForm
+        funcionarios={funcionarios}
+        funcionario={modal.funcionarioSelecionado}
+        setFuncionarios={setFuncionarios}
+        actionText={modal.actionText}
+        open={modal.open}
+        onSubmit={modal.onSubmit}
+        submitText={modal.submitText}
+        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
+        titulo={modal.titulo}
+        servicos={servicos}
+        buttons={modal.buttons}
+        barbearia={barbearia}
+        alertCustom={alertCustom}
+        buscarDados={fetchFuncionarios}
+      />
     </>
   );
 };

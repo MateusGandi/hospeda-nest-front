@@ -67,14 +67,14 @@ export const formatTime = (valorant, valor) => {
   let numeros = valor.replace(/\D/g, "");
 
   if (numeros === "") return "";
-
-  numeros = numeros.padStart(4, "0").slice(-4);
-
   if (+numeros > 2400) return valorant;
+  numeros = numeros.slice(0, 4);
 
   if (+numeros.slice(-2) > 59) return valorant;
 
-  return numeros.replace(/(\d{2})(\d{2})/, "$1:$2");
+  return numeros
+    .replace(/(\d{2})(\d{1})/, "$1:$2")
+    .replace(/(\d{2})(\d{2})/, "$1:$2");
 };
 
 export const formatMoney = (valor) => {

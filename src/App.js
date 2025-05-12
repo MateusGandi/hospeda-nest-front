@@ -98,7 +98,6 @@ function App() {
       <Alerta alert={alert} setAlert={setAlert} />
       <CssBaseline />
       <BrowserRouter>
-        <BetaInfoButton />
         <NavigationBar logo="Tonsus App" />
         <Permissions alertCustom={alertCustom} />
         <Routes>

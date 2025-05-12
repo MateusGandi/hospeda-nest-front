@@ -118,10 +118,13 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
                     alertCustom("Mensagem copiada!");
                   }}
                   color="success"
-                  variant="contained"
+                  variant="outlined"
                   disableElevation
                   endIcon={<ContentCopyIcon />}
-                  sx={{ maxWidth: "300px", color: "#fff" }}
+                  sx={{
+                    maxWidth: "300px",
+                    border: "1px solid rgb(134, 134, 134)",
+                  }}
                 >
                   Copiar mensagem
                 </Button>
@@ -191,7 +194,7 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
               <Icon>📌</Icon> Como começar
               <Typography variant="body1">
                 Copie a mensagem de <b>boas-vindas</b> e use no seu{" "}
-                <b>WhatsApp Business</b> para direcionar seus clientes à
+                <b>WhatsApp Business</b> para direcionar seus clientes ao
                 atendente virtual.
               </Typography>
             </Typography>

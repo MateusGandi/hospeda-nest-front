@@ -130,6 +130,7 @@ const Modal = ({
             justifyContent: "center",
             alignItems: "center",
             height: "100%",
+            minHeight: "200px",
             zIndex: 1,
           }}
         >
@@ -147,7 +148,7 @@ const Modal = ({
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                onAction();
+                onAction && onAction();
               }}
               component="form"
             >
@@ -217,7 +218,7 @@ const Modal = ({
                               fullWidth
                               size="large"
                               disableElevation
-                              onClick={() => onAction()}
+                              onClick={() => onAction && onAction()}
                               variant="contained"
                               color={color}
                               disabled={loadingButton}
@@ -273,7 +274,9 @@ const Modal = ({
                   <Button
                     color={button.color || "primary"}
                     disableElevation
+                    disabled={button.disabled}
                     onClick={button.action}
+                    icon={button.icon}
                     variant={button.variant ? button.variant : "outlined"}
                     fullWidth={
                       (["form", "view"].includes(component) || fullScreen) &&
@@ -281,7 +284,9 @@ const Modal = ({
                     }
                     sx={{
                       ...buttonStyle,
-                      border: "1px solid #484848",
+                      ...(button.variant == "outlined"
+                        ? { border: "1px solid #484848" }
+                        : {}),
                     }}
                   >
                     {button.titulo}

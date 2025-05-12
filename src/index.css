@@ -67,7 +67,8 @@ button {
 
 .show-link {
   width: 100%;
-  text-ecoration: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 .show-link:hover {
   text-decoration: underline !important;

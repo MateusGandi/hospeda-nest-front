@@ -12,6 +12,7 @@ const Confirm = ({
   title = "Tem certeza que deseja continuar?",
   message,
   children,
+  icon,
 }) => {
   return (
     <Modal
@@ -19,7 +20,7 @@ const Confirm = ({
       onClose={onClose}
       titulo={
         <>
-          <Icon>⚠️</Icon> {title}
+          <Icon>{icon ? icon : "⚠️"}</Icon> {title}
         </>
       }
       maxWidth="xs"
