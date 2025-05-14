@@ -90,6 +90,7 @@ export const Rows = ({
                   }
                   elevation={0}
                   sx={{
+                    ...sx,
                     ...(Array.isArray(selected) &&
                     selected?.some((opcao) => opcao.id === item.id)
                       ? {
@@ -124,7 +125,6 @@ export const Rows = ({
                     sx={{
                       borderRadius: "10px",
                       overflow: "hidden",
-                      ...sx,
                     }}
                   >
                     {(item.icon || item.imagem) && (

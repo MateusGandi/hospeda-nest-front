@@ -27,10 +27,11 @@ import {
 import LogoPartners from "../../Assets/logo_partners.png";
 import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
 import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
-import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.jpg";
+import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.png";
 import Icon from "../../Assets/Emojis";
 import { Rows } from "../../Componentes/Lista/Rows";
 import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
+import Image from "../../Assets/Landing/planos.png";
 
 const ModalPlanos = ({ alertCustom }) => {
   const [mensagensChat] = useState([
@@ -129,24 +130,25 @@ const ModalPlanos = ({ alertCustom }) => {
         open={modal.detalhes.length > 0}
         onClose={() => setModal((prev) => ({ ...prev, detalhes: [] }))}
         maxWidth="md"
-        titulo={
-          <Typography variant="h5">
-            <Icon>✨</Icon> Ao contratar este plano você terá acesso a:
-          </Typography>
-        }
+        titulo={modal.nome}
+        sx={{ background: "#181818" }}
         component="modal"
       >
         <Grid container spacing={2}>
-          <Grid size={12}>
+          <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: "center" }}>
+            <img src={Image} style={{ width: "450px" }}></img>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
             {" "}
             <Rows
+              sx={{ background: "none" }}
               items={modal.detalhes.map((detalhe, i) => ({
                 id: i,
                 icon: (
                   <Avatar
                     sx={{
-                      bgcolor: "primary.light",
-                      color: "#fff",
+                      bgcolor: "secondary.light",
+                      color: "#000",
                       width: 32,
                       height: 32,
 
@@ -161,16 +163,6 @@ const ModalPlanos = ({ alertCustom }) => {
               }))}
               disabled={true}
             />
-          </Grid>
-          <Grid size={12}>
-            {" "}
-            <Typography variant="h6" className="show-box">
-              <Icon>💡</Icon> Benefícios
-              <Typography variant="body1">
-                Todos os benefícios estão sujeitos aos termos de uso da
-                plataforma
-              </Typography>
-            </Typography>
           </Grid>
         </Grid>
       </Modal>
@@ -345,11 +337,12 @@ const ModalPlanos = ({ alertCustom }) => {
                     </Button>
                     <Button
                       variant="text"
-                      color={plano.destaque ? "success" : "primary"}
+                      color="#000"
                       fullWidth
                       onClick={() =>
                         setModal((prev) => ({
                           ...prev,
+                          nome: plano.nome,
                           detalhes: plano.produtosContratados,
                         }))
                       }
