@@ -27,6 +27,30 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
   const location = useLocation();
   const [internalOpen, setInternalOpen] = useState(open);
 
+  const isYouTube = (url) => {
+    return url?.includes("youtube.com") || url?.includes("youtu.be");
+  };
+
+  const getYouTubeId = (url) => {
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const sendYouTubeCommand = (iframe, command) => {
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(
+        JSON.stringify({
+          event: "command",
+          func: command,
+          args: [],
+        }),
+        "*"
+      );
+    }
+  };
+
   useEffect(() => {
     if (videoPath && videoList.length > 0) {
       const index = videoList.findIndex((video) => video.id === videoPath);
@@ -62,10 +86,19 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
     videoRefs.current.forEach((video, i) => {
       if (video) {
         if (i === index) {
-          video.currentTime = 0;
-          video.play();
+          if (video.tagName === "VIDEO") {
+            video.currentTime = 0;
+            video.play();
+          } else if (video.tagName === "IFRAME") {
+            sendYouTubeCommand(video, "playVideo");
+          }
+          setPlaying(true);
         } else {
-          video.pause();
+          if (video.tagName === "VIDEO") {
+            video.pause();
+          } else if (video.tagName === "IFRAME") {
+            sendYouTubeCommand(video, "pauseVideo");
+          }
         }
       }
     });
@@ -73,12 +106,24 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
 
   const togglePlay = () => {
     const video = videoRefs.current[currentIndex];
-    if (video.paused) {
-      video.play();
-      setPlaying(true);
-    } else {
-      video.pause();
-      setPlaying(false);
+    if (video) {
+      if (video.tagName === "VIDEO") {
+        if (video.paused) {
+          video.play();
+          setPlaying(true);
+        } else {
+          video.pause();
+          setPlaying(false);
+        }
+      } else if (video.tagName === "IFRAME") {
+        if (playing) {
+          sendYouTubeCommand(video, "pauseVideo");
+          setPlaying(false);
+        } else {
+          sendYouTubeCommand(video, "playVideo");
+          setPlaying(true);
+        }
+      }
     }
   };
 
@@ -148,11 +193,12 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
           display: "flex",
           justifyContent: "space-between",
           zIndex: 999,
-          alignItems: "start",
+          mt: "3px",
+          alignItems: "center",
         }}
       >
         <Typography variant="h6">
-          {videoList[currentIndex]?.title || "Vídeo"}
+          {videoList[currentIndex]?.title ?? "oi"}
         </Typography>
         <IconButton
           aria-label="close"
@@ -178,25 +224,61 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {videoList.map((video, index) => (
-          <video
-            key={index}
-            ref={(el) => (videoRefs.current[index] = el)}
-            src={video.src}
-            style={{
-              width: "100%",
-              height: "100vh",
-              objectFit: "cover",
-              position: "absolute",
-              top: 0,
-              transition: isMobile ? "transform 0.5s ease-in-out" : "none",
-              transform: `translateY(${(index - currentIndex) * 100}%)`,
-            }}
-            onPlay={() => setPlaying(true)}
-            autoPlay={index === currentIndex}
-            muted={false}
-          />
-        ))}
+        {videoList.map((video, index) => {
+          if (isYouTube(video.src)) {
+            const videoId = getYouTubeId(video.src);
+            return (
+              <Box
+                key={index}
+                style={{
+                  width: "100%",
+                  height: "100vh",
+                  position: "absolute",
+                  top: 0,
+                  transition: isMobile ? "transform 0.5s ease-in-out" : "none",
+                  transform: `translateY(${(index - currentIndex) * 100}%)`,
+                }}
+              >
+                <iframe
+                  ref={(el) => (videoRefs.current[index] = el)}
+                  src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=${
+                    index === currentIndex ? 1 : 0
+                  }&controls=0`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    objectFit: "cover",
+                  }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  onLoad={() => setPlaying(true)}
+                />
+              </Box>
+            );
+          } else {
+            return (
+              <video
+                key={index}
+                ref={(el) => (videoRefs.current[index] = el)}
+                src={video.src}
+                style={{
+                  width: "100%",
+                  height: "100vh",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  transition: isMobile ? "transform 0.5s ease-in-out" : "none",
+                  transform: `translateY(${(index - currentIndex) * 100}%)`,
+                }}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                autoPlay={index === currentIndex}
+                muted={false}
+              />
+            );
+          }
+        })}
 
         <Box
           onClick={togglePlay}

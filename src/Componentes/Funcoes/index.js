@@ -1,4 +1,5 @@
 import ColorThief from "colorthief";
+import validator from "validator";
 
 export const match = () => window.innerWidth <= 600;
 
@@ -331,3 +332,48 @@ export const getDominantColorFromURL = (imageUrl) => {
     };
   });
 };
+
+export function validarCampos(tipo, dados, componentValidations) {
+  const regras = componentValidations[tipo];
+
+  if (!regras) throw new Error("Tipo inválido");
+
+  for (const { campo, validacoes } of regras) {
+    const valor = dados[campo];
+    const listaValidacoes = validacoes.split(",").map((v) => v.trim());
+
+    for (const v of listaValidacoes) {
+      if (v === "required" && (valor === undefined || valor === "")) {
+        throw new Error(`${primeiraMaiuscula(campo)} é obrigatório.`);
+      }
+
+      if (v.startsWith("minLength(")) {
+        const min = parseInt(v.match(/\d+/)[0], 10);
+        if (!valor || valor.length < min) {
+          throw new Error(
+            `${primeiraMaiuscula(campo)} deve ter no mínimo ${min} caracteres.`
+          );
+        }
+      }
+
+      if (
+        v === "telefone" &&
+        valor &&
+        !validator.isMobilePhone(valor.replace(/\D/g, ""), "pt-BR")
+      ) {
+        throw new Error(`${primeiraMaiuscula(campo)} inválido`);
+      }
+
+      if (v.startsWith("equal(")) {
+        const outroCampo = v.match(/\(([^)]+)\)/)[1];
+        if (valor !== dados[outroCampo]) {
+          throw new Error(
+            `${primeiraMaiuscula(campo)} deve ser igual a ${primeiraMaiuscula(
+              outroCampo
+            )}.`
+          );
+        }
+      }
+    }
+  }
+}

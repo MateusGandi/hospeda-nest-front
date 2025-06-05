@@ -48,8 +48,10 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
         variant="outlined"
         color="success"
         startIcon={<WhatsAppIcon />}
+        sx={{
+          border: "1.5px solid rgba(256, 256, 256, 0.2)",
+        }}
         onClick={() => setModalSessoes(true)}
-        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
         fullWidth
         size="large"
       >
@@ -64,7 +66,7 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
         fullScreen="all"
         component="view"
       >
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
           <Grid
             size={{ xs: 12, md: 7 }}
             sx={{

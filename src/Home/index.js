@@ -116,9 +116,7 @@ const PublicPage = () => {
                 color={item.force ? "primary" : "secondary"}
                 disableElevation
                 style={{
-                  ...(item.force
-                    ? { fontWeight: "bold" }
-                    : { border: "1px solid #fff" }),
+                  fontWeight: "bold",
                   color: "#FFFFFF",
                 }}
                 onClick={() => navigate(item.action)}

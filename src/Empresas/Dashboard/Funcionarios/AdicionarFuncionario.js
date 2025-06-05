@@ -85,20 +85,7 @@ const Funcionario = ({
       buttons={buttons}
     >
       <Grid container spacing={4} sx={{ mt: 4 }}>
-        <Grid size={12}>
-          <Typography variant="body1" className="show-box">
-            <Typography variant="h6">
-              <Icon>💡</Icon> Aviso
-            </Typography>
-            Para cadastrar um novo funcionário, o mesmo precisa estar
-            previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
-            <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
-            cargo. Além disso você pode configurar a escala de trabalho:{" "}
-            <WorkSchedule alertCustom={alertCustom} dados={data} />
-          </Typography>
-        </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body1">Pesquise pelo funcionário</Typography>
           <SearchField
             fields={["telefone", "nome"]}
             url={`/user`}
@@ -128,8 +115,8 @@ const Funcionario = ({
         <Grid size={{ xs: 12, md: 6 }}>
           {servicos && servicos.length ? (
             <>
-              <Typography variant="body1" sx={{ top: 0 }}>
-                Selecione serviços para o funcionário
+              <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+                Selecione Serviços{" "}
               </Typography>
 
               <Rows
@@ -166,6 +153,18 @@ const Funcionario = ({
               </Typography>
             </Typography>
           )}
+        </Grid>{" "}
+        <Grid size={12}>
+          <Typography variant="body1" className="show-box">
+            <Typography variant="h6">
+              <Icon>💡</Icon> Aviso
+            </Typography>
+            Para cadastrar um novo funcionário, o mesmo precisa estar
+            previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
+            <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
+            cargo. Além disso você pode configurar a escala de trabalho:{" "}
+            <WorkSchedule alertCustom={alertCustom} dados={data} />
+          </Typography>
         </Grid>
       </Grid>
     </Modal>

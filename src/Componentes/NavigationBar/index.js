@@ -301,6 +301,10 @@ const NavigationBar = () => {
                       fullWidth
                       maxWidth="md"
                       fullScreen="mobile"
+                      sx={{
+                        background:
+                          "linear-gradient(0deg,rgba(33, 33, 33, 0) 0%, rgba(33, 33, 33, 1) 28%, rgba(33, 33, 33, 1) 100%)",
+                      }}
                       titulo={
                         <b>
                           <img src={LogoImage} style={{ height: "32px" }} />

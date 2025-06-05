@@ -9,9 +9,10 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../Componentes/Modal";
 import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
-import Banner from "../Assets/banner_onboard.png";
-import { Height } from "@mui/icons-material";
-import { getLocalItem, isMobile } from "../Componentes/Funcoes";
+import Banner from "../Assets/Login/tonsus_grafitti.png";
+import LogoBanner from "../Assets/Login/tonsus_logo_white.png";
+
+import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
 
 const LoginPage = ({ page, alertCustom }) => {
   const { hash } = useParams();
@@ -19,13 +20,14 @@ const LoginPage = ({ page, alertCustom }) => {
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
 
-  const handleLogin = async () => {
+  const handleLogin = async (token) => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
       const { telefone, ...rest } = dados;
       const data = await Api.query("POST", "/user/login", {
         ...rest,
-        telefone: telefone.replace(/\D/g, ""),
+        token,
+        telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
       navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
@@ -41,11 +43,7 @@ const LoginPage = ({ page, alertCustom }) => {
   const handleChangePass = async () => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
-      const { senha, confirm } = dados;
-      if (senha.length < 5 || confirm.length < 5)
-        return alertCustom("Sua senha deve conter ao menos 5 caracteres!");
-      else if (senha != confirm)
-        return alertCustom("As senhas digitadas não são iguais!");
+      const { senha } = dados;
 
       const data = await Api.query("POST", `/user/recover/change/${hash}`, {
         password: senha,
@@ -68,10 +66,7 @@ const LoginPage = ({ page, alertCustom }) => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
       const { telefone } = dados;
-      const data = await Api.query(
-        "POST",
-        `/user/recover/${telefone.replace(/\D/g, "")}`
-      );
+      await Api.query("POST", `/user/recover/${telefone.replace(/\D/g, "")}`);
 
       alertCustom(
         "Um link de recuperação será enviado para seu e-mail e WhatsApp!"
@@ -87,26 +82,21 @@ const LoginPage = ({ page, alertCustom }) => {
     }
   };
 
-  const handleCreate = async () => {
+  const handleCreate = async (token) => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
       const { telefone, confirmarSenha, senha, ...rest } = dados;
 
-      if (senha.length < 5 || confirmarSenha.length < 5)
-        return alertCustom("Sua senha deve conter ao menos 5 caracteres!");
-      else if (senha != confirmarSenha)
-        return alertCustom("As senhas digitadas não são iguais!");
-
       const data = await Api.query("POST", "/user/register", {
         ...rest,
         senha,
-        telefone: telefone.replace(/\D/g, ""),
+        token,
+        telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
       navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
       alertCustom("Conta criada com sucesso!");
     } catch (error) {
-      console.log(error);
       alertCustom(
         error?.response?.data?.message ??
           "Erro ao criar conta, verifique seus dados!"
@@ -167,6 +157,75 @@ const LoginPage = ({ page, alertCustom }) => {
     else setInicialState(null);
   }, [page, hash]);
 
+  const google = (type = "") => {
+    return (
+      {
+        create: "signup_with",
+        login: "signin_with",
+        recover: "signin_with",
+        change: "continue_with",
+      }[type] || "signin"
+    );
+  };
+
+  const componentValidations = {
+    create: [
+      { campo: "nome", validacoes: "required, minLength(10)" },
+      {
+        campo: "telefone",
+        validacoes: "required, minLength(18), telefone",
+      },
+      {
+        campo: "senha",
+        validacoes: "required, minLength(5), equal(confirmarSenha)",
+      },
+      { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
+    ],
+    login: [
+      {
+        campo: "telefone",
+        validacoes: "required, minLength(10), telefone",
+      },
+      { campo: "senha", validacoes: "required" },
+    ],
+    recover: [
+      {
+        campo: "telefone",
+        validacoes: "required, minLength(18), telefone",
+      },
+    ],
+    change: [
+      {
+        campo: "senha",
+        validacoes: "required, minLength(5), equal(confirmarSenha)",
+      },
+      { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
+    ],
+  };
+
+  const submitForm = async (TOKEN) => {
+    try {
+      if (TOKEN) {
+        return inicialState.componente == "create"
+          ? handleCreate(TOKEN)
+          : handleLogin(TOKEN);
+      }
+
+      await validarCampos(
+        inicialState.componente,
+        dados,
+        componentValidations
+      ).then(() => {
+        inicialState.componente == "create" && handleCreate();
+        inicialState.componente == "login" && handleLogin();
+        inicialState.componente == "recover" && handleRecover();
+        inicialState.componente == "change" && handleChangePass();
+      });
+    } catch (error) {
+      alertCustom(error.message || "Erro ao submeter o formulário!");
+    }
+  };
+
   return (
     inicialState && (
       <Modal
@@ -175,18 +234,44 @@ const LoginPage = ({ page, alertCustom }) => {
         titulo={inicialState.titulo}
         actionText={inicialState.actionText}
         loadingButton={inicialState.loadingButton}
-        onAction={() => {
-          inicialState.componente == "create" && handleCreate();
-          inicialState.componente == "login" && handleLogin();
-          inicialState.componente == "recover" && handleRecover();
-          inicialState.componente == "change" && handleChangePass();
-        }}
+        componentName={inicialState.componente}
+        onAction={submitForm}
+        buttons={[
+          {
+            type: "google",
+            text: google(inicialState.componente),
+            action: async ({ credential }) => {
+              await submitForm(credential);
+            },
+          },
+        ]}
         buttonStyle={{ variant: "contained" }}
         maxWidth={"md"}
         component="form"
         fullScreen="all"
         backAction={inicialState.backAction}
-        image={{ styles: { height: "500px" }, src: Banner }}
+        images={[
+          {
+            styles: { width: "100%", marginTop: "12vh", marginLeft: "-100px" },
+            src: Banner,
+          },
+
+          {
+            //   src: LogoBanner,
+            //   styles: {
+            //     width: "40px",
+            //     height: "40px",
+            //     margin: "10px",
+            //     padding: "10px",
+            //     background: "#0195F7",
+            //     borderRadius: "10px",
+            //   },
+            // text: {
+            //   content: "Sua plataforma de gestão e agendamentos",
+            //   variant: "h5",
+            // },
+          },
+        ]}
       >
         <Grid container spacing={4}>
           {inicialState.componente == "create" && (

@@ -10,13 +10,16 @@ import {
   Box,
   CircularProgress,
   Container,
+  Divider,
   Grid2 as Grid,
   Paper,
+  Stack,
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isMobile } from "../Funcoes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const full = {
   [undefined]: false,
@@ -43,11 +46,12 @@ const Modal = ({
   buttons = [], //{titulo, action, color}
   buttonStyle,
   modalStyle,
-  image,
+  images,
   loadingButton = false,
   sx,
   disablePadding,
   route = "",
+  componentName = "",
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -159,25 +163,53 @@ const Modal = ({
                   justifyContent: "center",
                 }}
               >
-                {image && (
-                  <Grid size={{ xs: 0, md: 7 }}>
-                    <img
-                      src={image.src}
-                      style={{
-                        ...image.styles,
-                        display: !isMobile ? "block" : "none",
-                      }}
-                    />
+                {images && !isMobile && (
+                  <Grid
+                    size={{ xs: 0, md: 7 }}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {images.map((image) => (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <img
+                          src={image.src}
+                          style={{
+                            ...image.styles,
+                          }}
+                        />
+                        {image.text && (
+                          <Typography variant={image.text.variant}>
+                            {image.text.content}
+                          </Typography>
+                        )}
+                      </Box>
+                    ))}
                   </Grid>
                 )}
                 <Grid size={{ xs: 12, md: component != "form" ? 12 : 5 }}>
                   <Paper
                     variant={
-                      isMobile || component != "form" ? "contained" : "outlined"
+                      "contained"
+                      // isMobile || component != "form" ? "contained" : "outlined"
                     }
                     sx={{
                       ...modalStyle,
-                      height: component != "form" ? "100%" : "530px",
+                      height:
+                        component != "form"
+                          ? "100%"
+                          : {
+                              xs: "calc(100vh - 130px)",
+                              md: componentName == "create" ? "550px" : "500px",
+                            },
                       m: 0,
                       p: ["modal"].includes(component)
                         ? "10px 0"
@@ -197,7 +229,7 @@ const Modal = ({
                         ...(component == "form"
                           ? {
                               p: "20px 0",
-                              height: component != "form" ? "100%" : "530px",
+                              height: "100%",
                               display: "flex",
                               justifyContent: "space-between",
                               flexDirection: "column",
@@ -213,20 +245,49 @@ const Modal = ({
                       <Grid size={12}>{children}</Grid>{" "}
                       {component == "form" && (
                         <>
-                          <Grid size={{ xs: 12, xs: 12 }}>
-                            <Button
-                              fullWidth
-                              size="large"
-                              disableElevation
-                              onClick={() => onAction && onAction()}
-                              variant="contained"
-                              color={color}
-                              disabled={loadingButton}
-                              type="submit"
-                              sx={{ marginTop: "50px", ...buttonStyle }}
-                            >
-                              {loadingButton ? "Carregando..." : actionText}
-                            </Button>
+                          <Grid size={12}>
+                            <Grid container>
+                              {buttons[0]?.type == "google" && (
+                                <>
+                                  <Grid size={12}>
+                                    <GoogleLogin
+                                      size="large"
+                                      shape="pill"
+                                      text={buttons[0]?.text}
+                                      onSuccess={(e) => buttons[0]?.action(e)}
+                                      onError={(e) => buttons[0]?.action(e)}
+                                    />
+                                  </Grid>
+                                  <Grid size={12}>
+                                    {" "}
+                                    <Divider
+                                      textAlign="center"
+                                      sx={{ m: "5px 0" }}
+                                    >
+                                      ou
+                                    </Divider>
+                                  </Grid>
+                                </>
+                              )}
+                              <Grid size={12}>
+                                <Button
+                                  fullWidth
+                                  size="large"
+                                  disableElevation
+                                  onClick={() => onAction && onAction()}
+                                  variant="contained"
+                                  color={color}
+                                  disabled={loadingButton}
+                                  type="submit"
+                                  sx={{
+                                    height: "40px",
+                                    ...buttonStyle,
+                                  }}
+                                >
+                                  {loadingButton ? "Carregando..." : actionText}
+                                </Button>
+                              </Grid>
+                            </Grid>
                           </Grid>{" "}
                           {submitText && (
                             <Grid size={{ xs: 12, xs: 12 }}>
@@ -236,10 +297,6 @@ const Modal = ({
                                 disableElevation
                                 onClick={async () => {
                                   await onSubmit();
-                                }}
-                                sx={{
-                                  border: "1px solid #484848",
-                                  color: "#fff",
                                 }}
                                 variant="outlined"
                               >
@@ -263,15 +320,40 @@ const Modal = ({
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
-                columnGap: isMobile ? 0 : 1,
+                gap: 1,
                 rowGap: 1,
+                m: 1,
               }}
             >
-              {" "}
+              {submitText && (
+                <Button
+                  disableElevation
+                  fullWidth={isMobile}
+                  onClick={onSubmit}
+                  variant="outlined"
+                  size="large"
+                  sx={{ display: { md: "none" } }}
+                >
+                  {submitText}
+                </Button>
+              )}
+              {onAction && (
+                <Button
+                  size="large"
+                  fullWidth={isMobile}
+                  disableElevation
+                  sx={{ display: { md: "none" } }}
+                  onClick={() => onAction()}
+                  variant="contained"
+                  color={color}
+                >
+                  {actionText}
+                </Button>
+              )}
               {buttons &&
-                // buttons.length &&
                 buttons.map((button) => (
                   <Button
+                    size="large"
                     color={button.color || "primary"}
                     disableElevation
                     disabled={button.disabled}
@@ -284,9 +366,6 @@ const Modal = ({
                     }
                     sx={{
                       ...buttonStyle,
-                      ...(button.variant == "outlined"
-                        ? { border: "1px solid #484848" }
-                        : {}),
                     }}
                   >
                     {button.titulo}
@@ -298,18 +377,17 @@ const Modal = ({
                   fullWidth={isMobile}
                   onClick={onSubmit}
                   variant="outlined"
-                  sx={{
-                    border: "1px solid #484848",
-                    color: "#fff",
-                  }}
+                  sx={{ display: { xs: "none" } }}
                 >
                   {submitText}
                 </Button>
               )}
+
               {onAction && (
                 <Button
                   fullWidth={isMobile}
                   disableElevation
+                  sx={{ display: { xs: "none" } }}
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}

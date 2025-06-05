@@ -5,6 +5,8 @@ import {
   IconButton,
   InputAdornment,
   Link,
+  Box,
+  Divider,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -61,7 +63,7 @@ const Login = ({ dados, setDados }) => {
             </InputAdornment>
           }
         />
-      </Grid>
+      </Grid>{" "}
       <Grid item size={{ xs: 12 }} sx={{ display: "flex", flexWrap: "wrap" }}>
         <a onClick={() => navigate("/recover")} className="show-link">
           Esqueceu sua senha?
@@ -69,7 +71,7 @@ const Login = ({ dados, setDados }) => {
         <a onClick={() => navigate("/create")} className="show-link">
           Não tem uma conta? Crie uma
         </a>
-      </Grid>
+      </Grid>{" "}
     </>
   );
 };

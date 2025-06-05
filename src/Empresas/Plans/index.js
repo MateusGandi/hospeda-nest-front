@@ -27,10 +27,11 @@ import {
 import LogoPartners from "../../Assets/logo_partners.png";
 import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
 import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
-import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.jpg";
+import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.png";
 import Icon from "../../Assets/Emojis";
 import { Rows } from "../../Componentes/Lista/Rows";
 import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
+import Image from "../../Assets/Landing/planos.png";
 
 const ModalPlanos = ({ alertCustom }) => {
   const [mensagensChat] = useState([
@@ -41,6 +42,7 @@ const ModalPlanos = ({ alertCustom }) => {
         "🤝 Olá Edu, como podemos te ajudar hoje?\n\nPor hora, podemos te ajudar com:\n- Notificações\n- Cancelamentos\n- Agendamentos\n- Dúvidas sobre o app\n- Recuperar sua conta perdida",
     },
     { remetente: "cliente", texto: "Estou com algumas dúvidas..." },
+
     {
       remetente: "bot",
       texto:
@@ -64,6 +66,7 @@ const ModalPlanos = ({ alertCustom }) => {
   const navigate = useNavigate();
   const [modal, setModal] = useState({
     video: false,
+    openDetalhes: false,
     open: true,
     onClose: () => navigate(to[getLocalItem("accessType") || ""]),
     loading: false,
@@ -72,15 +75,20 @@ const ModalPlanos = ({ alertCustom }) => {
     usuarios: formatNumberToWords(3000),
     avaliacao: 4.1,
     videos: [
+      // {
+      //   id: "67f00094-d984-8007-b039-a6cc21a8f7e6",
+      //   title: "Tudo sobre o Tonsus",
+      //   src: "https://www.w3schools.com/html/mov_bbb.mp4",
+      // },
+      // {
+      //   id: "video4",
+      //   src: "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+      //   description: "Dica de 1 minuto para melhor utilização",
+      // },
       {
-        id: "67f00094-d984-8007-b039-a6cc21a8f7e6",
-        title: "Tudo sobre o Tonsus",
-        src: "https://www.w3schools.com/html/mov_bbb.mp4",
-      },
-      {
-        id: "67f00094-d984-8007-b039-a6cc21a8f7ee",
-        title: "Ola mundo",
-        src: "https://www.w3schools.com/html/mov_bbb.mp4",
+        id: "video5",
+        src: "https://www.youtube.com/watch?v=ENCbaMJQ57k&ab_channel=BruceDark",
+        description: "Dica de 1 minuto para melhor utilização",
       },
     ],
     detalhes: [],
@@ -119,34 +127,40 @@ const ModalPlanos = ({ alertCustom }) => {
     <>
       <VideoPlayer
         setOpen={(flag) => setModal((prev) => ({ ...prev, video: flag }))}
-        title="Bem vindo ao Tonsus"
         maxWidth="xs"
         open={modal.video}
         videoList={modal.videos}
         onClose={() => setModal((prev) => ({ ...prev, video: false }))}
       />
       <Modal
-        open={modal.detalhes.length > 0}
-        onClose={() => setModal((prev) => ({ ...prev, detalhes: [] }))}
+        open={modal.openDetalhes}
+        onClose={() => setModal((prev) => ({ ...prev, openDetalhes: false }))}
         maxWidth="md"
-        titulo={
-          <Typography variant="h5">
-            <Icon>✨</Icon> Ao contratar este plano você terá acesso a:
-          </Typography>
-        }
+        titulo={modal.nome}
+        sx={{ background: "#181818", position: "relative", minHeight: "535px" }}
         component="modal"
       >
         <Grid container spacing={2}>
-          <Grid size={12}>
+          <Grid
+            size={{ xs: 12, md: 6 }}
+            sx={{ textAlign: "center", opacity: { xs: 0.1, md: 1 } }}
+          >
+            <img
+              src={Image}
+              style={{ width: "450px", position: "absolute", left: 0 }}
+            ></img>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
             {" "}
             <Rows
+              sx={{ background: "none" }}
               items={modal.detalhes.map((detalhe, i) => ({
                 id: i,
                 icon: (
                   <Avatar
                     sx={{
-                      bgcolor: "primary.light",
-                      color: "#fff",
+                      bgcolor: "secondary.light",
+                      color: "#000",
                       width: 32,
                       height: 32,
 
@@ -161,16 +175,6 @@ const ModalPlanos = ({ alertCustom }) => {
               }))}
               disabled={true}
             />
-          </Grid>
-          <Grid size={12}>
-            {" "}
-            <Typography variant="h6" className="show-box">
-              <Icon>💡</Icon> Benefícios
-              <Typography variant="body1">
-                Todos os benefícios estão sujeitos aos termos de uso da
-                plataforma
-              </Typography>
-            </Typography>
           </Grid>
         </Grid>
       </Modal>
@@ -238,7 +242,7 @@ const ModalPlanos = ({ alertCustom }) => {
               }}
             >
               <Grid size={12}>
-                <Typography variant="h3">
+                <Typography variant={isMobile ? "h4" : "h3"}>
                   Aumente seu <b>faturamento</b> e visibilidade por um preço
                   justo!
                 </Typography>
@@ -345,11 +349,13 @@ const ModalPlanos = ({ alertCustom }) => {
                     </Button>
                     <Button
                       variant="text"
-                      color={plano.destaque ? "success" : "primary"}
+                      color="#000"
                       fullWidth
                       onClick={() =>
                         setModal((prev) => ({
                           ...prev,
+                          nome: plano.nome,
+                          openDetalhes: true,
                           detalhes: plano.produtosContratados,
                         }))
                       }
@@ -458,7 +464,7 @@ const ModalPlanos = ({ alertCustom }) => {
           </Grid>{" "}
           <Grid size={12} order={998} sx={{ textAlign: "center", mb: -7 }}>
             <Typography variant={"h4"}>
-              Atendimento Automático WhatsApp
+              Atendimento WhatsApp
               <Typography variant={"h6"}>
                 Um Atendente Virtual para atender aos seus clientes até mesmo
                 fora do expediente!
@@ -473,7 +479,7 @@ const ModalPlanos = ({ alertCustom }) => {
                   style={{
                     position: "absolute",
                     top: 0,
-                    left: 0,
+                    ...(isMobile ? { right: "0" } : { left: "0" }),
                     width: "76%",
                     marginBottom: "-24px",
                     zIndex: 998,
@@ -496,7 +502,7 @@ const ModalPlanos = ({ alertCustom }) => {
 
                     zIndex: 997,
                     ...(isMobile
-                      ? { top: 90, left: 10 }
+                      ? { top: 70, left: 10 }
                       : { top: 180, right: 140 }),
                   }}
                 >
@@ -512,7 +518,7 @@ const ModalPlanos = ({ alertCustom }) => {
               </Grid>
               <Grid
                 size={{ xs: 12, md: 5 }}
-                sx={{ mt: isMobile ? -9 : 8, zIndex: 999 }}
+                sx={{ mt: isMobile ? "190px" : 8, zIndex: 999 }}
               >
                 <Stack>
                   <Card elevation={0} sx={{ background: "transparent" }}>

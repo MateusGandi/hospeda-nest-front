@@ -10,6 +10,9 @@ import {
   Container,
   CircularProgress,
   Button,
+  AppBar,
+  Toolbar,
+  Stack,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
@@ -22,6 +25,7 @@ import {
   getDominantColorFromURL,
   getLocalItem,
   isMobile,
+  primeiraMaiuscula,
 } from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
 
@@ -80,23 +84,23 @@ const BarberShopMenu = ({ alertCustom }) => {
       employee: [
         {
           action: "agendamento/cliente",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
         },
         {
           action: "agendamentos",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Minha Agenda",
         },
         {
           action: "profile",
-          icon: <Settings sx={{ mr: 1 }} />,
+          icon: <Settings sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Minha Escala",
         },
         {
           to: "/me",
           action: "me",
-          icon: <PersonIcon sx={{ mr: 1 }} />,
+          icon: <PersonIcon sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Meu perfil",
         },
       ],
@@ -104,88 +108,88 @@ const BarberShopMenu = ({ alertCustom }) => {
       manager: [
         {
           action: "edicao",
-          icon: <Store sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Editar dados da barbearia",
         },
         {
           action: "funcionarios",
-          icon: <People sx={{ mr: 1 }} />,
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
         },
         {
           action: "servicos",
-          icon: <Build sx={{ mr: 1 }} />,
+          icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
         },
         {
           action: "agendamento/cliente",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
         },
         {
           action: "agendamentos",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Minha Agenda",
         },
       ],
       adm: [
         {
           action: "edicao",
-          icon: <Store sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Editar dados da barbearia",
         },
         {
           action: "funcionarios",
-          icon: <People sx={{ mr: 1 }} />,
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
         },
         {
           action: "servicos",
-          icon: <Build sx={{ mr: 1 }} />,
+          icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
         },
         {
           to: "/me",
           action: "me",
-          icon: <PersonIcon sx={{ mr: 1 }} />,
+          icon: <PersonIcon sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Meu perfil",
         },
       ],
       admfuncionario: [
         {
           action: "edicao",
-          icon: <Store sx={{ mr: 1 }} />,
+          icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Editar dados da barbearia",
         },
         {
           action: "funcionarios",
-          icon: <People sx={{ mr: 1 }} />,
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
         },
         {
           action: "servicos",
-          icon: <Build sx={{ mr: 1 }} />,
+          icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
         },
         {
           action: "agendamento/cliente",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
         },
         {
           action: "agendamentos",
-          icon: <CalendarMonth sx={{ mr: 1 }} />,
+          icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Minha Agenda",
         },
         {
           action: "profile",
-          icon: <Settings sx={{ mr: 1 }} />,
+          icon: <Settings sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Minha Escala",
         },
         {
           to: "/me",
           action: "me",
-          icon: <PersonIcon sx={{ mr: 1 }} />,
+          icon: <PersonIcon sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Meu perfil",
         },
       ],
@@ -378,9 +382,9 @@ const BarberShopMenu = ({ alertCustom }) => {
           </Grid>
         </Grid>
       ) : (
-        <Grid container spacing={1.5}>
+        <Grid container spacing={1.5} sx={{ m: "0 2px" }}>
           {/* Banner com ícone de adicionar foto */}
-          <Grid item size={{ xs: 12 }}>
+          <Grid item size={{ xs: 12 }} sx={{ pb: 10 }}>
             <Card
               elevation={0}
               sx={{
@@ -522,12 +526,12 @@ const BarberShopMenu = ({ alertCustom }) => {
                             {" "}
                             <Button
                               variant="outlined"
-                              color="terciary"
-                              size="large"
+                              color="secondary"
+                              fontSize="medium"
                               startIcon={<StyleIcon />}
                               onClick={() => navigate("/plans")}
                               sx={{
-                                border: "1px solid rgba(256, 256, 256, 0.2)",
+                                border: "1.5px solid rgba(256, 256, 256, 0.2)",
                               }}
                               fullWidth
                             >
@@ -549,10 +553,49 @@ const BarberShopMenu = ({ alertCustom }) => {
               </CardContent>
             </Card>
           </Grid>
-
+          <AppBar
+            position="fixed"
+            sx={{
+              bottom: 0,
+              top: "auto",
+              borderRadius: "10px 10px 0 0",
+              background: "rgba(0, 0, 0, 0.7)",
+            }}
+          >
+            <Toolbar
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                m: "5px 0",
+              }}
+            >
+              {cards(getLocalItem("accessType")).map(
+                ({ action, icon, title, to }, i) => (
+                  <Stack
+                    sx={{ justifyContent: "center", alignItems: "center" }}
+                    onClick={() => (to ? navigate(to) : handleOpen(action))}
+                  >
+                    <IconButton sx={{ display: { xs: "", md: "none" } }}>
+                      {icon}
+                    </IconButton>
+                    <Typography variant="body2" sx={{ textAlign: "center" }}>
+                      {primeiraMaiuscula(
+                        title.split(" ")[title.split(" ").length - 1].trim()
+                      )}
+                    </Typography>
+                  </Stack>
+                )
+              )}
+            </Toolbar>
+          </AppBar>
           {cards(getLocalItem("accessType")).map(
             ({ action, icon, title, to }, i) => (
-              <Grid item key={i} size={{ xs: 12, md: 3 }}>
+              <Grid
+                item
+                key={i}
+                size={{ xs: 12, md: 3 }}
+                sx={{ display: { xs: "none", md: "block" } }}
+              >
                 <CustomCard
                   onClick={() => (to ? navigate(to) : handleOpen(action))}
                 >

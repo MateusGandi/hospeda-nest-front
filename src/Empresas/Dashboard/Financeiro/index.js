@@ -39,6 +39,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
     previsto: 0,
     vendas: [],
   });
+  const [pageSize, setPageSize] = useState(5);
 
   const handleGet = async () => {
     try {
@@ -51,21 +52,8 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         url = `/financial/employee/${userId}?data=${dataAtual}`;
       }
       const data = await Api.query("GET", url);
-      const vendas = [];
 
-      // Object.keys(data.estatisticasFuncionarios).forEach((funcionario) => {
-      //   vendas.push(
-      //     ...data.estatisticasFuncionarios[funcionario].map((atendimento) => ({
-      //       valor: atendimento.preco,
-      //       cliente: atendimento.nomeCliente || "Cliente não informado",
-      //       data: format(atendimento.data, "dd/MM/yyyy' às 'HH:mm"),
-      //       atendimento: funcionario,
-      //     }))
-      //   );
-      // });
-
-      // setVendasFiltradas(vendas);
-      setFinancas({ ...data, vendas: vendas });
+      setFinancas({ ...data, vendas: [] });
     } catch (error) {
       alertCustom("Erro ao buscar balanço financeiro!");
     }
@@ -75,17 +63,58 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
     dados?.modalOpen && handleGet();
   }, [dados?.modalOpen]);
 
+  useEffect(() => {
+    const buscar = async () => {
+      const dataAtual = new Date().toISOString().split("T")[0];
+      const data = await Api.query(
+        "GET",
+        `/financial/establishment/transactions/${getLocalItem(
+          "establishmentId"
+        )}?data=${dataAtual}&pageSize=${pageSize}&page=1`
+      );
+      const vendas = data.map((item) => ({
+        valor: item.preco,
+        cliente: item.nomeCliente || "Cliente não informado",
+        data: format(item.data, "dd/MM/yyyy' às 'HH:mm"),
+        atendimento: item,
+        funcionario: item.atendenteNome,
+      }));
+
+      // setVendasFiltradas(vendas);
+      setFinancas((prev) => ({ ...prev, vendas: vendas }));
+    };
+
+    buscar();
+  }, [pageSize]);
+
+  useEffect(() => {
+    // Ajusta a paginação baseado no número de itens filtrados
+    if (search) {
+      if (vendasFiltradas.length < 5) {
+        setPageSize(5);
+      } else if (vendasFiltradas.length > 10) {
+        setPageSize(10);
+      } else {
+        setPageSize(vendasFiltradas.length);
+      }
+    } else {
+      setPageSize(5);
+    }
+  }, [search]);
+
   return (
     <>
       <Button
-        color="terciary"
+        color="secondary"
         disableElevation
         onClick={() => setDados({ ...dados, modalOpen: true })}
         variant="outlined"
         size="large"
         fullWidth
         startIcon={<AttachMoneyRoundedIcon />}
-        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
+        sx={{
+          border: "1.5px solid rgba(256, 256, 256, 0.2)",
+        }}
       >
         Ver Financeiro
       </Button>
@@ -184,8 +213,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
               <CardContent>
                 <Typography variant="h6">Movimentado hoje</Typography>
                 <Typography variant="h5">
-                  {`R$ ${financas.total?.toFixed(2)}`}{" "}
-                  {/* <ArrowUpwardIcon fontSize="small" color="success" /> */}
+                  {`R$ ${financas.total?.toFixed(2)}`}
                 </Typography>
               </CardContent>
             </Card>
@@ -225,7 +253,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
           <Grid size={12} sx={{ m: "0 10px" }}>
             <PaperList
               items={
-                vendasFiltradas.length > 0
+                vendasFiltradas && vendasFiltradas.length > 0
                   ? vendasFiltradas.map((venda) => ({
                       ...venda,
                       titulo: venda.cliente,
@@ -239,13 +267,12 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                     ]
               }
             >
-              {" "}
               <Typography
                 variant="body1"
                 sx={{ m: "10px 15px", fontWeight: 600 }}
               >
                 Últimas Movimentações
-              </Typography>{" "}
+              </Typography>
             </PaperList>
           </Grid>
         </Grid>

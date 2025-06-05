@@ -145,8 +145,8 @@ const WorkSchedule = ({
       {type == "button" && (
         <Box sx={{ width: "100%", pt: 2 }}>
           <Button
-            variant="outlined"
-            color="secondary"
+            variant="text"
+            color="primary"
             disableElevation
             onClick={() => setOpen(true)}
           >
@@ -165,7 +165,6 @@ const WorkSchedule = ({
         maxWidth="md"
         component={"view"}
         modalStyle={{ background: "red" }}
-        disablePadding={isMobile}
       >
         <Grid container spacing={3}>
           <Grid size={12} sx={{ mb: 2 }}>
@@ -177,35 +176,35 @@ const WorkSchedule = ({
               assim como o horário de almoço. Use escalas predefinidas para
               facilitar a configuração!
               <Stack direction={{ xs: "column", md: "row" }} spacing={2} mt={3}>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{
-                    border: "1px solid rgb(134, 134, 134)",
+                <div
+                  style={{
+                    gap: 1,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
                   }}
-                  onClick={() => setDefaultSchedule("6x1")}
                 >
-                  Configurar 6x1 (Seg-Sáb)
-                </Button>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    onClick={() => setDefaultSchedule("6x1")}
+                  >
+                    Segunda à sábado
+                  </Button>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    onClick={() => setDefaultSchedule("5x2")}
+                  >
+                    Segunda à sexta
+                  </Button>
+                </div>
                 <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{
-                    border: "1px solid rgb(134, 134, 134)",
-                  }}
-                  onClick={() => setDefaultSchedule("5x2")}
-                >
-                  Configurar 5x2 (Seg-Sex)
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  sx={{
-                    border: "1px solid rgb(134, 134, 134)",
-                  }}
+                  variant="text"
+                  color="tarciary"
                   onClick={() => setDefaultSchedule("default")}
                 >
-                  Limpar
+                  Limpar minha escolha
                 </Button>
               </Stack>
             </Typography>
@@ -286,9 +285,11 @@ const WorkSchedule = ({
             </>
           ))}{" "}
           <Grid size={12}>
-            <Typography variant="h6">Horário de Almoço</Typography>
+            <Typography variant="h6" sx={{ m: "10px 0" }}>
+              Horário de Almoço
+            </Typography>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={6}>
             <CustomInput
               label="Início"
               value={lunchTime.horarioForaInicial}
@@ -299,7 +300,7 @@ const WorkSchedule = ({
               fullWidth
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={6}>
             <CustomInput
               label="Fim"
               value={lunchTime.horarioForaFinal}

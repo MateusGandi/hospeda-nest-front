@@ -36,6 +36,23 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        outlined: {
+          borderColor: "#484848", // Cor da borda laranja
+          borderWidth: "1.5px",
+        },
+      },
+      variants: [
+        {
+          props: { variant: "outlined", color: "secondary" },
+          style: {
+            borderColor: "#fff",
+            color: "#fff",
+          },
+        },
+      ],
+    },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -86,11 +103,20 @@ function App() {
     open: false,
   });
 
+  const [timeoutId, setTimeoutId] = useState(null);
+
   const alertCustom = (message) => {
     setAlert({ message: message, open: true });
-    setTimeout(() => {
-      setAlert((prev) => ({ ...prev, open: false }));
-    }, 5000);
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    setTimeoutId(
+      setTimeout(() => {
+        setAlert((prev) => ({ ...prev, open: false }));
+      }, 5000)
+    );
   };
 
   return (

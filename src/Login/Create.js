@@ -5,6 +5,7 @@ import {
   IconButton,
   InputAdornment,
   Typography,
+  Box,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -15,20 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Create = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [feedback, setFeedback] = useState("");
   const navigate = useNavigate();
-  useEffect(() => {
-    if (
-      dados.senha &&
-      dados.confirmarSenha &&
-      dados.senha?.length <= dados.confirmarSenha?.length &&
-      dados.senha != dados.confirmarSenha
-    )
-      setFeedback("●\tSenhas devem ser iguais");
-    else if (dados.senha?.length < 5)
-      setFeedback("●\tSenha devem conter ao menos 5 caracteres!");
-    else setFeedback(null);
-  }, [dados]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -116,15 +104,12 @@ const Create = ({ dados, setDados }) => {
             </InputAdornment>
           }
         />
+        <Box sx={{ marginTop: "10px" }}>
+          <a onClick={() => navigate("/login")} className="show-link">
+            Já possui uma conta? Acesse-a
+          </a>
+        </Box>
       </Grid>{" "}
-      <Grid item size={12} sx={{ height: 0 }}>
-        <a onClick={() => navigate("/login")} className="show-link">
-          Já possui uma conta? Acesse-a
-        </a>
-        <Typography color="error" variant="body1">
-          {feedback}
-        </Typography>
-      </Grid>
     </>
   );
 };
