@@ -333,7 +333,7 @@ export const getDominantColorFromURL = (imageUrl) => {
   });
 };
 
-export function validarCampos(tipo, dados, componentValidations) {
+export async function validarCampos(tipo, dados, componentValidations) {
   const regras = componentValidations[tipo];
 
   if (!regras) throw new Error("Tipo inválido");
