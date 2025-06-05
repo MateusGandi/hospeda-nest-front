@@ -43,17 +43,22 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     setModal({
       buttons: [
         {
-          color: "error",
+          color: "terciary",
           variant: "outlined",
           titulo: "Deletar serviço",
           action: () => handleDelete(item),
+        },
+        {
+          color: "terciary",
+          variant: "outlined",
+          titulo: "Cancelar Edição",
+          action: () => handleCancelEdit(),
         },
       ],
       open: true,
       titulo: `Editar ${item.nome}`,
       servicoSelecionado: { ...item, tempoGasto: item.tempoGasto.slice(0, 5) },
-      onSubmit: () => handleCancelEdit(),
-      submitText: "Cancelar Edição",
+
       actionText: "Editar",
     });
   };
@@ -158,8 +163,8 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
         open={open}
         onClose={handleClose}
         titulo={"Gerenciar serviços"}
-        onSubmit={addItem}
-        submitText="Novo Serviço"
+        onAction={addItem}
+        actionText="Novo Serviço"
         fullScreen="all"
         component="view"
         loading={modal.loading}

@@ -59,16 +59,20 @@ const GerenciarFuncionarios = ({
       open: true,
       buttons: [
         {
-          color: "error",
+          color: "terciary",
           variant: "outlined",
           titulo: "Remover funcionário",
           action: () => handleDelete(item),
         },
+        {
+          color: "terciary",
+          variant: "outlined",
+          titulo: "Cancelar Edição",
+          action: () => handleCancelEdit(),
+        },
       ],
       titulo: `Editar dados de ${item.nome}`,
       funcionarioSelecionado: item,
-      onSubmit: () => handleCancelEdit(),
-      submitText: "Cancelar Edição",
       actionText: "Editar",
     });
   };
@@ -160,8 +164,8 @@ const GerenciarFuncionarios = ({
         open={open}
         onClose={handleClose}
         titulo={"Gerenciar funcionários"}
-        onSubmit={addFuncionario}
-        submitText="Adicionar Funcionário"
+        onAction={addFuncionario}
+        actionText="Adicionar Funcionário"
         fullScreen="all"
         component="view"
       >

@@ -8,7 +8,7 @@ const Alerta = ({ alert, setAlert }) => {
 
   return (
     <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       open={alert.open}
       message={alert.message}
       onClose={handleClose}
@@ -17,7 +17,8 @@ const Alerta = ({ alert, setAlert }) => {
         "& .MuiSnackbarContent-root": {
           backgroundColor: "#353535",
           color: "#fff",
-          ...(isMobile ? { marginTop: "70px" } : {}),
+          position: "fixed",
+          ...(isMobile ? { top: "70px" } : {}),
           borderRadius: "10px",
         },
       }}

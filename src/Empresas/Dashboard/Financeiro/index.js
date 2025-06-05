@@ -105,14 +105,16 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
   return (
     <>
       <Button
-        color="terciary"
+        color="secondary"
         disableElevation
         onClick={() => setDados({ ...dados, modalOpen: true })}
         variant="outlined"
         size="large"
         fullWidth
         startIcon={<AttachMoneyRoundedIcon />}
-        sx={{ border: "1px solid rgba(256, 256, 256, 0.2)" }}
+        sx={{
+          border: "1.5px solid rgba(256, 256, 256, 0.2)",
+        }}
       >
         Ver Financeiro
       </Button>

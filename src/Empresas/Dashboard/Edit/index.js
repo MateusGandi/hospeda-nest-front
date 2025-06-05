@@ -4,6 +4,7 @@ import Modal from "../../../Componentes/Modal";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatPhone, formatTime } from "../../../Componentes/Funcoes";
+import Icon from "../../../Assets/Emojis";
 const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
   const [formData, setFormData] = useState(initialData);
 
@@ -84,23 +85,32 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
               variant="outlined"
             />
           </Grid>
-          <Grid item size={{ xs: 12, md: 4 }}>
+          <Grid item size={{ xs: 6, md: 4 }}>
             <CustomInput
               fullWidth
-              label="Horário de Abertura"
+              label="Abertura"
               value={formData.horarioAbertura}
               onChange={handleChange("horarioAbertura")}
               variant="outlined"
             />
           </Grid>
-          <Grid item size={{ xs: 12, md: 4 }}>
+          <Grid item size={{ xs: 6, md: 4 }}>
             <CustomInput
               fullWidth
-              label="Horário de Fechamento"
+              label="Fechamento"
               value={formData.horarioFechamento}
               onChange={handleChange("horarioFechamento")}
               variant="outlined"
             />
+          </Grid>
+          <Grid item size={12}>
+            <Typography variant="body1" className="show-box">
+              <Typography variant="h6">
+                <Icon>💡</Icon> Customização
+              </Typography>
+              Complemente com suas informações e alcançe o potencial máximo para
+              atrair clientes
+            </Typography>
           </Grid>
         </Grid>
       </Modal>
