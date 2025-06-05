@@ -191,7 +191,7 @@ const LoginPage = ({ page, alertCustom }) => {
     recover: [
       {
         campo: "telefone",
-        validacoes: "required, minLength(18), telefone",
+        validacoes: "required, minLength(13), telefone",
       },
     ],
     change: [
