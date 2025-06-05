@@ -23,6 +23,14 @@ export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Controle de carregamento
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setIsLoading(true);
+      window.location.reload();
+    });
+  }, []);
+
   useEffect(() => {
     const fetchRoutesAllowed = async () => {
       try {
@@ -86,7 +94,6 @@ export function RouteElement({ path, alertCustom }) {
   if (!pathF) {
     return <Navigate to="/login" />;
   } else {
-    console.log("testeetstetetee", lastPath);
     !"login create recover change".includes(lastPath.split("/")[0]) &&
       setLocalItem("lastRoute", lastPath);
     return paths[pathF];

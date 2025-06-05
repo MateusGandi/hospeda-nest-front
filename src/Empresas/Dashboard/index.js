@@ -109,7 +109,7 @@ const BarberShopMenu = ({ alertCustom }) => {
         {
           action: "edicao",
           icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Editar dados da barbearia",
+          title: "Editar barbearia",
         },
         {
           action: "funcionarios",
@@ -136,7 +136,7 @@ const BarberShopMenu = ({ alertCustom }) => {
         {
           action: "edicao",
           icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Editar dados da barbearia",
+          title: "Editar barbearia",
         },
         {
           action: "funcionarios",
@@ -159,7 +159,7 @@ const BarberShopMenu = ({ alertCustom }) => {
         {
           action: "edicao",
           icon: <Store sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Editar dados da barbearia",
+          title: "Editar barbearia",
         },
         {
           action: "funcionarios",
@@ -195,6 +195,37 @@ const BarberShopMenu = ({ alertCustom }) => {
       ],
     };
     return perm[user];
+  };
+  const renderOption = ({ action, icon, title, to }) => {
+    return (
+      <Stack
+        sx={{ justifyContent: "center", alignItems: "center" }}
+        onClick={() => (to ? navigate(to) : handleOpen(action))}
+      >
+        <IconButton>{icon}</IconButton>
+        <Typography variant="body2" sx={{ textAlign: "center" }}>
+          {primeiraMaiuscula(
+            title.split(" ")[title.split(" ").length - 1].trim()
+          )}
+        </Typography>
+      </Stack>
+    );
+  };
+
+  const renderCards = () => {
+    const opcoes = cards(getLocalItem("accessType"));
+
+    //se for celular, pega as 4 primeiras opções para a barra de baixo
+    //se não for celular, deixa vazio
+    const barraCenter = isMobile
+      ? opcoes.slice(isMobile ? 4 : 0, opcoes.length)
+      : opcoes;
+
+    //se for celular, pega as opções restantes para o centro
+    //se não for celular, pega todas as opções
+    const barraBottom = opcoes.slice(0, 4).map((item) => renderOption(item));
+
+    return { barraBottom, barraCenter };
   };
 
   const handleOpen = (to) => {
@@ -384,7 +415,7 @@ const BarberShopMenu = ({ alertCustom }) => {
       ) : (
         <Grid container spacing={1.5} sx={{ m: "0 2px" }}>
           {/* Banner com ícone de adicionar foto */}
-          <Grid item size={{ xs: 12 }} sx={{ pb: 10 }}>
+          <Grid item size={{ xs: 12 }}>
             <Card
               elevation={0}
               sx={{
@@ -438,8 +469,8 @@ const BarberShopMenu = ({ alertCustom }) => {
                   } // Renderiza a imagem de perfil
                   sx={{
                     position: "absolute",
-                    top: isMobile ? "140px" : "160px",
-                    left: isMobile ? "50%" : "10%",
+                    top: { xs: "140px", md: "160px" },
+                    left: { xs: "50%", md: "10%" },
                     transform: "translate(-50%, -50%)",
                     cursor: "pointer",
                     width: {
@@ -466,7 +497,7 @@ const BarberShopMenu = ({ alertCustom }) => {
               {/* Nome da barbearia e localização */}
               <CardContent
                 sx={{
-                  textAlign: isMobile ? "center" : "left",
+                  textAlign: { xs: "center", md: "left" },
                   background: gerarGradient(color),
                 }}
               >
@@ -487,7 +518,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                           textAlign: "center",
                           display: "flex",
                           width: "100%",
-                          justifyContent: isMobile ? "center" : "left",
+                          justifyContent: { xs: "center", md: "left" },
                         }}
                       >
                         {" "}
@@ -560,6 +591,7 @@ const BarberShopMenu = ({ alertCustom }) => {
               top: "auto",
               borderRadius: "10px 10px 0 0",
               background: "rgba(0, 0, 0, 0.7)",
+              display: { xs: "block", md: "none" },
             }}
           >
             <Toolbar
@@ -569,42 +601,20 @@ const BarberShopMenu = ({ alertCustom }) => {
                 m: "5px 0",
               }}
             >
-              {cards(getLocalItem("accessType")).map(
-                ({ action, icon, title, to }, i) => (
-                  <Stack
-                    sx={{ justifyContent: "center", alignItems: "center" }}
-                    onClick={() => (to ? navigate(to) : handleOpen(action))}
-                  >
-                    <IconButton sx={{ display: { xs: "", md: "none" } }}>
-                      {icon}
-                    </IconButton>
-                    <Typography variant="body2" sx={{ textAlign: "center" }}>
-                      {primeiraMaiuscula(
-                        title.split(" ")[title.split(" ").length - 1].trim()
-                      )}
-                    </Typography>
-                  </Stack>
-                )
-              )}
+              {renderCards().barraBottom}
             </Toolbar>
           </AppBar>
-          {cards(getLocalItem("accessType")).map(
-            ({ action, icon, title, to }, i) => (
-              <Grid
-                item
-                key={i}
-                size={{ xs: 12, md: 3 }}
-                sx={{ display: { xs: "none", md: "block" } }}
+          {renderCards().barraCenter.map(({ action, icon, title, to }, i) => (
+            <Grid item key={i} size={{ xs: 12, md: 3 }}>
+              <CustomCard
+                onClick={() => (to ? navigate(to) : handleOpen(action))}
               >
-                <CustomCard
-                  onClick={() => (to ? navigate(to) : handleOpen(action))}
-                >
-                  {icon}
-                  <Typography variant="body1">{title}</Typography>
-                </CustomCard>
-              </Grid>
-            )
-          )}
+                {icon}
+                <Typography variant="body1">{title}</Typography>
+              </CustomCard>
+            </Grid>
+          ))}
+          <Box sx={{ marginTop: { xs: 10 }, width: "100%" }}></Box>
 
           {barbearia && modal.agendamentos && (
             <Agendamentos

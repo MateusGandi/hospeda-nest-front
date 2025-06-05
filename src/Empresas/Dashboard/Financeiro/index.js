@@ -66,22 +66,25 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
   useEffect(() => {
     const buscar = async () => {
       const dataAtual = new Date().toISOString().split("T")[0];
-      const data = await Api.query(
+      await Api.query(
         "GET",
         `/financial/establishment/transactions/${getLocalItem(
           "establishmentId"
         )}?data=${dataAtual}&pageSize=${pageSize}&page=1`
-      );
-      const vendas = data.map((item) => ({
-        valor: item.preco,
-        cliente: item.nomeCliente || "Cliente não informado",
-        data: format(item.data, "dd/MM/yyyy' às 'HH:mm"),
-        atendimento: item,
-        funcionario: item.atendenteNome,
-      }));
+      )
+        .then((data) => {
+          const vendas = data.map((item) => ({
+            valor: item.preco,
+            cliente: item.nomeCliente || "Cliente não informado",
+            data: format(item.data, "dd/MM/yyyy' às 'HH:mm"),
+            atendimento: item,
+            funcionario: item.atendenteNome,
+          }));
 
-      // setVendasFiltradas(vendas);
-      setFinancas((prev) => ({ ...prev, vendas: vendas }));
+          // setVendasFiltradas(vendas);
+          setFinancas((prev) => ({ ...prev, vendas: vendas }));
+        })
+        .catch((error) => alertCustom("Erro ao buscar vendas!"));
     };
 
     buscar();

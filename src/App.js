@@ -14,7 +14,6 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router";
 import Permissions from "./Componentes/Permissions";
-import BetaInfoButton from "./Componentes/Alert/Beta";
 
 const theme = createTheme({
   palette: {
@@ -98,6 +97,7 @@ function App() {
     "/review/:barbeariaId",
     "/fac/:title?",
   ]);
+
   const [alert, setAlert] = useState({
     message: "",
     open: false,

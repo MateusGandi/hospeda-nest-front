@@ -332,7 +332,6 @@ const Modal = ({
                   onClick={onSubmit}
                   variant="outlined"
                   size="large"
-                  sx={{ display: { md: "none" } }}
                 >
                   {submitText}
                 </Button>
@@ -342,7 +341,6 @@ const Modal = ({
                   size="large"
                   fullWidth={isMobile}
                   disableElevation
-                  sx={{ display: { md: "none" } }}
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}

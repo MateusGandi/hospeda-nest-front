@@ -46,7 +46,7 @@ export const Cards = ({
     <Grid
       container
       spacing={2}
-      sx={{ justifyContent: "center", flexWrap: "wrap" }}
+      sx={{ justifyContent: "start", flexWrap: "wrap" }}
     >
       {items.map((item) => (
         <Grid size={{ xs: 11, sm: 6, md: 4 }} key={item.id}>

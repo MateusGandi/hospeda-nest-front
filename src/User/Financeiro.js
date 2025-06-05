@@ -171,6 +171,7 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
       <Permissions
         type="view"
         open={openPermissions}
+        handleClose={() => setOpenPermissions(false)}
         alertCustom={alertCustom}
       />
     </Grid>

@@ -321,15 +321,13 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           sx={{ m: "10px 0" }}
         >
           <Typography variant="h6">
-            <Icon>🎯</Icon>{" "}
-            {modal.filter?.valor
-              ? `Nenhum registro ${modal.filter?.titulo
-                  .toLowerCase()
-                  .slice(0, -1)} encontrado!`
-              : "Nenhum agendamento ainda!"}
+            <Icon>🎯</Icon> Nenhum registro encontrado!
           </Typography>
           Encontre a barbearia mais próxima de você e aproveite a facilidade de
           agendar de forma prática, direta e com inúmeros benefícios!
+          <Typography variant="body1" color="warning">
+            {`Buscou por: ${modal.filter?.titulo}`}
+          </Typography>
         </Typography>
       )}
 

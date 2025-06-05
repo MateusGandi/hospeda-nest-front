@@ -211,16 +211,16 @@ const LoginPage = ({ page, alertCustom }) => {
           : handleLogin(TOKEN);
       }
 
-      await validarCampos(
-        inicialState.componente,
-        dados,
-        componentValidations
-      ).then(() => {
-        inicialState.componente == "create" && handleCreate();
-        inicialState.componente == "login" && handleLogin();
-        inicialState.componente == "recover" && handleRecover();
-        inicialState.componente == "change" && handleChangePass();
-      });
+      // await validarCampos(
+      //   inicialState.componente,
+      //   dados,
+      //   componentValidations
+      // ).then(() => {
+      inicialState.componente == "create" && handleCreate();
+      inicialState.componente == "login" && handleLogin();
+      inicialState.componente == "recover" && handleRecover();
+      inicialState.componente == "change" && handleChangePass();
+      // });
     } catch (error) {
       alertCustom(error.message || "Erro ao submeter o formulário!");
     }

@@ -14,7 +14,12 @@ import Modal from "../Modal";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
 
-const Permissions = ({ type = "popup", open = false, alertCustom }) => {
+const Permissions = ({
+  type = "popup",
+  open = false,
+  alertCustom,
+  handleClose,
+}) => {
   const location = useLocation();
   const [modal, setModal] = useState({ open: open });
   const [showBottomPopup, setShowBottomPopup] = useState(false);
@@ -22,6 +27,7 @@ const Permissions = ({ type = "popup", open = false, alertCustom }) => {
   useEffect(() => {
     setModal((prev) => ({ ...prev, open: open }));
   }, [open]);
+
   const initialPermissions = [
     {
       name: "flagCookies",
@@ -90,6 +96,7 @@ const Permissions = ({ type = "popup", open = false, alertCustom }) => {
 
   const onClose = (force) => {
     setModal({ open: false });
+    handleClose();
     if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 
