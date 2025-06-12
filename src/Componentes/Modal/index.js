@@ -332,7 +332,6 @@ const Modal = ({
                   onClick={onSubmit}
                   variant="outlined"
                   size="large"
-                  sx={{ display: { md: "none" } }}
                 >
                   {submitText}
                 </Button>
@@ -342,16 +341,16 @@ const Modal = ({
                   size="large"
                   fullWidth={isMobile}
                   disableElevation
-                  sx={{ display: { md: "none" } }}
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
+                  sx={{ order: { md: 999, xs: 0 } }}
                 >
-                  {actionText}
+                  {loadingButton ? "Enviando..." : actionText}
                 </Button>
               )}
               {buttons &&
-                buttons.map((button) => (
+                buttons.map((button, index) => (
                   <Button
                     size="large"
                     color={button.color || "primary"}
@@ -366,6 +365,7 @@ const Modal = ({
                     }
                     sx={{
                       ...buttonStyle,
+                      order: { md: index, xs: index + 1 },
                     }}
                   >
                     {button.titulo}

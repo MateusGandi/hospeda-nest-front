@@ -10,13 +10,15 @@ import {
   Collapse,
   Link,
   ListItemIcon,
+  Button,
 } from "@mui/material";
 import { Folder, FolderOpen, InsertDriveFile } from "@mui/icons-material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Doc from "./documento.json";
 import Icon from "../../Assets/Emojis";
 
 const FAC = ({ filtro }) => {
+  const navigate = useNavigate();
   const { title } = useParams();
   const [documentos, setDocumentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -143,6 +145,7 @@ const FAC = ({ filtro }) => {
                             href={link.href}
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="show-link"
                           >
                             {link.label}
                           </Link>
@@ -156,6 +159,10 @@ const FAC = ({ filtro }) => {
           ))}
         </List>
       )}
+      <Box sx={{ mt: 4, textAlign: "center" }}>
+        <Button onClick={() => navigate("/fac")}>Veja completo</Button>
+      </Box>
+
       <Typography className="show-box" typography="body1" sx={{ m: "10px 0" }}>
         <Typography variant="h6">
           <Icon>💻</Icon> Atenção

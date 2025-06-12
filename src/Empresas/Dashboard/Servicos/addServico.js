@@ -20,9 +20,9 @@ const Servico = ({
 }) => {
   const [data, setData] = useState({
     nome: "",
-    tempoGasto: 0,
+    tempoGasto: "",
     descricao: "",
-    preco: 0,
+    preco: "",
   });
   const [horario, setHorario] = useState(null);
 
@@ -78,6 +78,15 @@ const Servico = ({
           },
         ];
       }
+      if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
+        return alertCustom("Horário no formato inválido");
+
+      if (
+        servicosAtualizados.find((item) =>
+          Object.values(item).some((value) => !value)
+        )
+      )
+        return alertCustom("Informe todos os campos obrigatórios");
 
       await apiService.query("POST", `/service`, servicosAtualizados);
 
@@ -122,8 +131,8 @@ const Servico = ({
         </Grid>
         <Grid item size={{ xs: 12, md: 4 }}>
           <CustomInput
-            label="Duração média (hh:mm)"
-            placeholder="Duração média"
+            label="Duração média"
+            placeholder="HH:MM"
             name="tempoGasto"
             value={data.tempoGasto}
             onChange={handleChange}

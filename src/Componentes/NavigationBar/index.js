@@ -290,98 +290,101 @@ const NavigationBar = () => {
             </Grid>
             {actions.length > 0 && (
               <Grid item>
-                {isMobile ? (
-                  <>
-                    <IconButton onClick={() => setMenuOpen((prev) => !prev)}>
-                      <MenuRoundedIcon size="large" />
-                    </IconButton>
-                    <Modal
-                      open={menuOpen}
-                      onClose={() => setMenuOpen(false)}
-                      fullWidth
-                      maxWidth="md"
-                      fullScreen="mobile"
-                      sx={{
-                        background:
-                          "linear-gradient(0deg,rgba(33, 33, 33, 0) 0%, rgba(33, 33, 33, 1) 28%, rgba(33, 33, 33, 1) 100%)",
-                      }}
-                      titulo={
-                        <b>
-                          <img src={LogoImage} style={{ height: "32px" }} />
-                        </b>
-                      }
-                    >
-                      <Rows
-                        items={actions
-                          .filter((item) => location.pathname !== item.route)
-                          .map((item) => ({
-                            ...item,
-                            action: () => {
-                              item.action();
-                              item.titulo != "Pesquisar" &&
-                                setMenuOpen((prev) => !prev);
-                            },
-                          }))}
-                        oneTapMode={true}
-                      />
-                    </Modal>
-                  </>
-                ) : (
-                  <Grid
-                    container
-                    spacing={1}
-                    sx={{ alignItems: "center", mr: -1 }}
-                  >
-                    {actions
+                <IconButton
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                  sx={{ display: { xs: "block", md: "none" } }}
+                >
+                  <MenuRoundedIcon size="large" />
+                </IconButton>
+                <Modal
+                  open={menuOpen}
+                  onClose={() => setMenuOpen(false)}
+                  fullWidth
+                  maxWidth="md"
+                  fullScreen="mobile"
+                  sx={{
+                    background:
+                      "linear-gradient(0deg,rgba(33, 33, 33, 0) 0%, rgba(33, 33, 33, 1) 28%, rgba(33, 33, 33, 1) 100%)",
+                  }}
+                  titulo={
+                    <b>
+                      <img src={LogoImage} style={{ height: "32px" }} />
+                    </b>
+                  }
+                >
+                  <Rows
+                    items={actions
                       .filter((item) => location.pathname !== item.route)
-                      .map((item, index) =>
-                        item.type === "icon" ? (
-                          <IconButton
+                      .map((item) => ({
+                        ...item,
+                        action: () => {
+                          item.action();
+                          item.titulo != "Pesquisar" &&
+                            setMenuOpen((prev) => !prev);
+                        },
+                      }))}
+                    oneTapMode={true}
+                  />
+                </Modal>
+
+                <Grid
+                  container
+                  spacing={1}
+                  sx={{
+                    alignItems: "center",
+                    mr: -1,
+                    display: { xs: "none", md: "flex" },
+                  }}
+                >
+                  {actions
+                    .filter((item) => location.pathname !== item.route)
+                    .map((item, index) =>
+                      item.type === "icon" ? (
+                        <IconButton
+                          key={index}
+                          onClick={item.action}
+                          color="#fff"
+                        >
+                          {item.icon}
+                        </IconButton>
+                      ) : item.type === "text" ? (
+                        <Typography
+                          href={item.route}
+                          onClick={item.action}
+                          sx={{
+                            m: "5px 10px",
+                            color: "#fff",
+                            cursor: "pointer",
+                            textDecoration: "none",
+                            ":hover": {
+                              textDecoration: "underline !important",
+                            },
+                          }}
+                        >
+                          {item.titulo}
+                        </Typography>
+                      ) : (
+                        <Badge
+                          badgeContent={item.notification ?? null}
+                          color="warning"
+                          showZero={false}
+                        >
+                          <Button
                             key={index}
-                            onClick={item.action}
-                            color="#fff"
-                          >
-                            {item.icon}
-                          </IconButton>
-                        ) : item.type === "text" ? (
-                          <Typography
-                            href={item.route}
-                            onClick={item.action}
+                            variant="outlined"
                             sx={{
-                              m: "5px 10px",
-                              color: "#fff",
-                              cursor: "pointer",
-                              textDecoration: "none",
-                              ":hover": {
-                                textDecoration: "underline !important",
-                              },
+                              borderColor: "#303030",
+                              color: "#FFFFFF",
+                              fontWeight: "bold",
                             }}
+                            onClick={item.action}
                           >
                             {item.titulo}
-                          </Typography>
-                        ) : (
-                          <Badge
-                            badgeContent={item.notification ?? null}
-                            color="warning"
-                            showZero={false}
-                          >
-                            <Button
-                              key={index}
-                              variant="outlined"
-                              sx={{
-                                borderColor: "#303030",
-                                color: "#FFFFFF",
-                                fontWeight: "bold",
-                              }}
-                              onClick={item.action}
-                            >
-                              {item.titulo}
-                            </Button>
-                          </Badge>
-                        )
-                      )}
-                  </Grid>
-                )}
+                          </Button>
+                        </Badge>
+                      )
+                    )}
+                </Grid>
               </Grid>
             )}
           </Grid>

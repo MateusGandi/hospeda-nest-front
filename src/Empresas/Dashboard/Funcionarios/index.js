@@ -28,6 +28,7 @@ const GerenciarFuncionarios = ({
   const handleDelete = async (item) => {
     // await Api.query("DELETE", `/employees/${item.id}`);
     try {
+      setModal((prev) => ({ ...prev, loading: true }));
       await Api.query("PATCH", `/establishment/${barbearia.id}`, {
         funcionarios: funcionarios
           .filter((op) => op.id != item.id)
@@ -40,6 +41,8 @@ const GerenciarFuncionarios = ({
       alertCustom("Funcionário removido com sucesso!");
     } catch (error) {
       alertCustom("Erro ao remover funcionários");
+    } finally {
+      setModal((prev) => ({ ...prev, loading: false }));
     }
 
     handleCancelEdit();

@@ -77,6 +77,15 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
           ...item,
           barbeariaId: barbearia.id,
         }));
+      if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
+        return alertCustom("Horário no formato inválido");
+
+      if (
+        servicosAtualizados.find((item) =>
+          Object.values(item).some((value) => !value)
+        )
+      )
+        return alertCustom("Informe todos os campos obrigatórios");
 
       if (servicosAtualizados.length)
         await Api.query("POST", `/service`, servicosAtualizados);
@@ -205,7 +214,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
                 label="serviço"
                 keys={[
                   { label: "", value: "nome" },
-                  { label: "Preço (R$)", value: "preco" },
+                  { label: "Preço: R$", value: "preco" },
                 ]}
                 onEdit={handleSelect}
                 items={servicos.map((item, index) => ({

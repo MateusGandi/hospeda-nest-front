@@ -32,7 +32,7 @@ const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
       });
 
       if (Object.keys(changedData).length === 0) {
-        alertCustom("Nenhuma alteração foi feita.");
+        alertCustom("Nenhuma alteração foi feita!");
         return;
       }
 
@@ -49,15 +49,31 @@ const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
     }
   };
 
+  const handleClose = () => {
+    setFormData({
+      nome: userData?.nome || "",
+      email: userData?.email || "",
+      telefone: userData?.telefone || "",
+    });
+    onClose();
+  };
+
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       titulo="Editar seus dados"
-      onAction={handleSubmit}
-      actionText="Salvar"
       fullScreen="all"
-      buttons={[{ titulo: "cancelar", action: onClose, color: "terciary" }]}
+      buttons={[
+        { titulo: "cancelar", action: handleClose, color: "terciary" },
+        {
+          titulo: "Salvar",
+          variant: "contained",
+          action: handleSubmit,
+          color: "primary",
+          disabled: !formData.nome || !formData.email || !formData.telefone,
+        },
+      ]}
     >
       <Box>
         <Grid container spacing={3} sx={{ m: 1, pt: 3 }}>

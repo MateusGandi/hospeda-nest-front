@@ -22,7 +22,12 @@ import OptionsPopover from "../Componentes/Popover";
 import { useNavigate } from "react-router-dom";
 import Permissions from "../Componentes/Permissions";
 
-const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
+const ModalRelatorio = ({
+  usuario,
+  alertCustom,
+  handleEdit,
+  hanldeRecover,
+}) => {
   const [dados, setDados] = useState(null);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
   const [openPermissions, setOpenPermissions] = useState(false);
@@ -91,9 +96,8 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
               ) : (
                 <>
                   <Button
-                    color="#fff"
+                    color="terciary"
                     variant="outlined"
-                    sx={{ border: "1px solid rgb(98, 98, 98)" }}
                     onClick={handleEdit}
                   >
                     Editar dados
@@ -108,6 +112,10 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                       setOpenPermissions(true);
                       Cookies.remove("getPermission");
                     },
+                  },
+                  {
+                    title: "Trocar senha",
+                    action: hanldeRecover,
                   },
                 ]}
               />
@@ -156,7 +164,7 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
                   icon={<HelpRoundedIcon />}
                   options={[
                     {
-                      title: "O que é Cash Back?",
+                      title: "Como usar o crédito",
                       action: () => {
                         navigate("/fac/cashback");
                       },
@@ -171,6 +179,7 @@ const ModalRelatorio = ({ usuario, alertCustom, handleEdit }) => {
       <Permissions
         type="view"
         open={openPermissions}
+        handleClose={() => setOpenPermissions(false)}
         alertCustom={alertCustom}
       />
     </Grid>

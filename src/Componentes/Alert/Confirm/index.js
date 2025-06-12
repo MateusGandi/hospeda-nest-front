@@ -20,13 +20,25 @@ const Confirm = ({
       onClose={onClose}
       titulo={
         <>
-          <Icon>{icon ? icon : "⚠️"}</Icon> {title}
+          {icon && <Icon>{icon}</Icon>} {title}
         </>
       }
+      type="alert"
       maxWidth="xs"
+      buttonStyle={{ width: "47%" }}
       buttons={[
-        { titulo: "Cancelar", action: onClose, color: "terciary" },
-        { titulo: "Confirmar", action: onConfirm, color: "terciary" },
+        {
+          titulo: "Cancelar",
+          action: onClose,
+          color: "secondary",
+          variant: "text",
+        },
+        {
+          titulo: "Confirmar",
+          action: onConfirm,
+          color: "primary",
+          variant: "contained",
+        },
       ]}
     >
       <Typography typography="body1" sx={{ m: "0 20px" }}>

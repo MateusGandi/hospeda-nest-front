@@ -68,11 +68,15 @@ export const formatTime = (valorant, valor) => {
   let numeros = valor.replace(/\D/g, "");
 
   if (numeros === "") return "";
-  if (+numeros > 2400) return valorant;
   numeros = numeros.slice(0, 4);
 
-  if (+numeros.slice(-2) > 59) return valorant;
-
+  if (
+    numeros.slice(0, 2).padEnd(2, "0") == 24 &&
+    +numeros.slice(2, 4).padEnd(2, "0") > 0
+  )
+    return valorant;
+  if (numeros.slice(0, 2).padEnd(2, "0") > 24) return valorant;
+  if (numeros.slice(2, 4).padEnd(2, "0") > 59) return valorant;
   return numeros
     .replace(/(\d{2})(\d{1})/, "$1:$2")
     .replace(/(\d{2})(\d{2})/, "$1:$2");

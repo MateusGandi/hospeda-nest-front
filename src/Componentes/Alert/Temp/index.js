@@ -17,8 +17,8 @@ const Alerta = ({ alert, setAlert }) => {
         "& .MuiSnackbarContent-root": {
           backgroundColor: "#353535",
           color: "#fff",
-          position: "fixed",
-          ...(isMobile ? { top: "70px" } : {}),
+
+          ...(isMobile ? { position: "fixed", top: "70px" } : {}),
           borderRadius: "10px",
         },
       }}

@@ -203,7 +203,7 @@ const ModalPlanos = ({ alertCustom }) => {
             />
             {!isMobile && (
               <Button
-                variant="outlined"
+                variant="text"
                 disableElevation
                 color="secondary"
                 onClick={() => navigate("/login")}

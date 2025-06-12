@@ -46,7 +46,7 @@ export const Cards = ({
     <Grid
       container
       spacing={2}
-      sx={{ justifyContent: "center", flexWrap: "wrap" }}
+      sx={{ justifyContent: "start", flexWrap: "wrap" }}
     >
       {items.map((item) => (
         <Grid size={{ xs: 11, sm: 6, md: 4 }} key={item.id}>
@@ -121,7 +121,7 @@ export const Cards = ({
               {keys ? (
                 keys.map((key) => (
                   <Typography variant="body1" sx={{ width: "100%", m: 0 }}>
-                    {`${key.label ? `${key.label}: ` : ""}${item[key.value]}`}
+                    {`${key.label ? `${key.label} ` : ""}${item[key.value]}`}
                   </Typography>
                 ))
               ) : (

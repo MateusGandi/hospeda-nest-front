@@ -200,10 +200,15 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
                 onChange={(e) => handleChange("comment", e.target.value)}
               />
               <Typography
-                sx={{ width: "100%", display: "flex", justifyContent: "end" }}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                  mb: 2,
+                }}
               >
                 <Button
-                  variant="text"
+                  variant="contained"
                   color="secondary"
                   sx={{ m: "10px 0", p: "5px 15px" }}
                   onClick={handleSubmit}
