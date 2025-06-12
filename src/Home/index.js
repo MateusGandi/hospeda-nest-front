@@ -51,7 +51,8 @@ const PublicPage = () => {
           backgroundSize: "cover",
           display: "flex",
           alignItems: "center",
-          height: "calc(100vh - 65px)",
+          height: "100vh",
+          paddingTop: "50px",
         }}
       >
         <Grid

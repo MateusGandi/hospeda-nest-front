@@ -257,8 +257,7 @@ const NavigationBar = () => {
     <>
       <AppBar
         elevation={0}
-        position="static"
-        sx={{ background: "#000", mb: -1 }}
+        sx={{ position: "absolute", left: 0, background: "none", mb: -1 }}
       >
         <Toolbar style={{ justifyContent: "space-between" }}>
           <Grid

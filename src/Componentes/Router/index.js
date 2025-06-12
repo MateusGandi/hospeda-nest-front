@@ -82,7 +82,8 @@ export function RouteElement({ path, alertCustom }) {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
-        height="80vh"
+        height="100vh"
+        sx={{ paddingTop: "50px" }}
       >
         <CircularProgress />
       </Box>
@@ -96,7 +97,15 @@ export function RouteElement({ path, alertCustom }) {
   } else {
     !"login create recover change".includes(lastPath.split("/")[0]) &&
       setLocalItem("lastRoute", lastPath);
-    return paths[pathF];
+    return (
+      <Box
+        sx={{
+          height: "100vh",
+        }}
+      >
+        {paths[pathF]}
+      </Box>
+    );
   }
 }
 
