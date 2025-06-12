@@ -68,27 +68,23 @@ const Usuarios = ({ alertCustom }) => {
           open={recover.open}
           onClose={recover.onCancel}
           onConfirm={handleResetPassword}
-          title="Deseja realmente trocar sua senha?"
+          title="Deseja proceder?"
           message={
-            <Typography variant="body1">
-              Ao trocar sua senha você vai receber um link:
-              <Typography
-                variant="body1"
-                sx={{ m: 1, display: "flex", gap: 1 }}
-              >
-                <EmojiNumber num={1} /> Por WhatsApp
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ m: 1, display: "flex", gap: 1 }}
-              >
-                <EmojiNumber num={2} />
-                Por E-mail
-              </Typography>
-              <Typography variant="body1">
+            <Typography
+              variant="body1"
+              sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
+            >
+              <Typography>
+                Ao trocar sua senha você vai receber um link ou por WhatsApp ou
+                por E-mail.
+              </Typography>{" "}
+              <Typography>
                 Para ambos os casos você precisa ter concordado com o termo de
-                uso e consentimento. Prosseguindo aqui, você concorda
-                expressadamente com esses termos, deseja continuar?
+                uso e consentimento.
+              </Typography>{" "}
+              <Typography>
+                Prosseguindo aqui, você concorda expressadamente com esses
+                termos, deseja continuar?
               </Typography>
             </Typography>
           }
@@ -98,7 +94,9 @@ const Usuarios = ({ alertCustom }) => {
         <EditUserModal
           buscar={fetch}
           open={openEdit}
-          onClose={() => setOpenEdit(false)}
+          onClose={() => {
+            setOpenEdit(false);
+          }}
           alertCustom={alertCustom}
           userData={userData}
         />
@@ -113,14 +111,6 @@ const Usuarios = ({ alertCustom }) => {
         component="view"
         loading={loading}
         disablePadding={true}
-        buttons={[
-          {
-            color: "error",
-            variant: "outlined",
-            action: () => setRecover((prev) => ({ ...prev, open: true })),
-            titulo: "Resetar Senha",
-          },
-        ]}
       >
         {" "}
         <Grid container spacing={isMobile ? 1 : 3} sx={{ p: 2 }}>
@@ -129,6 +119,9 @@ const Usuarios = ({ alertCustom }) => {
               usuario={userData}
               alertCustom={alertCustom}
               handleEdit={() => setOpenEdit(true)}
+              hanldeRecover={() =>
+                setRecover((prev) => ({ ...prev, open: true }))
+              }
             />
           </Grid>
           <Grid item size={12}>

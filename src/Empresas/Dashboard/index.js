@@ -199,7 +199,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   const renderOption = ({ action, icon, title, to }) => {
     return (
       <Stack
-        sx={{ justifyContent: "center", alignItems: "center" }}
+        sx={{ justifyContent: "center", alignItems: "center", width: "25%" }}
         onClick={() => (to ? navigate(to) : handleOpen(action))}
       >
         <IconButton>{icon}</IconButton>
@@ -307,7 +307,6 @@ const BarberShopMenu = ({ alertCustom }) => {
           const [latitude, longitude] = dataAtualizada.longitudeAndLatitude
             ? dataAtualizada.longitudeAndLatitude
             : [];
-
           setBarbearia({
             ...dataAtualizada,
             location: { latitude, longitude },
@@ -353,9 +352,13 @@ const BarberShopMenu = ({ alertCustom }) => {
         const [latitude, longitude] = data.longitudeAndLatitude
           ? data.longitudeAndLatitude
           : [];
+        const { horarioFechamento, horarioAbertura } = data;
 
         setBarbearia({
           ...data,
+
+          horarioFechamento: horarioFechamento.slice(0, 5),
+          horarioAbertura: horarioAbertura.slice(0, 5),
           location: { latitude, longitude },
         });
       } catch (error) {
@@ -558,7 +561,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                             <Button
                               variant="outlined"
                               color="secondary"
-                              fontSize="medium"
+                              size="large"
                               startIcon={<StyleIcon />}
                               onClick={() => navigate("/plans")}
                               sx={{
@@ -614,7 +617,7 @@ const BarberShopMenu = ({ alertCustom }) => {
               </CustomCard>
             </Grid>
           ))}
-          <Box sx={{ marginTop: { xs: 10 }, width: "100%" }}></Box>
+          <Box sx={{ marginTop: { xs: 10, md: 0 }, width: "100%" }}></Box>
 
           {barbearia && modal.agendamentos && (
             <Agendamentos

@@ -121,7 +121,7 @@ export const Cards = ({
               {keys ? (
                 keys.map((key) => (
                   <Typography variant="body1" sx={{ width: "100%", m: 0 }}>
-                    {`${key.label ? `${key.label}: ` : ""}${item[key.value]}`}
+                    {`${key.label ? `${key.label} ` : ""}${item[key.value]}`}
                   </Typography>
                 ))
               ) : (

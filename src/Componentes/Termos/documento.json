@@ -1,86 +1,127 @@
 [
   {
-    "title": "Termos de uso",
+    "title": "Política de Privacidade",
     "sections": [
       {
-        "heading": "TERMOS DE USO DO TONSUS APP",
-        "text": "Última atualização: 17 de Abril de 2025"
+        "heading": "Coleta e uso de dados pessoais",
+        "text": "A plataforma Tonsus coleta dados pessoais como nome, e-mail, telefone, dados de acesso, agendamentos e preferências de uso para funcionamento adequado dos serviços de agendamento, compras e comunicação. Esses dados são utilizados para garantir a melhor experiência para o usuário e permitir que barbeiros e barbearias tenham acesso apenas ao essencial para prestar seus serviços (telefone de contato e nome do cliente)."
       },
       {
-        "heading": "1. ACEITAÇÃO DOS TERMOS",
-        "text": "Ao utilizar o sistema de gestão/agendamento para barbearias (doravante \"Sistema\"), você concorda com estes Termos de Uso e com a Política de Privacidade..."
+        "heading": "Consentimento para comunicação via WhatsApp",
+        "text": "Ao fornecer seu número de telefone, você autoriza o envio de mensagens via WhatsApp pelo nosso 'bot' para: confirmação de agendamentos, promoções e informações gerais. Você pode cancelar esse envio a qualquer momento. Consulte nosso atendamento via WhatsApp para mais informações",
+        "links": [
+          {
+            "label": "Entre em contato conosco via WhatsApp",
+            "href": "https://api.whatsapp.com/send?phone=556292324267"
+          }
+        ]
       },
       {
-        "heading": "2. DEFINIÇÕES",
-        "text": "**Usuário Cliente:** Pessoa física que agenda serviços nas barbearias...\n\n**Assinatura:** Pagamento mensal obrigatório para acesso contínuo ao Sistema."
+        "heading": "Direito de imagem e publicidade (Barbearias)",
+        "text": "Barbearias que utilizam a plataforma Tonsus autorizam o uso de seu nome, logotipo, imagens do perfil, imagens do local e demais elementos para divulgação em canais de comunicação da plataforma, como redes sociais, e-mails, ou página principal."
       },
       {
-        "heading": "3. CADASTRO E USO DO SISTEMA",
-        "text": "**3.1 Requisitos para Cadastro**\n- Todos os usuários devem fornecer e-mail, telefone e senha válidos...\n\n**3.2 Responsabilidades do Usuário**\n- Manter a confidencialidade da senha..."
+        "heading": "Compartilhamento e sigilo de dados",
+        "text": "A Tonsus se compromete a nunca comercializar dados com terceiros. Os dados pessoais são compartilhados somente com barbeiros e barbearias envolvidos no agendamento. Nenhum outro dado, além do telefone e nome, é compartilhado."
       },
       {
-        "heading": "4. FUNCIONALIDADES",
-        "text": "**4.1 Clientes**\n- Agendar, cancelar ou reagendar horários...\n\n**4.2 Barbeiros e Administradores**\n- Cancelar agendamentos, marcar atendimentos como concluídos..."
-      },
-      {
-        "heading": "5. ASSINATURA E PAGAMENTO",
-        "text": "**Pagamento Mensal:** Barbearias devem pagar a assinatura...\n**Reembolsos:** Não há reembolso por períodos não utilizados após o pagamento."
-      },
-      {
-        "heading": "7. PROPRIEDADE INTELECTUAL",
-        "text": "O Sistema é propriedade exclusiva da equipe Tonsus..."
-      },
-      {
-        "heading": "8. LIMITAÇÃO DE RESPONSABILIDADE",
-        "text": "Não nos responsabilizamos por danos indiretos, conteúdo de terceiros ou interrupções temporárias do Sistema."
-      },
-      {
-        "heading": "9. RESCISÃO",
-        "text": "Podemos suspender ou encerrar contas em caso de violação dos termos..."
-      },
-      {
-        "heading": "10. DISPOSIÇÕES GERAIS",
-        "text": "**Canais de Comunicação**\n- Contato via e-mail e WhatsApp para notificações..."
-      }
-    ]
-  },
-  {
-    "title": "Ferramentas de terceiros",
-    "sections": [
-      {
-        "heading": "6. PRIVACIDADE E DADOS",
-        "text": "Coletamos dados pessoais (e-mail, telefone) para operar o Sistema, em conformidade com a LGPD...",
+        "heading": "Segurança e LGPD",
+        "text": "Estamos em conformidade com a Lei Geral de Proteção de Dados (LGPD). Todos os dados coletados são armazenados com segurança e usados apenas para fins previstos na lei. O usuário pode solicitar a exclusão definitiva dos seus dados a qualquer momento.",
         "links": [
           {
             "label": "Lei Geral de Proteção de Dados (LGPD)",
             "href": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm"
           }
         ]
-      },
-      {
-        "heading": "ADENDOS IMPORTANTES",
-        "text": "**Consentimento para WhatsApp**\n- Ao fornecer o número de telefone, o usuário autoriza o contato via WhatsApp...\n\n**Custos de Comunicação**\n- O usuário é responsável por eventuais custos de dados."
       }
     ]
   },
   {
-    "title": "Dúvidas: cashback, pagamentos, descontos, políticas de incentivo",
+    "title": "Termos de Uso",
     "sections": [
       {
-        "heading": "Como funciona o cashback?",
-        "text": "A partir de compras no app você recebe um valor de volta que pode ser utilizado em compras futuras ou até mesmo em serviços na plataforma. O cashback é acumulado e pode ser usado em qualquer barbearia parceira do Tonsus."
+        "heading": "Cadastro e responsabilidade do usuário",
+        "text": "O cadastro é obrigatório para uso da plataforma e exige dados reais e atualizados. O usuário se responsabiliza por manter sua senha segura e não deve compartilhar seu acesso com terceiros."
       },
       {
-        "heading": "Quais são as formas de pagamento aceitas?",
-        "text": "Aceitamos Pix, cartão de crédito, débito e pagamento via plataforma. Pagamentos presenciais dependem da barbearia."
+        "heading": "Uso da plataforma por barbeiros e barbearias",
+        "text": "O uso da plataforma implica na aceitação das condições de uso, incluindo a aceitação dos valores, das taxas de intermediação e dos termos de promoção. Ao publicar serviços ou produtos, o barbeiro concorda com as condições comerciais."
       },
       {
-        "heading": "Há descontos para clientes recorrentes?",
-        "text": "Sim, oferecemos descontos progressivos para clientes frequentes, conforme política de fidelidade definida pela barbearia."
+        "heading": "Cashback, bonus, links afiliados",
+        "text": "Tonsus oferece sistema de cashback para compras feitas por links de afiliados (Shopee, Amazon, Mercado Livre). Após a confirmação da compra, uma porcentagem do valor retorna como crédito para o cliente. Esse crédito pode ser utilizado em produtos vendidos dentro da plataforma Tonsus. Caso deseje sacar, aplica-se desconto de 25% do valor para cobertura de tributações e custos bancários."
       },
       {
-        "heading": "O que são políticas de incentivo?",
-        "text": "São regras de bonificação para clientes, baseadas em frequência de uso e valor gasto, e caracter sortido, podem incluir cashback, descontos e promoções. Incentivando novos e antigos clientes a visitarem diferentes barbearias."
+        "heading": "Cupons e descontos",
+        "text": "Cupons e promoções somente são válidos se emitidos diretamente pela plataforma. Não é permitida a utilização de cupons diretamente com barbearias. Ao aceitar o cupom, a plataforma arca com a diferença do valor promocional, garantindo ao barbeiro o recebimento integral."
+      },
+      {
+        "heading": "Pagamentos e taxas",
+        "text": "Todas as transações realizadas através da plataforma estão sujeitas às taxas da intermediadora Asaas, acrescidas de uma taxa operacional, a partir de 1% do valor integral pago pelo cliente. Os métodos aceitos incluem Pix, boleto e cartão."
+      },
+      {
+        "heading": "Entrega de produtos",
+        "text": "Os produtos podem ser entregues via parceiro logístico terceirizado ou retirados diretamente na barbearia no momento do atendimento. O cliente será notificado no WhatsApp sobre a forma de entrega."
+      },
+      {
+        "heading": "Direitos da plataforma",
+        "text": "Reservamo-nos o direito de suspender o usuário ou barbeiro que descumprir as regras de uso, tentar fraudes ou usar dados de forma indevida."
+      },
+      {
+        "heading": "Canal de suporte",
+        "text": "Para dúvidas, suporte ou cancelamentos, entre em contato pelo WhatsApp",
+        "links": [
+          {
+            "label": "Canal de suporte",
+            "href": "https://api.whatsapp.com/send?phone=556292324267"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Dúvidas Frequentes",
+    "sections": [
+      {
+        "heading": "O que é o cashback?",
+        "text": "O cashback é uma forma de devolução de parte do valor gasto em compras realizadas por links da Tonsus. Ele retorna como crédito para uso dentro da plataforma, podendo ser convertido em desconto ou em saque (com 25% de taxa)."
+      },
+      {
+        "heading": "Posso sacar o cashback?",
+        "text": "Sim. O valor acumulado pode ser sacado via transferência bancária, desde que atinja o mínimo compesativo em relação as taxas de transferência, sujeito a desconto de 25% sobre o valor para cobertura de custos fiscais e administrativos."
+      },
+      {
+        "heading": "Como funcionam os cupons?",
+        "text": "Os cupons emitidos são aplicados no momento do pagamento dentro da plataforma. A barbearia receberá o valor total, e a diferença é custeada pelo Tonsus. Cupons apresentados diretamente no estabelecimento sem pagamento via plataforma serão considerados inválidos."
+      },
+      {
+        "heading": "O que acontece se eu cancelar um agendamento?",
+        "text": "O cancelamento pode ser feito sem custo até 1 hora antes do horário marcado. Após esse prazo, uma falta será marcada e o valor devolvido sem custos adicionais, embora, penalidades como o bloqueio parcial a partir de 1 semana para novos agendamento no estabelecimento poderão ser aplicados. Se o barbeiro não comparecer, o valor será devolvido integralmente ao cliente."
+      },
+      {
+        "heading": "Quais são as formas de pagamento?",
+        "text": "Aceitamos pagamentos via Pix, cartão de crédito, boleto e saldo Tonsus. Os pagamentos são processados através da plataforma Asaas e incluem uma taxa adicional a partir de 1% sobre o valor integral pago pelo cliente."
+      },
+      {
+        "heading": "Barbeiro pode ver meus dados?",
+        "text": "Apenas o seu nome e telefone são compartilhados com o barbeiro para fins de agendamento e atendimento. Nenhum outro dado pessoal é compartilhado."
+      },
+      {
+        "heading": "Posso recusar mensagens do 'bot'?",
+        "text": "Sim. Basta solicitar o cancelamento do envio de mensagens via WhatsApp dentro da plataforma ou responder ao 'bot' que não deseja mais receber mensagens. Você pode fazer isso a qualquer momento."
+      },
+      {
+        "heading": "O que é o 'bot' do WhatsApp?",
+        "text": "O 'bot' do WhatsApp é um assistente automatizado que envia mensagens para confirmar agendamentos, informar promoções e fornecer atualizações gerais. Ele facilita a comunicação entre você e a plataforma Tonsus."
+      }
+    ]
+  },
+  {
+    "title": "Atualizações",
+    "sections": [
+      {
+        "heading": "Ultima atualização",
+        "text": "09 de Junho de 2025 - 14:07"
       }
     ]
   }

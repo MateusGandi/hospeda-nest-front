@@ -213,13 +213,21 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           mt: 2,
         }}
       >
-        Meus agendamentos
-        <Filter
-          title="Filtrar por"
-          options={filterOptions}
-          filter={modal.filter}
-          setFilter={(filter) => setModal((prev) => ({ ...prev, filter }))}
-        />
+        <span>Meus agendamentos</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Typography
+            variant="body1"
+            sx={{ display: { xs: "none", md: "block" } }}
+          >
+            {modal.filter?.titulo}
+          </Typography>
+          <Filter
+            title="Filtrar por"
+            options={filterOptions}
+            filter={modal.filter}
+            setFilter={(filter) => setModal((prev) => ({ ...prev, filter }))}
+          />{" "}
+        </span>
       </Typography>
 
       {modal.loading ? (
@@ -325,9 +333,6 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           </Typography>
           Encontre a barbearia mais próxima de você e aproveite a facilidade de
           agendar de forma prática, direta e com inúmeros benefícios!
-          <Typography variant="body1" color="warning">
-            {`Buscou por: ${modal.filter?.titulo}`}
-          </Typography>
         </Typography>
       )}
 

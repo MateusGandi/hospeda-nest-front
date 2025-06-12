@@ -119,32 +119,32 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
                     navigator.clipboard.writeText(mensagemBoasVindas);
                     alertCustom("Mensagem copiada!");
                   }}
+                  size="large"
                   color="success"
-                  variant="outlined"
+                  variant="contained"
                   disableElevation
                   endIcon={<ContentCopyIcon />}
                   sx={{
+                    color: "#fff !important",
                     maxWidth: "300px",
-                    border: "1px solid rgb(134, 134, 134)",
                   }}
                 >
                   Copiar mensagem
                 </Button>
               </Typography>{" "}
             </Typography>{" "}
-            <div></div>
-            {/* <Typography
-              variant="body1"
-              sx={{
-                whiteSpace: "pre-line",
-              }}
+            <Typography
+              variant="h6"
+              className="show-box"
+              sx={{ textAlign: "left" }}
             >
-                {mensagemBoasVindas.replace(
-                "https://api.whatsapp.com/send?phone=556292324267",
-                ""
-              )}  
-             
-            </Typography> */}
+              <Icon>📌</Icon> Como começar
+              <Typography variant="body1">
+                Copie a mensagem de <b>boas-vindas</b> e use no seu{" "}
+                <b>WhatsApp Business</b> para direcionar seus clientes ao
+                atendente virtual.
+              </Typography>
+            </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 5 }}>
             <Stack>
@@ -190,16 +190,6 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
                 </CardContent>
               </Card>{" "}
             </Stack>
-          </Grid>
-          <Grid size={12}>
-            <Typography variant="h6" className="show-box">
-              <Icon>📌</Icon> Como começar
-              <Typography variant="body1">
-                Copie a mensagem de <b>boas-vindas</b> e use no seu{" "}
-                <b>WhatsApp Business</b> para direcionar seus clientes ao
-                atendente virtual.
-              </Typography>
-            </Typography>
           </Grid>
         </Grid>
       </Modal>

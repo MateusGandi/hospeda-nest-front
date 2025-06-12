@@ -120,7 +120,7 @@ const Permissions = ({
       });
 
       await apiService.query(
-        "PATCH",
+        "PUT",
         `/user/${getLocalItem("userId")}`,
         objToSave
       );
@@ -156,8 +156,6 @@ const Permissions = ({
         titulo="Permissões"
         open={modal.open}
         onClose={onClose}
-        actionText="Confirmar"
-        onAction={() => handleSubmit()}
         fullScreen="mobile"
         buttons={[
           {
@@ -171,6 +169,15 @@ const Permissions = ({
             variant: "outlined",
             action: acceptAll,
             color: "terciary",
+          },
+          {
+            titulo: "Confirmar",
+            action: () => handleSubmit(),
+            color: "primary",
+            variant: "contained",
+            disabled: permissionsList
+              .filter((p) => p.required)
+              .some((perm) => !perm.value),
           },
         ]}
       >

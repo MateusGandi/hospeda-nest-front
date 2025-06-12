@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, Stack, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Stack,
+  IconButton,
+  Grid2 as Grid,
+} from "@mui/material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import CloseIcon from "@mui/icons-material/Close";
 import Modal from "../../../Componentes/Modal";
-import { isMobile } from "../../Funcoes";
+import Banner from "../../../Assets/Landing/mock_tonsus.png";
 
 const WhatsAppButton = () => {
   const [showExitModal, setShowExitModal] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [continuar, setContinuar] = useState(false);
   const phoneNumber = "+556292324267";
-  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=556292324267`;
 
   const handleWhatsAppClick = () => {
     window.open(whatsappUrl, "_blank");
@@ -85,18 +91,26 @@ const WhatsAppButton = () => {
         open={showExitModal}
         onClose={handleCloseModal}
         titulo=" "
-        sx={{ textAlign: "center" }}
+        sx={{
+          textAlign: "center",
+          position: "relative",
+          backgroundImage: `url(${Banner})`,
+          backgroundSize: "cover",
+          minHeight: "500px",
+          width: "500px",
+          backgroundPosition: "center",
+        }}
+        maxWidth="md"
         component="modal"
-        maxWidth="xs"
         buttons={[
           {
-            titulo: "Continuar navegando",
+            titulo: "Voltar",
             variant: "text",
-            color: "secaondary",
+            color: "secondary",
             action: handleCloseModal,
           },
           {
-            titulo: "Conversar agora",
+            titulo: "Conversar",
             variant: "contained",
             color: "success",
             icon: <WhatsAppIcon />,
@@ -108,19 +122,22 @@ const WhatsAppButton = () => {
           mr: { md: "2.5%", xs: 0 },
         }}
       >
-        <Stack spacing={1}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Tem dúvidas?
-          </Typography>
-
-          <Typography variant="body1" sx={{ pb: 4 }}>
-            Fale agora mesmo com nosso especialista online! Ele pode tirar suas
-            dúvidas e te apresentar uma solução personalizada.
-          </Typography>
-        </Stack>
+        {" "}
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            <Stack spacing={1}>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Está procurando algo diferente?
+              </Typography>
+              <Typography variant="h6" sx={{ pb: 4, pt: 4 }}>
+                Temos um especialista online que pode tirar suas dúvidas e te
+                apresentar uma solução personalizada
+              </Typography>
+            </Stack>{" "}
+          </Grid>
+        </Grid>
       </Modal>
     </>
   );
 };
-
 export default WhatsAppButton;
