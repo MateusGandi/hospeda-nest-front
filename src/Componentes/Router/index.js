@@ -100,6 +100,7 @@ export function RouteElement({ path, alertCustom }) {
     return (
       <Box
         sx={{
+          marginTop: pathF != "/home" ? "60px" : "0px",
           height: "100vh",
         }}
       >
