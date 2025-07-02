@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
+import { v4 as uuidv4 } from "uuid";
 import Modal from "../../Componentes/Modal";
-import Onboarding from "./Onboarding";
 import CustomCard from "../../Componentes/Card/";
 import {
   formatPhone,
@@ -32,6 +32,7 @@ import Api from "../../Componentes/Api/axios";
 import StyleIcon from "@mui/icons-material/Style";
 import PersonIcon from "@mui/icons-material/Person";
 
+import Onboarding from "./Onboarding";
 import EditData from "./Edit";
 import EditFuncionarios from "./Funcionarios";
 import EditServicos from "./Servicos";
@@ -276,10 +277,9 @@ const BarberShopMenu = ({ alertCustom }) => {
     }
 
     try {
-      // Ajustar o nome do arquivo
-      const fileExtension = file.type.split("/")[1];
-      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
-      const renamedFile = new File([file], newName, { type: file.type });
+      const fileExtension = file.name.split(".").pop(); // extensão segura
+      const uniqueName = `${uuidv4()}.${fileExtension}`;
+      const renamedFile = new File([file], uniqueName, { type: file.type });
 
       const formData = new FormData();
       formData.append("fotos", renamedFile);
@@ -290,16 +290,17 @@ const BarberShopMenu = ({ alertCustom }) => {
           const endpoint = `/images/establishment/${barbearia.id}/${
             type === "banner" ? "banner" : "profile"
           }`;
+
           await Api.query("POST", endpoint, formData);
 
-          // Atualiza a imagem visualmente logo após upload
+          // Atualiza imagem localmente
           if (type === "banner") {
             setBannerImage(reader.result);
           } else if (type === "profile") {
             setProfileImage(reader.result);
           }
 
-          // Recarrega dados da barbearia após upload
+          // Atualiza dados
           const dataAtualizada = await Api.query(
             "GET",
             `/establishment?establishmentId=${getLocalItem("establishmentId")}`
@@ -307,12 +308,12 @@ const BarberShopMenu = ({ alertCustom }) => {
           const [latitude, longitude] = dataAtualizada.longitudeAndLatitude
             ? dataAtualizada.longitudeAndLatitude
             : [];
+
           setBarbearia({
             ...dataAtualizada,
             location: { latitude, longitude },
           });
 
-          // Aguarda um pouco e pega a cor dominante da nova imagem
           if (type === "profile") {
             setTimeout(() => {
               const imageUrl = `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${
@@ -613,7 +614,9 @@ const BarberShopMenu = ({ alertCustom }) => {
                 onClick={() => (to ? navigate(to) : handleOpen(action))}
               >
                 {icon}
-                <Typography variant="body1">{title}</Typography>
+                <Typography variant="body1" sx={{ ml: 1 }}>
+                  {title}
+                </Typography>
               </CustomCard>
             </Grid>
           ))}

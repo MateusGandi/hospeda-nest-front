@@ -17,19 +17,12 @@ import CreateEstablishment from "../../Empresas/Plans/Onboard";
 import Api from "../Api/axios";
 import { setLocalItem } from "../Funcoes";
 import Reviews from "../../Empresas/Home/Avaliacao";
-import FAC from "../Termos";
+import FAQ from "../Termos";
 
 export function RouteElement({ path, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Controle de carregamento
   const navigate = useNavigate();
-
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      setIsLoading(true);
-      window.location.reload();
-    });
-  }, []);
 
   useEffect(() => {
     const fetchRoutesAllowed = async () => {
@@ -43,7 +36,7 @@ export function RouteElement({ path, alertCustom }) {
           "/change",
           "/recover",
           "/home",
-          "/fac",
+          "/faq",
         ]);
       } finally {
         setIsLoading(false);
@@ -72,7 +65,7 @@ export function RouteElement({ path, alertCustom }) {
     "/checkout": <Checkout alertCustom={alertCustom} />,
     "/onboard": <CreateEstablishment alertCustom={alertCustom} />,
     "/review": <Reviews alertCustom={alertCustom} />,
-    "/fac": <FAC />,
+    "/faq": <FAQ />,
   };
 
   if (isLoading) {

@@ -171,10 +171,10 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
           </Grid>
 
           <Grid size={{ xs: 12, md: 7 }}>
-            <Typography variant="h6" gutterBottom>
-              Avalie também
-            </Typography>
             <Box className={isMobile ? "" : "show-box"}>
+              <Typography variant="h6" gutterBottom>
+                Avalie também
+              </Typography>
               <Typography variant="body1" gutterBottom>
                 Escolha uma nota de 1 a 5 para avaliar o seu atendimento e o
                 ambiente

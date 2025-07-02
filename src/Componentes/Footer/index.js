@@ -61,10 +61,10 @@ export default function Footer() {
                 <Link className="show-link" to="/home">
                   Home
                 </Link>
-                <Link className="show-link" to="/fac">
+                <Link className="show-link" to="/faq">
                   Termos
                 </Link>
-                <Link className="show-link" to="/fac">
+                <Link className="show-link" to="/faq">
                   Sobre Nós
                 </Link>
               </Stack>
@@ -105,53 +105,29 @@ export default function Footer() {
                 <Typography variant="body1" gutterBottom>
                   Legal
                 </Typography>
-                <Link className="show-link" to="/fac">
+                <Link className="show-link" to="/faq">
                   Termos & Condições
                 </Link>
-                <Link className="show-link" to="/fac">
+                <Link className="show-link" to="/faq">
                   Política de Privacidade
                 </Link>
               </Stack>
             </Grid>
 
             <Grid size={{ xs: 12, md: 5 }} sx={{ textAlign: "center" }}>
-              <Typography variant="body1" gutterBottom>
-                Formas de pagamento
-              </Typography>{" "}
               <Box display="flex" alignItems="center" justifyContent={"center"}>
                 <img
                   src={PaymentMethods}
                   alt="Formas de pagamento"
-                  style={{ maxWidth: "300px", height: "auto" }}
+                  style={{
+                    maxWidth: "300px",
+                    height: "auto",
+                    margin: "50px 0",
+                  }}
                 />
               </Box>
             </Grid>
           </Grid>
-          <Box
-            mt={6}
-            borderTop="1px solid #ddd"
-            pt={2}
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            flexWrap="wrap"
-          >
-            <Typography variant="body2" color="textSecondary">
-              © {new Date().getFullYear()} Tonsus App. Todos os direitos
-              reservados.
-            </Typography>
-            <Box display="flex" gap={1}>
-              {/* <IconButton size="small" color="inherit">
-              <Facebook />
-            </IconButton> */}
-              <IconButton size="small" color="inherit">
-                <Instagram />
-              </IconButton>
-              {/* <IconButton size="small" color="inherit">
-              <YouTube />
-            </IconButton> */}
-            </Box>
-          </Box>
         </Container>
       </Box>
     </>

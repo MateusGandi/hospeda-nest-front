@@ -55,6 +55,7 @@ const ModalRelatorio = ({
   return (
     <Grid size={12}>
       <Card
+        elevation={0}
         sx={{
           top: "15px",
           height: "150px",
@@ -87,23 +88,9 @@ const ModalRelatorio = ({
           }
           action={
             <Grid container spacing={isMobile ? 0 : 1}>
-              {isMobile ? (
-                <>
-                  <IconButton onClick={handleEdit}>
-                    <ModeEditOutlineOutlinedIcon />
-                  </IconButton>{" "}
-                </>
-              ) : (
-                <>
-                  <Button
-                    color="terciary"
-                    variant="outlined"
-                    onClick={handleEdit}
-                  >
-                    Editar dados
-                  </Button>
-                </>
-              )}
+              <IconButton onClick={handleEdit}>
+                <ModeEditOutlineOutlinedIcon />
+              </IconButton>{" "}
               <OptionsPopover
                 options={[
                   {
@@ -116,6 +103,10 @@ const ModalRelatorio = ({
                   {
                     title: "Trocar senha",
                     action: hanldeRecover,
+                  },
+                  {
+                    title: "Editar meus dados",
+                    action: handleEdit,
                   },
                 ]}
               />
@@ -138,7 +129,7 @@ const ModalRelatorio = ({
             }}
           >
             <CardContent>
-              <Typography variant="h6">Total Bônus</Typography>
+              <Typography variant="h6">Total Saldo</Typography>
               <Typography variant="h5">
                 {mostrarSaldo
                   ? `R$ ${dados.approved.valor.toFixed(2)}`
@@ -164,9 +155,9 @@ const ModalRelatorio = ({
                   icon={<HelpRoundedIcon />}
                   options={[
                     {
-                      title: "Como usar o crédito",
+                      title: "Como usar meu bônus?",
                       action: () => {
-                        navigate("/fac/cashback");
+                        navigate("/faq/cashback");
                       },
                     },
                   ]}

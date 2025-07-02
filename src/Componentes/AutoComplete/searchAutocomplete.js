@@ -19,7 +19,7 @@ export default function FreeSolo({
   searchField,
   setItemSelecionado,
   itemSelecionado,
-  minDigitsForSearch = 6, // Valor padrão: 6 dígitos
+  minDigitsForSearch = 1, // Valor padrão: 6 dígitos
 }) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);

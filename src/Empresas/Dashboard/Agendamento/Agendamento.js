@@ -6,6 +6,7 @@ import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar";
 import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
+import Icon from "../../../Assets/Emojis";
 
 const Agendamento = ({ setError, form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
@@ -120,8 +121,12 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
               ]}
               onSelect={handleSelect}
             />
-            <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-              Nenhum vaga disponível para esse dia, escolha outro!
+            <Typography variant="h6" className="show-box" sx={{ m: "12px 0" }}>
+              <Icon>🔍</Icon> Nenhuma vaga disponível para esse dia!
+              <Typography variant="body1">
+                Verifique sua escala de trabalho, você pode não ter escala para
+                este dia!
+              </Typography>
             </Typography>
           </>
         )}
@@ -141,6 +146,7 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
         <Grid container spacing={1}>
           <Grid size={{ xs: 12, md: 12 }}>
             <Calendario
+              data={data.dia}
               onSelect={(value) => {
                 setData((prev) => ({ ...prev, dia: value }));
               }}

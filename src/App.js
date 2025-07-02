@@ -95,7 +95,7 @@ function App() {
     "/plans/:videoPath?",
     "/checkout/:key?",
     "/review/:barbeariaId",
-    "/fac/:title?",
+    "/faq/:title?",
   ]);
 
   const [alert, setAlert] = useState({

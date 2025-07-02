@@ -36,7 +36,7 @@ const PublicPage = () => {
       { title: "Gerenciar barbearia", action: "/dashboard", force: true },
     ],
     employee: [
-      { title: "Veja os termos de uso", action: "/fac" },
+      { title: "Veja os termos de uso", action: "/faq" },
       { title: "Comece a atender clientes", action: "/dashboard", force: true },
     ],
   };

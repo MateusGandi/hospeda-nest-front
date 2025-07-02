@@ -12,6 +12,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import { Close } from "@mui/icons-material";
 
 const SearchBarWithFilters = ({
   initial,
@@ -182,7 +183,19 @@ const SearchBarWithFilters = ({
             {aditionalFilters ? aditionalFilters : null}
           </Box>
 
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              flexWrap: "nowrap",
+            }}
+          >
+            {" "}
+            {!!selectedFilters.length && (
+              <IconButton onClick={() => setSelectedFilters([])}>
+                <Close sx={{ color: "#fff" }} />
+              </IconButton>
+            )}
             <IconButton onClick={handleCloseFilters}>
               <ExpandLessRoundedIcon sx={{ color: "#fff" }} />
             </IconButton>

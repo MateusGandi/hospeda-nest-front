@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Grid2 as Grid, Icon, Typography } from "@mui/material";
+import { Box, Grid2 as Grid, Typography } from "@mui/material";
+import Icon from "../../../Assets/Emojis";
 import Modal from "../../../Componentes/Modal";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { formatarHorario } from "../../../Componentes/Funcoes";
@@ -86,6 +87,10 @@ const Funcionario = ({
     >
       <Grid container spacing={4} sx={{ mt: 4 }}>
         <Grid size={{ xs: 12, md: 6 }}>
+          {" "}
+          <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+            Selecione o Usuário{" "}
+          </Typography>
           <SearchField
             fields={["telefone", "nome"]}
             url={`/user`}
@@ -155,15 +160,31 @@ const Funcionario = ({
           )}
         </Grid>{" "}
         <Grid size={12}>
-          <Typography variant="body1" className="show-box">
+          <Typography className="show-box">
             <Typography variant="h6">
-              <Icon>💡</Icon> Aviso
+              <Icon>📝</Icon> Aviso
             </Typography>
-            Para cadastrar um novo funcionário, o mesmo precisa estar
-            previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
-            <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
-            cargo. Além disso você pode configurar a escala de trabalho:{" "}
-            <WorkSchedule alertCustom={alertCustom} dados={data} />
+            {!funcionario ? (
+              <Typography variant="body1">
+                Para cadastrar um novo funcionário, o mesmo precisa estar
+                previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
+                <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
+                cargo. <p>Só assim você poderá editar sua escala.</p>
+              </Typography>
+            ) : (
+              <Typography variant="body1">
+                Você pode editar a escala do funcionário, programando dias da
+                semana, horário de almoço, e ausências previstas.
+              </Typography>
+            )}{" "}
+            <Box sx={{ display: "flex", justifyContent: "end" }}>
+              {" "}
+              <WorkSchedule
+                alertCustom={alertCustom}
+                dados={data}
+                disabled={!funcionario}
+              />
+            </Box>
           </Typography>
         </Grid>
       </Grid>
