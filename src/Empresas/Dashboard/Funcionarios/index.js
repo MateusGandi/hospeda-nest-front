@@ -146,7 +146,7 @@ const GerenciarFuncionarios = ({
         try {
           const endpoint = `/images/user/${userId}`;
           await Api.query("POST", endpoint, formData);
-
+          fetchFuncionarios();
           alertCustom("Foto adicionada com sucesso!");
         } catch (uploadError) {
           alertCustom("Erro ao adicionar foto!");

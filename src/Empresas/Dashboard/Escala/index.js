@@ -19,26 +19,6 @@ import { Close } from "@mui/icons-material";
 import MenuSuspenso from "../../../Componentes/Popover/Suspenso";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
-const validateTimeConflict = (workDays, lunchRows) => {
-  const parse = (time) => {
-    if (!time || !time.includes(":")) return null;
-    const [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
-  };
-
-  return workDays.every((d) => {
-    if (!d.ativo || !d.horarioForaInicial || !d.horarioForaFinal) return true;
-    const start = parse(d.horarioForaInicial);
-    const end = parse(d.horarioForaFinal);
-    return lunchRows.every((l) => {
-      const startLunch = parse(l.inicio);
-      const endLunch = parse(l.fim);
-      if (startLunch == null || endLunch == null) return true;
-      return endLunch <= start || startLunch >= end;
-    });
-  });
-};
-
 const WorkSchedule = ({
   type = "button",
   openModal = false,
@@ -116,11 +96,6 @@ const WorkSchedule = ({
   };
 
   const handleSave = async () => {
-    if (!validateTimeConflict(workDays, lunchRows)) {
-      return alertCustom(
-        "Horários de almoço não podem colidir com a escala de trabalho."
-      );
-    }
     try {
       await apiService.query(
         "PUT",

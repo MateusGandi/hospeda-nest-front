@@ -20,6 +20,7 @@ export default function FreeSolo({
   setItemSelecionado,
   itemSelecionado,
   minDigitsForSearch = 1, // Valor padrão: 6 dígitos
+  disabled = false,
 }) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -118,6 +119,7 @@ export default function FreeSolo({
           {option.title}
         </li>
       )}
+      disabled={disabled}
       renderInput={(params) => (
         <Box
           sx={{

@@ -154,7 +154,11 @@ export const Rows = ({
                           {item.titulo}
                         </Typography>
                       }
-                      secondary={item.subtitulo}
+                      secondary={
+                        <Typography sx={{ fontSize: "16px" }}>
+                          {item.subtitulo}
+                        </Typography>
+                      }
                     />
 
                     {actions &&
