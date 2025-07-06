@@ -12,12 +12,21 @@ import {
   Tooltip,
 } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
-import { formatTime, getLocalItem } from "../../../Componentes/Funcoes";
+import {
+  formatTime,
+  getLocalItem,
+  isMobile,
+} from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
 import EditableTable from "../../../Componentes/Table";
 import { Close } from "@mui/icons-material";
 import MenuSuspenso from "../../../Componentes/Popover/Suspenso";
+
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import WorkIcon from "@mui/icons-material/Work";
+import LunchDiningIcon from "@mui/icons-material/LunchDining";
+import LocalCafeIcon from "@mui/icons-material/LocalCafe";
+import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
 
 const WorkSchedule = ({
   type = "button",
@@ -30,7 +39,11 @@ const WorkSchedule = ({
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const [opened, setOpened] = useState(true);
-
+  const tabs = [
+    { icon: <WorkIcon />, label: "Escala Semanal" },
+    { icon: <LunchDiningIcon />, label: "Horário de Almoço" },
+    { icon: <LocalCafeIcon />, label: "Ausências" },
+  ];
   const [workDays, setWorkDays] = useState(
     [...Array(7)].map((_, i) => ({
       diaSemana: i % 7,
@@ -59,6 +72,9 @@ const WorkSchedule = ({
   };
   const handleRemoveAbsence = (indexToRemove) => {
     setAbsences((prev) => prev.filter((_, i) => i !== indexToRemove));
+  };
+  const handleGetHelp = () => {
+    setOpened(true);
   };
 
   const handleClearAll = () => {
@@ -120,7 +136,7 @@ const WorkSchedule = ({
       headerName: "Ativo",
       type: "",
       editable: true,
-      width: 40,
+      width: 80,
       renderCell: (row, rowIndex) => (
         <Switch
           checked={row.ativo}
@@ -210,7 +226,7 @@ const WorkSchedule = ({
     {
       headerName: "Remover",
       headerName: "",
-      width: 40,
+      width: 80,
       renderCell: (_, index) => (
         <Tooltip title="Excluir">
           <IconButton onClick={() => handleRemoveAbsence(index)}>
@@ -221,7 +237,27 @@ const WorkSchedule = ({
     },
   ];
 
-  useEffect(() => setOpen(openModal), [openModal]);
+  useEffect(() => {
+    const buscarEscala = async () => {
+      console.log(dados);
+      await apiService
+        .query(
+          "GET",
+          `https://srv744360.hstgr.cloud/tonsus/api/user/work-schedule/${
+            dados?.id || getLocalItem("userId")
+          }`
+        )
+        .then((d) => console.log(d))
+        .catch((error) => {
+          console.log(error);
+          alertCustom("Erro ao buscar escala");
+        });
+    };
+    if (openModal) {
+      buscarEscala();
+    }
+    setOpen(openModal);
+  }, [openModal]);
 
   return (
     <>
@@ -256,7 +292,15 @@ const WorkSchedule = ({
                 },
               ]
             : []),
-
+          ...(tab == 0 && !opened
+            ? [
+                {
+                  titulo: "Quero Ajuda",
+                  color: "terciary",
+                  action: handleGetHelp,
+                },
+              ]
+            : []),
           {
             titulo: "Limpar tudo",
             color: "terciary",
@@ -267,6 +311,7 @@ const WorkSchedule = ({
         <Grid container spacing={2}>
           <Grid size={12}>
             <Tabs
+              centered={isMobile}
               value={tab}
               onChange={(e, val) => setTab(val)}
               sx={{
@@ -285,24 +330,35 @@ const WorkSchedule = ({
                 },
               }}
             >
-              <Tab
-                label="Escala Semanal"
-                sx={{ borderRadius: "0 !important", minHeight: 48 }}
-              />
-              <Tab
-                label="Horário de Almoço"
-                sx={{
-                  borderRadius: "0 !important",
-                  minHeight: 48,
-                }}
-              />
-              <Tab
-                label="Ausências"
-                sx={{ borderRadius: "0 !important", minHeight: 48 }}
-              />
+              {tabs.map((item, index) => (
+                <Tab
+                  id={index}
+                  label={
+                    <>
+                      <Box sx={{ display: { xs: "block", md: "none" } }}>
+                        {item.icon}
+                      </Box>
+                      <Box sx={{ display: { xs: "none", md: "block" } }}>
+                        {item.label}
+                      </Box>
+                    </>
+                  }
+                  sx={{
+                    borderRadius: "0 !important",
+                    minHeight: 48,
+                    px: 3,
+                    minWidth: "fit-content",
+                  }}
+                />
+              ))}
             </Tabs>
+          </Grid>{" "}
+          <Grid size={12}>
+            <Typography variant="h6" sx={{ textAlign: "center" }}>
+              {" "}
+              {tabs[tab].label}
+            </Typography>
           </Grid>
-
           <Grid size={12}>
             {tab === 0 && (
               <>
@@ -339,12 +395,13 @@ const WorkSchedule = ({
                     </Button>
                   </Stack>
                 </MenuSuspenso>
-
-                <EditableTable
-                  columns={scheduleColumns}
-                  rows={workDays}
-                  onChange={setWorkDays}
-                />
+                <SwipeIndicator>
+                  <EditableTable
+                    columns={scheduleColumns}
+                    rows={workDays}
+                    onChange={setWorkDays}
+                  />
+                </SwipeIndicator>
               </>
             )}
 

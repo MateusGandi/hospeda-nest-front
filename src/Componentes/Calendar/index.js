@@ -16,7 +16,7 @@ const Calendario = ({ onSelect, all = false, data = null }) => {
   const [dataSelecionada, setDataSelecionada] = useState(null);
 
   useEffect(() => {
-    setDataSelecionada(data);
+    setDataSelecionada(new Date(data));
   }, [data]);
 
   const intervaloDesabilitadoInicio = new Date(2024, 9, 10);

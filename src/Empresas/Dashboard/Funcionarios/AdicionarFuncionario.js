@@ -3,7 +3,11 @@ import { Avatar, Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import Icon from "../../../Assets/Emojis";
 import Modal from "../../../Componentes/Modal";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarHorario, formatPhone } from "../../../Componentes/Funcoes";
+import {
+  formatarHorario,
+  formatPhone,
+  getLocalItem,
+} from "../../../Componentes/Funcoes";
 import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
 import apiService from "../../../Componentes/Api/axios";
 import WorkSchedule from "../Escala";
@@ -106,7 +110,7 @@ const Funcionario = ({
               ) : (
                 <SearchField
                   fields={["telefone", "nome"]}
-                  url={`/user`}
+                  url={`/user/employables/XXXX/${getLocalItem("userId")}`}
                   placeholder="Pesquise por nome ou telefone..."
                   setItemSelecionado={(item) => {
                     if (!item) {

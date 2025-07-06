@@ -60,6 +60,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
         overflow: "hidden",
         border: "1px solid #606060",
         borderRadius: "10px",
+        overflowX: { xs: "scroll", md: "hidden" },
       }}
     >
       <Table

@@ -43,6 +43,7 @@ const BoxEscalaSugestao = ({ children, icon, title, open, setOpen }) => {
         onClick={() => setOpen(true)}
         sx={{
           position: "fixed",
+          display: { xs: "none", md: "block" },
           bottom: 16,
           left: 16,
           zIndex: 9998,

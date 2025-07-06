@@ -55,13 +55,17 @@ export default function FreeSolo({
     }
 
     setLoading(true);
+    let finalUrl = "";
+    if (searchField) {
+      finalUrl = `${url}?${searchField}=${inputValue}`;
+    } else if (url.includes("XXXX")) {
+      finalUrl = url.replaceAll("XXXX", inputValue);
+    } else {
+      finalUrl = `${url}/${inputValue}`;
+    }
+
     try {
-      const response = await apiService.query(
-        "GET",
-        searchField
-          ? `${url}?${searchField}=${inputValue}`
-          : `${url}/${inputValue}`
-      );
+      const response = await apiService.query("GET", finalUrl);
       const data = response.map((item) => ({
         ...item,
         title: fields.map((key) => item[key]).join(" - "),

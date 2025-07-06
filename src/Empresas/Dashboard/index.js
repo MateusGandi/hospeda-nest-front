@@ -34,8 +34,8 @@ import PersonIcon from "@mui/icons-material/Person";
 
 import Onboarding from "./Onboarding";
 import EditData from "./Edit";
-import EditFuncionarios from "./Funcionarios";
-import EditServicos from "./Servicos";
+import GerenciarFuncionarios from "./Funcionarios";
+import GerenciarServicos from "./Servicos";
 import Agendamentos from "./Agendamentos";
 import Financeiro from "./Financeiro";
 import WhatsApp from "./WhatsApp";
@@ -51,6 +51,7 @@ import {
   CalendarMonth,
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
+import { set } from "date-fns";
 
 const BarberShopMenu = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ const BarberShopMenu = ({ alertCustom }) => {
     profile: false,
     location: false,
   });
+  const [modalData, setModalData] = useState({});
   const [color, setColor] = useState("#363636");
   const [etapa, setEtapa] = useState({
     progresso: "empresa",
@@ -76,6 +78,11 @@ const BarberShopMenu = ({ alertCustom }) => {
   const [barbearia, setBarbearia] = useState(null);
   const [bannerImage, setBannerImage] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [permitions, setPermissions] = useState({
+    banner: getLocalItem("accessType") === "adm",
+    perfil: getLocalItem("accessType") === "adm",
+  });
+
   const cards = (user) => {
     if (!user) return [];
     if (user === "adm")
@@ -256,6 +263,7 @@ const BarberShopMenu = ({ alertCustom }) => {
   }, [barbearia, profileImage]);
 
   const handleClose = () => {
+    setModalData({});
     setModal((prev) => {
       return Object.keys(prev).reduce(
         (acc, key) => ({ ...acc, [key]: false }),
@@ -449,23 +457,25 @@ const BarberShopMenu = ({ alertCustom }) => {
                 type="file"
                 onChange={(e) => handlePhotoUpload(e, "banner")}
               />
-              <label htmlFor="banner-upload">
-                <IconButton
-                  color="primary"
-                  sx={{
-                    position: "absolute",
-                    right: 1,
-                    top: 1,
-                    background: "rgba(0,0,0,0.1)",
-                  }}
-                  component="span"
-                >
-                  <AddPhotoAlternateIcon sx={{ color: "#fff" }} />
-                </IconButton>
-              </label>
+              {permitions.banner && (
+                <label htmlFor="banner-upload">
+                  <IconButton
+                    color="primary"
+                    sx={{
+                      position: "absolute",
+                      right: 1,
+                      top: 1,
+                      background: "rgba(0,0,0,0.1)",
+                    }}
+                    component="span"
+                  >
+                    <AddPhotoAlternateIcon sx={{ color: "#fff" }} />
+                  </IconButton>
+                </label>
+              )}
 
               {/* Avatar com a logo da barbearia */}
-              <label htmlFor="profile-upload">
+              <label htmlFor={permitions.perfil ? "profile-upload" : "none"}>
                 <Avatar
                   src={
                     profileImage ||
@@ -476,7 +486,7 @@ const BarberShopMenu = ({ alertCustom }) => {
                     top: { xs: "140px", md: "160px" },
                     left: { xs: "50%", md: "10%" },
                     transform: "translate(-50%, -50%)",
-                    cursor: "pointer",
+                    ...(permitions.perfil ? { cursor: "pointer" } : {}),
                     width: {
                       xs: 160, // Para telas pequenas
                       md: 160, // Para telas médias e maiores
@@ -631,19 +641,22 @@ const BarberShopMenu = ({ alertCustom }) => {
             />
           )}
 
-          <EditFuncionarios
+          <GerenciarFuncionarios
             barbearia={barbearia}
             open={modal.funcionarios}
             handleClose={handleClose}
             alertCustom={alertCustom}
+            onSelect={(funcionario) => setModalData({ funcionario })}
           />
-          <EditServicos
+          <GerenciarServicos
             barbearia={barbearia}
             open={modal.servicos}
             handleClose={handleClose}
             alertCustom={alertCustom}
+            //onSelect={(servico) => setModalData({ servico })}
           />
           <WorkSchedule
+            dados={modalData.funcionario}
             type="modal"
             openModal={modal.profile}
             alertCustom={alertCustom}

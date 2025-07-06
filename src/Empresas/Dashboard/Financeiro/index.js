@@ -10,27 +10,62 @@ import {
   Paper,
   IconButton,
 } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
-import { format } from "date-fns";
-import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
+import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
+import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import RequestPageIcon from "@mui/icons-material/RequestPage";
+import StarIcon from "@mui/icons-material/Star";
+
 import Api from "../../../Componentes/Api/axios";
-import {
-  formatarHorario,
-  formatCNPJ,
-  getLocalItem,
-  isMobile,
-  Saudacao,
-} from "../../../Componentes/Funcoes";
-import SearchBarWithFilters from "../../../Componentes/Search";
-import { PaperList } from "../../../Componentes/Lista/Paper";
+import CustomTabs from "../../../Componentes/Tabs";
+import Modal from "../../../Componentes/Modal";
+import { formatCNPJ, getLocalItem } from "../../../Componentes/Funcoes";
+
+import Avaliacoes from "./Movimentacoes/Avaliacoes";
+import ListaMovimentacoes from "./Movimentacoes/Geral";
+import ListaMovimentacoesFuncionarios from "./Movimentacoes/Funcionarios";
+import FornecedoresInfo from "./Movimentacoes/Fornecedores";
+import Dividas from "./Dividas";
 
 const ModalRelatorio = ({ barbearia, alertCustom }) => {
-  const [dados, setDados] = useState(null);
-  const [search, setSearch] = useState("");
-  const [vendasFiltradas, setVendasFiltradas] = useState([]);
+  const tabsAccess = {
+    adm: [
+      { icon: <RequestPageIcon />, label: "Geral", id: 0 },
+      { icon: <AttachMoneyRoundedIcon />, label: "Movimentações", id: 1 },
+      { icon: <PeopleAltRoundedIcon />, label: "Funcionários", id: 2 },
+      { icon: <LocalShippingRoundedIcon />, label: "Fornecedores", id: 3 },
+      { icon: <StarIcon />, label: "Avaliações", id: 4 },
+    ],
+    employee: [
+      { icon: <AttachMoneyRoundedIcon />, label: "Movimentações", id: 0 },
+    ],
+  };
+  const tabs = tabsAccess[getLocalItem("accessType")] || [];
+  const [dados, setDados] = useState({
+    modalOpen: false,
+    tab: tabs[0],
+  });
+  const search = {
+    adm: {
+      url_financeiro: (id, dt) => `/financial/establishment/${id}?data=${dt}`,
+      url_transacoes: (id, dt, p, pz) =>
+        `/financial/establishment/transactions/${id}?data=${dt}&pageSize=${pz}&page=${p}`,
+    },
+    employee: {
+      url_financeiro: (id, dt) => `/financial/employee/${id}?data=${dt}`,
+      url_transacoes: (id, dt, p, pz) =>
+        `/financial/employee/transactions/${id}?data=${dt}&pageSize=${pz}&page=${p}`,
+    },
+    client: {
+      url_financeiro: (id, dt) => `/financial/user/${id}?data=${dt}`,
+      url_transacoes: (id, dt, p, pz) =>
+        `/financial/user/transactions/${id}?data=${dt}&pageSize=${pz}&page=${p}`,
+    },
+  };
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
   const [financas, setFinancas] = useState({
     ganho: 0,
@@ -39,71 +74,37 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
     previsto: 0,
     vendas: [],
   });
-  const [pageSize, setPageSize] = useState(5);
+
+  const handleTabChange = (tabId) => {
+    setDados((prev) => ({
+      ...prev,
+      tab: tabs[tabId],
+    }));
+  };
 
   const handleGet = async () => {
     try {
-      let url = "";
       const dataAtual = new Date().toISOString().split("T")[0];
-      const userId = getLocalItem("userId");
-      if (getLocalItem("accessType") == "adm") {
-        url = `/financial/establishment/${userId}?data=${dataAtual}`;
-      } else {
-        url = `/financial/employee/${userId}?data=${dataAtual}`;
-      }
-      const data = await Api.query("GET", url);
+      const req = {
+        adm: getLocalItem("establishmentId"),
+        client: getLocalItem("userId"),
+        employee: getLocalItem("userId"),
+      };
+      const url = search[getLocalItem("accessType")].url_financeiro(
+        req[getLocalItem("accessType")],
+        dataAtual
+      );
 
-      setFinancas({ ...data, vendas: [] });
+      const data = await Api.query("GET", url);
+      setFinancas(data);
     } catch (error) {
       alertCustom("Erro ao buscar balanço financeiro!");
     }
   };
 
   useEffect(() => {
-    dados?.modalOpen && handleGet();
-  }, [dados?.modalOpen]);
-
-  useEffect(() => {
-    const buscar = async () => {
-      const dataAtual = new Date().toISOString().split("T")[0];
-      await Api.query(
-        "GET",
-        `/financial/establishment/transactions/${getLocalItem(
-          "establishmentId"
-        )}?data=${dataAtual}&pageSize=${pageSize}&page=1`
-      )
-        .then((data) => {
-          const vendas = data.map((item) => ({
-            valor: item.preco,
-            cliente: item.nomeCliente || "Cliente não informado",
-            data: format(item.data, "dd/MM/yyyy' às 'HH:mm"),
-            atendimento: item,
-            funcionario: item.atendenteNome,
-          }));
-
-          // setVendasFiltradas(vendas);
-          setFinancas((prev) => ({ ...prev, vendas: vendas }));
-        })
-        .catch((error) => alertCustom("Erro ao buscar vendas!"));
-    };
-
-    buscar();
-  }, [pageSize]);
-
-  useEffect(() => {
-    // Ajusta a paginação baseado no número de itens filtrados
-    if (search) {
-      if (vendasFiltradas.length < 5) {
-        setPageSize(5);
-      } else if (vendasFiltradas.length > 10) {
-        setPageSize(10);
-      } else {
-        setPageSize(vendasFiltradas.length);
-      }
-    } else {
-      setPageSize(5);
-    }
-  }, [search]);
+    if (dados.modalOpen) handleGet();
+  }, [dados.modalOpen]);
 
   return (
     <>
@@ -119,12 +120,12 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
           border: "1.5px solid rgba(256, 256, 256, 0.2)",
         }}
       >
-        Ver Financeiro
+        Financeiro
       </Button>
 
       <Modal
         onClose={() => setDados({ ...dados, modalOpen: false })}
-        open={dados?.modalOpen}
+        open={dados.modalOpen}
         titulo="Financeiro"
         fullScreen="all"
         maxWidth="md"
@@ -134,19 +135,18 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         <Grid
           container
           spacing={1}
-          justifyContent={"center"}
-          sx={{
-            mt: "-10px",
-          }}
+          justifyContent="center"
+          sx={{ mt: "-10px", p: 1 }}
         >
           <Grid size={12} sx={{ mb: "-75px" }}>
             <Paper
+              elevation={0}
               sx={{
                 height: "180px",
                 width: "100%",
-                left: 0,
+                background: { xs: "none", lg: "#363636" },
                 position: "relative",
-                borderRadius: isMobile ? 0 : "10px",
+                borderRadius: { xs: 0, lg: "10px" },
               }}
             >
               <Card
@@ -155,15 +155,15 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                   background: "none",
                   position: "absolute",
                   top: "15px",
-                  ...(!isMobile ? { ml: "50px" } : {}),
+                  ml: { xs: 0, md: "50px" },
                 }}
               >
                 <CardHeader
                   avatar={
                     <Avatar
                       sx={{
-                        width: "50px",
-                        height: "50px",
+                        width: 70,
+                        height: 70,
                         fontSize: 30,
                         fontWeight: 600,
                       }}
@@ -172,10 +172,12 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
                       {barbearia.nome[0].toUpperCase()}
                     </Avatar>
                   }
-                  title={<Typography variant="h6">{barbearia.nome}</Typography>}
+                  title={
+                    <Typography variant="h6">{getLocalItem("nome")}</Typography>
+                  }
                   subheader={
                     <Typography variant="body2" sx={{ mt: -0.5 }}>
-                      CNPJ {formatCNPJ(barbearia.cnpj)}
+                      {barbearia.nome} | {formatCNPJ(barbearia.cnpj)}
                     </Typography>
                   }
                 />
@@ -226,57 +228,32 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6">Perdas/Despesas</Typography>
-                <Typography variant="h5">{`R$ ${financas.perda?.toFixed(
-                  2
-                )}`}</Typography>
+                <Typography variant="h5">
+                  {`R$ ${financas.perda?.toFixed(2)}`}
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
-
-          <Grid
-            size={12}
-            sx={{
-              m: "0 10px",
-              mt: "30px",
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "end",
-            }}
-          >
-            <SearchBarWithFilters
-              initial={financas.vendas}
-              elements={vendasFiltradas}
-              setElements={setVendasFiltradas}
-              label="Pesquisar vendas"
-              searchValue={search}
-              setSearchValue={setSearch}
-              fullWidth={false}
+          <Grid size={12}>
+            <CustomTabs
+              sx={{ mt: 5 }}
+              selected={dados.tab.id}
+              tabs={tabs}
+              onChange={handleTabChange}
+              views={[
+                <Dividas />,
+                <ListaMovimentacoes
+                  buscar={search}
+                  alertCustom={alertCustom}
+                />,
+                <ListaMovimentacoesFuncionarios
+                  buscar={search}
+                  alertCustom={alertCustom}
+                />,
+                <FornecedoresInfo />,
+                <Avaliacoes alertCustom={alertCustom} barbearia={barbearia} />,
+              ]}
             />
-          </Grid>
-          <Grid size={12} sx={{ m: "0 10px" }}>
-            <PaperList
-              items={
-                vendasFiltradas && vendasFiltradas.length > 0
-                  ? vendasFiltradas.map((venda) => ({
-                      ...venda,
-                      titulo: venda.cliente,
-                      subtitulo: `R$ ${venda.valor} em ${venda.data}`,
-                    }))
-                  : [
-                      {
-                        titulo: "Nenhuma venda encontrada...",
-                        subtitulo: "",
-                      },
-                    ]
-              }
-            >
-              <Typography
-                variant="body1"
-                sx={{ m: "10px 15px", fontWeight: 600 }}
-              >
-                Últimas Movimentações
-              </Typography>
-            </PaperList>
           </Grid>
         </Grid>
       </Modal>

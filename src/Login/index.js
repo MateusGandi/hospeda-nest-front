@@ -9,8 +9,7 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../Componentes/Modal";
 import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
-import Banner from "../Assets/Login/tonsus_grafitti.png";
-import LogoBanner from "../Assets/Login/tonsus_logo_white.png";
+import Banner from "../Assets/Login/tonsus_mosaico.png";
 
 import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
 
@@ -245,6 +244,7 @@ const LoginPage = ({ page, alertCustom }) => {
             },
           },
         ]}
+        sx={{ background: "#000", p: 2 }}
         buttonStyle={{ variant: "contained" }}
         maxWidth={"md"}
         component="form"
@@ -252,24 +252,26 @@ const LoginPage = ({ page, alertCustom }) => {
         backAction={inicialState.backAction}
         images={[
           {
-            styles: { width: "100%", marginTop: "12vh", marginLeft: "-100px" },
+            styles: { width: "100%", marginTop: "8vh", marginLeft: "-100px" },
             src: Banner,
           },
 
           {
-            //   src: LogoBanner,
-            //   styles: {
-            //     width: "40px",
-            //     height: "40px",
-            //     margin: "10px",
-            //     padding: "10px",
-            //     background: "#0195F7",
-            //     borderRadius: "10px",
-            //   },
-            // text: {
-            //   content: "Sua plataforma de gestão e agendamentos",
-            //   variant: "h5",
-            // },
+            src: "", //LogoBanner,
+            styles: {
+              marginLeft: "-100px",
+
+              // width: "40px",
+              // height: "40px",
+              // margin: "10px",
+              // padding: "10px",
+              // background: "#0195F7",
+              // borderRadius: "10px",
+            },
+            text: {
+              content: "Ferramentas personalizadas para o seu negócio!",
+              variant: "h6",
+            },
           },
         ]}
       >

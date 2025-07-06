@@ -1,0 +1,240 @@
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Grid2 as Grid,
+  Button,
+  Box,
+  IconButton,
+  Chip,
+} from "@mui/material";
+import SearchBarWithFilters from "../../../../Componentes/Search";
+import { PaperList } from "../../../../Componentes/Lista/Paper";
+import apiService from "../../../../Componentes/Api/axios";
+import {
+  getLocalItem,
+  getStatus,
+  toUTC,
+} from "../../../../Componentes/Funcoes";
+import { format } from "date-fns";
+import CustomDateInput from "../../../../Componentes/Custom";
+import Modal from "../../../../Componentes/Modal";
+import { ptBR } from "date-fns/locale";
+
+const ListaMovimentacoes = ({ buscar, alertCustom }) => {
+  const [dados, _setDados] = useState({
+    vendas: [],
+    vendasFiltradas: [],
+    search: "",
+    page: 1,
+    pageSize: 10,
+    data: new Date().toISOString(),
+    loading: true,
+  });
+
+  const [detalhe, setDetalhe] = useState({
+    open: false,
+    movimentacao: null,
+  });
+
+  const setDados = (campo, info) =>
+    _setDados((prev) => ({ ...prev, [campo]: info }));
+
+  const handleGet = async () => {
+    try {
+      setDados("loading", true);
+      const data = await apiService.query(
+        "GET",
+        buscar[getLocalItem("accessType")].url_transacoes(
+          getLocalItem("userId"),
+          dados.data,
+          dados.page,
+          dados.pageSize
+        )
+      );
+
+      const vendas = data.map((item) => ({
+        valor: item.preco,
+        cliente: item.nomeCliente || "Cliente não informado",
+        data: toUTC(item.data),
+        atendimento: item,
+        funcionario: item.atendenteNome,
+      }));
+
+      setDados("vendas", vendas);
+      setDados("vendasFiltradas", vendas);
+    } catch (error) {
+      console.error(error);
+      alertCustom("Erro ao buscar movimentações!");
+    } finally {
+      setDados("loading", false);
+    }
+  };
+
+  useEffect(() => {
+    handleGet();
+  }, [dados.pageSize, dados.data]);
+
+  const abrirDetalhes = (movimentacao) => {
+    setDetalhe({ open: true, movimentacao });
+  };
+
+  return (
+    <Grid container spacing={2} sx={{ p: 2 }}>
+      <Grid size={12}>
+        <Grid container spacing={2} justifyContent="space-between">
+          <Grid size={{ xs: 12, md: 3 }}>
+            <CustomDateInput
+              onChange={(v, valid) => {
+                valid && setDados("data", format(v, "yyyy-MM-dd"));
+              }}
+              value={dados.data}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <SearchBarWithFilters
+              initial={dados.vendas}
+              elements={dados.vendasFiltradas}
+              setElements={(elements) => setDados("vendasFiltradas", elements)}
+              search={dados.search}
+              label="Pesquisar vendas"
+              searchValue={dados.search}
+              setSearchValue={(value) => setDados("search", value)}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid size={12}>
+        <PaperList
+          variant="contained"
+          items={
+            dados.vendasFiltradas.length > 0
+              ? [
+                  ...dados.vendasFiltradas.map((venda) => ({
+                    ...venda,
+
+                    titulo: (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Typography variant="h6">{venda.cliente}</Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 400, gap: 1 }}
+                        >
+                          Atendido por {venda.funcionario}{" "}
+                        </Typography>
+                      </Box>
+                    ),
+                    subtitulo: (
+                      <Typography>
+                        R$ {venda.valor} em {venda.data}
+                        <Typography
+                          variant="body1"
+                          className="show-link"
+                          onClick={() => abrirDetalhes(venda)}
+                        >
+                          Ver Detalhes
+                        </Typography>{" "}
+                      </Typography>
+                    ),
+                  })),
+                  {
+                    titulo: (
+                      <Box sx={{ textAlign: "center", width: "100%" }}>
+                        <Button
+                          variant="text"
+                          disabled={dados.vendas.length < dados.pageSize}
+                          onClick={() =>
+                            dados.vendas.length === dados.pageSize &&
+                            setDados("pageSize", dados.pageSize + 10)
+                          }
+                        >
+                          Carregar mais
+                        </Button>
+                      </Box>
+                    ),
+                    subtitulo: "",
+                  },
+                ]
+              : [
+                  {
+                    titulo: dados.loading
+                      ? "Buscando..."
+                      : "Nenhuma venda encontrada...",
+                    subtitulo: "",
+                  },
+                ]
+          }
+        >
+          <Typography variant="h6" sx={{ m: "10px 15px", color: "#fff" }}>
+            Histórico Movimentações
+          </Typography>
+        </PaperList>
+      </Grid>
+
+      {/* Modal de Detalhes da Movimentação */}
+      <Modal
+        open={detalhe.open}
+        onClose={() => setDetalhe((prev) => ({ ...prev, open: false }))}
+        titulo="Detalhes da Movimentação"
+        maxWidth="md"
+        buttons={[
+          {
+            titulo: "Fechar",
+            variant: "contained",
+            action: () => setDetalhe((prev) => ({ ...prev, open: false })),
+          },
+        ]}
+        loading={detalhe.loading}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, p: 2 }}>
+          <Typography variant="body1">
+            <strong>Cliente:</strong> {detalhe.movimentacao?.cliente}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Valor:</strong> R$ {detalhe.movimentacao?.valor}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Data:</strong> {detalhe.movimentacao?.data}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Status:</strong>{" "}
+            <Chip
+              label={getStatus(detalhe.movimentacao?.atendimento.status).valor}
+              color={getStatus(detalhe.movimentacao?.atendimento.status).color}
+              size="small"
+            />
+          </Typography>
+          <Typography variant="body1">
+            <strong>Atendente:</strong>{" "}
+            {detalhe.movimentacao?.atendimento.atendenteNome}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Finalização:</strong>{" "}
+            {detalhe.movimentacao?.atendimento.dataFinalizacao
+              ? toUTC(detalhe.movimentacao?.atendimento.dataFinalizacao)
+              : "Não finalizado"}
+          </Typography>
+          {detalhe.movimentacao?.atendimento.manual && (
+            <Typography variant="body1">
+              <strong>Inserido Manualmente</strong>
+            </Typography>
+          )}
+          {detalhe.movimentacao?.atendimento.motivoCancelamento && (
+            <Typography variant="body1">
+              <strong>Cancelado:</strong>{" "}
+              {detalhe.movimentacao?.atendimento.motivoCancelamento}
+            </Typography>
+          )}
+        </Box>
+      </Modal>
+    </Grid>
+  );
+};
+
+export default ListaMovimentacoes;

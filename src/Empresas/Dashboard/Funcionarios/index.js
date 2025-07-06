@@ -14,6 +14,7 @@ const GerenciarFuncionarios = ({
   open,
   handleClose,
   alertCustom,
+  onSelect,
 }) => {
   const [modal, setModal] = useState({
     open: false,
@@ -58,6 +59,7 @@ const GerenciarFuncionarios = ({
   };
 
   const handleSelect = (item) => {
+    onSelect(item);
     setModal({
       open: true,
       buttons: [

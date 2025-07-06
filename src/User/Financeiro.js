@@ -58,11 +58,11 @@ const ModalRelatorio = ({
         elevation={0}
         sx={{
           top: "15px",
-          height: "150px",
+          height: "180px",
           overflow: "visible",
           m: "-16px -16px 60px -16px",
           p: "8px 24px",
-          borderRadius: isMobile ? 0 : "10px",
+          borderRadius: { Xs: 0, md: "10px" },
         }}
       >
         <CardHeader
@@ -70,12 +70,13 @@ const ModalRelatorio = ({
             <Avatar
               sx={{
                 bgcolor: "#0195F7",
-                width: "50px",
-                height: "50px",
+                width: 80,
+                height: 80,
                 fontSize: 30,
                 color: "#fff",
                 fontWeight: 600,
               }}
+              src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
             >
               {usuario.nome[0].toUpperCase()}
             </Avatar>
@@ -116,7 +117,7 @@ const ModalRelatorio = ({
         <CardActions
           sx={{
             display: "flex",
-            justifyContent: isMobile ? "center" : "left",
+            justifyContent: { xs: "center", lg: "left" },
           }}
         >
           {" "}
@@ -129,7 +130,7 @@ const ModalRelatorio = ({
             }}
           >
             <CardContent>
-              <Typography variant="h6">Total Saldo</Typography>
+              <Typography variant="h6">Saldo Total </Typography>
               <Typography variant="h5">
                 {mostrarSaldo
                   ? `R$ ${dados.approved.valor.toFixed(2)}`

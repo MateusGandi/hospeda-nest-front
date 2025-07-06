@@ -11,7 +11,7 @@ import Icon from "../../../Assets/Emojis";
 const Agendamento = ({ setError, form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
-  const [data, setData] = useState({ horario: null, dia: null });
+  const [data, setData] = useState({ horario: null, dia: new Date() });
 
   const [loading, setLoading] = useState(false);
 
@@ -149,6 +149,10 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
               data={data.dia}
               onSelect={(value) => {
                 setData((prev) => ({ ...prev, dia: value }));
+                setModal((prev) => ({
+                  ...prev,
+                  open: false,
+                }));
               }}
             />
           </Grid>

@@ -45,15 +45,20 @@ const SearchBarWithFilters = ({
   }, [elements]);
 
   useEffect(() => {
-    // Aplica os filtros e a busca
     const filteredElements = initial.filter((element) => {
-      // Verifica se o elemento corresponde aos filtros selecionados
+      const matchesSearch = !searchValue
+        ? true
+        : Object.values(element).some((value) =>
+            String(value).toLowerCase().includes(searchValue.toLowerCase())
+          );
+
       const matchesFilters = selectedFilters.every((filter) =>
         propFilters.some((prop) => element[prop] === filter)
       );
 
-      return matchesFilters;
+      return matchesSearch && matchesFilters;
     });
+
     setElements(filteredElements);
   }, [searchValue, selectedFilters]);
 
@@ -123,7 +128,7 @@ const SearchBarWithFilters = ({
           onFocus={handleFocus}
           onChange={handleInputChange}
           inputRef={textFieldRef}
-          sx={{ width: "calc(100% - 60px)" }}
+          fullWidth
           InputProps={{
             endAdornment: (
               <>
