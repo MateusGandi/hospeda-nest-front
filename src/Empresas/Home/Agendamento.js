@@ -51,7 +51,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
       if (data.dia) {
         const ids = form.servicos?.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro.id,
+          form.barbeiro?.id,
           ids,
           data.dia.toISOString().split("T")[0]
         );

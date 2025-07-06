@@ -51,7 +51,7 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
       if (form.dia) {
         const ids = form.servico.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro.id,
+          form.barbeiro?.id,
           ids,
           form.dia.toISOString().split("T")[0]
         );
@@ -75,7 +75,7 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
       const dataAtual = new Date().toISOString().split("T")[0];
       if (!ids || !form.barbeiro?.id) return;
 
-      const resp = await buscarVagas(form.barbeiro.id, ids, dataAtual);
+      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
     fetch();
