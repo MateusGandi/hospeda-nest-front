@@ -244,7 +244,7 @@ const LoginPage = ({ page, alertCustom }) => {
             },
           },
         ]}
-        sx={{ background: "#000", p: 2 }}
+        sx={{ background: "#000", p: "0 16px" }}
         buttonStyle={{ variant: "contained" }}
         maxWidth={"md"}
         component="form"

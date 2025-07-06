@@ -82,7 +82,7 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
       setFormState({ rating: 0, comment: "" });
       carregarAvaliacoes();
     } catch (error) {
-      alertCustom("Erro ao enviar avaliação.");
+      alertCustom(error.response.data.message ?? "Erro ao enviar avaliação.");
     }
   };
 
