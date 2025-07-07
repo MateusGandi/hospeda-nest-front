@@ -28,7 +28,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     search: "",
     page: 1,
     pageSize: 10,
-    data: new Date(),
+    data: new Date().toISOString(),
     loading: true,
   });
 

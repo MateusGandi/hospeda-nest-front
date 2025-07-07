@@ -42,6 +42,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
     ],
     employee: [
       { icon: <AttachMoneyRoundedIcon />, label: "Movimentações", id: 0 },
+      { icon: <StarIcon />, label: "Avaliações", id: 1 },
     ],
   };
   const tabs = tabsAccess[getLocalItem("accessType")] || [];
@@ -240,19 +241,36 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
               selected={dados.tab.id}
               tabs={tabs}
               onChange={handleTabChange}
-              views={[
-                <Dividas />,
-                <ListaMovimentacoes
-                  buscar={search}
-                  alertCustom={alertCustom}
-                />,
-                <ListaMovimentacoesFuncionarios
-                  buscar={search}
-                  alertCustom={alertCustom}
-                />,
-                <FornecedoresInfo />,
-                <Avaliacoes alertCustom={alertCustom} barbearia={barbearia} />,
-              ]}
+              views={
+                {
+                  adm: [
+                    <Dividas />,
+                    <ListaMovimentacoes
+                      buscar={search}
+                      alertCustom={alertCustom}
+                    />,
+                    <ListaMovimentacoesFuncionarios
+                      buscar={search}
+                      alertCustom={alertCustom}
+                    />,
+                    <FornecedoresInfo />,
+                    <Avaliacoes
+                      alertCustom={alertCustom}
+                      barbearia={barbearia}
+                    />,
+                  ],
+                  employee: [
+                    <ListaMovimentacoes
+                      buscar={search}
+                      alertCustom={alertCustom}
+                    />,
+                    <Avaliacoes
+                      alertCustom={alertCustom}
+                      barbearia={barbearia}
+                    />,
+                  ],
+                }[getLocalItem("accessType") || []]
+              }
             />
           </Grid>
         </Grid>

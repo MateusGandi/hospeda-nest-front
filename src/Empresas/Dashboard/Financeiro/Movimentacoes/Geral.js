@@ -45,7 +45,9 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       const data = await apiService.query(
         "GET",
         buscar[getLocalItem("accessType")].url_transacoes(
-          getLocalItem("userId"),
+          getLocalItem("accessType") == "adm"
+            ? getLocalItem("establishmentId")
+            : getLocalItem("userId"),
           dados.data,
           dados.page,
           dados.pageSize
@@ -98,6 +100,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
               search={dados.search}
               label="Pesquisar vendas"
               searchValue={dados.search}
+              fullWidth={true}
               setSearchValue={(value) => setDados("search", value)}
             />
           </Grid>

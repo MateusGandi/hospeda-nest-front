@@ -235,14 +235,20 @@ const Dividas = () => {
           {" "}
           <Grid
             size={{ xs: 12, md: 3 }}
-            sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 2,
+              position: "relative",
+            }}
           >
-            <Typography variant="body1" className="show-box">
-              <Typography variant="h6">
-                <Icon>💻</Icon> Gestão de contas
-              </Typography>
-              A listagem de contas permite que você visualize e gerencie dívidas
-              pendentes.
+            <Typography
+              variant="body1"
+              sx={{ position: "absolute", top: 0, left: 0, zIndex: 1, p: 2 }}
+            >
+              <Typography variant="h6">Gestão de contas</Typography>A listagem
+              de contas permite que você visualize e gerencie dívidas pendentes,
+              tudo de forma simplificada.
             </Typography>
             <img
               src={Banner}

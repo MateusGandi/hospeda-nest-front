@@ -105,49 +105,43 @@ const SearchBarWithFilters = ({
   };
 
   return (
-    <Box
-      sx={{ width: "100%", ...(fullWidth ? {} : { maxWidth: "100px" }) }}
-      onBlur={handleBlur}
-      tabIndex={-1}
-    >
-      <Box>
-        <Grid2 container spacing={2}>
-          {children}
-          <Grid2 size={{ xs: 10, md: 10.8 }}>
-            <TextField
-              variant="outlined"
-              placeholder={label}
-              size="small"
-              value={searchValue}
-              onFocus={handleFocus}
-              onChange={handleInputChange}
-              inputRef={textFieldRef}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <>
-                    {" "}
-                    {searchValue.length > 0 && (
-                      <IconButton onClick={handleClearFilters}>
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                    <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
-                  </>
-                ),
-                sx: {
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                  p: "5px 10px",
-                  background: "#363636",
-                  borderRadius: "100px",
+    <Box sx={{ width: "100%" }} onBlur={handleBlur} tabIndex={-1}>
+      <Grid2 container spacing={2}>
+        {children}
+        <Grid2 size={fullWidth ? 12 : { xs: 10, md: 10.8 }}>
+          <TextField
+            variant="outlined"
+            placeholder={label}
+            size="small"
+            value={searchValue}
+            onFocus={handleFocus}
+            onChange={handleInputChange}
+            inputRef={textFieldRef}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <>
+                  {" "}
+                  {searchValue.length > 0 && (
+                    <IconButton onClick={handleClearFilters}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
+                </>
+              ),
+              sx: {
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
                 },
-              }}
-            />
-          </Grid2>
+                p: "5px 10px",
+                background: "#363636",
+                borderRadius: "100px",
+              },
+            }}
+          />
         </Grid2>
-      </Box>
+      </Grid2>
       <Collapse
         in={filtersVisible && !!uniqueFilterValues[propFilters[0]]?.length}
       >

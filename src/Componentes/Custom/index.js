@@ -129,9 +129,12 @@ export default function CustomDateInput({ value, onChange, label, ...props }) {
     dataFormatada: "",
     dataEscrita: "",
   });
-
   const setDados = (prop, value) =>
     _setDados((prev) => ({ ...prev, [prop]: value }));
+
+  useEffect(() => {
+    setDados("dataSelecionada", value);
+  }, [value]);
 
   const handleTextChange = (e) => {
     try {

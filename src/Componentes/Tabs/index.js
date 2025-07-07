@@ -69,7 +69,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
               mt: 1,
             }}
           >
-            <Typography variant="h6">{tabs[selected].label}</Typography>
+            <Typography variant="h6">{tabs[selected]?.label}</Typography>
           </Grid2>
           <Grid2 size={12}>
             {" "}
