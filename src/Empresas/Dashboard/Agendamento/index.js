@@ -263,9 +263,8 @@ const AgendamentoManual = ({
                   <Typography variant="h6">
                     🔔 Notificação
                     <Typography variant="body1">
-                      {
-                        "Seu cliente será notificado! Caso ele tenha permitido notificações via WhatsApp"
-                      }
+                      Seu cliente será notificado! Caso ele tenha permitido
+                      notificações via WhatsApp
                     </Typography>
                     {/* <Typography variant="body1" textAlign="center">
                       <FormControlLabel

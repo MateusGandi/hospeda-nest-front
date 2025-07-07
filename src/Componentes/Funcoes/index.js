@@ -24,6 +24,21 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
+export const toUTC = (dataISO) => {
+  try {
+    return dataISO
+      .split("T")
+      .map((item, i) =>
+        i == 0
+          ? item.split("-").reverse().join("/")
+          : item.split(":").slice(0, 2).join(":")
+      )
+      .join(" ");
+  } catch (error) {
+    return "Data inválida";
+  }
+};
+
 export const formatarData = (dataISO, timeZone = "rio_branco") => {
   const data = new Date(dataISO);
 
@@ -74,12 +89,23 @@ export const formatTime = (valorant, valor) => {
     numeros.slice(0, 2).padEnd(2, "0") == 24 &&
     +numeros.slice(2, 4).padEnd(2, "0") > 0
   )
-    return valorant;
-  if (numeros.slice(0, 2).padEnd(2, "0") > 24) return valorant;
-  if (numeros.slice(2, 4).padEnd(2, "0") > 59) return valorant;
+    return valor.slice(0, -1);
+  if (numeros.slice(0, 2).padEnd(2, "0") > 24) return valor.slice(0, -1);
+  if (numeros.slice(2, 4).padEnd(2, "0") > 59) return valor.slice(0, -1);
   return numeros
     .replace(/(\d{2})(\d{1})/, "$1:$2")
     .replace(/(\d{2})(\d{2})/, "$1:$2");
+};
+
+export const formatDate = (valor) => {
+  if (!valor) return "";
+  if (valor.length > 2) {
+    valor = valor.replace(/^(\d{2})(\d)/g, "$1/$2");
+  }
+  if (valor.length > 5) {
+    valor = valor.replace(/^(\d{2})\/(\d{2})(\d)/g, "$1/$2/$3");
+  }
+  return valor.substring(0, 10);
 };
 
 export const formatMoney = (valor) => {

@@ -1,5 +1,18 @@
-import { TextField, MenuItem, InputAdornment } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  TextField,
+  MenuItem,
+  InputAdornment,
+  Box,
+  IconButton,
+} from "@mui/material";
 import { height, styled } from "@mui/system";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { format, isValid, parse, set } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import Calendario from "../Calendar";
+import { formatDate } from "../Funcoes";
+import Modal from "../Modal";
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -22,6 +35,7 @@ const CustomTextField = styled(TextField)({
   },
   "& .MuiInputBase-input": {
     color: "#fff",
+    paddingTop: 18,
     height: "15px",
     "&::placeholder": {
       opacity: 1, // Mantém o placeholder visível
@@ -30,7 +44,7 @@ const CustomTextField = styled(TextField)({
   },
 });
 
-export function CustomInput({
+export const CustomInput = ({
   placeholder,
   startIcon,
   endIcon,
@@ -38,7 +52,7 @@ export function CustomInput({
   multiline,
   minRows,
   ...props
-}) {
+}) => {
   return (
     <CustomTextField
       {...props}
@@ -58,9 +72,9 @@ export function CustomInput({
       }}
     />
   );
-}
+};
 
-export function CustomSelect({
+export const CustomSelect = ({
   options,
   startIcon,
   endIcon,
@@ -68,7 +82,7 @@ export function CustomSelect({
   label,
   placeholder,
   ...props
-}) {
+}) => {
   return (
     <CustomTextField
       {...props}
@@ -105,5 +119,87 @@ export function CustomSelect({
 
       {children}
     </CustomTextField>
+  );
+};
+
+export default function CustomDateInput({ value, onChange, label, ...props }) {
+  const [dados, _setDados] = useState({
+    open: false,
+    dataSelecionada: null,
+    dataFormatada: "",
+    dataEscrita: "",
+  });
+  const setDados = (prop, value) =>
+    _setDados((prev) => ({ ...prev, [prop]: value }));
+
+  useEffect(() => {
+    setDados("dataSelecionada", value);
+  }, [value]);
+
+  const handleTextChange = (e) => {
+    try {
+      if (e.target.value.length > 10) return;
+
+      const parsed = parse(e.target.value, "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
+      });
+
+      if (isValid(parsed) && e.target.value.toString().length == 10) {
+        _setDados((prev) => ({
+          ...prev,
+          dataSelecionada: parsed,
+          dataFormatada: format(parsed, "dd/MM/yyyy"),
+        }));
+
+        return onChange(parsed, true);
+      } else {
+        setDados("dataFormatada", formatDate(e.target.value));
+        onChange(formatDate(e.target.value), false);
+      }
+    } catch (error) {
+      alert("Erro ao formatar a data: " + error.message);
+    }
+  };
+
+  // Ao selecionar no calendário
+  const handleDateSelect = (data) => {
+    _setDados((prev) => ({
+      ...prev,
+      open: false,
+      dataSelecionada: data,
+      dataFormatada: format(data, "dd/MM/yyyy"),
+    }));
+    onChange(data, true);
+  };
+
+  return (
+    <>
+      <CustomInput
+        fullWidth
+        placeholder={"dd/mm/aaaa"}
+        label={label}
+        value={dados.dataFormatada || format(value, "dd/MM/yyyy")}
+        onChange={handleTextChange}
+        startIcon={
+          <IconButton onClick={() => setDados("open", true)}>
+            <CalendarTodayIcon />
+          </IconButton>
+        }
+        {...props}
+      />
+
+      <Modal
+        open={dados.open}
+        onClose={() => setDados("open", false)}
+        maxWidth="xs"
+        titulo="Selecione uma data"
+      >
+        <Calendario
+          onSelect={handleDateSelect}
+          data={dados.dataSelecionada}
+          all={true}
+        />
+      </Modal>
+    </>
   );
 }

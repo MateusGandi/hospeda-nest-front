@@ -95,7 +95,7 @@ function App() {
     "/plans/:videoPath?",
     "/checkout/:key?",
     "/review/:barbeariaId",
-    "/fac/:title?",
+    "/faq/:title?",
   ]);
 
   const [alert, setAlert] = useState({
@@ -125,6 +125,7 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <NavigationBar logo="Tonsus App" />
+
         <Permissions alertCustom={alertCustom} />
         <Routes>
           {paths.map((path, index) => (

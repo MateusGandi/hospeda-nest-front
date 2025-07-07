@@ -17,7 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Doc from "./documento.json";
 import Icon from "../../Assets/Emojis";
 
-const FAC = ({ filtro }) => {
+const FAQ = ({ filtro }) => {
   const navigate = useNavigate();
   const { title } = useParams();
   const [documentos, setDocumentos] = useState([]);
@@ -85,9 +85,17 @@ const FAC = ({ filtro }) => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 2 }}>
+    <Container
+      maxWidth="md"
+      sx={{
+        minHeight: "calc(100vh - 130px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
       {carregando ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
           <CircularProgress />
         </Box>
       ) : documentos.length === 0 ? (
@@ -159,9 +167,11 @@ const FAC = ({ filtro }) => {
           ))}
         </List>
       )}
-      <Box sx={{ mt: 4, textAlign: "center" }}>
-        <Button onClick={() => navigate("/fac")}>Veja completo</Button>
-      </Box>
+      {title && (
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Button onClick={() => navigate("/faq")}>Veja completo</Button>
+        </Box>
+      )}
 
       <Typography className="show-box" typography="body1" sx={{ m: "10px 0" }}>
         <Typography variant="h6">
@@ -176,4 +186,4 @@ const FAC = ({ filtro }) => {
   );
 };
 
-export default FAC;
+export default FAQ;

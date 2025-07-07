@@ -10,7 +10,7 @@ import Modal from "../../Componentes/Modal";
 const Servicos = ({ setError, form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
-  const [data, setData] = useState({ horario: null, dia: null });
+  const [data, setData] = useState({ horario: null, dia: new Date() });
 
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +51,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
       if (data.dia) {
         const ids = form.servicos?.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro.id,
+          form.barbeiro?.id,
           ids,
           data.dia.toISOString().split("T")[0]
         );
@@ -148,7 +148,13 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
           <Grid size={{ xs: 12, md: 12 }}>
             <Calendario
               data={data.dia}
-              onSelect={(value) => setData((prev) => ({ ...prev, dia: value }))}
+              onSelect={(value) => {
+                setData((prev) => ({ ...prev, dia: value }));
+                setModal((prev) => ({
+                  ...prev,
+                  open: false,
+                }));
+              }}
             />
           </Grid>
         </Grid>{" "}

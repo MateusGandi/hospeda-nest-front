@@ -19,7 +19,8 @@ export default function FreeSolo({
   searchField,
   setItemSelecionado,
   itemSelecionado,
-  minDigitsForSearch = 6, // Valor padrão: 6 dígitos
+  minDigitsForSearch = 1, // Valor padrão: 6 dígitos
+  disabled = false,
 }) {
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -54,13 +55,17 @@ export default function FreeSolo({
     }
 
     setLoading(true);
+    let finalUrl = "";
+    if (searchField) {
+      finalUrl = `${url}?${searchField}=${inputValue}`;
+    } else if (url.includes("XXXX")) {
+      finalUrl = url.replaceAll("XXXX", inputValue);
+    } else {
+      finalUrl = `${url}/${inputValue}`;
+    }
+
     try {
-      const response = await apiService.query(
-        "GET",
-        searchField
-          ? `${url}?${searchField}=${inputValue}`
-          : `${url}/${inputValue}`
-      );
+      const response = await apiService.query("GET", finalUrl);
       const data = response.map((item) => ({
         ...item,
         title: fields.map((key) => item[key]).join(" - "),
@@ -118,6 +123,7 @@ export default function FreeSolo({
           {option.title}
         </li>
       )}
+      disabled={disabled}
       renderInput={(params) => (
         <Box
           sx={{

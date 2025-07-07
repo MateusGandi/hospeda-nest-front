@@ -52,7 +52,7 @@ const Permissions = ({
         <>
           Você deve aceitar nossos{" "}
           <a
-            href="/fac"
+            href="/faq"
             rel="noopener noreferrer"
             style={{ color: "#0195F7", textDecoration: "none" }}
           >

@@ -9,6 +9,7 @@ import {
   TextField,
   Avatar,
   Badge,
+  Box,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
@@ -25,7 +26,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
 
 import LogoImage from "../../Assets/logo_aut.png";
-import FAC from "../Termos";
+import FAQ from "../Termos";
 import apiService from "../Api/axios";
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const NavigationBar = () => {
   const [searchValue, setSearchValue] = useState("");
   const [hasScheduling, setHasScheduling] = useState(false);
   const [actions, setActions] = useState([]);
+  const [scrolled, setScrolled] = useState(false);
   const accessType = getLocalItem("accessType");
 
   const handleGetScheduling = async () => {
@@ -250,6 +252,20 @@ const NavigationBar = () => {
   };
 
   useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
     setActions(actionsMap[accessType]);
   }, [hasScheduling, location]);
 
@@ -257,10 +273,17 @@ const NavigationBar = () => {
     <>
       <AppBar
         elevation={0}
-        position="static"
-        sx={{ background: "#000", mb: -1 }}
+        sx={{
+          position: "absolute",
+          left: 0,
+          background: "none",
+        }}
       >
-        <Toolbar style={{ justifyContent: "space-between" }}>
+        <Toolbar
+          style={{
+            justifyContent: "space-between",
+          }}
+        >
           <Grid
             container
             spacing={2}
@@ -423,7 +446,7 @@ const NavigationBar = () => {
             },
           }}
         />
-        <FAC filtro={searchValue} />
+        <FAQ filtro={searchValue} />
       </Modal>
     </>
   );

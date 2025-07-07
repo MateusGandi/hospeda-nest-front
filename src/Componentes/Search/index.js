@@ -8,10 +8,12 @@ import {
   Paper,
   Typography,
   Button,
+  Grid2,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import { Close } from "@mui/icons-material";
 
 const SearchBarWithFilters = ({
   initial,
@@ -44,15 +46,20 @@ const SearchBarWithFilters = ({
   }, [elements]);
 
   useEffect(() => {
-    // Aplica os filtros e a busca
     const filteredElements = initial.filter((element) => {
-      // Verifica se o elemento corresponde aos filtros selecionados
+      const matchesSearch = !searchValue
+        ? true
+        : Object.values(element).some((value) =>
+            String(value).toLowerCase().includes(searchValue.toLowerCase())
+          );
+
       const matchesFilters = selectedFilters.every((filter) =>
         propFilters.some((prop) => element[prop] === filter)
       );
 
-      return matchesFilters;
+      return matchesSearch && matchesFilters;
     });
+
     setElements(filteredElements);
   }, [searchValue, selectedFilters]);
 
@@ -98,54 +105,43 @@ const SearchBarWithFilters = ({
   };
 
   return (
-    <Box
-      sx={{ width: "100%", ...(fullWidth ? {} : { maxWidth: "500px" }) }}
-      onBlur={handleBlur}
-      tabIndex={-1}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          gap: 1,
-          alignItems: "start",
-          justifyContent: "end",
-          flexWrap: "wrap",
-        }}
-      >
+    <Box sx={{ width: "100%" }} onBlur={handleBlur} tabIndex={-1}>
+      <Grid2 container spacing={2}>
         {children}
-
-        <TextField
-          variant="outlined"
-          placeholder={label}
-          size="small"
-          value={searchValue}
-          onFocus={handleFocus}
-          onChange={handleInputChange}
-          inputRef={textFieldRef}
-          sx={{ width: "calc(100% - 60px)" }}
-          InputProps={{
-            endAdornment: (
-              <>
-                {" "}
-                {searchValue.length > 0 && (
-                  <IconButton onClick={handleClearFilters}>
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                )}
-                <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
-              </>
-            ),
-            sx: {
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "none",
+        <Grid2 size={fullWidth ? 12 : { xs: 10, md: 10.8 }}>
+          <TextField
+            variant="outlined"
+            placeholder={label}
+            size="small"
+            value={searchValue}
+            onFocus={handleFocus}
+            onChange={handleInputChange}
+            inputRef={textFieldRef}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <>
+                  {" "}
+                  {searchValue.length > 0 && (
+                    <IconButton onClick={handleClearFilters}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
+                </>
+              ),
+              sx: {
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
+                },
+                p: "5px 10px",
+                background: "#363636",
+                borderRadius: "100px",
               },
-              p: "5px 10px",
-              background: "#363636",
-              borderRadius: "100px",
-            },
-          }}
-        />
-      </Box>
+            }}
+          />
+        </Grid2>
+      </Grid2>
       <Collapse
         in={filtersVisible && !!uniqueFilterValues[propFilters[0]]?.length}
       >
@@ -182,7 +178,19 @@ const SearchBarWithFilters = ({
             {aditionalFilters ? aditionalFilters : null}
           </Box>
 
-          <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              flexWrap: "nowrap",
+            }}
+          >
+            {" "}
+            {!!selectedFilters.length && (
+              <IconButton onClick={() => setSelectedFilters([])}>
+                <Close sx={{ color: "#fff" }} />
+              </IconButton>
+            )}
             <IconButton onClick={handleCloseFilters}>
               <ExpandLessRoundedIcon sx={{ color: "#fff" }} />
             </IconButton>

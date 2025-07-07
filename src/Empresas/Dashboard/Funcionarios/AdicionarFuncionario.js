@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Grid2 as Grid, Icon, Typography } from "@mui/material";
+import { Avatar, Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import Icon from "../../../Assets/Emojis";
 import Modal from "../../../Componentes/Modal";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarHorario } from "../../../Componentes/Funcoes";
+import {
+  formatarHorario,
+  formatPhone,
+  getLocalItem,
+} from "../../../Componentes/Funcoes";
 import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
 import apiService from "../../../Componentes/Api/axios";
 import WorkSchedule from "../Escala";
 
 const Funcionario = ({
-  funcionario, //funcionário selecionado
-  setFuncionarios,
+  funcionario,
   funcionarios,
   barbearia,
   open,
@@ -30,6 +34,7 @@ const Funcionario = ({
   });
 
   useEffect(() => {
+    console.log("funcionario", funcionario);
     if (funcionario && open) {
       setData({
         ...funcionario,
@@ -84,34 +89,55 @@ const Funcionario = ({
       component="view"
       buttons={buttons}
     >
-      <Grid container spacing={4} sx={{ mt: 4 }}>
+      <Grid container spacing={4} sx={{ mt: 2 }}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <SearchField
-            fields={["telefone", "nome"]}
-            url={`/user`}
-            placeholder="Pesquise por nome ou telefone"
-            setItemSelecionado={(item) => {
-              if (!item) {
-                return setData((prev) => ({
-                  ...prev,
-                  id: null,
-                  nome: "",
-                  telefone: "",
-                  servicosPrestados: [],
-                }));
-              }
+          <Stack alignItems="center" spacing={2}>
+            <Avatar
+              alt={(funcionario ?? data)?.nome ?? "Foto do Funcionário"}
+              sx={{ width: 250, height: 250, fontSize: 100 }}
+              src={(funcionario ?? data)?.imagem}
+            >
+              {(funcionario ?? data)?.nome[0]?.toUpperCase() ?? "T"}
+            </Avatar>
+            <Box sx={{ m: "0 24px", width: "100%" }}>
+              {funcionario ? (
+                <Typography variant="h5" sx={{ textAlign: "center" }}>
+                  {data.nome}{" "}
+                  <Typography variant="body1">
+                    {formatPhone(data.telefone)}
+                  </Typography>
+                </Typography>
+              ) : (
+                <SearchField
+                  fields={["telefone", "nome"]}
+                  url={`/user/employables/XXXX/${getLocalItem("userId")}`}
+                  placeholder="Pesquise por nome ou telefone..."
+                  setItemSelecionado={(item) => {
+                    if (!item) {
+                      return setData((prev) => ({
+                        ...prev,
+                        id: null,
+                        nome: "",
+                        telefone: "",
+                        servicosPrestados: [],
+                      }));
+                    }
 
-              setData((prev) => ({
-                ...prev,
-                id: item.id,
-                nome: item.nome,
-                telefone: item.telefone,
-                foto: item.foto,
-              }));
-            }}
-            itemSelecionado={data}
-          />
-        </Grid>{" "}
+                    setData((prev) => ({
+                      ...prev,
+                      id: item.id,
+                      nome: item.nome,
+                      telefone: item.telefone,
+                      imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
+                      foto: item.foto,
+                    }));
+                  }}
+                  itemSelecionado={data}
+                />
+              )}
+            </Box>
+          </Stack>
+        </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           {servicos && servicos.length ? (
             <>
@@ -155,15 +181,32 @@ const Funcionario = ({
           )}
         </Grid>{" "}
         <Grid size={12}>
-          <Typography variant="body1" className="show-box">
-            <Typography variant="h6">
-              <Icon>💡</Icon> Aviso
-            </Typography>
-            Para cadastrar um novo funcionário, o mesmo precisa estar
-            previamente <b>CADASTRADO</b> na plataforma com uma conta{" "}
-            <b>NORMAL</b> e precisará confirmar seu convite para assumiur o
-            cargo. Além disso você pode configurar a escala de trabalho:{" "}
-            <WorkSchedule alertCustom={alertCustom} dados={data} />
+          <Typography className="show-box">
+            <Grid container spacing={2} sx={{ alignItems: "center" }}>
+              <Grid size={{ xs: 12, md: 9 }}>
+                {" "}
+                {funcionario ? (
+                  <Typography variant="body1">
+                    {" "}
+                    Você pode editar a escala do funcionário, programando dias
+                    da semana, horário de almoço, e ausências previstas.
+                  </Typography>
+                ) : (
+                  <Typography variant="body1">
+                    Seu funcionário deve criar uma conta na plataforma e
+                    precisará confirmar seu convite para assumiur o cargo.
+                  </Typography>
+                )}
+              </Grid>
+              <Grid size={{ xs: 12, md: 3 }}>
+                {" "}
+                <WorkSchedule
+                  alertCustom={alertCustom}
+                  dados={data}
+                  disabled={!funcionario}
+                />
+              </Grid>
+            </Grid>
           </Typography>
         </Grid>
       </Grid>

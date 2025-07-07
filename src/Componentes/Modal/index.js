@@ -247,28 +247,6 @@ const Modal = ({
                         <>
                           <Grid size={12}>
                             <Grid container>
-                              {buttons[0]?.type == "google" && (
-                                <>
-                                  <Grid size={12}>
-                                    <GoogleLogin
-                                      size="large"
-                                      shape="pill"
-                                      text={buttons[0]?.text}
-                                      onSuccess={(e) => buttons[0]?.action(e)}
-                                      onError={(e) => buttons[0]?.action(e)}
-                                    />
-                                  </Grid>
-                                  <Grid size={12}>
-                                    {" "}
-                                    <Divider
-                                      textAlign="center"
-                                      sx={{ m: "5px 0" }}
-                                    >
-                                      ou
-                                    </Divider>
-                                  </Grid>
-                                </>
-                              )}
                               <Grid size={12}>
                                 <Button
                                   fullWidth
@@ -286,7 +264,30 @@ const Modal = ({
                                 >
                                   {loadingButton ? "Carregando..." : actionText}
                                 </Button>
-                              </Grid>
+                              </Grid>{" "}
+                              {buttons[0]?.type == "google" && (
+                                <>
+                                  {" "}
+                                  <Grid size={12}>
+                                    {" "}
+                                    <Divider
+                                      textAlign="center"
+                                      sx={{ m: "5px 0" }}
+                                    >
+                                      ou
+                                    </Divider>
+                                  </Grid>
+                                  <Grid size={12}>
+                                    <GoogleLogin
+                                      size="large"
+                                      shape="pill"
+                                      text={buttons[0]?.text}
+                                      onSuccess={(e) => buttons[0]?.action(e)}
+                                      onError={(e) => buttons[0]?.action(e)}
+                                    />
+                                  </Grid>
+                                </>
+                              )}
                             </Grid>
                           </Grid>{" "}
                           {submitText && (
@@ -321,7 +322,6 @@ const Modal = ({
                 display: "flex",
                 flexWrap: "wrap",
                 gap: 1,
-                rowGap: 1,
                 m: 1,
               }}
             >

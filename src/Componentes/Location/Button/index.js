@@ -4,6 +4,7 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Grid2,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -57,38 +58,43 @@ const GetUserLocation = ({
   return (
     <>
       {" "}
-      <Typography
-        variant="body2"
-        sx={{
-          width: "100%",
-          p: 1,
-          textAlign: "center",
-        }}
-      >
-        {address}
-      </Typography>
-      <IconButton
-        disabled={loading}
-        onClick={
-          address
-            ? () => {
-                setAddress("");
-                setLocation(null);
-              }
-            : () => handleGetLocation()
-        }
-        size="large"
-        sx={{ background: "#363636", maxWidth: "50px" }}
-      >
-        {loading ? (
-          <CircularProgress sx={{ color: "#fff" }} size={28} />
-        ) : (
-          <PlaceIcon
-            sx={{ width: 28, height: 28 }}
-            color={address ? "success" : "secondary"}
-          />
-        )}
-      </IconButton>
+      <Grid2 size={12}>
+        <Typography
+          variant="body2"
+          sx={{
+            width: "100%",
+            p: 1,
+            textAlign: "center",
+          }}
+        >
+          {address}
+        </Typography>
+      </Grid2>
+      <Grid2 size={{ xs: 2, md: 1.2 }}>
+        {" "}
+        <IconButton
+          disabled={loading}
+          onClick={
+            address
+              ? () => {
+                  setAddress("");
+                  setLocation(null);
+                }
+              : () => handleGetLocation()
+          }
+          size="large"
+          sx={{ background: "#363636", maxWidth: "50px" }}
+        >
+          {loading ? (
+            <CircularProgress sx={{ color: "#fff" }} size={28} />
+          ) : (
+            <PlaceIcon
+              sx={{ width: 28, height: 28 }}
+              color={address ? "success" : "secondary"}
+            />
+          )}
+        </IconButton>
+      </Grid2>
     </>
   );
 };

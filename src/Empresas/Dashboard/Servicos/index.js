@@ -125,7 +125,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   };
 
   useEffect(() => {
-    if (open) fetchServicos();
+    if (open && !modal.open) fetchServicos();
   }, [open, modal.open]);
 
   const handlePhotoUpload = async (e, serviceId) => {

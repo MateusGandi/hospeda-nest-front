@@ -257,6 +257,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
             <Rows
               items={modalConteudo.agendamentos}
               onSelect={(item) => {
+                console.log(item);
                 setModalConteudo((prev) => ({
                   ...prev,
                   view: "agendamento",
