@@ -246,33 +246,31 @@ const LoginPage = ({ page, alertCustom }) => {
         ]}
         sx={{ background: "#000", p: "0 16px" }}
         buttonStyle={{ variant: "contained" }}
-        maxWidth={"md"}
+        maxWidth={"lg"}
         component="form"
         fullScreen="all"
         backAction={inicialState.backAction}
         images={[
           {
-            styles: { width: "100%", marginTop: "8vh", marginLeft: "-100px" },
+            styles: { width: "90%" },
             src: Banner,
           },
 
-          {
-            src: "", //LogoBanner,
-            styles: {
-              marginLeft: "-100px",
-
-              // width: "40px",
-              // height: "40px",
-              // margin: "10px",
-              // padding: "10px",
-              // background: "#0195F7",
-              // borderRadius: "10px",
-            },
-            text: {
-              content: "Ferramentas personalizadas para o seu negócio!",
-              variant: "h6",
-            },
-          },
+          // {
+          //   src: "", //LogoBanner,
+          //   styles: {
+          //     // width: "40px",
+          //     // height: "40px",
+          //     // margin: "10px",
+          //     // padding: "10px",
+          //     // background: "#0195F7",
+          //     // borderRadius: "10px",
+          //   },
+          //   text: {
+          //     content: "Ferramentas personalizadas para o seu negócio!",
+          //     variant: "h6",
+          //   },
+          // },
         ]}
       >
         <Grid container spacing={4}>

@@ -563,35 +563,29 @@ const BarberShopMenu = ({ alertCustom }) => {
                           barbearia={barbearia}
                         />
                       </Grid>
-                      {["adm", "manager"].includes(
-                        getLocalItem("accessType")
-                      ) && (
-                        <>
-                          <Grid size={{ xs: 12, md: 4 }}>
-                            {" "}
-                            <Button
-                              variant="outlined"
-                              color="secondary"
-                              size="large"
-                              startIcon={<StyleIcon />}
-                              onClick={() => navigate("/plans")}
-                              sx={{
-                                border: "1.5px solid rgba(256, 256, 256, 0.2)",
-                              }}
-                              fullWidth
-                            >
-                              Planos
-                            </Button>
-                          </Grid>
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        {" "}
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          size="large"
+                          startIcon={<StyleIcon />}
+                          onClick={() => navigate("/plans")}
+                          sx={{
+                            border: "1.5px solid rgba(256, 256, 256, 0.2)",
+                          }}
+                          fullWidth
+                        >
+                          Planos
+                        </Button>
+                      </Grid>
 
-                          <Grid size={{ xs: 12, md: 4 }}>
-                            <WhatsApp
-                              barbearia={barbearia}
-                              alertCustom={alertCustom}
-                            />
-                          </Grid>
-                        </>
-                      )}
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <WhatsApp
+                          barbearia={barbearia}
+                          alertCustom={alertCustom}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>

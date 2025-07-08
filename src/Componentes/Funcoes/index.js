@@ -24,7 +24,7 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
-export const toUTC = (dataISO) => {
+export const toUTC = (dataISO, onlyDate = false) => {
   try {
     return dataISO
       .split("T")
@@ -33,6 +33,7 @@ export const toUTC = (dataISO) => {
           ? item.split("-").reverse().join("/")
           : item.split(":").slice(0, 2).join(":")
       )
+      .filter((_, index) => (onlyDate ? index == 0 : true))
       .join(" ");
   } catch (error) {
     return "Data inválida";

@@ -158,14 +158,20 @@ const Modal = ({
             >
               <Grid
                 container
+                spacing={5}
                 sx={{
                   display: "flex",
                   justifyContent: "center",
+                  alignItems: {
+                    xs: "start",
+                    md: component != "form" ? "start" : "center",
+                  },
+                  height: "100%",
                 }}
               >
                 {images && !isMobile && (
                   <Grid
-                    size={{ xs: 0, md: 7 }}
+                    size={{ xs: 0, md: 8 }}
                     sx={{
                       display: "flex",
                       justifyContent: "center",
@@ -195,7 +201,7 @@ const Modal = ({
                     ))}
                   </Grid>
                 )}
-                <Grid size={{ xs: 12, md: component != "form" ? 12 : 5 }}>
+                <Grid size={{ xs: 12, md: component != "form" ? 12 : 4 }}>
                   <Paper
                     variant={
                       "contained"

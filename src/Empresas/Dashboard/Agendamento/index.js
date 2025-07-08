@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Grid2 as Grid, Typography } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import Api from "../../../Componentes/Api/axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -37,12 +37,12 @@ const AgendamentoManual = ({
     },
     {
       key: "confirmacao",
-      title: "Confirmação",
+      title: "Agedamento confirmado!",
       item: "confirmacao",
     },
     {
       key: "error",
-      title: "Confirmação",
+      title: "Opps, algo deu errado!",
       item: "error",
     },
   ];
@@ -57,7 +57,7 @@ const AgendamentoManual = ({
     barbearia: barbearia,
     barbeiro: barbeiro,
     cliente: null,
-    servicos: null,
+    servicos: [],
     agendamento: null,
   });
   const [page, setPage] = useState(null);
@@ -107,10 +107,9 @@ const AgendamentoManual = ({
           })
           .catch((error) => {
             alertCustom(
-              "Erro ao confirmar agendamento, favor, tente mais tarde!"
+              error.response.data.message ||
+                "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
-            // setTituloModal(paths[pathTo + 2].title);
-            // navigate(`/dashboard/${paths[pathTo + 2].key}`);
           });
       }
       setTituloModal(paths[pathTo + 1].title);
@@ -182,6 +181,131 @@ const AgendamentoManual = ({
     }
   };
 
+  const views = {
+    cliente: (
+      <ClienteForm
+        alertCustom={alertCustom}
+        setFormData={setForm}
+        formData={form}
+      />
+    ),
+    servicos: (
+      <Servicos
+        alertCustom={alertCustom}
+        form={form}
+        setForm={setForm}
+        format={formatarRows}
+        setError={alertCustom}
+      />
+    ),
+    agendamento: (
+      <Agendamento
+        alertCustom={alertCustom}
+        form={form}
+        setForm={setForm}
+        format={formatarRows}
+        setError={alertCustom}
+      />
+    ),
+    confirmacao: (
+      <Grid
+        container
+        sx={{
+          height: "60vh",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <Grid size={{ md: 12, xs: 12 }}>
+          {" "}
+          <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
+            <span
+              style={{
+                background: "#EA7E11",
+                padding: "8px 16px",
+                borderRadius: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              {format(() => {
+                try {
+                  if (!form?.agendamento?.id) return new Date();
+                  const data = new Date(form?.agendamento?.id);
+                  data.setHours(data.getHours() + 3);
+                  return data;
+                } catch (error) {
+                  return new Date();
+                }
+              }, "dd/MM/yyyy' às 'HH:mm'h'")}
+            </span>
+          </Typography>{" "}
+        </Grid>
+        <Grid
+          size={{ md: 12, xs: 12 }}
+          className="show-box"
+          sx={{ textAlign: "start" }}
+        >
+          <Typography variant="h6">
+            🔔 Notificação
+            <Typography variant="body1">
+              Seu cliente será notificado! Caso ele tenha permitido notificações
+              via WhatsApp
+            </Typography>
+          </Typography>
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}></Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Button
+            disableElevation
+            color="terciary"
+            size="large"
+            onClick={() => navigate("/dashboard")}
+            startIcon={<ArrowBackIcon />}
+          >
+            Voltar a tela inicial
+          </Button>
+        </Grid>
+      </Grid>
+    ),
+    error: (
+      <Grid
+        container
+        sx={{
+          height: "60vh",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Typography variant="h5">
+            Ocorreu um erro com o agendamento...
+            <Typography variant="body1" color="GrayText">
+              Tente novamente mais tarde!
+            </Typography>
+          </Typography>
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Button
+            disableElevation
+            variant="outlined"
+            size="large"
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              border: "1px solid #484848",
+            }}
+            onClick={() => navigate("/dashboard")}
+          >
+            Voltar a tela inicial
+          </Button>
+        </Grid>
+      </Grid>
+    ),
+  };
+
   return (
     page && (
       <Modal
@@ -205,136 +329,16 @@ const AgendamentoManual = ({
       >
         <Grid container>
           <Grid size={{ xs: 12, md: 12 }}>
-            {subPath == "cliente" && (
-              <ClienteForm
-                alertCustom={alertCustom}
-                setFormData={setForm}
-                formData={form}
-              />
-            )}
-            {subPath == "servicos" && (
-              <Servicos
-                alertCustom={alertCustom}
-                form={form}
-                setForm={setForm}
-                format={formatarRows}
-                setError={alertCustom}
-              />
-            )}
-            {subPath == "agendamento" && (
-              <Agendamento
-                alertCustom={alertCustom}
-                form={form}
-                setForm={setForm}
-                format={formatarRows}
-                setError={alertCustom}
-              />
-            )}
-            {subPath == "confirmacao" && (
-              <Grid
-                container
+            {Object.keys(views).map((key) => (
+              <Box
                 sx={{
-                  height: "60vh",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  flexWrap: "wrap",
+                  width: "100%",
+                  display: key == subPath ? "block" : "none",
                 }}
               >
-                <Grid size={{ md: 12, xs: 12 }}>
-                  {" "}
-                  <Typography variant="h4" sx={{ mb: 1 }}>
-                    Agendamento Confirmado!
-                  </Typography>
-                  <Typography variant="h5" color="warning">
-                    {format(() => {
-                      const data = new Date(form?.agendamento.id);
-                      data.setHours(data.getHours() + 3);
-                      // Adiciona 3 horas à data
-                      return data;
-                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
-                  </Typography>{" "}
-                </Grid>
-                <Grid
-                  size={{ md: 12, xs: 12 }}
-                  className="show-box"
-                  sx={{ textAlign: "start" }}
-                >
-                  <Typography variant="h6">
-                    🔔 Notificação
-                    <Typography variant="body1">
-                      Seu cliente será notificado! Caso ele tenha permitido
-                      notificações via WhatsApp
-                    </Typography>
-                    {/* <Typography variant="body1" textAlign="center">
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={form.notify}
-                            onChange={(e) =>
-                              setForm((prev) => ({
-                                ...prev,
-                                notify: e.target.checked,
-                              }))
-                            }
-                            color="success"
-                          />
-                        }
-                        label="Quero ser notificado pelo WhatsApp"
-                      />
-                    </Typography> */}
-                  </Typography>
-                </Grid>
-                <Grid size={{ md: 12, xs: 12 }}></Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <Button
-                    disableElevation
-                    color="terciary"
-                    size="large"
-                    onClick={() => navigate("/dashboard")}
-                    startIcon={<ArrowBackIcon />}
-                  >
-                    Voltar a tela inicial
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
-            {subPath == "error" && (
-              <Grid
-                container
-                sx={{
-                  height: "60vh",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                }}
-              >
-                <Grid size={{ md: 12, xs: 12 }}>
-                  {" "}
-                  <Typography variant="h5">
-                    Ocorreu um erro com o agendamento...
-                    <Typography variant="body1" color="GrayText">
-                      Tente novamente mais tarde!
-                    </Typography>
-                  </Typography>
-                </Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <Button
-                    disableElevation
-                    variant="outlined"
-                    size="large"
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      border: "1px solid #484848",
-                    }}
-                    onClick={() => navigate("/dashboard")}
-                  >
-                    Voltar a tela inicial
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
+                {views[key]}
+              </Box>
+            ))}
           </Grid>
         </Grid>
       </Modal>

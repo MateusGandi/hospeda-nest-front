@@ -69,7 +69,6 @@ const Empresa = ({ alertCustom }) => {
   });
 
   const handleSaveAgendamento = async () => {
-    // throw new Error("oi");
     await Api.query("POST", "/scheduling", {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
@@ -87,9 +86,7 @@ const Empresa = ({ alertCustom }) => {
 
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
-        return alertCustom(
-          `Informe as informações necessárias para prosseguir!`
-        );
+        return alertCustom("Preencha informações necessárias para prosseguir!");
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -105,8 +102,6 @@ const Empresa = ({ alertCustom }) => {
               error.response.data.message ??
                 "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
-            // setTituloModal(paths[pathTo + 2].title);
-            // navigate(`/barbearia/${empresa.path}/${paths[pathTo + 2].key}`);
           });
       }
       setTituloModal(paths[pathTo + 1].title);
@@ -272,7 +267,6 @@ const Empresa = ({ alertCustom }) => {
                     {format(() => {
                       const data = new Date(form?.agendamento.id);
                       data.setHours(data.getHours() + 3);
-                      // Adiciona 3 horas à data
                       return data;
                     }, "dd/MM/yyyy' às 'HH:mm'h'")}
                   </Typography>{" "}
