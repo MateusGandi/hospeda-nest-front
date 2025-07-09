@@ -65,6 +65,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   const addItem = () => {
     setModal({
       open: true,
+      servicoSelecionado: null,
       titulo: "Adicionar novo serviço",
     });
   };
@@ -185,7 +186,9 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
           open={modal.open}
           onSubmit={modal.onSubmit}
           submitText={modal.submitText}
-          setOpen={(e) => setModal((prev) => ({ ...prev, open: e }))}
+          setOpen={(e) =>
+            setModal((prev) => ({ ...prev, open: e, servicoSelecionado: null }))
+          }
           titulo={modal.titulo}
           buttons={modal.buttons}
           barbearia={barbearia}

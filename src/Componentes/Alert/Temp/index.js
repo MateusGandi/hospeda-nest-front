@@ -1,5 +1,4 @@
 import { Snackbar } from "@mui/material";
-import { isMobile } from "../../Funcoes";
 
 const Alerta = ({ alert, setAlert }) => {
   const handleClose = () => {
@@ -17,11 +16,11 @@ const Alerta = ({ alert, setAlert }) => {
         "& .MuiSnackbarContent-root": {
           backgroundColor: "#353535",
           color: "#fff",
-
-          ...(isMobile
-            ? { position: "fixed", top: "70px", left: "10px", right: "10px" }
-            : {}),
           borderRadius: "10px",
+          position: { xs: "fixed", sm: "relative" },
+          top: { xs: "70px" },
+          left: { xs: "10px" },
+          right: { xs: "10px" },
         },
       }}
     />

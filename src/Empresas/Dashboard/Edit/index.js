@@ -75,7 +75,7 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
             <CustomInput
               fullWidth
               label="Horário de Abertura"
-              placeholder="HH:MM"
+              placeholder="hh:mm"
               value={formData.horarioAbertura}
               onChange={handleChange("horarioAbertura")}
               variant="outlined"
@@ -85,7 +85,7 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
             <CustomInput
               fullWidth
               label="Horário de Fechamento"
-              placeholder="HH:MM"
+              placeholder="hh:mm"
               value={formData.horarioFechamento}
               onChange={handleChange("horarioFechamento")}
               variant="outlined"

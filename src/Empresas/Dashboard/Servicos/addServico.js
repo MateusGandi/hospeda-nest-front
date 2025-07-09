@@ -132,7 +132,7 @@ const Servico = ({
         <Grid item size={{ xs: 12, md: 4 }}>
           <CustomInput
             label="Duração média"
-            placeholder="HH:MM"
+            placeholder="hh:mm"
             name="tempoGasto"
             value={data.tempoGasto}
             onChange={handleChange}

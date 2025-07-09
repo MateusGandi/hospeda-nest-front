@@ -42,7 +42,7 @@ import WhatsApp from "./WhatsApp";
 import AgendamentoManual from "./Agendamento";
 import WorkSchedule from "./Escala";
 import GetUserLocation from "../../Componentes/Location/Modal";
-
+import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
 import {
   Store,
   Settings,
@@ -52,6 +52,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import { set } from "date-fns";
+import LoadingImagePulse from "../../Componentes/Effects/loading";
 
 const BarberShopMenu = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -421,7 +422,8 @@ const BarberShopMenu = ({ alertCustom }) => {
               alignItems: "center",
             }}
           >
-            <CircularProgress />
+            {" "}
+            <LoadingImagePulse src={LogoIcon} />
           </Grid>
         </Grid>
       ) : (

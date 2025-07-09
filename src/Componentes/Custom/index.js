@@ -37,7 +37,6 @@ const CustomTextField = styled(TextField)({
   },
   "& .MuiInputBase-input": {
     color: "#fff",
-    paddingTop: 18,
     height: "15px",
     "&::placeholder": {
       opacity: 1, // Mantém o placeholder visível

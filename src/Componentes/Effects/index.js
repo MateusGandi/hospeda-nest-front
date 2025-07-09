@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
-import { isMobile } from "../Funcoes";
 
 export const TypingEffectText = () => {
   const words = [
@@ -69,11 +68,11 @@ export const TypingEffectText = () => {
 
   return (
     <Typography
-      variant={isMobile ? "h5" : "h2"}
       component="p"
       sx={{
+        fontSize: { xs: "	1.5rem", md: "3.7rem" },
         width: "96%",
-        minHeight: isMobile ? "135px" : "210px",
+        minHeight: { xs: "135px", md: "210px" },
         textAlign: "left",
       }}
     >

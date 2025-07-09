@@ -12,8 +12,6 @@ import { Facebook, Instagram, YouTube } from "@mui/icons-material";
 
 import PaymentMethods from "../../Assets/Footer/formas_pagamento.png";
 import { Link } from "react-router-dom";
-import { isMobile } from "../Funcoes";
-import { CustomInput } from "../Custom";
 
 export default function Footer() {
   return (
@@ -49,7 +47,7 @@ export default function Footer() {
               display: "flex",
               justifyContent: "space-around",
               flexWrap: "wrap",
-              ...(isMobile ? { textAlign: "center" } : {}),
+              xs: { textAlign: "center" },
             }}
           >
             <Grid size={{ xs: 12, md: 3 }}>

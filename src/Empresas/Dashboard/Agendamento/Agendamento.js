@@ -46,7 +46,7 @@ const Agendamento = ({ form, setForm, alertCustom }) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (data.dia && form.barbeiro.id && form.servicos.length) {
+      if (data.dia && form.barbeiro.id && form.servicos?.length) {
         const ids = form.servicos.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
           form.barbeiro.id,

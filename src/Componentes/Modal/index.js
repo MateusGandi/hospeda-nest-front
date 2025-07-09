@@ -17,17 +17,17 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { isMobile } from "../Funcoes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import LoadingImagePulse from "../Effects/loading";
 import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
+import { isMobile } from "../Funcoes";
 
 const full = {
-  [undefined]: false,
-  all: true,
-  mobile: isMobile,
-  desktop: !isMobile,
+  [undefined]: { xs: false, md: false, sec: false },
+  all: { xs: true, md: true, sec: true },
+  mobile: { xs: true, md: false, sec: isMobile },
+  desktop: { xs: false, md: true, sec: !isMobile },
 };
 
 const Modal = ({
@@ -54,6 +54,7 @@ const Modal = ({
   disablePadding,
   route = "",
   componentName = "",
+  alignItems = "start",
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,14 +87,17 @@ const Modal = ({
       onClose={handleClose}
       maxWidth={maxWidth}
       fullWidth
-      fullScreen={full[fullScreen]}
+      fullScreen={full[fullScreen].sec}
       PaperProps={{
         sx: {
           ...sx,
           borderRadius:
-            ["form", "view"].includes(component) || full[fullScreen]
+            ["form", "view"].includes(component) ||
+            full[fullScreen]?.xs ||
+            full[fullScreen]?.md
               ? 0
               : "10px",
+
           position: "relative",
         },
       }}
@@ -151,7 +155,7 @@ const Modal = ({
               sx={{
                 height: "100%",
                 p: "0 !important",
-                borderRadius: isMobile ? "0" : "18px",
+                borderRadius: { xs: 0, md: "18px" },
               }}
               onSubmit={(e) => {
                 e.preventDefault();
@@ -165,18 +169,16 @@ const Modal = ({
                 sx={{
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: {
-                    xs: "start",
-                    md: component != "form" ? "start" : "center",
-                  },
+                  alignItems: alignItems,
+                  pt: { xs: 0, md: 3 },
                   height: "100%",
                 }}
               >
-                {images && !isMobile && (
+                {images && (
                   <Grid
                     size={{ xs: 0, md: 8 }}
                     sx={{
-                      display: "flex",
+                      display: { md: "flex", xs: "none" },
                       justifyContent: "center",
                       flexWrap: "wrap",
                     }}
@@ -206,30 +208,26 @@ const Modal = ({
                 )}
                 <Grid size={{ xs: 12, md: component != "form" ? 12 : 4 }}>
                   <Paper
-                    variant={
-                      "contained"
-                      // isMobile || component != "form" ? "contained" : "outlined"
-                    }
+                    variant="contained"
                     sx={{
                       ...modalStyle,
                       height:
                         component != "form"
                           ? "100%"
                           : {
-                              xs: "calc(100vh - 160px)",
+                              xs: "calc(100vh - 170px)",
                               md: componentName == "create" ? "550px" : "500px",
                             },
                       m: 0,
                       p: ["modal"].includes(component)
                         ? "10px 0"
-                        : isMobile
-                        ? "0"
-                        : "0px 24px",
+                        : { xs: 0, md: "0px 24px" },
                       background: "transparent",
                     }}
-                    elevation={
-                      isMobile || ["view", "modal"].includes(component) ? 0 : 1
-                    }
+                    elevation={{
+                      xs: ["view", "modal"].includes(component) ? 0 : 1,
+                      md: ["view", "modal"].includes(component) ? 0 : 1,
+                    }}
                   >
                     <Grid
                       container
@@ -326,9 +324,10 @@ const Modal = ({
           </DialogContent>{" "}
           {component != "form" && (buttons.length || onAction || onSubmit) ? (
             <DialogActions
-              disableSpacing={
-                (["form", "view"].includes(component) || fullScreen) && isMobile
-              }
+              disableSpacing={{
+                xs: ["form", "view"].includes(component) || fullScreen,
+                md: false,
+              }}
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
@@ -339,7 +338,9 @@ const Modal = ({
               {submitText && (
                 <Button
                   disableElevation
-                  fullWidth={isMobile}
+                  sx={{
+                    width: { xs: "100%", md: "auto" },
+                  }}
                   onClick={onSubmit}
                   variant="outlined"
                   size="large"
@@ -350,12 +351,14 @@ const Modal = ({
               {onAction && (
                 <Button
                   size="large"
-                  fullWidth={isMobile}
+                  sx={{
+                    width: { xs: "100%", md: "auto" },
+                    order: { md: 999, xs: 0 },
+                  }}
                   disableElevation
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
-                  sx={{ order: { md: 999, xs: 0 } }}
                 >
                   {loadingButton ? "Enviando..." : actionText}
                 </Button>
@@ -370,13 +373,12 @@ const Modal = ({
                     onClick={button.action}
                     icon={button.icon}
                     variant={button.variant ? button.variant : "outlined"}
-                    fullWidth={{
-                      xs: ["form", "view"].includes(component) || fullScreen,
-                      md: false,
-                    }}
                     sx={{
                       ...buttonStyle,
-
+                      width: {
+                        xs: ["form", "view"].includes(component) || fullScreen,
+                        md: "auto",
+                      },
                       order: { md: index, xs: index + 1 },
                     }}
                   >
@@ -386,10 +388,12 @@ const Modal = ({
               {submitText && (
                 <Button
                   disableElevation
-                  fullWidth={{ xs: true, md: false }}
                   onClick={onSubmit}
                   variant="outlined"
-                  sx={{ display: { xs: "none" } }}
+                  sx={{
+                    display: { xs: "none" },
+                    width: { xs: "100%", md: "auto" },
+                  }}
                 >
                   {submitText}
                 </Button>
@@ -397,10 +401,10 @@ const Modal = ({
 
               {onAction && (
                 <Button
-                  fullWidth={{ xs: true, md: false }}
                   disableElevation
                   sx={{
                     display: { xs: "none" },
+                    width: { xs: "100%", md: "auto" },
                   }}
                   onClick={() => onAction()}
                   variant="contained"
