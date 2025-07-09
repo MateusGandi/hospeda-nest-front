@@ -20,6 +20,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isMobile } from "../Funcoes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import LoadingImagePulse from "../Effects/loading";
+import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
 
 const full = {
   [undefined]: false,
@@ -138,7 +140,8 @@ const Modal = ({
             zIndex: 1,
           }}
         >
-          <CircularProgress />
+          <LoadingImagePulse src={LogoIcon} />
+          {/* <CircularProgress /> */}
         </Container>
       ) : (
         <>
@@ -213,7 +216,7 @@ const Modal = ({
                         component != "form"
                           ? "100%"
                           : {
-                              xs: "calc(100vh - 130px)",
+                              xs: "calc(100vh - 160px)",
                               md: componentName == "create" ? "550px" : "500px",
                             },
                       m: 0,
@@ -265,6 +268,8 @@ const Modal = ({
                                   type="submit"
                                   sx={{
                                     height: "40px",
+                                    background:
+                                      "linear-gradient(to right, #2C69D1, #0ABCF9)",
                                     ...buttonStyle,
                                   }}
                                 >
@@ -365,12 +370,13 @@ const Modal = ({
                     onClick={button.action}
                     icon={button.icon}
                     variant={button.variant ? button.variant : "outlined"}
-                    fullWidth={
-                      (["form", "view"].includes(component) || fullScreen) &&
-                      isMobile
-                    }
+                    fullWidth={{
+                      xs: ["form", "view"].includes(component) || fullScreen,
+                      md: false,
+                    }}
                     sx={{
                       ...buttonStyle,
+
                       order: { md: index, xs: index + 1 },
                     }}
                   >
@@ -380,7 +386,7 @@ const Modal = ({
               {submitText && (
                 <Button
                   disableElevation
-                  fullWidth={isMobile}
+                  fullWidth={{ xs: true, md: false }}
                   onClick={onSubmit}
                   variant="outlined"
                   sx={{ display: { xs: "none" } }}
@@ -391,9 +397,11 @@ const Modal = ({
 
               {onAction && (
                 <Button
-                  fullWidth={isMobile}
+                  fullWidth={{ xs: true, md: false }}
                   disableElevation
-                  sx={{ display: { xs: "none" } }}
+                  sx={{
+                    display: { xs: "none" },
+                  }}
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}

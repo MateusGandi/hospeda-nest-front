@@ -111,25 +111,27 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
                   <Paper
                     key={index}
                     elevation={0}
-                    sx={{ p: "10px 0", background: "transparent" }}
+                    sx={{ p: 1, background: "transparent" }}
                   >
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "start", mb: 1 }}>
                       <Avatar
                         src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
                         alt={usuario.nome}
                         sx={{ mr: 2 }}
                       />
                       <Box>
-                        <Typography fontWeight="bold">
-                          {usuario.nome}
-                        </Typography>
-                        <Rating value={nota} readOnly size="small" />
-                      </Box>
-                    </Box>
-                    <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                        <Typography>{usuario.nome}</Typography>
+                        <Rating value={nota} readOnly size="small" />{" "}
+                      </Box>{" "}
+                    </Box>{" "}
+                    <Typography
+                      variant="body2"
+                      sx={{ whiteSpace: "pre-wrap", mt: -1.5, mb: 1 }}
+                      color="textSecondary"
+                    >
                       {descricao}
                     </Typography>
-                  </Paper>{" "}
+                  </Paper>
                 </>
               ))
             ) : (

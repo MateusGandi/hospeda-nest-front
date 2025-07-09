@@ -7,8 +7,16 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
 
   useEffect(() => {
     try {
-      setFuncionarios(format(form.barbearia.funcionarios, "barbeiros"));
+      if (
+        !form.barbearia?.funcionarios ||
+        !form.barbearia?.funcionarios.length
+      ) {
+        setFuncionarios([]);
+        return;
+      }
+      setFuncionarios(format(form.barbearia?.funcionarios, "barbeiros"));
     } catch (error) {
+      console.log("Erro ao formatar funcionários:", error);
       setError("Não há funcionários disponíveis");
     }
   }, [form.barbearia]);

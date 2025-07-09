@@ -39,12 +39,12 @@ const Empresa = ({ alertCustom }) => {
     },
     {
       key: "confirmacao",
-      title: "Confirmação",
+      title: "Agendamento confirmado!",
       item: "confirmacao",
     },
     {
       key: "error",
-      title: "Confirmação",
+      title: "Opps, algo deu errado!",
       item: "error",
     },
   ];
@@ -260,15 +260,26 @@ const Empresa = ({ alertCustom }) => {
               >
                 <Grid size={{ md: 12, xs: 12 }}>
                   {" "}
-                  <Typography variant="h4" sx={{ mb: 1 }}>
-                    Agendamento Confirmado!
-                  </Typography>
-                  <Typography variant="h5" color="warning">
-                    {format(() => {
-                      const data = new Date(form?.agendamento.id);
-                      data.setHours(data.getHours() + 3);
-                      return data;
-                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                  <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
+                    <span
+                      style={{
+                        background: "#EA7E11",
+                        padding: "8px 16px",
+                        borderRadius: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {format(() => {
+                        try {
+                          if (!form?.agendamento?.id) return new Date();
+                          const data = new Date(form?.agendamento?.id);
+                          data.setHours(data.getHours() + 3);
+                          return data;
+                        } catch (error) {
+                          return new Date();
+                        }
+                      }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                    </span>
                   </Typography>{" "}
                 </Grid>
                 <Grid

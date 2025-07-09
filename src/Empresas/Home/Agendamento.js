@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Grid2 as Grid,
+  Icon,
+  Typography,
+} from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import { formatarData } from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
@@ -53,7 +58,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
         const resp = await buscarVagas(
           form.barbeiro?.id,
           ids,
-          data.dia.toISOString().split("T")[0]
+          data.dia.split("T")[0]
         );
 
         setVagasDisponiveis(resp.map((item) => formatarData(item)));
@@ -66,7 +71,7 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
       }
     };
 
-    buscar();
+    if (form.servicos?.length) buscar();
   }, [data.dia]); // Adicionado data.dia e data.horario como dependências
 
   useEffect(() => {
@@ -124,8 +129,11 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
               ]}
               onSelect={handleSelect}
             />
-            <Typography variant="body1" sx={{ m: 1, textAlign: "center" }}>
-              Nenhum vaga disponível para esse dia, escolha outro!
+            <Typography variant="h6" className="show-box" sx={{ m: "12px 0" }}>
+              <Icon>🔍</Icon> Nenhuma vaga disponível para este dia!
+              <Typography variant="body1">
+                Sem vagas para este dia mas selecione uma data diferente...
+              </Typography>
             </Typography>
           </>
         )}

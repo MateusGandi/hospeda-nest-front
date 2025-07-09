@@ -107,6 +107,7 @@ const Estabelecimentos = ({ alertCustom }) => {
             propFilters={["nome"]}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
+            fullWidth={false}
           >
             <GetUserLocation
               setLoading={setLoadingLocation}
@@ -146,18 +147,20 @@ const Estabelecimentos = ({ alertCustom }) => {
               <div style={{ width: "100%" }}>Nenhum resultado encontrado!</div>
             </Typography>
           )}
-          <Typography sx={{ textAlign: "center", m: 1 }}>
-            <Button
-              disableElevation
-              variant="text"
-              color="secondary"
-              onClick={() =>
-                setPage((prev) => ({ ...prev, page: prev.size + 10 }))
-              }
-            >
-              Ver mais
-            </Button>
-          </Typography>
+          {empresas.length > page.size && (
+            <Typography sx={{ textAlign: "center", m: 1 }}>
+              <Button
+                disableElevation
+                variant="text"
+                color="secondary"
+                onClick={() =>
+                  setPage((prev) => ({ ...prev, page: prev.size + 10 }))
+                }
+              >
+                Ver mais
+              </Button>
+            </Typography>
+          )}
         </Grid>
       </Grid>
     </Modal>

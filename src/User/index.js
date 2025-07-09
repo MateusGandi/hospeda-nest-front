@@ -119,9 +119,10 @@ const Usuarios = ({ alertCustom }) => {
               usuario={userData}
               alertCustom={alertCustom}
               handleEdit={() => setOpenEdit(true)}
-              hanldeRecover={() =>
+              handleRecover={() =>
                 setRecover((prev) => ({ ...prev, open: true }))
               }
+              reaload={fetch}
             />
           </Grid>
           <Grid item size={12}>
