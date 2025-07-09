@@ -24,7 +24,7 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
-export const toUTC = (dataISO) => {
+export const toUTC = (dataISO, onlyDate = false) => {
   try {
     return dataISO
       .split("T")
@@ -33,11 +33,37 @@ export const toUTC = (dataISO) => {
           ? item.split("-").reverse().join("/")
           : item.split(":").slice(0, 2).join(":")
       )
+      .filter((_, index) => (onlyDate ? index == 0 : true))
       .join(" ");
   } catch (error) {
     return "Data inválida";
   }
 };
+
+export function corPorLetra(letra) {
+  const cores = [
+    "#F44336", // vermelho
+    "#E91E63", // rosa
+    "#9C27B0", // roxo
+    "#673AB7", // roxo escuro
+    "#3F51B5", // azul
+    "#2196F3", // azul claro
+    "#03A9F4", // ciano
+    "#009688", // verde água
+    "#4CAF50", // verde
+    "#8BC34A", // verde limão
+    "#FFC107", // amarelo
+    "#FF9800", // laranja
+    "#FF5722", // laranja escuro
+    "#795548", // marrom
+    "#607D8B", // azul acinzentado
+  ];
+
+  if (!letra || typeof letra !== "string") return "#999";
+
+  const index = letra.toUpperCase().charCodeAt(0) % cores.length;
+  return cores[index];
+}
 
 export const formatarData = (dataISO, timeZone = "rio_branco") => {
   const data = new Date(dataISO);

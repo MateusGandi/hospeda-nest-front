@@ -16,7 +16,7 @@ import {
   toUTC,
 } from "../../../../Componentes/Funcoes";
 import { format } from "date-fns";
-import CustomDateInput from "../../../../Componentes/Custom";
+import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
 import Modal from "../../../../Componentes/Modal";
 import { ptBR } from "date-fns/locale";
 
@@ -166,9 +166,11 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                 ]
               : [
                   {
-                    titulo: dados.loading
-                      ? "Buscando..."
-                      : "Nenhuma venda encontrada...",
+                    titulo: dados.loading ? (
+                      <LoadingBox message="Buscando..." />
+                    ) : (
+                      "Nenhuma venda encontrada"
+                    ),
                     subtitulo: "",
                   },
                 ]

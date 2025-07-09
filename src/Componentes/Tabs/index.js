@@ -54,7 +54,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
             selected == 0
               ? "0 10px 10px 10px"
               : selected == tabs.length - 1
-              ? "10px 0 10px 10px"
+              ? { xs: "10px 0 10px 10px", md: "10px" }
               : "10px",
           background: "#2A2A2A",
         }}

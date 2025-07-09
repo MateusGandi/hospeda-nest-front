@@ -5,6 +5,8 @@ import {
   InputAdornment,
   Box,
   IconButton,
+  CircularProgress,
+  Typography,
 } from "@mui/material";
 import { height, styled } from "@mui/system";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -35,7 +37,6 @@ const CustomTextField = styled(TextField)({
   },
   "& .MuiInputBase-input": {
     color: "#fff",
-    paddingTop: 18,
     height: "15px",
     "&::placeholder": {
       opacity: 1, // Mantém o placeholder visível
@@ -203,3 +204,23 @@ export default function CustomDateInput({ value, onChange, label, ...props }) {
     </>
   );
 }
+
+export const LoadingBox = ({ message, variant = "body1" }) => {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        textAlign: "center",
+        p: 2,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1,
+      }}
+    >
+      {" "}
+      <CircularProgress size={25} />
+      <Typography variant={variant}>{message}</Typography>
+    </Box>
+  );
+};

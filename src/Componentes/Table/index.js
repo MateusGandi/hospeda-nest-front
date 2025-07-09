@@ -77,8 +77,12 @@ const EditableTable = ({ columns, rows, onChange }) => {
               <TableCell
                 key={col.field}
                 sx={{
-                  width: col.width || "auto",
-                  maxWidth: col.width || "auto",
+                  width: col.width
+                    ? { xs: col.width, md: col.width / 2 }
+                    : "auto",
+                  maxWidth: col.width
+                    ? { xs: col.width, md: col.width / 2 }
+                    : "auto",
                   borderRight:
                     index !== columns.length - 1 ? "1px solid #505050" : "none",
                   borderBottom: "1px solid #606060",

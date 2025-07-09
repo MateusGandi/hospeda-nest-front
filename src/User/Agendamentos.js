@@ -10,7 +10,7 @@ import ReviewBarbershopModal from "../Evaluation";
 import Filter from "../Componentes/Filter";
 import Confirm from "../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
-import { CustomInput } from "../Componentes/Custom";
+import { CustomInput, LoadingBox } from "../Componentes/Custom";
 import Icon from "../Assets/Emojis";
 
 const ListaAgendamentos = ({ alertCustom, usuario }) => {
@@ -231,9 +231,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
       </Typography>
 
       {modal.loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Box>
+        <LoadingBox message={"Carregando agendamentos..."} />
       ) : agendamentos.length > 0 ? (
         <Rows
           items={agendamentos.map((agendamento) => {

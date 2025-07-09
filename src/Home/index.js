@@ -117,6 +117,13 @@ const PublicPage = () => {
                 color={item.force ? "primary" : "secondary"}
                 disableElevation
                 style={{
+                  ...(item.force
+                    ? {
+                        background:
+                          "linear-gradient(to right, #2C69D1, #0ABCF9)",
+                      }
+                    : {}),
+
                   fontWeight: "bold",
                   color: "#FFFFFF",
                 }}

@@ -14,7 +14,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Api from "../Componentes/Api/axios";
-import { isMobile, Saudacao } from "../Componentes/Funcoes";
+import { getLocalItem, isMobile, Saudacao } from "../Componentes/Funcoes";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import Cookies from "js-cookie";
@@ -26,7 +26,8 @@ const ModalRelatorio = ({
   usuario,
   alertCustom,
   handleEdit,
-  hanldeRecover,
+  handleRecover,
+  reaload,
 }) => {
   const [dados, setDados] = useState(null);
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
@@ -52,6 +53,42 @@ const ModalRelatorio = ({
     handleGet();
   }, []);
 
+  const handlePhotoUpload = async (e, userId) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      console.error("Nenhum arquivo selecionado.");
+      return;
+    }
+
+    try {
+      // Ajustar o nome do arquivo
+      const fileExtension = file.type.split("/")[1];
+      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
+      const renamedFile = new File([file], newName, { type: file.type });
+
+      const formData = new FormData();
+      formData.append("fotos", renamedFile);
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const endpoint = `/images/user/${userId}`;
+          await Api.query("POST", endpoint, formData);
+          reaload();
+          alertCustom("Foto adicionada com sucesso!");
+        } catch (uploadError) {
+          alertCustom("Erro ao adicionar foto!");
+          console.error("Erro ao fazer upload da imagem:", uploadError);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Erro ao processar o arquivo:", error);
+    }
+  };
+
   return (
     <Grid size={12}>
       <Card
@@ -67,19 +104,53 @@ const ModalRelatorio = ({
       >
         <CardHeader
           avatar={
-            <Avatar
-              sx={{
-                bgcolor: "#0195F7",
-                width: 80,
-                height: 80,
-                fontSize: 30,
-                color: "#fff",
-                fontWeight: 600,
-              }}
-              src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
-            >
-              {usuario.nome[0].toUpperCase()}
-            </Avatar>
+            <Box sx={{ position: "relative", width: 80, height: 80 }}>
+              <Avatar
+                sx={{
+                  bgcolor: "#0195F7",
+                  width: 80,
+                  height: 80,
+                  fontSize: 30,
+                  color: "rgba(256,256,256,0.5)",
+                  fontWeight: 600,
+                }}
+                src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
+              >
+                {usuario.nome[0].toUpperCase()}
+              </Avatar>
+
+              {/* Botão de upload */}
+              {getLocalItem("establishmentId") && (
+                <label htmlFor="upload-foto">
+                  <input
+                    id="upload-foto"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => handlePhotoUpload(e, usuario.id)}
+                  />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      right: 0,
+                      bgcolor: "rgba(0,0,0,0.6)",
+                      borderRadius: "50%",
+                      width: 24,
+                      height: 24,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Typography variant="caption" color="#fff">
+                      +
+                    </Typography>
+                  </Box>
+                </label>
+              )}
+            </Box>
           }
           title={<Typography variant="body1">{Saudacao()}</Typography>}
           subheader={
@@ -103,7 +174,7 @@ const ModalRelatorio = ({
                   },
                   {
                     title: "Trocar senha",
-                    action: hanldeRecover,
+                    action: handleRecover,
                   },
                   {
                     title: "Editar meus dados",

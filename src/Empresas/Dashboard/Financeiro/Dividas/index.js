@@ -230,6 +230,7 @@ const Dividas = () => {
         onClose={() => setOpen(false)}
         titulo={"Gestão de Dívidas"}
         maxWidth="lg"
+        alignItems="center"
       >
         <Grid container spacing={2}>
           {" "}

@@ -230,12 +230,12 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
             return (
               <Box
                 key={index}
-                style={{
+                sx={{
                   width: "100%",
                   height: "100vh",
                   position: "absolute",
                   top: 0,
-                  transition: isMobile ? "transform 0.5s ease-in-out" : "none",
+                  transition: { xs: "transform 0.5s ease-in-out", md: "none" },
                   transform: `translateY(${(index - currentIndex) * 100}%)`,
                 }}
               >
@@ -268,7 +268,7 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
                   objectFit: "cover",
                   position: "absolute",
                   top: 0,
-                  transition: isMobile ? "transform 0.5s ease-in-out" : "none",
+                  transition: { xs: "transform 0.5s ease-in-out", md: "none" },
                   transform: `translateY(${(index - currentIndex) * 100}%)`,
                 }}
                 onPlay={() => setPlaying(true)}

@@ -39,12 +39,12 @@ const Empresa = ({ alertCustom }) => {
     },
     {
       key: "confirmacao",
-      title: "Confirmação",
+      title: "Agendamento confirmado!",
       item: "confirmacao",
     },
     {
       key: "error",
-      title: "Confirmação",
+      title: "Opps, algo deu errado!",
       item: "error",
     },
   ];
@@ -69,7 +69,6 @@ const Empresa = ({ alertCustom }) => {
   });
 
   const handleSaveAgendamento = async () => {
-    // throw new Error("oi");
     await Api.query("POST", "/scheduling", {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
@@ -87,9 +86,7 @@ const Empresa = ({ alertCustom }) => {
 
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
       if (subPath && !form[resp.item]) {
-        return alertCustom(
-          `Informe as informações necessárias para prosseguir!`
-        );
+        return alertCustom("Preencha informações necessárias para prosseguir!");
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -105,8 +102,6 @@ const Empresa = ({ alertCustom }) => {
               error.response.data.message ??
                 "Erro ao confirmar agendamento, favor, tente mais tarde!"
             );
-            // setTituloModal(paths[pathTo + 2].title);
-            // navigate(`/barbearia/${empresa.path}/${paths[pathTo + 2].key}`);
           });
       }
       setTituloModal(paths[pathTo + 1].title);
@@ -265,16 +260,26 @@ const Empresa = ({ alertCustom }) => {
               >
                 <Grid size={{ md: 12, xs: 12 }}>
                   {" "}
-                  <Typography variant="h4" sx={{ mb: 1 }}>
-                    Agendamento Confirmado!
-                  </Typography>
-                  <Typography variant="h5" color="warning">
-                    {format(() => {
-                      const data = new Date(form?.agendamento.id);
-                      data.setHours(data.getHours() + 3);
-                      // Adiciona 3 horas à data
-                      return data;
-                    }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                  <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
+                    <span
+                      style={{
+                        background: "#EA7E11",
+                        padding: "8px 16px",
+                        borderRadius: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {format(() => {
+                        try {
+                          if (!form?.agendamento?.id) return new Date();
+                          const data = new Date(form?.agendamento?.id);
+                          data.setHours(data.getHours() + 3);
+                          return data;
+                        } catch (error) {
+                          return new Date();
+                        }
+                      }, "dd/MM/yyyy' às 'HH:mm'h'")}
+                    </span>
                   </Typography>{" "}
                 </Grid>
                 <Grid

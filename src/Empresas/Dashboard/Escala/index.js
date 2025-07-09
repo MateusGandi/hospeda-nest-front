@@ -38,7 +38,7 @@ const WorkSchedule = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(0);
-  const [opened, setOpened] = useState(true);
+  const [opened, setOpened] = useState(false);
   const tabs = [
     { icon: <WorkIcon />, label: "Escala Semanal" },
     { icon: <LunchDiningIcon />, label: "Horário de Almoço" },
@@ -364,6 +364,7 @@ const WorkSchedule = ({
               <>
                 <MenuSuspenso
                   open={opened}
+                  fixedButton={false}
                   setOpen={setOpened}
                   icon={<LightbulbIcon />}
                   title="Personalizar escala"

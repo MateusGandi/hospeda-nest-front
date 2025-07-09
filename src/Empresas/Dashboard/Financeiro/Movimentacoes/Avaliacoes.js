@@ -8,11 +8,13 @@ import {
   Container,
   Paper,
   Grid2 as Grid,
+  CircularProgress,
 } from "@mui/material";
 import apiService from "../../../../Componentes/Api/axios";
 import { getLocalItem, isMobile } from "../../../../Componentes/Funcoes";
 import { useNavigate } from "react-router-dom";
 import Icon from "../../../../Assets/Emojis";
+import { LoadingBox } from "../../../../Componentes/Custom";
 
 const ReviewBarbershop = ({ barbearia, alertCustom }) => {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
   const [formState, setFormState] = useState({ rating: 0, comment: "" });
   const [page, setPage] = useState(1);
   const [has, setHas] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const carregarAvaliacoes = async () => {
     setLoading(true);
@@ -33,7 +35,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
       if (!depoimentos.length) {
         setHas(false);
         setLoading(false);
-        alertCustom("Sem mais comentários");
+        return alertCustom("Sem mais comentários");
       }
       page === 1 && setHas(true);
       setAvaliacoes(depoimentos || []);
@@ -49,25 +51,14 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
     carregarAvaliacoes();
   }, [page]);
 
-  const handleChange = (field, value) => {
-    setFormState((prev) => ({ ...prev, [field]: value }));
-  };
-
   return (
     <Box sx={{ p: 2 }}>
       <Grid container spacing={2}>
-        <Grid size={12}>
-          {" "}
-          <Typography variant="h6" sx={{ m: "10px 15px", color: "#fff" }}>
-            Média das Avaliações
-          </Typography>
-        </Grid>
-        <Grid size={{ xs: 12, md: 5 }}>
-          <Box sx={{ display: "flex", alignItems: "center", m: 1 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <Rating value={media} readOnly precision={0.1} />
             <Typography sx={{ ml: 1 }}>{media.toFixed(1)} / 5</Typography>
           </Box>
-
           {avaliacoes.length ? (
             avaliacoes.map(({ usuario, descricao, nota }, index) => (
               <Paper
@@ -75,22 +66,28 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
                 elevation={0}
                 sx={{ p: 1, background: "transparent" }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "start", mb: 1 }}>
                   <Avatar
                     src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
                     alt={usuario.nome}
                     sx={{ mr: 2 }}
                   />
                   <Box>
-                    <Typography fontWeight="bold">{usuario.nome}</Typography>
-                    <Rating value={nota} readOnly size="small" />
-                  </Box>
-                </Box>
-                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                    <Typography>{usuario.nome}</Typography>
+                    <Rating value={nota} readOnly size="small" />{" "}
+                  </Box>{" "}
+                </Box>{" "}
+                <Typography
+                  variant="body2"
+                  sx={{ whiteSpace: "pre-wrap", mt: -1.5, mb: 1 }}
+                  color="textSecondary"
+                >
                   {descricao}
                 </Typography>
               </Paper>
             ))
+          ) : loading ? (
+            <LoadingBox message={"Carregando..."} />
           ) : (
             <Typography
               className="show-box"
@@ -102,7 +99,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
               </Typography>
               Em breve seus novos clientes deixarão suas opiniões!
             </Typography>
-          )}
+          )}{" "}
           <Box sx={{ width: "100%", textAlign: "center", p: 1 }}>
             {has ? (
               <Button
@@ -128,8 +125,8 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Box className={isMobile ? "" : "show-box"}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Box component={Paper} className={isMobile ? "" : "show-box"}>
             <Typography variant="h6" gutterBottom>
               <Icon>🔍</Icon> O poder de uma boa avaliação!
             </Typography>

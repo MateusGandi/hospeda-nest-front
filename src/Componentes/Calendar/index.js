@@ -7,27 +7,26 @@ import {
   Grid2 as Grid,
   Box,
 } from "@mui/material";
-import { format, addMonths, subMonths, isSameDay } from "date-fns";
+import { format, addMonths, subMonths, isToday, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { toUTC } from "../Funcoes";
 
 const Calendario = ({ onSelect, all = false, data = null }) => {
   const [mesAtual, setMesAtual] = useState(new Date());
   const [dataSelecionada, setDataSelecionada] = useState(null);
 
-  useEffect(() => {
-    setDataSelecionada(new Date(data));
-  }, [data]);
+  useEffect(() => setDataSelecionada(data), [data]);
 
   const intervaloDesabilitadoInicio = new Date(2024, 9, 10);
   const intervaloDesabilitadoFim = new Date(2024, 9, 15);
 
-  const isDataDesabilitada = (data) => {
+  const isDataDesabilitada = (info) => {
     if (all) return false;
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    const dataSemHorario = new Date(data);
+    const dataSemHorario = new Date(info);
     dataSemHorario.setHours(0, 0, 0, 0);
 
     return (
@@ -64,8 +63,16 @@ const Calendario = ({ onSelect, all = false, data = null }) => {
         </Grid>
       );
     }
+    const isSelectedDay = (ds, d) => toUTC(d, true) == toUTC(ds, true);
+
     for (let dia = 1; dia <= diasNoMes; dia++) {
-      const data = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), dia);
+      const mes = ("00" + (mesAtual.getMonth() + 1)).slice(-2);
+      const ano = mesAtual.getFullYear();
+
+      const data = parse([dia, mes, ano].join("/"), "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
+      }).toISOString();
+
       dias.push(
         <Grid
           size={{ xs: 12 / 7 }}
@@ -79,17 +86,19 @@ const Calendario = ({ onSelect, all = false, data = null }) => {
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              bgcolor: isSameDay(data, dataSelecionada)
+              bgcolor: isSelectedDay(data, dataSelecionada)
                 ? "primary.main"
                 : isDataDesabilitada(data)
                 ? "grey.300"
+                : isToday(data)
+                ? "grey.900"
                 : "inherit",
-              color: isSameDay(data, dataSelecionada) ? "white" : "inherit",
+              color: isSelectedDay(data, dataSelecionada) ? "white" : "inherit",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               "&:hover": {
-                bgcolor: isSameDay(data, dataSelecionada)
+                bgcolor: isSelectedDay(data, dataSelecionada)
                   ? "primary.dark"
                   : isDataDesabilitada(data)
                   ? "grey.300"

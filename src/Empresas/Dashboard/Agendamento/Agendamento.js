@@ -8,7 +8,7 @@ import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 import Icon from "../../../Assets/Emojis";
 
-const Agendamento = ({ setError, form, setForm, alertCustom }) => {
+const Agendamento = ({ form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
   const [data, setData] = useState({ horario: null, dia: new Date() });
@@ -37,7 +37,6 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
       return info;
     } catch (error) {
       console.error("Erro ao buscar vagas:", error.response.data);
-      //setError("Não há vagas disponíveis");
       alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
       return [];
     } finally {
@@ -47,12 +46,12 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (data.dia) {
-        const ids = form.servicos?.map(({ id }) => id).join(",");
+      if (data.dia && form.barbeiro.id && form.servicos?.length) {
+        const ids = form.servicos.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro?.id,
+          form.barbeiro.id,
           ids,
-          data.dia.toISOString().split("T")[0]
+          data.dia.split("T")[0]
         );
 
         setVagasDisponiveis(resp.map((item) => formatarData(item)));
@@ -66,17 +65,18 @@ const Agendamento = ({ setError, form, setForm, alertCustom }) => {
     };
 
     buscar().then(() => setModal((prev) => ({ ...prev, open: false })));
-  }, [data.dia]); // Adicionado data.dia e data.horario como dependências
+  }, [data.dia]);
 
   useEffect(() => {
     const fetch = async () => {
-      const ids = form.servicos?.map(({ id }) => id).join(",");
+      const ids = form.servicos.map(({ id }) => id).join(",");
       const dataAtual = new Date().toISOString().split("T")[0];
       const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
-    fetch();
-  }, []);
+    console.log(form);
+    form.servicos?.length && fetch();
+  }, [form.servicos]);
 
   const handleSelect = (item) => {
     setForm((prev) => ({ ...prev, agendamento: item }));
