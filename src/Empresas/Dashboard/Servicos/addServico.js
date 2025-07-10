@@ -61,6 +61,7 @@ const Servico = ({
 
   const handleSave = async () => {
     try {
+      console.log(formData);
       let servicosAtualizados;
       if (formData) {
         servicosAtualizados = [
@@ -69,7 +70,10 @@ const Servico = ({
         ];
       } else {
         servicosAtualizados = [
-          ...servicos.map((item) => ({ ...item, barbeariaId: barbearia.id })),
+          ...servicos.map(({ foto, ...item }) => ({
+            ...item,
+            barbeariaId: barbearia.id,
+          })),
           {
             ...data,
             barbeariaId: barbearia.id,
@@ -78,6 +82,7 @@ const Servico = ({
           },
         ];
       }
+      console.log(servicosAtualizados);
       if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
         return alertCustom("Horário no formato inválido");
 
