@@ -6,19 +6,25 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   const [funcionarios, setFuncionarios] = useState([]);
 
   useEffect(() => {
-    try {
-      if (
-        !form.barbearia?.funcionarios ||
-        !form.barbearia?.funcionarios.length
-      ) {
-        setFuncionarios([]);
-        return;
+    const handler = () => {
+      console.log("Form barbeira:", form.barbearia);
+      try {
+        if (form.barbearia && !form.barbearia.funcionarios.length) {
+          console.log("Nenhum funcionário encontrado");
+          setFuncionarios([]);
+          return;
+        } else {
+          console.log(
+            "Formatando funcionários:",
+            format(form.barbearia.funcionarios, "barbeiros")
+          );
+          setFuncionarios(format(form.barbearia.funcionarios, "barbeiros"));
+        }
+      } catch (error) {
+        setError("Não há funcionários disponíveis");
       }
-      setFuncionarios(format(form.barbearia?.funcionarios, "barbeiros"));
-    } catch (error) {
-      console.log("Erro ao formatar funcionários:", error);
-      setError("Não há funcionários disponíveis");
-    }
+    };
+    form.barbearia && handler();
   }, [form.barbearia]);
 
   const handleSelect = (item) => {

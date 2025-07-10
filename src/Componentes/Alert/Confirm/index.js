@@ -25,7 +25,7 @@ const Confirm = ({
       }
       type="alert"
       maxWidth="xs"
-      buttonStyle={{ width: "47%" }}
+      buttonStyle={{ width: "47%", margin: "0 1%" }}
       buttons={[
         {
           titulo: "Cancelar",

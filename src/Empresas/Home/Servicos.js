@@ -6,11 +6,16 @@ const Servicos = ({ setError, format, form, setForm, alertCustom }) => {
   const [servicos, setServicos] = useState([]);
 
   useEffect(() => {
-    try {
-      setServicos(format(form.barbeiro.servicosPrestados, "servicos"));
-    } catch (error) {
-      setError("Não há serviços disponíveis");
-    }
+    const handler = () => {
+      try {
+        console.log("Form barbeiro:", form.barbeiro);
+        setServicos(format(form.barbeiro.servicosPrestados, "servicos"));
+      } catch (error) {
+        console.log("Erro ao formatar serviços:", error);
+        setError("Não há serviços disponíveis");
+      }
+    };
+    if (form.barbeiro) handler();
   }, [form.barbeiro]);
 
   const handleSelect = (item) => {

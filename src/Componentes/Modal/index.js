@@ -92,11 +92,7 @@ const Modal = ({
         sx: {
           ...sx,
           borderRadius:
-            ["form", "view"].includes(component) ||
-            full[fullScreen]?.xs ||
-            full[fullScreen]?.md
-              ? 0
-              : "10px",
+            ["form", "view"].includes(component) && isMobile ? 0 : "10px",
 
           position: "relative",
         },

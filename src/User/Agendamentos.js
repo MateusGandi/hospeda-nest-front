@@ -185,7 +185,6 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
           sx={{ mt: 2 }}
           fullWidth
           placeholder="Informe o motivo do cancelamento"
-          label="Motivo"
           multiline
           minRows={4}
           value={motivoCancelamento}
@@ -336,6 +335,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
 
       {modal.agendamento && (
         <Modal
+          component="view"
           open={modal.open}
           onClose={handleClose}
           titulo={`${format(
