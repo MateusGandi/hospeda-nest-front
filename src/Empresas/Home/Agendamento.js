@@ -15,7 +15,10 @@ import Modal from "../../Componentes/Modal";
 const Servicos = ({ setError, form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
-  const [data, setData] = useState({ horario: null, dia: new Date() });
+  const [data, setData] = useState({
+    horario: null,
+    dia: new Date().toISOString(),
+  });
 
   const [loading, setLoading] = useState(false);
 

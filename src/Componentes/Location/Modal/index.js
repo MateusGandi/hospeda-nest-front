@@ -114,7 +114,7 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
       maxWidth="xs"
       buttons={[
         {
-          titulo: "Minha localização",
+          titulo: "Minha Atual",
           variant: "contained",
           color: "primary",
           action: handleUseCurrentLocation,
@@ -127,19 +127,21 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
         },
       ]}
       buttonStyle={{
-        width: { md: "47%", xs: "100%" },
+        width: { md: "48%", xs: "100%" },
         mr: { md: "1%", xs: 0 },
       }}
       loading={loading.currentLocation || loading.addressLocation}
     >
       <Stack spacing={1} sx={{ width: "100%", textAlign: "center" }}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Sua localização
+          Qual Sua localização?
         </Typography>
 
         <Typography variant="body1" sx={{ pb: 4 }}>
-          Ajude seus clientes a encontrarem você! Qual localização você deseja
-          usar?
+          Ajude seus clientes a encontrarem você!{" "}
+          <Typography variant="body1">
+            Qual localização você deseja usar para a sua barbearia?
+          </Typography>
         </Typography>
       </Stack>
     </Modal>

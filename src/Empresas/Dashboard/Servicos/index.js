@@ -70,14 +70,16 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     });
   };
 
-  const handleSave = async (apenasSalvar = false) => {
+  const handleSave = async (dados = []) => {
+    const apenasSalvar = dados.length > 0;
     try {
-      const servicosAtualizados = servicos
+      const servicosAtualizados = [...dados, ...servicos]
         .filter((item) => (!!item.flag && item.id) || !item.id)
         .map(({ flagUpdate, ...item }) => ({
           ...item,
           barbeariaId: barbearia.id,
         }));
+
       if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
         return alertCustom("Horário no formato inválido");
 
@@ -92,7 +94,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
         await Api.query("POST", `/service`, servicosAtualizados);
 
       await fetchServicos();
-      !apenasSalvar && alertCustom("Serviços atualizados atualizada!");
+      !apenasSalvar && alertCustom("Serviços atualizados com sucesso!");
     } catch (error) {
       !apenasSalvar && alertCustom("Erro ao cadastrar serviços!");
     }
@@ -102,8 +104,12 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
       const data = await Api.query("GET", `/service`);
-      setServicos(data.map(({ id, ...item }) => ({ ...item, flag: true })));
-      handleSave(false);
+      if (data.length == 0) {
+        setOpenAlertModal(false);
+        return alertCustom("Nenhum serviço pré-definido encontrado!");
+      }
+
+      handleSave(data.map(({ id, ...item }) => ({ ...item, flag: true })));
       setOpenAlertModal(false);
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
@@ -116,6 +122,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     try {
       const data = await Api.query("GET", `/service/${barbearia.id}`);
       setServicos(data);
+      console.log("Serviços encontrados:", data);
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
@@ -253,7 +260,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
       <Confirm
         open={openAlertModal}
         onClose={() => setOpenAlertModal(false)}
-        onAction={handleSavePreServices}
+        onConfirm={handleSavePreServices}
         title={"Começar com pré-definidos"}
         message="Gostaria de usar e editar serviços pré-definidos?"
       />

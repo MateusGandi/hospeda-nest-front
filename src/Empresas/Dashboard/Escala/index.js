@@ -16,6 +16,7 @@ import {
   formatTime,
   getLocalItem,
   isMobile,
+  toUTC,
 } from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
 import EditableTable from "../../../Componentes/Table";
@@ -210,9 +211,9 @@ const WorkSchedule = ({
       headerName: "Início",
       editable: true,
       type: "text",
-      placeholder: "DD/MM/YYYY",
+      placeholder: "DD/MM/YYYY HH:MM",
       width: 120,
-      format: (i, f, v, va) => formatTime(v, va),
+      format: (i, f, v, va) => toUTC(v),
     },
     {
       field: "fim",
@@ -221,7 +222,7 @@ const WorkSchedule = ({
       type: "text",
       placeholder: "DD/MM/YYYY",
       width: 120,
-      format: (i, f, v, va) => formatTime(v, va),
+      format: (i, f, v, va) => toUTC(v),
     },
     {
       headerName: "Remover",
@@ -239,23 +240,60 @@ const WorkSchedule = ({
 
   useEffect(() => {
     const buscarEscala = async () => {
-      console.log(dados);
       await apiService
         .query(
           "GET",
-          `https://srv744360.hstgr.cloud/tonsus/api/user/work-schedule/${
+          `https://srv744360.hstgr.cloud/tonsus/api/user/setted-times/${
             dados?.id || getLocalItem("userId")
           }`
         )
-        .then((d) => console.log(d))
+        .then((d) => {
+          const escala = [...Array(7)].map((_, i) => {
+            const dia = d.escala?.find((item) => item.diaSemana === i);
+            return {
+              diaSemana: i,
+              day: [
+                "Domingo",
+                "Segunda-feira",
+                "Terça-feira",
+                "Quarta-feira",
+                "Quinta-feira",
+                "Sexta-feira",
+                "Sábado",
+              ][i],
+              horarioForaInicial: dia?.horarioInicio?.slice(0, 5) || "",
+              horarioForaFinal: dia?.horarioFim?.slice(0, 5) || "",
+              ativo: !!dia,
+            };
+          });
+          setWorkDays(escala);
+
+          if (d.almoco?.horaInicio && d.almoco?.horaFim) {
+            setLunchRows([
+              {
+                inicio: d.almoco.horaInicio.slice(0, 5),
+                fim: d.almoco.horaFim.slice(0, 5),
+              },
+            ]);
+          }
+
+          if (Array.isArray(d.ausencia)) {
+            setAbsences(
+              d.ausencia.map((a) => ({
+                motivo: a.motivo || "",
+                inicio: `${a.dia}T${a.horarioInicio}`,
+                fim: `${a.dia}T${a.horarioFim}`,
+              }))
+            );
+          }
+        })
+
         .catch((error) => {
           console.log(error);
           alertCustom("Erro ao buscar escala");
         });
     };
-    if (openModal) {
-      buscarEscala();
-    }
+    buscarEscala();
     setOpen(openModal);
   }, [openModal]);
 
