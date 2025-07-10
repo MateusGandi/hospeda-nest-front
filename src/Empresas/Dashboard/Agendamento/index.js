@@ -27,7 +27,7 @@ const AgendamentoManual = ({
     },
     {
       key: "servicos",
-      title: "Selecione um ou mais servicos",
+      title: "Selecione um ou mais serviços",
       item: "servicos",
     },
     {
@@ -37,7 +37,7 @@ const AgendamentoManual = ({
     },
     {
       key: "confirmacao",
-      title: "Agedamento confirmado!",
+      title: "Agendamento confirmado!",
       item: "confirmacao",
     },
     {

@@ -92,11 +92,7 @@ const Modal = ({
         sx: {
           ...sx,
           borderRadius:
-            ["form", "view"].includes(component) ||
-            full[fullScreen]?.xs ||
-            full[fullScreen]?.md
-              ? 0
-              : "10px",
+            ["form", "view"].includes(component) && isMobile ? 0 : "10px",
 
           position: "relative",
         },
@@ -144,8 +140,11 @@ const Modal = ({
             zIndex: 1,
           }}
         >
-          <LoadingImagePulse src={LogoIcon} />
-          {/* <CircularProgress /> */}
+          {component == "view" ? (
+            <LoadingImagePulse src={LogoIcon} />
+          ) : (
+            <CircularProgress />
+          )}
         </Container>
       ) : (
         <>
@@ -224,10 +223,7 @@ const Modal = ({
                         : { xs: 0, md: "0px 24px" },
                       background: "transparent",
                     }}
-                    elevation={{
-                      xs: ["view", "modal"].includes(component) ? 0 : 1,
-                      md: ["view", "modal"].includes(component) ? 0 : 1,
-                    }}
+                    elevation={["view", "modal"].includes(component) ? 0 : 1}
                   >
                     <Grid
                       container
@@ -375,10 +371,11 @@ const Modal = ({
                     variant={button.variant ? button.variant : "outlined"}
                     sx={{
                       ...buttonStyle,
-                      width: {
-                        xs: ["form", "view"].includes(component) || fullScreen,
-                        md: "auto",
-                      },
+                      ...((["form", "view"].includes(component) ||
+                        fullScreen) &&
+                      isMobile
+                        ? { width: "100%" }
+                        : {}),
                       order: { md: index, xs: index + 1 },
                     }}
                   >

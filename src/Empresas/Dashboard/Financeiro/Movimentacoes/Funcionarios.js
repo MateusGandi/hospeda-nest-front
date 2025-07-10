@@ -17,7 +17,7 @@ import {
 } from "../../../../Componentes/Funcoes";
 import { format, parseISO } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import CustomDateInput from "../../../../Componentes/Custom";
+import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
 import Modal from "../../../../Componentes/Modal";
 
 const ListaMovimentacoes = ({ buscar, alertCustom }) => {
@@ -209,7 +209,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                   alignItems: "center",
                 }}
               >
-                <CircularProgress />
+                <LoadingBox message={"Carregando..."} />
               </Box>
             ) : (
               <PaperList

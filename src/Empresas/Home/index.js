@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   FormControlLabel,
   Grid2 as Grid,
@@ -29,7 +30,7 @@ const Empresa = ({ alertCustom }) => {
     { key: "barbeiros", title: "Selecione um barbeiro", item: "barbeiro" },
     {
       key: "servicos",
-      title: "Selecione um ou mais servicos",
+      title: "Selecione um ou mais serviços",
       item: "servicos",
     },
     {
@@ -58,7 +59,7 @@ const Empresa = ({ alertCustom }) => {
   const [form, setForm] = useState({
     barbearia: null,
     barbeiro: null,
-    servicos: null,
+    servicos: [],
     agendamento: null,
   });
   const [page, setPage] = useState({
@@ -140,7 +141,7 @@ const Empresa = ({ alertCustom }) => {
           "GET",
           `/establishment/client/${barbeariaName}`
         );
-
+        setForm((prev) => ({ ...prev, barbearia: data }));
         setEmpresa(data);
       } catch (error) {
         console.error("Erro ao buscar empresa:", error);
@@ -190,6 +191,162 @@ const Empresa = ({ alertCustom }) => {
       }));
     }
   };
+  const views = {
+    not: (
+      <BarberPresentation
+        barbearia={empresa}
+        handleAction={handleNext}
+        handleActionText={"Escolher barbeiro"}
+      />
+    ),
+    barbeiros: (
+      <Funcioanarios
+        alertCustom={alertCustom}
+        form={form}
+        setForm={setForm}
+        format={formatarRows}
+        setError={alertCustom}
+      />
+    ),
+    servicos: (
+      <Servicos
+        alertCustom={alertCustom}
+        form={form}
+        setForm={setForm}
+        format={formatarRows}
+        setError={alertCustom}
+        setLoading={setLoading}
+      />
+    ),
+    agendamento: (
+      <Agendamento
+        alertCustom={alertCustom}
+        form={form}
+        setForm={setForm}
+        format={formatarRows}
+        setError={alertCustom}
+        setLoading={setLoading}
+      />
+    ),
+    confirmacao: (
+      <Grid
+        container
+        sx={{
+          height: "60vh",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <Grid size={{ md: 12, xs: 12 }}>
+          {" "}
+          <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
+            <span
+              style={{
+                background: "#EA7E11",
+                padding: "8px 16px",
+                borderRadius: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              {format(() => {
+                try {
+                  if (!form?.agendamento?.id) return new Date();
+                  const data = new Date(form?.agendamento?.id);
+                  data.setHours(data.getHours() + 3);
+                  return data;
+                } catch (error) {
+                  return new Date();
+                }
+              }, "dd/MM/yyyy' às 'HH:mm'h'")}
+            </span>
+          </Typography>{" "}
+        </Grid>
+        <Grid
+          size={{ md: 12, xs: 12 }}
+          className="show-box"
+          sx={{ textAlign: "start" }}
+        >
+          <Typography variant="h6">
+            🔔 Notificação
+            <Typography variant="body1">
+              {getLocalItem("flagWhatsapp")
+                ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
+                : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
+            </Typography>
+            <Typography variant="body1">
+              <b>Cancelamentos</b> só podem ocorrer com <b>1h</b> de
+              antecedência.
+            </Typography>
+          </Typography>
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <a
+            href={`https://www.google.com/maps?q=${form?.barbearia?.endereco}`}
+            target="_blank"
+          >
+            <Button
+              disableElevation
+              color="primary"
+              size="large"
+              variant="contained"
+              startIcon={<NavigationIcon />}
+            >
+              Ver Localização
+            </Button>
+          </a>
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Button
+            disableElevation
+            color="terciary"
+            size="large"
+            onClick={() => navigate("/home")}
+            startIcon={<ArrowBackIcon />}
+          >
+            Voltar a tela inicial
+          </Button>
+        </Grid>
+      </Grid>
+    ),
+    error: (
+      <Grid
+        container
+        sx={{
+          height: "60vh",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <Grid size={{ md: 12, xs: 12 }}>
+          {" "}
+          <Typography variant="h5">
+            Ocorreu um erro com o agendamento...
+            <Typography variant="body1" color="GrayText">
+              Tente novamente mais tarde!
+            </Typography>
+          </Typography>
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Button
+            disableElevation
+            variant="outlined"
+            size="large"
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              border: "1px solid #484848",
+            }}
+            onClick={() => navigate("/home")}
+          >
+            Voltar a tela inicial
+          </Button>
+        </Grid>
+      </Grid>
+    ),
+  };
   return (
     page.open && (
       <Modal
@@ -210,161 +367,16 @@ const Empresa = ({ alertCustom }) => {
       >
         <Grid container sx={{ display: "flex", justifyContent: "center" }}>
           <Grid size={{ xs: 12, md: !subPath ? 12 : 8 }}>
-            {!subPath && (
-              <BarberPresentation
-                barbearia={empresa}
-                handleAction={handleNext}
-                handleActionText={"Escolher barbeiro"}
-              />
-            )}
-
-            {subPath == "barbeiros" && (
-              <Funcioanarios
-                alertCustom={alertCustom}
-                form={form}
-                setForm={setForm}
-                format={formatarRows}
-                setError={alertCustom}
-              />
-            )}
-            {subPath == "servicos" && (
-              <Servicos
-                alertCustom={alertCustom}
-                form={form}
-                setForm={setForm}
-                format={formatarRows}
-                setError={alertCustom}
-                setLoading={setLoading}
-              />
-            )}
-            {subPath == "agendamento" && (
-              <Agendamento
-                alertCustom={alertCustom}
-                form={form}
-                setForm={setForm}
-                format={formatarRows}
-                setError={alertCustom}
-                setLoading={setLoading}
-              />
-            )}
-            {subPath == "confirmacao" && (
-              <Grid
-                container
+            {Object.keys(views).map((key) => (
+              <Box
                 sx={{
-                  height: "60vh",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  flexWrap: "wrap",
+                  width: "100%",
+                  display: key == (subPath || "not") ? "block" : "none",
                 }}
               >
-                <Grid size={{ md: 12, xs: 12 }}>
-                  {" "}
-                  <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
-                    <span
-                      style={{
-                        background: "#EA7E11",
-                        padding: "8px 16px",
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {format(() => {
-                        try {
-                          if (!form?.agendamento?.id) return new Date();
-                          const data = new Date(form?.agendamento?.id);
-                          data.setHours(data.getHours() + 3);
-                          return data;
-                        } catch (error) {
-                          return new Date();
-                        }
-                      }, "dd/MM/yyyy' às 'HH:mm'h'")}
-                    </span>
-                  </Typography>{" "}
-                </Grid>
-                <Grid
-                  size={{ md: 12, xs: 12 }}
-                  className="show-box"
-                  sx={{ textAlign: "start" }}
-                >
-                  <Typography variant="h6">
-                    🔔 Notificação
-                    <Typography variant="body1">
-                      {getLocalItem("flagWhatsapp")
-                        ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
-                        : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
-                    </Typography>
-                    <Typography variant="body1">
-                      <b>Cancelamentos</b> só podem ocorrer com <b>1h</b> de
-                      antecedência.
-                    </Typography>
-                  </Typography>
-                </Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <a
-                    href={`https://www.google.com/maps?q=${form?.barbearia.endereco}`}
-                    target="_blank"
-                  >
-                    <Button
-                      disableElevation
-                      color="primary"
-                      size="large"
-                      variant="contained"
-                      startIcon={<NavigationIcon />}
-                    >
-                      Ver Localização
-                    </Button>
-                  </a>
-                </Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <Button
-                    disableElevation
-                    color="terciary"
-                    size="large"
-                    onClick={() => navigate("/home")}
-                    startIcon={<ArrowBackIcon />}
-                  >
-                    Voltar a tela inicial
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
-            {subPath == "error" && (
-              <Grid
-                container
-                sx={{
-                  height: "60vh",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  flexWrap: "wrap",
-                }}
-              >
-                <Grid size={{ md: 12, xs: 12 }}>
-                  {" "}
-                  <Typography variant="h5">
-                    Ocorreu um erro com o agendamento...
-                    <Typography variant="body1" color="GrayText">
-                      Tente novamente mais tarde!
-                    </Typography>
-                  </Typography>
-                </Grid>
-                <Grid size={{ md: 12, xs: 12 }}>
-                  <Button
-                    disableElevation
-                    variant="outlined"
-                    size="large"
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      border: "1px solid #484848",
-                    }}
-                    onClick={() => navigate("/home")}
-                  >
-                    Voltar a tela inicial
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
+                {views[key]}
+              </Box>
+            ))}
           </Grid>
         </Grid>
       </Modal>

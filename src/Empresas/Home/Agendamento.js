@@ -15,7 +15,10 @@ import Modal from "../../Componentes/Modal";
 const Servicos = ({ setError, form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
-  const [data, setData] = useState({ horario: null, dia: new Date() });
+  const [data, setData] = useState({
+    horario: null,
+    dia: new Date().toISOString(),
+  });
 
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +26,6 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
     setModal({
       open: true,
       onClose: () => setModal((prev) => ({ ...prev, open: false })),
-      onAction: () => setModal((prev) => ({ ...prev, open: false })),
-      actionText: "Confirmar",
       maxWidth: "xs",
       titulo: "Selecione uma data específica",
       component: "modal",
@@ -43,7 +44,6 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
       return info;
     } catch (error) {
       console.error("Erro ao buscar vagas:", error);
-      //setError("Não há vagas disponíveis");
       alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
       return [];
     } finally {
@@ -53,10 +53,10 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (data.dia) {
-        const ids = form.servicos?.map(({ id }) => id).join(",");
+      if (data.dia && form.barbeiro.id) {
+        const ids = form.servicos.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
-          form.barbeiro?.id,
+          form.barbeiro.id,
           ids,
           data.dia.split("T")[0]
         );
@@ -71,18 +71,8 @@ const Servicos = ({ setError, form, setForm, alertCustom }) => {
       }
     };
 
-    if (form.servicos?.length) buscar();
-  }, [data.dia]); // Adicionado data.dia e data.horario como dependências
-
-  useEffect(() => {
-    const fetch = async () => {
-      const ids = form.servicos?.map(({ id }) => id).join(",");
-      const dataAtual = new Date().toISOString().split("T")[0];
-      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
-      setVagasDisponiveis(resp.map((item) => formatarData(item)));
-    };
-    fetch();
-  }, []);
+    if (form.servicos && form.servicos.length) buscar();
+  }, [data.dia, form.servicos]);
 
   const handleSelect = (item) => {
     setForm((prev) => ({ ...prev, agendamento: item }));

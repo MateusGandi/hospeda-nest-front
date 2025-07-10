@@ -54,7 +54,9 @@ const NavigationBar = () => {
   };
 
   useEffect(() => {
-    getLocalItem("accessType") == "client" && handleGetScheduling();
+    getLocalItem("accessType") == "client" &&
+      location.pathname.includes("/home") &&
+      handleGetScheduling();
   }, [location]);
 
   const actionsMap = {

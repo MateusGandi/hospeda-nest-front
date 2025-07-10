@@ -117,7 +117,11 @@ const CreateEstablishment = ({ alertCustom }) => {
           navigate("/login");
         });
       })
-      .catch((error) => alertCustom("Erro ao criar estabelecimento."));
+      .catch((error) =>
+        alertCustom(
+          error.response.data.message || "Erro ao criar estabelecimento."
+        )
+      );
 
     setLoading(false);
   };
