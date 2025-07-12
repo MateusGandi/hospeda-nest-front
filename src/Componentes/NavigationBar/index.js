@@ -25,6 +25,8 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
 
+import { googleLogout } from "@react-oauth/google";
+
 import LogoImage from "../../Assets/logo_aut.png";
 import FAQ from "../Termos";
 import apiService from "../Api/axios";
@@ -58,6 +60,13 @@ const NavigationBar = () => {
       location.pathname.includes("/home") &&
       handleGetScheduling();
   }, [location]);
+
+  const handleLogout = () => {
+    Cookies.remove("getPermission");
+    googleLogout();
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const actionsMap = {
     null: [
@@ -100,13 +109,9 @@ const NavigationBar = () => {
     employee: [
       {
         titulo: "Sair",
-        action: () => {
-          localStorage.clear();
-          navigate("/login");
-        },
+        action: handleLogout,
         route: "/logout",
         type: "text",
-
         icon: <LogoutIcon />,
       },
       {
@@ -161,14 +166,9 @@ const NavigationBar = () => {
       },
       {
         titulo: "Sair",
-        action: () => {
-          Cookies.remove("getPermission");
-          localStorage.clear();
-          navigate("/login");
-        },
+        action: handleLogout,
         route: "/logout",
         type: "text",
-
         icon: <LogoutIcon />,
       },
       {
@@ -188,14 +188,9 @@ const NavigationBar = () => {
       },
       {
         titulo: "Sair",
-        action: () => {
-          Cookies.remove("getPermission");
-          localStorage.clear();
-          navigate("/login");
-        },
+        action: handleLogout,
         route: "/logout",
         type: "text",
-
         icon: <LogoutIcon />,
       },
       {
@@ -221,13 +216,9 @@ const NavigationBar = () => {
     adm: [
       {
         titulo: "Sair",
-        action: () => {
-          localStorage.clear();
-          navigate("/login");
-        },
+        action: handleLogout,
         route: "/logout",
         type: "text",
-
         icon: <LogoutIcon />,
       },
       {

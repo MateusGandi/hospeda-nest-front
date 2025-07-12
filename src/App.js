@@ -81,6 +81,7 @@ function App() {
   const [paths] = useState([
     "/home",
     "/create",
+    "/complete",
     "/onboard/:planId?",
     "/login",
     "/change/:hash?",

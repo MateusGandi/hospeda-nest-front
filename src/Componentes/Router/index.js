@@ -34,6 +34,7 @@ export function RouteElement({ path, alertCustom }) {
           "/login",
           "/create",
           "/change",
+          "/complete",
           "/recover",
           "/home",
           "/faq",
@@ -55,6 +56,7 @@ export function RouteElement({ path, alertCustom }) {
     "/create": <Login page="create" alertCustom={alertCustom} />,
     "/recover": <Login page="recover" alertCustom={alertCustom} />,
     "/change": <Login page="change" alertCustom={alertCustom} />,
+    "/complete": <Login page="complete" alertCustom={alertCustom} />,
     "/home": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
     "/barbearia": <Empresa alertCustom={alertCustom} />,
@@ -88,8 +90,13 @@ export function RouteElement({ path, alertCustom }) {
   if (!pathF) {
     return <Navigate to="/login" />;
   } else {
-    !"login create recover change".includes(lastPath.split("/")[0]) &&
+    if (
+      !["/login", "/create", "/recover", "/change", "/complete"].some(
+        (rot) => rot == lastPath
+      )
+    ) {
       setLocalItem("lastRoute", lastPath);
+    }
     return (
       <Box
         sx={{

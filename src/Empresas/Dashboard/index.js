@@ -402,7 +402,8 @@ const BarberShopMenu = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    Object.values(barbearia?.location ?? {}).some((item) => !item) &&
+    getLocalItem("accessType") == "adm" &&
+      Object.values(barbearia?.location ?? {}).some((item) => !item) &&
       setModal((prev) => ({ ...prev, location: true }));
   }, [barbearia]);
 
