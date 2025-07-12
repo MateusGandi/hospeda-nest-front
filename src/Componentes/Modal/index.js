@@ -220,7 +220,7 @@ const Modal = ({
                       m: 0,
                       p: ["modal"].includes(component)
                         ? "10px 0"
-                        : { xs: 0, md: "0px 24px" },
+                        : { xs: "0 16px", md: "0px 24px" },
                       background: "transparent",
                     }}
                     elevation={["view", "modal"].includes(component) ? 0 : 1}
