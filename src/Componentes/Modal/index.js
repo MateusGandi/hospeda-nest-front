@@ -287,6 +287,8 @@ const Modal = ({
                                     sx={{
                                       background: "#fff",
                                       borderRadius: "50px",
+                                      display: "flex",
+                                      justifyContent: "center",
                                     }}
                                   >
                                     <GoogleLogin
