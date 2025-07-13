@@ -12,12 +12,24 @@ import Api from "../Componentes/Api/axios";
 import Banner from "../Assets/Login/tonsus_mosaico.png";
 
 import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
+import Complete from "./Complete";
 
 const LoginPage = ({ page, alertCustom }) => {
   const { hash } = useParams();
   const navigate = useNavigate();
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
+
+  const verifyAndRedirect = (dadosReceived, message) => {
+    const lastPath = getLocalItem("lastRoute") || "/home";
+    if (dadosReceived && dadosReceived.pendencia) {
+      alertCustom(dadosReceived.motivo);
+      navigate("/complete");
+    } else {
+      navigate(lastPath);
+      alertCustom(message || "Acesso concedido!");
+    }
+  };
 
   const handleLogin = async (token) => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
@@ -29,8 +41,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
-      alertCustom("Login realizado com sucesso!");
+      verifyAndRedirect(data, "Login realizado com sucesso!");
     } catch (error) {
       console.log(error);
       alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
@@ -48,13 +59,35 @@ const LoginPage = ({ page, alertCustom }) => {
         password: senha,
       });
       Api.setKey(data);
-      navigate("/login");
-      alertCustom("Senha atualizada com sucesso, faça login novamente!");
+
+      verifyAndRedirect(
+        data,
+        "Senha atualizada com sucesso, faça login novamente!"
+      );
     } catch (error) {
       console.log(error);
       alertCustom(
         error?.response?.data?.message ??
           "Erro ao atualizar senha, verifique os dados!"
+      );
+    } finally {
+      setInicialState((prev) => ({ ...prev, loadingButton: false }));
+    }
+  };
+
+  const handleUpdate = async () => {
+    setInicialState((prev) => ({ ...prev, loadingButton: true }));
+    try {
+      const { telefone, ...rest } = dados;
+
+      await Api.query("PATCH", `/user/${getLocalItem("userId")}`, {
+        telefone: telefone?.replace(/\D/g, ""),
+      });
+      verifyAndRedirect(null, "Dados atualizados com sucesso!");
+    } catch (error) {
+      alertCustom(
+        error?.response?.data?.message ??
+          "Erro ao recuperar conta, verifique os dados!"
       );
     } finally {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
@@ -93,8 +126,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      navigate(getLocalItem("lastRoute") ? getLocalItem("lastRoute") : "/home");
-      alertCustom("Conta criada com sucesso!");
+      verifyAndRedirect(data, "Conta criada com sucesso!");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -104,9 +136,11 @@ const LoginPage = ({ page, alertCustom }) => {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
     }
   };
+
   const handleClose = () => {
     navigate("/home");
   };
+
   const paginas = {
     login: {
       titulo: "Acesse sua conta",
@@ -140,6 +174,15 @@ const LoginPage = ({ page, alertCustom }) => {
       titulo: "Recupere sua conta",
       actionText: "Recuperar",
       componente: "recover",
+      backAction: {
+        titulo: "Voltar",
+        action: handleClose,
+      },
+    },
+    complete: {
+      titulo: "Complete seu cadastro",
+      actionText: "Atualizar",
+      componente: "complete",
       backAction: {
         titulo: "Voltar",
         action: handleClose,
@@ -200,6 +243,12 @@ const LoginPage = ({ page, alertCustom }) => {
       },
       { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
     ],
+    complete: [
+      {
+        campo: "telefone",
+        validacoes: "required, minLength(12), telefone",
+      },
+    ],
   };
 
   const submitForm = async (TOKEN) => {
@@ -219,6 +268,7 @@ const LoginPage = ({ page, alertCustom }) => {
         inicialState.componente == "login" && handleLogin();
         inicialState.componente == "recover" && handleRecover();
         inicialState.componente == "change" && handleChangePass();
+        inicialState.componente == "complete" && handleUpdate();
       });
     } catch (error) {
       alertCustom(error.message || "Erro ao submeter o formulário!");
@@ -235,16 +285,20 @@ const LoginPage = ({ page, alertCustom }) => {
         loadingButton={inicialState.loadingButton}
         componentName={inicialState.componente}
         onAction={submitForm}
-        buttons={[
-          {
-            type: "google",
-            text: google(inicialState.componente),
-            action: async ({ credential }) => {
-              await submitForm(credential);
-            },
-          },
-        ]}
-        sx={{ background: "#000", p: "0 16px" }}
+        buttons={
+          inicialState.componente == "complete"
+            ? []
+            : [
+                {
+                  type: "google",
+                  text: google(inicialState.componente),
+                  action: async ({ credential }) => {
+                    await submitForm(credential);
+                  },
+                },
+              ]
+        }
+        sx={{ background: "#000" }}
         buttonStyle={{ variant: "contained" }}
         maxWidth={"lg"}
         component="form"
@@ -285,6 +339,9 @@ const LoginPage = ({ page, alertCustom }) => {
           )}
           {inicialState.componente == "change" && (
             <ChangePassword dados={dados} setDados={setDados} />
+          )}
+          {inicialState.componente == "complete" && (
+            <Complete dados={dados} setDados={setDados} />
           )}
         </Grid>
       </Modal>

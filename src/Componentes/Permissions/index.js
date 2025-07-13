@@ -96,7 +96,7 @@ const Permissions = ({
 
   const onClose = (force) => {
     setModal({ open: false });
-    handleClose();
+    Permissions && handleClose();
     if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 
@@ -120,7 +120,7 @@ const Permissions = ({
       });
 
       await apiService.query(
-        "PUT",
+        "PATCH",
         `/user/${getLocalItem("userId")}`,
         objToSave
       );
@@ -136,7 +136,12 @@ const Permissions = ({
   };
 
   useEffect(() => {
-    if (type == "popup") {
+    if (
+      type == "popup" &&
+      ["/login", "/create", "/recover", "/change", "/complete"].every(
+        (rot) => window.location.pathname != rot
+      )
+    ) {
       const shouldPrompt =
         Cookies.get("getPermission") !== "false" &&
         getLocalItem("userId") &&
@@ -147,6 +152,8 @@ const Permissions = ({
       if (shouldPrompt) {
         setShowBottomPopup(true);
       }
+    } else {
+      setShowBottomPopup(false);
     }
   }, [location]);
 
@@ -259,6 +266,7 @@ const Permissions = ({
                 fullWidth
                 variant="contained"
                 color="secondary"
+                disableElevation
                 onClick={() => {
                   setShowBottomPopup(false);
                   acceptAll();

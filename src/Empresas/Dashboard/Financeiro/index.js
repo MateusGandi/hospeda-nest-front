@@ -132,6 +132,7 @@ const ModalRelatorio = ({ barbearia, alertCustom }) => {
         maxWidth="md"
         disablePadding={true}
         route="financeiro"
+        component="view"
       >
         <Grid
           container

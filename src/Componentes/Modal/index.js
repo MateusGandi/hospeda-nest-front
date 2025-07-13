@@ -92,7 +92,7 @@ const Modal = ({
         sx: {
           ...sx,
           borderRadius:
-            ["form", "view"].includes(component) && isMobile ? 0 : "10px",
+            ["form", "view"].includes(component) || isMobile ? 0 : "10px",
 
           position: "relative",
         },
@@ -154,7 +154,7 @@ const Modal = ({
               sx={{
                 height: "100%",
                 p: "0 !important",
-                borderRadius: { xs: 0, md: "18px" },
+                borderRadius: { xs: 0, md: "0" },
               }}
               onSubmit={(e) => {
                 e.preventDefault();
@@ -220,7 +220,7 @@ const Modal = ({
                       m: 0,
                       p: ["modal"].includes(component)
                         ? "10px 0"
-                        : { xs: 0, md: "0px 24px" },
+                        : { xs: "0 16px", md: "0px 24px" },
                       background: "transparent",
                     }}
                     elevation={["view", "modal"].includes(component) ? 0 : 1}
