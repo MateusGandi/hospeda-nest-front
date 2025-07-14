@@ -4,7 +4,7 @@ import { getLocalItem, setLocalItem } from "../Funcoes";
 class ApiService {
   constructor(baseURL) {
     this.api = axios.create({
-      baseURL: "http://localhost:3333", //"https://srv744360.hstgr.cloud/tonsus/api", //process.env.REACT_APP_BACK_TONSUS,
+      baseURL: "https://srv744360.hstgr.cloud/tonsus/api", //process.env.REACT_APP_BACK_TONSUS,
     });
   }
 
