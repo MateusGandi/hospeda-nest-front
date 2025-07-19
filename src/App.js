@@ -114,6 +114,8 @@ function App() {
       clearTimeout(timeoutId);
     }
 
+    console.log("mateus gayyyy teste");
+
     setTimeoutId(
       setTimeout(() => {
         setAlert((prev) => ({ ...prev, open: false }));
