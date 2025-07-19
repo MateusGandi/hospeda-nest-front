@@ -25,8 +25,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "reis23@discente.ufg.br"
+          git config --local user.name "konojoao"
       - name: Get commit info
         id: commit-info
         run: |
@@ -60,7 +60,7 @@ jobs:
               repo: context.repo.repo,
               title: `🚀 Deploy: ${{ steps.commit-info.outputs.commit-msg }}`,
               head: '${{ steps.create-branch.outputs.branch-name }}',
-              base: 'main',
+              base: 'develop',
               body: `## Deploy Automático 🤖
               
               **Commit Original:** ${{ steps.commit-info.outputs.commit-sha }}
