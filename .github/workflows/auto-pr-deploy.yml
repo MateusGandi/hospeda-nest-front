@@ -25,8 +25,8 @@ jobs:
 
       - name: Configure Git
         run: |
-            git config --local user.email "reis23@discente.ufg.br"
-            git config --local user.name "konojoao"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
       - name: Get commit info
         id: commit-info
         run: |
