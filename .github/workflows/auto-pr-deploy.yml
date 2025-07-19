@@ -60,7 +60,7 @@ jobs:
               repo: context.repo.repo,
               title: `🚀 Deploy: ${{ steps.commit-info.outputs.commit-msg }}`,
               head: '${{ steps.create-branch.outputs.branch-name }}',
-              base: 'develop',
+              base: 'main',
               body: `## Deploy Automático 🤖
               
               **Commit Original:** ${{ steps.commit-info.outputs.commit-sha }}
