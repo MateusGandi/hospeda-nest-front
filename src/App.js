@@ -114,7 +114,7 @@ function App() {
       clearTimeout(timeoutId);
     }
 
-    console.log("mateus gayyyyy testee");
+    console.log("mateus gayyyyyy testee");
 
     setTimeoutId(
       setTimeout(() => {
