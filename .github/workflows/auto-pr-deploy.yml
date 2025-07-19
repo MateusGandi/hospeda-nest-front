@@ -1,5 +1,5 @@
-# .github/workflows/auto-review-merge.yml
-name: Auto Review and Merge PR
+# .github/workflows/simple-auto-merge.yml
+name: Simple Auto Merge
 
 on:
   pull_request:
@@ -7,237 +7,83 @@ on:
     branches: [main]
 
 jobs:
-  auto-review-and-merge:
+  auto-merge:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
+          ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Get PR Info
-        id: pr-info
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr = context.payload.pull_request;
-            
-            return {
-              number: pr.number,
-              author: pr.user.login,
-              title: pr.title,
-              draft: pr.draft,
-              mergeable: pr.mergeable,
-              head_sha: pr.head.sha
-            };
-
-      - name: Add Labels to PR
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prData = ${{ steps.pr-info.outputs.result }};
-            
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prData.number,
-              labels: ['auto-review', 'pending-merge', 'vercel-deploy']
-            });
-
-      - name: Request Copilot Review
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prData = ${{ steps.pr-info.outputs.result }};
-            
-            // Adiciona comentário solicitando review do Copilot
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prData.number,
-              body: `## 🤖 Review Automático Iniciado
-              
-              @github-copilot review this PR focusing on:
-              - Build safety and breaking changes
-              - Security vulnerabilities
-              - Performance implications
-              - Code quality and best practices
-              
-              **Status:** ⏳ Aguardando review automático
-              **Next:** Auto-merge após aprovação dos checks
-              
-              ---
-              *PR por @${prData.author} será mergeado automaticamente pelo owner após aprovação.*`
-            });
-
-      - name: Wait for Initial Checks
+      - name: Configure Git as KonoJoao
         run: |
-          echo "Aguardando checks iniciais..."
-          sleep 30
+          git config --local user.email "konojoao@users.noreply.github.com"
+          git config --local user.name "KonoJoao"
 
-      - name: Check PR Status and Auto-Merge
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prData = ${{ steps.pr-info.outputs.result }};
+      - name: Get PR Info and Cherry-pick
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          PR_AUTHOR=${{ github.event.pull_request.user.login }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          
+          echo "Processing PR #$PR_NUMBER from $PR_AUTHOR"
+          
+          # Fetch PR branch
+          git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
+          
+          # Get commits from PR
+          COMMITS=$(git rev-list --reverse main..pr-$PR_NUMBER)
+          
+          # Cherry-pick each commit
+          for commit in $COMMITS; do
+            echo "Cherry-picking $commit"
+            git cherry-pick $commit --no-commit
             
-            // Aguarda um pouco mais para garantir que os checks rodaram
-            await new Promise(resolve => setTimeout(resolve, 30000));
+            # Get original commit message
+            ORIGINAL_MSG=$(git log -1 --pretty=format:"%s" $commit)
             
-            // Busca informações atualizadas do PR
-            const { data: pr } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prData.number
-            });
-            
-            console.log(`PR #${prData.number} - Status: ${pr.mergeable_state}`);
-            
-            // Verifica status dos checks
-            const { data: checks } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: pr.head.sha
-            });
-            
-            const { data: statuses } = await github.rest.repos.listCommitStatusesForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: pr.head.sha
-            });
-            
-            // Verifica se todos os checks passaram
-            const checksOk = checks.check_runs.length === 0 || 
-                           checks.check_runs.every(check => 
-                             check.status === 'completed' && 
-                             (check.conclusion === 'success' || check.conclusion === 'neutral')
-                           );
-            
-            const statusesOk = statuses.length === 0 || 
-                             statuses.every(status => status.state === 'success');
-            
-            console.log(`Checks OK: ${checksOk}, Statuses OK: ${statusesOk}`);
-            
-            // Condições para merge automático
-            const canMerge = !pr.draft && 
-                           pr.mergeable && 
-                           //checksOk && 
-                           //statusesOk &&
-                           pr.mergeable_state !== 'dirty';
-            
-            if (canMerge) {
-              // Atualiza o comentário
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prData.number,
-                body: `## ✅ Review Aprovado - Fazendo Merge
-                
-                **Checks:** ✅ Todos passaram
-                **Security:** ✅ Sem problemas detectados
-                **Merge:** 🚀 Em progresso...
-                
-                *Mergeando como ${context.repo.owner} para trigger do deploy.*`
-              });
-              
-              // Faz o merge squash
-              try {
-                const { data: mergeResult } = await github.rest.pulls.merge({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: prData.number,
-                  commit_title: `${pr.title} (#${prData.number})`,
-                  commit_message: `Merged by auto-review workflow\n\nOriginal author: @${prData.author}\nReviewed and approved automatically`,
-                  merge_method: 'squash'
-                });
-                
-                console.log(`✅ PR #${prData.number} mergeado com sucesso!`);
-                console.log(`Commit SHA: ${mergeResult.sha}`);
-                
-                // Comentário de sucesso
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prData.number,
-                  body: `## 🎉 Merge Concluído!
-                  
-                  ✅ **PR mergeado com sucesso**
-                  📝 **Commit:** \`${mergeResult.sha.substring(0, 7)}\`
-                  🚀 **Deploy:** Vercel deploy iniciado automaticamente
-                  
-                  Obrigado @${prData.author} pela contribuição!`
-                });
-                
-              } catch (error) {
-                console.error('Erro ao fazer merge:', error);
-                
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prData.number,
-                  body: `## ❌ Erro no Merge Automático
-                  
-                  Não foi possível fazer o merge automaticamente.
-                  **Erro:** ${error.message}
-                  
-                  Por favor, faça o merge manualmente ou verifique os conflitos.`
-                });
-              }
-              
-            } else {
-              console.log(`PR #${prData.number} não pode ser mergeado automaticamente`);
-              console.log(`Draft: ${pr.draft}, Mergeable: ${pr.mergeable}, State: ${pr.mergeable_state}`);
-              
-              let reason = [];
-              if (pr.draft) reason.push("É um draft");
-              if (!pr.mergeable) reason.push("Tem conflitos");
-              if (!checksOk) reason.push("Alguns checks falharam");
-              if (!statusesOk) reason.push("Alguns status checks falharam");
-              if (pr.mergeable_state === 'dirty') reason.push("Branch desatualizada");
-              
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prData.number,
-                body: `## ⏸️ Merge Automático Pausado
-                
-                **Motivo(s):**
-                ${reason.map(r => `- ${r}`).join('\n')}
-                
-                **Próximos passos:**
-                - Resolva os problemas acima
-                - O merge será tentado automaticamente quando os checks passarem
-                
-                Ou faça o merge manualmente quando estiver pronto.`
-              });
-            }
+            # Commit as KonoJoao with reference to original author
+            git commit -m "$ORIGINAL_MSG
 
-  # Job separado para reagir a mudanças no PR
-  handle-pr-updates:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'synchronize'
-    
-    steps:
-      - name: PR Updated - Restart Review Process
+          Co-authored-by: $PR_AUTHOR <$PR_AUTHOR@users.noreply.github.com>
+          Merged-by: KonoJoao (auto-merge)"
+          done
+          
+          # Push to main
+          git push origin main
+
+      - name: Close PR and Comment
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const pr = context.payload.pull_request;
             
+            // Fecha o PR
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              state: 'closed'
+            });
+            
+            // Adiciona comentário
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
-              body: `## 🔄 PR Atualizado
+              body: `## ✅ Merged automaticamente por @KonoJoao
               
-              Novos commits detectados. Reiniciando processo de review automático...
+              🎉 **Status:** Commits aplicados na branch main
+              👤 **Merged by:** KonoJoao
+              📝 **Original author:** @${pr.user.login}
+              🚀 **Deploy:** Vercel deploy iniciado automaticamente
               
-              @github-copilot please review the latest changes in this PR.`
+              Obrigado pela contribuição!`
             });
