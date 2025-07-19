@@ -127,7 +127,7 @@ const SearchBarWithFilters = ({
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   )}
-                  <SearchIcon fontSize="large" sx={{ color: "#626262" }} />
+                  <SearchIcon fontSize="medium" sx={{ color: "#fff", mr: 1 }} />
                 </>
               ),
               sx: {

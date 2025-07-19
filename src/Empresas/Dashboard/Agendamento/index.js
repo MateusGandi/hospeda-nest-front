@@ -10,15 +10,9 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
 import ClienteForm from "./Cliente";
-import { formatarHorario } from "../../../Componentes/Funcoes";
+import { formatarHorario, getLocalItem } from "../../../Componentes/Funcoes";
 
-const AgendamentoManual = ({
-  open,
-  onClose,
-  barbearia,
-  barbeiro,
-  alertCustom,
-}) => {
+const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   const paths = [
     {
       key: "cliente",
@@ -55,7 +49,9 @@ const AgendamentoManual = ({
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     barbearia: barbearia,
-    barbeiro: barbeiro,
+    barbeiro: barbearia.funcionarios.find(
+      (f) => f.id === getLocalItem("userId")
+    ),
     cliente: null,
     servicos: [],
     agendamento: null,
@@ -67,7 +63,9 @@ const AgendamentoManual = ({
       onClose();
       setForm({
         barbearia: barbearia,
-        barbeiro: barbeiro,
+        barbeiro: barbearia.funcionarios.find(
+          (f) => f.id === getLocalItem("userId")
+        ),
         cliente: null,
         servicos: null,
         agendamento: null,
@@ -84,7 +82,9 @@ const AgendamentoManual = ({
       services: form.servicos.map(({ id }) => id),
       userName: form.cliente.nome,
       userId: form.cliente.id,
-      barberId: barbeiro.id,
+      barberId: barbearia.funcionarios.find(
+        (f) => f.id === getLocalItem("userId")
+      ).id,
     });
   };
 
@@ -144,7 +144,9 @@ const AgendamentoManual = ({
         navigate("/dashboard");
         setForm({
           barbearia: barbearia,
-          barbeiro: barbeiro,
+          barbeiro: barbearia.funcionarios.find(
+            (f) => f.id === getLocalItem("userId")
+          ),
           cliente: null,
           servicos: null,
           agendamento: null,
@@ -310,7 +312,7 @@ const AgendamentoManual = ({
     page && (
       <Modal
         loading={loading}
-        open={open}
+        open={true}
         backAction={{
           action: !["confirmacao", "error"].includes(subPath)
             ? handleBack

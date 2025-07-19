@@ -13,14 +13,14 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import Api from "../Componentes/Api/axios";
-import { getLocalItem, isMobile, Saudacao } from "../Componentes/Funcoes";
+import Api from "../../Componentes/Api/axios";
+import { getLocalItem, isMobile, Saudacao } from "../../Componentes/Funcoes";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import Cookies from "js-cookie";
-import OptionsPopover from "../Componentes/Popover";
+import OptionsPopover from "../../Componentes/Popover";
 import { useNavigate } from "react-router-dom";
-import Permissions from "../Componentes/Permissions";
+import Permissions from "../../Componentes/Permissions";
 
 const ModalRelatorio = ({
   usuario,

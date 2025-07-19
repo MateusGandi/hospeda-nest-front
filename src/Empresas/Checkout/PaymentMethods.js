@@ -1,5 +1,5 @@
 import React from "react";
-import { Rows } from "../Lista/Rows";
+import { Rows } from "../../Componentes/Lista/Rows";
 
 const PaymentMethods = ({ value, onChange, itens }) => {
   return (

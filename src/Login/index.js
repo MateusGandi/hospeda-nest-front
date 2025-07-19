@@ -26,7 +26,7 @@ const LoginPage = ({ page, alertCustom }) => {
       alertCustom(dadosReceived.motivo);
       navigate("/complete");
     } else {
-      navigate(lastPath);
+      navigate(lastPath || "/home");
       alertCustom(message || "Acesso concedido!");
     }
   };

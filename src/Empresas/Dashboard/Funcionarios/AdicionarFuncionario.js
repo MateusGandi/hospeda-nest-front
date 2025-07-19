@@ -15,7 +15,7 @@ import WorkSchedule from "../Escala";
 const Funcionario = ({
   funcionario,
   funcionarios,
-  barbearia,
+  barbeariaId,
   open,
   onClose,
   servicos,
@@ -48,7 +48,7 @@ const Funcionario = ({
     const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
     const funcionariosFinais = [...semAtual, data];
 
-    await apiService.query("PATCH", `/establishment/${barbearia.id}`, {
+    await apiService.query("PATCH", `/establishment/${barbeariaId.id}`, {
       funcionarios: funcionariosFinais.map((item) => ({
         userId: item.id,
         servicesId: item.servicosPrestados.map((service) => service.id),

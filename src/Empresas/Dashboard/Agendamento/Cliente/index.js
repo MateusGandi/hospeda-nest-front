@@ -63,7 +63,7 @@ export default function ClienteSelecionar({ formaData, setFormData }) {
       <Box mt={5}>
         {option == 1 ? (
           <ClienteForm
-            formaData={formaData.cliente}
+            formaData={formaData?.cliente}
             setformaData={(item) =>
               setFormData((prev) => ({ ...prev, cliente: item }))
             }

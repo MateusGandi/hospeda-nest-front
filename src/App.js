@@ -12,9 +12,9 @@ import {
 import Alerta from "./Componentes/Alert/Temp";
 import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { RouteElement, Redirect } from "./Componentes/Router";
+import { RouteElement, Redirect } from "./Componentes/Router/Path";
 import Permissions from "./Componentes/Permissions";
-//mateu gay
+// mateus gayyy
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -97,6 +97,7 @@ function App() {
     "/checkout/:key?",
     "/review/:barbeariaId",
     "/faq/:title?",
+    "/envite/:establishmentId?/:token?",
   ]);
 
   const [alert, setAlert] = useState({
@@ -125,7 +126,7 @@ function App() {
       <Alerta alert={alert} setAlert={setAlert} />
       <CssBaseline />
       <BrowserRouter>
-        <NavigationBar logo="Tonsus App" />
+        <NavigationBar logo="Tonsus App" alertCustom={alertCustom} />
 
         <Permissions alertCustom={alertCustom} />
         <Routes>

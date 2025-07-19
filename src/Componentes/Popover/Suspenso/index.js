@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Box, IconButton, Paper, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const BoxEscalaSugestao = ({
+const BoxSuspenso = ({
   children,
   icon,
   title,
   open,
   setOpen,
   fixedButton = true,
+  button = false,
 }) => {
   return (
     <>
@@ -50,7 +51,9 @@ const BoxEscalaSugestao = ({
         onClick={() => setOpen(true)}
         sx={{
           position: "fixed",
-          display: { xs: "none", md: fixedButton ? "block" : "none" },
+          display: button
+            ? "block"
+            : { xs: "none", md: fixedButton ? "block" : "none" },
           bottom: 16,
           left: 16,
           zIndex: 9998,
@@ -62,4 +65,4 @@ const BoxEscalaSugestao = ({
   );
 };
 
-export default BoxEscalaSugestao;
+export default BoxSuspenso;

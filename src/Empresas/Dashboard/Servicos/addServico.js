@@ -15,7 +15,7 @@ const Servico = ({
   submitText,
   actionText,
   buttons,
-  barbearia,
+  barbeariaId,
   alertCustom,
 }) => {
   const [data, setData] = useState({
@@ -66,17 +66,17 @@ const Servico = ({
       if (formData) {
         servicosAtualizados = [
           ...servicos.filter((item) => item.id !== formData.id),
-          { ...data, barbeariaId: barbearia.id, preco: +data.preco },
+          { ...data, barbeariaId: barbeariaId, preco: +data.preco },
         ];
       } else {
         servicosAtualizados = [
           ...servicos.map(({ foto, ...item }) => ({
             ...item,
-            barbeariaId: barbearia.id,
+            barbeariaId: barbeariaId,
           })),
           {
             ...data,
-            barbeariaId: barbearia.id,
+            barbeariaId: barbeariaId,
             preco: +data.preco,
             disabled: true,
           },

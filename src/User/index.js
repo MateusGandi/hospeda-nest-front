@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Profile from "./Edit";
+import Profile from "./Perfil/Edit";
 import apiService from "../Componentes/Api/axios";
 import { getLocalItem, isMobile } from "../Componentes/Funcoes";
 import Modal from "../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import { Grid2 as Grid, Typography } from "@mui/material";
-import ListaAgendamentos from "./Agendamentos";
-import ModalRelatorio from "./Financeiro";
-import EditUserModal from "./Edit";
+import ListaAgendamentos from "./Perfil/Agendamentos";
+import ModalRelatorio from "./Perfil/Financeiro";
+import EditUserModal from "./Perfil/Edit";
 import Confirm from "../Componentes/Alert/Confirm";
-import EmojiNumber from "../Assets/Emojis/EmojiNumber";
 
 const Usuarios = ({ alertCustom }) => {
   const navigate = useNavigate();

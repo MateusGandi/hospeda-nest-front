@@ -28,6 +28,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
+import { useNavigate } from "react-router-dom";
 
 const WorkSchedule = ({
   type = "button",
@@ -37,6 +38,7 @@ const WorkSchedule = ({
   handleCloseModal,
   disabled,
 }) => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const [opened, setOpened] = useState(false);
@@ -313,7 +315,7 @@ const WorkSchedule = ({
 
       <Modal
         open={open}
-        onClose={handleCloseModal || (() => setOpen(false))}
+        onClose={handleCloseModal ? () => handleCloseModal : () => navigate(-1)}
         onAction={handleSave}
         actionText="Salvar"
         titulo="Configurar Escala de Trabalho"

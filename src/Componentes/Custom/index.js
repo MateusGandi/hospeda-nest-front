@@ -12,7 +12,7 @@ import { height, styled } from "@mui/system";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { format, isValid, parse, set } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import Calendario from "../Calendar";
+import Calendario from "../Calendar/Simple";
 import { formatDate } from "../Funcoes";
 import Modal from "../Modal";
 

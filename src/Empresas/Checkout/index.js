@@ -13,13 +13,13 @@ import PaymentMethods from "./PaymentMethods";
 import PixPayment from "./PixPayment";
 import CardPayment from "./CardPayment";
 import BoletoPayment from "./BoletoPayment";
-import Modal from "../Modal";
+import Modal from "../../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import PixIcon from "@mui/icons-material/Pix";
 import BarcodeIcon from "../../Assets/barcode.png";
 import CardIcon from "@mui/icons-material/CreditCard";
-import { PaperList } from "../Lista/Paper";
-import apiService from "../Api/axios";
+import { PaperList } from "../../Componentes/Lista/Paper";
+import apiService from "../../Componentes/Api/axios";
 import Confirmacao from "./Confirmacao";
 
 const Checkout = ({ alertCustom }) => {

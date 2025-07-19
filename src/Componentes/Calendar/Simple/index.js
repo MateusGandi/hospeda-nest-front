@@ -10,7 +10,7 @@ import {
 import { format, addMonths, subMonths, isToday, parse } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { toUTC } from "../Funcoes";
+import { toUTC } from "../../Funcoes";
 
 const Calendario = ({ onSelect, all = false, data = null }) => {
   const [mesAtual, setMesAtual] = useState(new Date());

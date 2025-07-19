@@ -16,7 +16,7 @@ import Icon from "../../../Assets/Emojis";
 import LogoTonsus from "../../../Assets/tonsus_logo.png";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
-const GestorSessoesWhatsApp = ({ barbearia, alertCustom }) => {
+const WhatsApp = ({ barbearia, alertCustom }) => {
   const [mensagensChat] = useState([
     { remetente: "cliente", texto: "Olá, bom dia." },
     {
@@ -197,4 +197,4 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
   );
 };
 
-export default GestorSessoesWhatsApp;
+export default WhatsApp;
