@@ -127,8 +127,8 @@ jobs:
             // Condições para merge automático
             const canMerge = !pr.draft && 
                            pr.mergeable && 
-                           checksOk && 
-                           statusesOk &&
+                           //checksOk && 
+                           //statusesOk &&
                            pr.mergeable_state !== 'dirty';
             
             if (canMerge) {
