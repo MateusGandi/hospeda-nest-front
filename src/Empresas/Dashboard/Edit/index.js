@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Grid2 as Grid, Switch, Typography } from "@mui/material";
+import { Grid2 as Grid, Switch, Typography } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatPhone, formatTime } from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
-import HorarioInput from "../../../Componentes/Horario/free";
-const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
-  const [formData, setFormData] = useState(initialData);
+
+const EditData = ({ open = true, onClose, barbearia, alertCustom, onSave }) => {
+  const [formData, setFormData] = useState(barbearia);
 
   useEffect(() => {
-    setFormData(initialData);
-  }, [initialData]);
+    setFormData(barbearia);
+  }, [barbearia]);
 
   const handleChange = (field) => (event) => {
     if (field === "telefone") {
@@ -28,24 +28,26 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
     }
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      if (
-        formData.horarioAbertura.lenght < 5 ||
-        formData.horarioFechamento.lenght < 5
-      ) {
-        return alertCustom("Preencha todos os campos corretamente");
-      }
-      onSave(formData);
+  const handleSave = async () => {
+    if (
+      formData.horarioAbertura.lenght < 5 ||
+      formData.horarioFechamento.lenght < 5
+    ) {
+      return alertCustom("Preencha todos os campos corretamente");
     }
+    onSave(formData);
   };
 
   const onChangeAndSave = async (aberto) => {
     try {
-      await Api.query("PATCH", `/establishment/${initialData.id}`, {
-        aberto: aberto,
-      });
+      await onSave(
+        {
+          aberto: aberto,
+        },
+        false
+      );
     } catch (error) {
+      console.error("Erro ao mudar status do estabelecimento:", error);
       alertCustom("Erro ao mudar status do estabelecimento");
     }
   };
@@ -54,7 +56,7 @@ const EditData = ({ open, handleClose, initialData, onSave, alertCustom }) => {
     <>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         titulo={"Atualizar dados"}
         onAction={handleSave}
         actionText={"Salvar"}

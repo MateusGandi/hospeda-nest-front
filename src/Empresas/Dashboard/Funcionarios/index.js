@@ -8,29 +8,27 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import { getLocalItem } from "../../../Componentes/Funcoes";
+import WorkSchedule from "../Escala";
 
-const GerenciarFuncionarios = ({
-  barbearia,
-  open,
-  handleClose,
-  alertCustom,
-  onSelect,
-}) => {
+const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
+  const navigate = useNavigate();
   const [modal, setModal] = useState({
     open: false,
     titulo: "Adicionar novo funcionário",
     funcionarioSelecionado: null,
     actionText: "Adicionar",
     loading: false,
+    barbeariaId: getLocalItem("establishmentId"),
+    funcionario: null,
+    escala: false,
   });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
   const handleDelete = async (item) => {
-    // await Api.query("DELETE", `/employees/${item.id}`);
     try {
       setModal((prev) => ({ ...prev, loading: true }));
-      await Api.query("PATCH", `/establishment/${barbearia.id}`, {
+      await Api.query("PATCH", `/establishment/${modal.barbeariaId}`, {
         funcionarios: funcionarios
           .filter((op) => op.id != item.id)
           .map((item) => ({
@@ -55,11 +53,13 @@ const GerenciarFuncionarios = ({
       titulo: "Adicionar novo funcionário",
       funcionarioSelecionado: null,
       actionText: "Adicionar",
+      barbeariaId: getLocalItem("establishmentId"),
+      funcionario: null,
+      escala: false,
     });
   };
 
   const handleSelect = (item) => {
-    onSelect(item);
     setModal({
       open: true,
       buttons: [
@@ -79,20 +79,27 @@ const GerenciarFuncionarios = ({
       titulo: `Editar dados de ${item.nome}`,
       funcionarioSelecionado: item,
       actionText: "Editar",
+      barbeariaId: getLocalItem("establishmentId"),
+      funcionario: item,
+      escala: false,
     });
   };
 
   const addFuncionario = () => {
     setModal({
       open: true,
+      barbeariaId: getLocalItem("establishmentId"),
       titulo: "Adicionar novo funcionário",
+      funcionario: null,
+      escala: false,
     });
   };
+
   const fetchFuncionarios = async () => {
     try {
       const { funcionarios } = await Api.query(
         "GET",
-        `/establishment?establishmentId=${barbearia.id}`
+        `/establishment?establishmentId=${modal.barbeariaId}`
       );
       setFuncionarios(
         funcionarios.map((item) => ({
@@ -110,10 +117,11 @@ const GerenciarFuncionarios = ({
       alertCustom("Erro ao buscar funcionários!");
     }
   };
+
   useEffect(() => {
     const fetchServicos = async () => {
       try {
-        const dados = await Api.query("GET", `/service/${barbearia.id}`);
+        const dados = await Api.query("GET", `/service/${modal.barbeariaId}`);
         setServicos(dados);
       } catch (e) {
         alertCustom("Erro ao buscar serviços!");
@@ -124,7 +132,7 @@ const GerenciarFuncionarios = ({
     Promise.all([fetchServicos(), fetchFuncionarios()]).finally(() => {
       setModal((prev) => ({ ...prev, loading: false }));
     });
-  }, [open]);
+  }, []);
 
   const handlePhotoUpload = async (e, userId) => {
     const file = e.target.files[0];
@@ -166,24 +174,22 @@ const GerenciarFuncionarios = ({
     <>
       <Modal
         loading={modal.loading}
-        open={open}
-        onClose={handleClose}
+        open={true}
+        onClose={onClose}
         titulo={"Gerenciar funcionários"}
         onAction={addFuncionario}
         actionText="Adicionar Funcionário"
         fullScreen="all"
         component="view"
       >
-        {" "}
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>
-            {" "}
             <Grid size={12}>
               <Typography variant="body1" className="show-box">
                 <Typography variant="h6">
                   <Icon>💡</Icon>Ajuda rápida
                 </Typography>
-                Clique sobre um funcionário para adicionar uma foto ou em{" "}
+                Clique sobre um funcionário para adicionar uma foto ou em
                 <b>EDITAR</b> para adicionar <b>SERVIÇOS</b> ao atendimento do
                 funcionário
               </Typography>
@@ -232,9 +238,18 @@ const GerenciarFuncionarios = ({
         titulo={modal.titulo}
         servicos={servicos}
         buttons={modal.buttons}
-        barbearia={barbearia}
+        barbeariaId={modal.barbeariaId}
         alertCustom={alertCustom}
         buscarDados={fetchFuncionarios}
+      />
+      <WorkSchedule
+        dados={modal.funcionario}
+        type="modal"
+        openModal={modal.escala}
+        alertCustom={alertCustom}
+        handleCloseModal={() =>
+          setModal((prev) => ({ ...prev, escala: false }))
+        }
       />
     </>
   );

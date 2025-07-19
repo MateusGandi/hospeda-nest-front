@@ -294,7 +294,7 @@ export const getStatus = (status) => {
   }
 };
 
-export function formatDataToString(dataString) {
+export function formatDataToString(dataISO, allow) {
   const meses = [
     "Janeiro",
     "Fevereiro",
@@ -310,8 +310,14 @@ export function formatDataToString(dataString) {
     "Dezembro",
   ];
 
-  const [dia, mes, ano] = dataString.split("/");
-  return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
+  const [ano, mes, dia] = dataISO.split("T")[0].split("-");
+  const temp = {
+    ano,
+    mes: meses[parseInt(mes, 10) - 1],
+    dia,
+  };
+  if (!allow) return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
+  return allow.map((item) => temp[item]).join(" de ");
 }
 
 export function gerarGradient(hex) {

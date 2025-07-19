@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Chip, Typography, Box, CircularProgress } from "@mui/material";
-import Modal from "../Componentes/Modal";
-import { Rows } from "../Componentes/Lista/Rows";
-import apiService from "../Componentes/Api/axios";
+import Modal from "../../Componentes/Modal";
+import { Rows } from "../../Componentes/Lista/Rows";
+import apiService from "../../Componentes/Api/axios";
 import { format } from "date-fns";
-import { PaperList } from "../Componentes/Lista/Paper";
-import { formatarHorario, isMobile } from "../Componentes/Funcoes";
-import ReviewBarbershopModal from "../Evaluation";
-import Filter from "../Componentes/Filter";
-import Confirm from "../Componentes/Alert/Confirm";
+import { PaperList } from "../../Componentes/Lista/Paper";
+import { formatarHorario, isMobile } from "../../Componentes/Funcoes";
+import ReviewBarbershopModal from "../../Evaluation";
+import Filter from "../../Componentes/Filter";
+import Confirm from "../../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
-import { CustomInput, LoadingBox } from "../Componentes/Custom";
-import Icon from "../Assets/Emojis";
+import { CustomInput, LoadingBox } from "../../Componentes/Custom";
+import Icon from "../../Assets/Emojis";
 
 const ListaAgendamentos = ({ alertCustom, usuario }) => {
   const navigate = useNavigate();

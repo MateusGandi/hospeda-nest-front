@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import LoadingImagePulse from "../Effects/loading";
 import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
@@ -56,17 +56,8 @@ const Modal = ({
   componentName = "",
   alignItems = "start",
 }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
-
-  // Atualiza o caminho anterior ao abrir a modal
-  useEffect(() => {
-    if (open) {
-      setPrevPath(location.pathname);
-      route && navigate(route);
-    }
-  }, [open]);
 
   // Fecha a modal se o usuário navegar para outra página manualmente
   useEffect(() => {
@@ -78,7 +69,6 @@ const Modal = ({
   // Garante que onClose também navega de volta quando necessário
   const handleClose = () => {
     onClose();
-    if (route) navigate(-1);
   };
 
   return (
@@ -91,9 +81,7 @@ const Modal = ({
       PaperProps={{
         sx: {
           ...sx,
-          borderRadius:
-            ["form", "view"].includes(component) || isMobile ? 0 : "10px",
-
+          borderRadius: full[fullScreen].sec ? 0 : "10px",
           position: "relative",
         },
       }}
@@ -282,21 +270,17 @@ const Modal = ({
                                       ou
                                     </Divider>
                                   </Grid>
-                                  <Grid
-                                    size={12}
-                                    sx={{
-                                      background: "#fff",
-                                      borderRadius: "50px",
-                                      display: "flex",
-                                      justifyContent: "center",
-                                    }}
-                                  >
+                                  <Grid size={12}>
                                     <GoogleLogin
+                                      width="100%"
+                                      disable
                                       size="large"
+                                      type="dark"
                                       shape="pill"
-                                      text={buttons[0]?.text}
+                                      text={buttons[0]?.text || "signin_with"}
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                       onError={(e) => buttons[0]?.action(e)}
+                                      buttonText="Login"
                                     />
                                   </Grid>
                                 </>

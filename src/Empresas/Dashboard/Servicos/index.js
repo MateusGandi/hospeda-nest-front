@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal";
 import { useNavigate } from "react-router-dom";
 import ServicoForm from "./addServico";
-import { Rows } from "../../../Componentes/Lista/Rows";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
+import { getLocalItem } from "../../../Componentes/Funcoes";
 
-const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
+const GerenciarServicos = ({ alertCustom, onClose }) => {
+  const navigate = useNavigate();
   const handleCancelEdit = () => {
     setModal({
       open: false,
@@ -24,13 +25,14 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
     servicoSelecionado: null,
     actionText: "Adicionar",
     loading: false,
+    barbeariaId: getLocalItem("establishmentId"),
   });
   const [servicos, setServicos] = useState([]);
   const [openAlertModal, setOpenAlertModal] = useState(false);
 
   const handleDelete = async (item) => {
     try {
-      await Api.query("DELETE", `/service/${item.id}/${barbearia.id}`);
+      await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
       setServicos(servicos.filter((op) => op.id != item.id));
       alertCustom("Serviço deletado com sucesso!");
     } catch (error) {
@@ -77,7 +79,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
         .filter((item) => (!!item.flag && item.id) || !item.id)
         .map(({ flagUpdate, ...item }) => ({
           ...item,
-          barbeariaId: barbearia.id,
+          barbeariaId: modal.barbeariaId,
         }));
 
       if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
@@ -120,7 +122,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   const fetchServicos = async () => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
-      const data = await Api.query("GET", `/service/${barbearia.id}`);
+      const data = await Api.query("GET", `/service/${modal.barbeariaId}`);
       setServicos(data);
       console.log("Serviços encontrados:", data);
       if (data && !data.length) {
@@ -133,8 +135,8 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   };
 
   useEffect(() => {
-    if (open && !modal.open) fetchServicos();
-  }, [open, modal.open]);
+    if (!modal.open) fetchServicos();
+  }, [modal.open]);
 
   const handlePhotoUpload = async (e, serviceId) => {
     const file = e.target.files[0];
@@ -177,8 +179,8 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
   return (
     <>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={true}
+        onClose={onClose}
         titulo={"Gerenciar serviços"}
         onAction={addItem}
         actionText="Novo Serviço"
@@ -198,7 +200,7 @@ const GerenciarServicos = ({ barbearia, open, handleClose, alertCustom }) => {
           }
           titulo={modal.titulo}
           buttons={modal.buttons}
-          barbearia={barbearia}
+          barbeariaId={modal.barbeariaId}
           servicos={servicos}
           alertCustom={alertCustom}
         />{" "}

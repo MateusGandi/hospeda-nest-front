@@ -12,12 +12,10 @@ import {
 } from "@mui/material";
 import apiService from "../../../../Componentes/Api/axios";
 import { getLocalItem, isMobile } from "../../../../Componentes/Funcoes";
-import { useNavigate } from "react-router-dom";
 import Icon from "../../../../Assets/Emojis";
 import { LoadingBox } from "../../../../Componentes/Custom";
 
 const ReviewBarbershop = ({ barbearia, alertCustom }) => {
-  const navigate = useNavigate();
   const [avaliacoes, setAvaliacoes] = useState([]);
   const [media, setMedia] = useState(0);
   const [formState, setFormState] = useState({ rating: 0, comment: "" });

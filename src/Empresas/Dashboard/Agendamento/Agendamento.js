@@ -3,7 +3,7 @@ import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { formatarData } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
-import Calendario from "../../../Componentes/Calendar";
+import Calendario from "../../../Componentes/Calendar/Simple";
 import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 import Icon from "../../../Assets/Emojis";
@@ -49,7 +49,7 @@ const Agendamento = ({ form, setForm, alertCustom }) => {
 
   useEffect(() => {
     const buscar = async () => {
-      if (data.dia && form.barbeiro.id && form.servicos?.length) {
+      if (data.dia && form.barbeiro?.id && form.servicos?.length) {
         const ids = form.servicos.map(({ id }) => id).join(",");
         const resp = await buscarVagas(
           form.barbeiro.id,

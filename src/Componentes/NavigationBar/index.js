@@ -25,12 +25,14 @@ import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
 
-import { googleLogout } from "@react-oauth/google";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 
 import LogoImage from "../../Assets/logo_aut.png";
-import FAQ from "../Termos";
 import apiService from "../Api/axios";
-const NavigationBar = () => {
+
+import FAQ from "../../Empresas/Termos";
+
+const NavigationBar = ({ alertCustom }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -262,8 +264,35 @@ const NavigationBar = () => {
     setActions(actionsMap[accessType]);
   }, [hasScheduling, location]);
 
+  const verifyAndRedirect = (dadosReceived, message) => {
+    if (dadosReceived && dadosReceived.pendencia) {
+      alertCustom(dadosReceived.motivo);
+      navigate("/complete");
+    } else {
+      alertCustom(message || "Acesso concedido!");
+    }
+  };
+  const handleLogin = async (token) => {
+    try {
+      const data = await apiService.query("POST", "/user/login", { token });
+      apiService.setKey(data);
+      verifyAndRedirect(data, "Login realizado com sucesso!");
+    } catch (error) {
+      console.log(error);
+      alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
+    }
+  };
+
   return (
     <>
+      <Box sx={{ display: "none" }}>
+        <GoogleLogin
+          useOneTap
+          onSuccess={({ credential }) => handleLogin(credential)}
+          onError={() => alertCustom("Erro ao realizar login com Google!")}
+          buttonText="Login"
+        />
+      </Box>
       <AppBar
         elevation={0}
         sx={{

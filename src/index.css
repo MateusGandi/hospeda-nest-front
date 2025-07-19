@@ -34,8 +34,8 @@ a {
 }
 
 .show-art {
-  padding: 4px 8px;
-  border-radius: 10px;
+  padding-right: 4px;
+  border-radius: 16px;
   margin-right: 5px;
   font-weight: 600;
 }
@@ -48,8 +48,8 @@ a {
 }
 
 .show-box {
-  border-radius: 10px;
-  border: 1px solid #484848;
+  border-radius: 16px;
+  border: 2px solid #3a3a3a;
   padding: 20px 15px;
 }
 
@@ -73,4 +73,30 @@ button {
 }
 .show-link:hover {
   text-decoration: underline !important;
+}
+
+.justify-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.justify-between-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap-reverse;
+}
+
+.justify-center-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap-reverse;
 }

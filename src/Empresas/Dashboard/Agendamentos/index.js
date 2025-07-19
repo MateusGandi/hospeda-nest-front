@@ -1,35 +1,32 @@
 import React, { use, useEffect, useState } from "react";
-import {
-  Button,
-  Chip,
-  Container,
-  Grid2 as Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import Modal from "../../../Componentes/Modal";
-import Api from "../../../Componentes/Api/axios";
-import { Rows } from "../../../Componentes/Lista/Rows";
-import Calendario from "../../../Componentes/Calendar";
+import { Chip, Grid2 as Grid, IconButton, Typography } from "@mui/material";
+
 import { format } from "date-fns";
 import {
   formatarHorario,
   formatDataToString,
-  formatTime,
   getLocalItem,
   getStatus,
-  isMobile,
   primeiraMaiuscula,
 } from "../../../Componentes/Funcoes";
+
+import Modal from "../../../Componentes/Modal";
+import Api from "../../../Componentes/Api/axios";
+import { Rows } from "../../../Componentes/Lista/Rows";
+import Calendario from "../../../Componentes/Calendar/Simple";
 import Reagendamento from "./Reschedule";
 import apiService from "../../../Componentes/Api/axios";
 import InsertInvitationRoundedIcon from "@mui/icons-material/InsertInvitationRounded";
 import Icon from "../../../Assets/Emojis";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import Filter from "../../../Componentes/Filter";
+import { useNavigate } from "react-router-dom";
 
-const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
-  const [dataSelecionada, setDataSelecionada] = useState(new Date());
+const Agendamentos = ({ alertCustom, onClose }) => {
+  const navigate = useNavigate();
+  const [dataSelecionada, setDataSelecionada] = useState(
+    new Date().toISOString()
+  );
   const [filterOptions] = useState({
     "": "Todos",
     PENDING: "Agendados",
@@ -57,7 +54,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
 
   const buscarAgendamentos = async () => {
     try {
-      const dataFormatted = dataSelecionada.toISOString().split("T")[0];
+      const dataFormatted = dataSelecionada.split("T")[0];
       const userId = getLocalItem("userId");
       const agendamentos = await apiService.query(
         "GET",
@@ -114,13 +111,12 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
               </span>
             </Typography>
           ),
-          //disabled: ["NOT_ATTEND"].includes(item.status),
           subtitulo: (
             <>
               <Typography variant="body2" sx={{ display: "flex", gap: 1 }}>
                 {format(
                   new Date(item.dataFinalizacao),
-                  "'Previsão para finalizar até ' HH:mm ' horas'"
+                  "'Previsão de finalização até ' HH:mm ' horas'"
                 )}
               </Typography>
             </>
@@ -181,8 +177,8 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   };
 
   useEffect(() => {
-    open && buscarAgendamentos();
-  }, [modalConteudo.filter, dataSelecionada, open]);
+    buscarAgendamentos();
+  }, [modalConteudo.filter, dataSelecionada]);
 
   const handleAction = async (acao) => {
     try {
@@ -207,8 +203,8 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
 
   return (
     <Modal
-      open={open}
-      onClose={handleClose}
+      open={true}
+      onClose={onClose}
       titulo="Agendamentos"
       fullScreen="all"
       maxWidth="sm"
@@ -224,9 +220,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
           }}
         >
           <Typography variant="h6">
-            <span>
-              {formatDataToString(dataSelecionada.toLocaleDateString())}
-            </span>
+            <span>{formatDataToString(dataSelecionada)}</span>
           </Typography>
           <span>
             <Filter
@@ -268,7 +262,6 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
                   dados: {
                     ...item,
                     dia: item.data,
-                    barbearia: barbearia,
                     servicos: item.servico,
                     barbeiro: { id: getLocalItem("userId") },
                   },
@@ -320,6 +313,7 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
             all={true}
             data={dataSelecionada}
             onSelect={(date) => {
+              console.log(date);
               setDataSelecionada(date);
               setModalConteudo((prev) => ({ ...prev, open: false }));
             }}
@@ -370,4 +364,4 @@ const AgendamentoManual = ({ open, handleClose, alertCustom, barbearia }) => {
   );
 };
 
-export default AgendamentoManual;
+export default Agendamentos;

@@ -8,7 +8,7 @@ import {
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { formatarData, getLocalItem } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
-import Calendario from "../../../Componentes/Calendar";
+import Calendario from "../../../Componentes/Calendar/Simple";
 import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 

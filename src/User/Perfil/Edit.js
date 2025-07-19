@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Grid2 as Grid, Typography, Box, Button } from "@mui/material";
-import Modal from "../Componentes/Modal";
-import { CustomInput } from "../Componentes/Custom";
-import apiService from "../Componentes/Api/axios";
-import { getLocalItem } from "../Componentes/Funcoes";
-import { formatPhone } from "../Componentes/Funcoes";
+import Modal from "../../Componentes/Modal";
+import { CustomInput } from "../../Componentes/Custom";
+import apiService from "../../Componentes/Api/axios";
+import { getLocalItem } from "../../Componentes/Funcoes";
+import { formatPhone } from "../../Componentes/Funcoes";
 
 const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
   const [formData, setFormData] = useState({

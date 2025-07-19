@@ -1,0 +1,112 @@
+import React, { useEffect, useState } from "react";
+import WeekCalendar from "../../Componentes/Calendar/Schedule";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import { Box, IconButton, Typography } from "@mui/material";
+import Icon from "../../Assets/Emojis";
+import Filter from "../../Componentes/Filter";
+import Search from "../../Componentes/Search";
+import { useNavigate } from "react-router-dom";
+
+export default function App({ alertCustom }) {
+  const navigate = useNavigate();
+  const [filterOptions] = useState({
+    "": "Todos",
+    PENDING: "Agendados",
+    NOT_ATTEND: "Não Compareci",
+    CANCELLED: "Cancelados",
+    OK: "Concluídos",
+  });
+  const [content, _setContent] = useState({
+    search: "",
+    filter: "",
+    filtred: [
+      {
+        id: "1",
+        title: "Reunião",
+        date: new Date(2025, 6, 22, 14, 10),
+        duration: 30,
+      },
+      {
+        id: "2",
+        title: "Treinamento",
+        date: new Date(2025, 6, 23, 15, 0),
+        duration: 45,
+      },
+    ],
+    eventos: [
+      {
+        id: "1",
+        title: "Reunião",
+        date: new Date(2025, 6, 22, 14, 10),
+        duration: 30,
+      },
+      {
+        id: "2",
+        title: "Treinamento",
+        date: new Date(2025, 6, 23, 15, 0),
+        duration: 45,
+      },
+    ],
+  });
+
+  const setContent = (newContent) => {
+    _setContent((prev) => ({ ...prev, ...newContent }));
+  };
+
+  return (
+    <>
+      <WeekCalendar
+        tools={
+          <Box className="justify-between" sx={{ gap: 1, mb: 2 }}>
+            <Filter
+              title="Filtrar por"
+              options={filterOptions}
+              filter={content.filter}
+              setFilter={(filter) => setContent({ filter })}
+            />{" "}
+            <Search
+              initial={content.eventos}
+              elements={content.filtred}
+              setElements={(elements) => setContent({ filtred: elements })}
+              label="Pesquisar eventos"
+              searchValue={content.search}
+              setSearchValue={(value) => setContent({ search: value })}
+            />
+          </Box>
+        }
+        events={content.filtred}
+        allowEventMove={true}
+        onEventClick={(ev) => alert(`Clicou em: ${ev.title}`)}
+        onEventMove={(updatedEvent) => {
+          setContent(
+            content.eventos.map((e) =>
+              e.id === updatedEvent.id ? updatedEvent : e
+            )
+          );
+          console.log("Evento movido:", updatedEvent);
+        }}
+        onWeekChange={(newDate) => {
+          console.log("Semana mudou para:", newDate);
+        }}
+        onCellClick={(day, hour, minute) => {
+          alert(`Clique na célula: dia ${day}, ${hour}:${minute}`);
+        }}
+      />
+
+      <Typography
+        variant="h6"
+        sx={{
+          width: "100%",
+          marginTop: "20vh",
+          alignContent: "center",
+        }}
+        className="show-box"
+      >
+        <Icon>🎯</Icon> Uffa!
+        <Typography variant="body1">
+          Sua agenda está vazia para este dia...
+        </Typography>
+      </Typography>
+    </>
+  );
+}
