@@ -176,7 +176,10 @@ const Dividas = () => {
         }}
       >
         {" "}
-        <Paper elevation={0} sx={{ p: 2, width: { xs: "100%", md: "300px" } }}>
+        <Paper
+          elevation={0}
+          sx={{ p: 2, width: { xs: "100%", md: "300px" }, background: "none" }}
+        >
           <Typography variant="body2">
             <Typography
               component="span"
@@ -196,18 +199,12 @@ const Dividas = () => {
             {`Total de ${contasMock.length} dívidas em aberto`}
           </Typography>
         </Paper>
-        <Button
-          variant="contained"
-          onClick={() => setOpen(true)}
-          disableElevation
-          endIcon={<ArrowForwardRoundedIcon />}
-        >
-          Ver Mais
-        </Button>
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <Rows
+          oneTapMode={true}
           items={contasMock.slice(0, 3).map((item) => ({
+            action: () => setOpen(true),
             icon: <DiscountRoundedIcon />,
             titulo: (
               <Typography
@@ -219,7 +216,6 @@ const Dividas = () => {
             ),
             subtitulo: `R$ ${item.valor.toFixed(2)}`,
           }))}
-          disabled={true}
         />
       </Grid>
 

@@ -62,6 +62,7 @@ const ModalPlanos = ({ alertCustom }) => {
     adm: "/dashboard",
     manager: "/manager",
     "": "/home",
+    employee: "/dashboard",
   };
   const navigate = useNavigate();
   const [modal, setModal] = useState({

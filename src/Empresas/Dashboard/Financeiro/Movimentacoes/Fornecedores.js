@@ -9,10 +9,9 @@ const FornecedoresInfo = () => {
         {" "}
         <Grid size={12}>
           {" "}
-          <Typography variant="h6" sx={{ m: "10px 15px", color: "#fff" }}>
+          <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
             Aguarde, estamos preparando uma nova ferramenta!
           </Typography>
-          <Divider />
         </Grid>
         {/* Imagem à esquerda */}
         <Grid

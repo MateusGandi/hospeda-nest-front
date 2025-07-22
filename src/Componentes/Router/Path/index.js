@@ -29,6 +29,9 @@ import AgendamentoManual from "../../../Empresas/Dashboard/Agendamento";
 import EditData from "../../../Empresas/Dashboard/Edit";
 import BarberShopMenu from "../../../Empresas/Dashboard";
 
+import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
+import LoadingImagePulse from "../../Effects/loading";
+
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +42,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     const fetchRoutesAllowed = async () => {
       try {
         const paths = await Api.getAccess();
-        setPathsAllowed([...paths, "/envite"]);
+        setPathsAllowed([...paths, "/envite", "/manager"]);
       } catch (error) {
         setPathsAllowed([
           "/login",
@@ -97,7 +100,9 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     fetch();
   }, []);
 
-  const handleClose = () => navigate(-1);
+  const handleClose = () => {
+    navigate(-1);
+  };
 
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
@@ -188,7 +193,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         height="100vh"
         sx={{ paddingTop: "50px" }}
       >
-        <CircularProgress />
+        <LoadingImagePulse src={LogoIcon} />
       </Box>
     );
   }

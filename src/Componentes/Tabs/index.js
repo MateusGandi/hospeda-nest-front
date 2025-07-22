@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Box, Paper, Grid2, Typography } from "@mui/material";
-import { isMobile } from "../Funcoes";
+import { isMobile, primeiraMaiuscula } from "../Funcoes";
 
 const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
   return (
@@ -17,24 +17,31 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
       >
         {tabs.map(({ label, id, icon }, index) => (
           <Tab
-            key={id}
+            key={id || index}
             label={
               <>
-                <Box sx={{ display: { xs: "none", lg: "block" }, px: 3 }}>
-                  {label}
-                </Box>
-                <Box sx={{ display: { xs: "block", lg: "none" }, px: 3 }}>
+                <Box
+                  variant="outlined"
+                  component={Paper}
+                  sx={{
+                    borderRadius: "50%",
+                    ...(selected == id || selected == index
+                      ? { background: "rgba(255, 255, 255, 0.5)" }
+                      : {}),
+                    width: "60px",
+                    height: "60px",
+                  }}
+                  className="justify-center"
+                >
                   {icon}
                 </Box>
+                <Box sx={{ px: 3, pt: 1 }}>{primeiraMaiuscula(label)}</Box>
               </>
             }
             color="terciary"
             sx={{
-              background: selected == id ? "#2A2A2A" : "none",
               color: "#fff !important",
-              border:
-                selected == id ? "1px solid #444444" : "1px solid transparent",
-              borderRadius: "10px 10px 0 0 !important",
+              borderRadius: "10px !important",
               px: 0,
               minWidth: "fit-content",
               borderBottom: "none !important",
@@ -46,7 +53,6 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
         ))}
       </Tabs>
       <Paper
-        variant="outlined"
         elevation={0}
         sx={{
           m: "0 4px",
@@ -59,7 +65,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
           background: "#2A2A2A",
         }}
       >
-        <Grid2 container spacing={1}>
+        <Grid2 container>
           {" "}
           <Grid2
             size={12}
@@ -71,7 +77,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
           >
             <Typography variant="h6">{tabs[selected]?.label}</Typography>
           </Grid2>
-          <Grid2 size={12}>
+          <Grid2 size={12} sx={{ mt: 2 }}>
             {" "}
             {views[selected] || (
               <Typography sx={{ p: 1, textAlign: "center" }}>

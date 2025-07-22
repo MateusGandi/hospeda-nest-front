@@ -224,7 +224,16 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
               Nenhum funcionário cadastrado
             </Typography>
           </Typography>
-        )}
+        )}{" "}
+        {/* <WorkSchedule
+          dados={modal.funcionario}
+          type="button"
+          openModal={modal.escala}
+          alertCustom={alertCustom}
+          handleCloseModal={() =>
+            setModal((prev) => ({ ...prev, escala: false }))
+          }
+        /> */}
       </Modal>
       <FuncionarioForm
         funcionarios={funcionarios}
@@ -241,15 +250,6 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
         barbeariaId={modal.barbeariaId}
         alertCustom={alertCustom}
         buscarDados={fetchFuncionarios}
-      />
-      <WorkSchedule
-        dados={modal.funcionario}
-        type="modal"
-        openModal={modal.escala}
-        alertCustom={alertCustom}
-        handleCloseModal={() =>
-          setModal((prev) => ({ ...prev, escala: false }))
-        }
       />
     </>
   );

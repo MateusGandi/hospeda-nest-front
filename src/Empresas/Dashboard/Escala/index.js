@@ -29,6 +29,7 @@ import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
 import { useNavigate } from "react-router-dom";
+import CustomTabs from "../../../Componentes/Tabs";
 
 const WorkSchedule = ({
   type = "button",
@@ -350,117 +351,66 @@ const WorkSchedule = ({
       >
         <Grid container spacing={2}>
           <Grid size={12}>
-            <Tabs
-              centered={isMobile}
-              value={tab}
-              onChange={(e, val) => setTab(val)}
-              sx={{
-                mb: 2,
-                mb: 2,
-                "& .MuiTab-root": {
-                  borderRadius: "0 !important",
-                  minHeight: 48,
-                  color: "text.secondary", // cor dos tabs não selecionados
-                },
-                "& .MuiTab-root.Mui-selected": {
-                  color: "#fff",
-                },
-                "& .MuiTabs-indicator": {
-                  backgroundColor: "secondary.main", // cor da linha indicador do tab ativo
-                },
-              }}
-            >
-              {tabs.map((item, index) => (
-                <Tab
-                  id={index}
-                  label={
-                    <>
-                      <Box sx={{ display: { xs: "block", md: "none" } }}>
-                        {item.icon}
-                      </Box>
-                      <Box sx={{ display: { xs: "none", md: "block" } }}>
-                        {item.label}
-                      </Box>
-                    </>
-                  }
-                  sx={{
-                    borderRadius: "0 !important",
-                    minHeight: 48,
-                    px: 3,
-                    minWidth: "fit-content",
-                  }}
-                />
-              ))}
-            </Tabs>
-          </Grid>{" "}
-          <Grid size={12}>
-            <Typography variant="h6" sx={{ textAlign: "center" }}>
-              {" "}
-              {tabs[tab].label}
-            </Typography>
-          </Grid>
-          <Grid size={12}>
-            {tab === 0 && (
-              <>
-                <MenuSuspenso
-                  open={opened}
-                  fixedButton={false}
-                  setOpen={setOpened}
-                  icon={<LightbulbIcon />}
-                  title="Personalizar escala"
-                >
-                  <Typography variant="body1">
-                    Use escalas predefinidas para facilitar a configuração.
-                  </Typography>
-                  <Stack
-                    direction={{ xs: "column", md: "row" }}
-                    spacing={1}
-                    sx={{ mt: 4, justifyContent: "center" }}
+            <CustomTabs
+              tabs={tabs}
+              onChange={(e) => setTab(e)}
+              selected={tab}
+              views={[
+                <>
+                  <MenuSuspenso
+                    open={opened}
+                    fixedButton={false}
+                    setOpen={setOpened}
+                    icon={<LightbulbIcon />}
+                    title="Personalizar escala"
                   >
-                    <Button
-                      variant="text"
-                      fullWidth
-                      disableElevation
-                      color="terciary"
-                      onClick={() => setOpened(false)}
+                    <Typography variant="body1">
+                      Use escalas predefinidas para facilitar a configuração.
+                    </Typography>
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={1}
+                      sx={{ mt: 4, justifyContent: "center" }}
                     >
-                      Continuar
-                    </Button>
-                    <Button
-                      disableElevation
-                      variant="contained"
-                      fullWidth
-                      onClick={setDefaultSchedule}
-                    >
-                      Aplicar escala 6x1
-                    </Button>
-                  </Stack>
-                </MenuSuspenso>
-                <SwipeIndicator>
-                  <EditableTable
-                    columns={scheduleColumns}
-                    rows={workDays}
-                    onChange={setWorkDays}
-                  />
-                </SwipeIndicator>
-              </>
-            )}
-
-            {tab === 1 && (
-              <EditableTable
-                columns={lunchColumns}
-                rows={lunchRows}
-                onChange={setLunchRows}
-              />
-            )}
-
-            {tab === 2 && (
-              <EditableTable
-                columns={absencesColumns}
-                rows={absences}
-                onChange={setAbsences}
-              />
-            )}
+                      <Button
+                        variant="text"
+                        fullWidth
+                        disableElevation
+                        color="terciary"
+                        onClick={() => setOpened(false)}
+                      >
+                        Continuar
+                      </Button>
+                      <Button
+                        disableElevation
+                        variant="contained"
+                        fullWidth
+                        onClick={setDefaultSchedule}
+                      >
+                        Aplicar escala 6x1
+                      </Button>
+                    </Stack>
+                  </MenuSuspenso>
+                  <SwipeIndicator>
+                    <EditableTable
+                      columns={scheduleColumns}
+                      rows={workDays}
+                      onChange={setWorkDays}
+                    />
+                  </SwipeIndicator>
+                </>,
+                <EditableTable
+                  columns={lunchColumns}
+                  rows={lunchRows}
+                  onChange={setLunchRows}
+                />,
+                <EditableTable
+                  columns={absencesColumns}
+                  rows={absences}
+                  onChange={setAbsences}
+                />,
+              ]}
+            />
           </Grid>
         </Grid>
       </Modal>

@@ -6,7 +6,10 @@ import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 export default function Sales() {
   return (
     <Box sx={{ p: 2, display: "flex" }}>
-      <img src={BannerImage} style={{ width: "300px", borderRadius: "10px" }} />
+      <img
+        src={BannerImage}
+        style={{ width: "300px", height: "300vh", borderRadius: "10px" }}
+      />
       <Typography variant="h4" fontWeight={600} sx={{ ml: 2 }}>
         Tonsus App
         <Typography variant="h6">
