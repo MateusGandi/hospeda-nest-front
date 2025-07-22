@@ -8,15 +8,16 @@ import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { getLocalItem } from "../../../Componentes/Funcoes";
+import apiService from "../../../Componentes/Api/axios";
 
 const GerenciarServicos = ({ alertCustom, onClose }) => {
-  const navigate = useNavigate();
   const handleCancelEdit = () => {
     setModal({
       open: false,
       titulo: "Adicionar novo serviço",
       servicoSelecionado: null,
       actionText: "Adicionar",
+      barbeariaId: getLocalItem("establishmentId"),
     });
   };
   const [modal, setModal] = useState({
@@ -27,6 +28,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
     loading: false,
     barbeariaId: getLocalItem("establishmentId"),
   });
+  const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
   const [openAlertModal, setOpenAlertModal] = useState(false);
 
@@ -41,7 +43,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
     handleCancelEdit();
   };
 
-  const handleSelect = (item) => {
+  const handleSelect = async (item) => {
     setModal({
       buttons: [
         {
@@ -60,15 +62,18 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       open: true,
       titulo: `Editar ${item.nome}`,
       servicoSelecionado: { ...item, tempoGasto: item.tempoGasto.slice(0, 5) },
-
+      barbeariaId: getLocalItem("establishmentId"),
       actionText: "Editar",
     });
+    await fetchFuncionarios(item.id);
   };
+
   const addItem = () => {
     setModal({
       open: true,
       servicoSelecionado: null,
       titulo: "Adicionar novo serviço",
+      barbeariaId: getLocalItem("establishmentId"),
     });
   };
 
@@ -115,8 +120,9 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       setOpenAlertModal(false);
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
+    } finally {
+      setModal((prev) => ({ ...prev, loading: false }));
     }
-    setModal((prev) => ({ ...prev, loading: false }));
   };
 
   const fetchServicos = async () => {
@@ -124,7 +130,6 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
     try {
       const data = await Api.query("GET", `/service/${modal.barbeariaId}`);
       setServicos(data);
-      console.log("Serviços encontrados:", data);
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
@@ -132,6 +137,34 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       alertCustom("Houve um problema ao buscar serviços");
     }
     setModal((prev) => ({ ...prev, loading: false }));
+  };
+
+  const fetchFuncionarios = async (serviceId) => {
+    try {
+      const funcionarios = await Api.query(
+        "GET",
+        `/establishment/employees/${modal.barbeariaId}`
+      );
+
+      const comissoes = await Api.query(
+        "GET",
+        `/service/commission-configurations/${serviceId}`
+      );
+
+      const funcionariosComComissoes = funcionarios.map((func) => {
+        const comissao = comissoes.find((c) => c.funcionarioId === func.id);
+        return {
+          ...func,
+          percentual: comissao?.percentual || 0,
+          valorFixo: comissao?.valorFixo || 0,
+        };
+      });
+
+      setFuncionarios(funcionariosComComissoes);
+    } catch (error) {
+      console.error("Erro ao buscar funcionários:", error);
+      alertCustom("Erro ao buscar funcionários!");
+    }
   };
 
   useEffect(() => {
@@ -198,6 +231,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
           setOpen={(e) =>
             setModal((prev) => ({ ...prev, open: e, servicoSelecionado: null }))
           }
+          funcionarios={funcionarios}
           titulo={modal.titulo}
           buttons={modal.buttons}
           barbeariaId={modal.barbeariaId}
@@ -226,12 +260,17 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
                 label="serviço"
                 keys={[
                   { label: "", value: "nome" },
-                  { label: "Preço: R$", value: "preco" },
+                  {
+                    label: "",
+                    value: "preco",
+                    format: (value) =>
+                      `R$ ${(+value).toFixed(2)}`.replace(".", ","),
+                  },
                 ]}
                 onEdit={handleSelect}
                 items={servicos.map((item, index) => ({
                   ...item,
-                  imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/service/${item.id}/${item.foto}`,
+                  imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,
                   titulo: item.nome,
                   subtitulo:
                     item.tempoGasto && item.descricao

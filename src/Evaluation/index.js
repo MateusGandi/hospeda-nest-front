@@ -115,7 +115,7 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
                   >
                     <Box sx={{ display: "flex", alignItems: "start", mb: 1 }}>
                       <Avatar
-                        src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
+                        src={`${process.env.REACT_APP_BACK_TONSUS}/images/user/${usuario.id}/${usuario.foto}`}
                         alt={usuario.nome}
                         sx={{ mr: 2 }}
                       />

@@ -114,7 +114,7 @@ const ModalRelatorio = ({
                   color: "rgba(256,256,256,0.5)",
                   fontWeight: 600,
                 }}
-                src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`}
+                src={`${process.env.REACT_APP_BACK_TONSUS}/images/user/${usuario.id}/${usuario.foto}`}
               >
                 {usuario.nome[0].toUpperCase()}
               </Avatar>

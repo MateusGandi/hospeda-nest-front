@@ -81,9 +81,9 @@ const Estabelecimentos = ({ alertCustom }) => {
           ? item.endereco.slice(0, 40) + "..."
           : item.endereco
       }`,
-      imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/profile/${item.profile}`,
-      profile: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/profile/${item.profile}`,
-      banner: `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${item.id}/banner/${item.banner}`,
+      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/profile/${item.profile}`,
+      profile: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/profile/${item.profile}`,
+      banner: `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${item.id}/banner/${item.banner}`,
     }));
   };
 

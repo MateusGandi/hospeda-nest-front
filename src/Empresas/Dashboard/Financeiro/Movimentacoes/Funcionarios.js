@@ -65,7 +65,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         funcionarios.map((item) => ({
           ...item,
           imagem: item.foto
-            ? `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`
+            ? `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`
             : null,
           titulo: `${item.nome} - ${item.telefone}`,
           action: () => {

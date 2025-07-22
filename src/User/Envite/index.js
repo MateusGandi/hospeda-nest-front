@@ -71,11 +71,11 @@ export default function Envite() {
   }, [establishmentId]);
 
   const fotoBarbearia = barbearia?.id
-    ? `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
+    ? `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
     : "https://via.placeholder.com/100";
 
   const fotoUsuario = usuario?.id
-    ? `https://srv744360.hstgr.cloud/tonsus/api/images/user/${usuario.id}/${usuario.foto}`
+    ? `${process.env.REACT_APP_BACK_TONSUS}/images/user/${usuario.id}/${usuario.foto}`
     : "https://via.placeholder.com/100";
 
   if (loading) return null;

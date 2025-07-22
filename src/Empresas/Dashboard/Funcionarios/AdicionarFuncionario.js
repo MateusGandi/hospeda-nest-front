@@ -128,7 +128,7 @@ const Funcionario = ({
                       id: item.id,
                       nome: item.nome,
                       telefone: item.telefone,
-                      imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
+                      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
                       foto: item.foto,
                     }));
                   }}

@@ -240,7 +240,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
   useEffect(() => {
     if (barbearia)
       getDominantColorFromURL(
-        `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
+        `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
       )
         .then((color) => setColor(color))
         .catch((error) => {});
@@ -285,7 +285,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           if (type === "profile") {
             setTimeout(() => {
               getDominantColorFromURL(
-                `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${
+                `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${
                   barbearia.id
                 }/profile/${profile}?t=${Date.now()}`
               ).then(setColor);
@@ -354,7 +354,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                     backgroundColor: "rgba(0,0,0,0.1)",
                     backgroundImage: `url(${
                       bannerImage ||
-                      `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/banner/${barbearia.banner}`
+                      `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner}`
                     })`,
                     height: 145,
                     backgroundSize: "cover",
@@ -389,7 +389,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                   <Avatar
                     src={
                       profileImage ||
-                      `https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
+                      `${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`
                     }
                     sx={{
                       position: "absolute",

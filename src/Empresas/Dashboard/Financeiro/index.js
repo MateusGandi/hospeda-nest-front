@@ -159,7 +159,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                           fontSize: 30,
                           fontWeight: 600,
                         }}
-                        src={`https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
+                        src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                       >
                         {barbearia.nome[0].toUpperCase()}
                       </Avatar>

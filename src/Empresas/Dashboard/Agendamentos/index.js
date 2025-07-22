@@ -88,7 +88,7 @@ const Agendamentos = ({ alertCustom, onClose }) => {
             titulo: `${service.nome} | R$ ${service.preco}`,
             subtitulo: formatarHorario(service.tempoGasto),
           })),
-          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
+          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
           titulo: (
             <Typography
               variant="h6"

@@ -47,7 +47,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
         ...updatedRows[rowIndex],
         [field]: value,
       };
-      onChange(updatedRows);
+      onChange(updatedRows, rowIndex, field, value);
     } catch (err) {
       console.error("Erro ao alterar célula:", err);
     }
@@ -139,7 +139,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
                             fullWidth
                             type={col.type}
                             value={
-                              col.format && typeof value === "string"
+                              col.format
                                 ? col.format(rowIndex, col.field, value, value)
                                 : value || ""
                             }

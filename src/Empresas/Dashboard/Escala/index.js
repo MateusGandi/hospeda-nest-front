@@ -246,9 +246,7 @@ const WorkSchedule = ({
       await apiService
         .query(
           "GET",
-          `https://srv744360.hstgr.cloud/tonsus/api/user/setted-times/${
-            dados?.id || getLocalItem("userId")
-          }`
+          `/user/setted-times/${dados?.id || getLocalItem("userId")}`
         )
         .then((d) => {
           const escala = [...Array(7)].map((_, i) => {
