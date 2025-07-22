@@ -4,7 +4,7 @@ import { CheckCircle, Error as ErrorIcon } from "@mui/icons-material";
 import EditableTable from "../../../Componentes/Table";
 import apiService from "../../../Componentes/Api/axios";
 
-const CommissionCalculator = ({ funcionarios, servico, alertCustom }) => {
+const CommissionCalculator = ({ funcionarios, servico, onChange }) => {
   const [rows, setRows] = useState(
     funcionarios.map((f) => ({
       id: f.id,
@@ -19,17 +19,15 @@ const CommissionCalculator = ({ funcionarios, servico, alertCustom }) => {
       if (index !== rowIndex) return row;
 
       const novoValor = parseFloat(value) || 0;
-      let percentual = 0;
-      let valorFixo = 0;
+      let percentual = row.percentual;
+      let valorFixo = row.valorFixo;
 
       if (field === "percentual") {
         percentual = Math.max(0, Math.min(novoValor, 100));
-        valorFixo = (servico.valor * percentual) / 100;
-      }
-
-      if (field === "valorFixo") {
+        valorFixo = 0; // zera o valor fixo
+      } else if (field === "valorFixo") {
         valorFixo = Math.max(0, Math.min(novoValor, servico.valor));
-        percentual = 0; // zera o percentual, como pedido
+        percentual = 0; // zera o percentual
       }
 
       return {
@@ -40,6 +38,7 @@ const CommissionCalculator = ({ funcionarios, servico, alertCustom }) => {
     });
 
     setRows(recalculated);
+    onChange?.(recalculated);
   };
 
   const totalComissao = useMemo(

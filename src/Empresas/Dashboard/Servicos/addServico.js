@@ -20,6 +20,7 @@ const Servico = ({
   barbeariaId,
   alertCustom,
   funcionarios,
+  setFuncionarios,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -121,6 +122,18 @@ const Servico = ({
     }
   };
 
+  const onChangeCommission = (comissoes) => {
+    const updatedFuncionarios = funcionarios.map((f) => {
+      const comissao = comissoes.find((c) => c.id === f.id);
+      return {
+        ...f,
+        percentual: comissao ? comissao.percentual : 0,
+        valorFixo: comissao ? comissao.valorFixo : 0,
+      };
+    });
+    setFuncionarios(updatedFuncionarios);
+  };
+
   return (
     <Modal
       open={open}
@@ -215,7 +228,7 @@ const Servico = ({
                 <CommissionCalculator
                   funcionarios={funcionarios}
                   servico={{ valor: data.preco, nome: data.nome }}
-                  onSave
+                  onChange={onChangeCommission}
                 />
               </Grid>
             </>

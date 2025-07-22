@@ -232,6 +232,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
             setModal((prev) => ({ ...prev, open: e, servicoSelecionado: null }))
           }
           funcionarios={funcionarios}
+          setFuncionarios={setFuncionarios}
           titulo={modal.titulo}
           buttons={modal.buttons}
           barbeariaId={modal.barbeariaId}
