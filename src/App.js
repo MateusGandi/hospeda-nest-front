@@ -14,7 +14,7 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router/Path";
 import Permissions from "./Componentes/Permissions";
-
+// joão gayyy
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -113,6 +113,8 @@ function App() {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
+
+    console.log("mateus gayyyyyyy testee");
 
     setTimeoutId(
       setTimeout(() => {

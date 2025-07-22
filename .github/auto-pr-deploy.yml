@@ -1,0 +1,174 @@
+name: Auto PR for Vercel Deploy
+
+on:
+  push:
+    branches:
+      - develop # adicione outras branches se necessário
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - '.gitignore'
+
+jobs:
+  check-author-and-create-pr:
+    runs-on: ubuntu-latest
+    
+    # Só executa se o commit NÃO for feito pelo dono do repositório
+    if: github.actor != github.repository_owner
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          -- git config --local user.email "action@github.com"
+          -- git config --local user.name "GitHub Action"
+            git config --local user.email "reis23@discente.ufg.br"
+            git config --local user.name "konojoao"
+      - name: Get commit info
+        id: commit-info
+        run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s" $COMMIT_SHA)
+          COMMIT_AUTHOR="${{ github.actor }}"
+          
+          echo "commit-sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+          echo "commit-msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit-author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+
+      - name: Create deployment branch
+        id: create-branch
+        run: |
+          BRANCH_NAME="deploy/auto-pr-$(date +%Y%m%d-%H%M%S)"
+          
+          # Cria nova branch a partir do commit atual
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+          
+          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        id: create-pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pullRequest } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Deploy: ${{ steps.commit-info.outputs.commit-msg }}`,
+              head: '${{ steps.create-branch.outputs.branch-name }}',
+              base: 'main',
+              body: `## Deploy Automático 🤖
+              
+              **Commit Original:** ${{ steps.commit-info.outputs.commit-sha }}
+              **Autor:** @${{ steps.commit-info.outputs.commit-author }}
+              **Mensagem:** ${{ steps.commit-info.outputs.commit-msg }}
+              
+              ---
+              
+              Este PR foi criado automaticamente para trigger do deploy na Vercel.
+              
+              ### Checklist
+              - [ ] Build passa sem erros
+              - [ ] Testes passam
+              - [ ] Deploy preview está funcionando
+              
+              ### Review Automático
+              O GitHub Copilot fará o review automático deste PR.
+              
+              **⚠️ Este PR será mergeado automaticamente após aprovação dos checks.**`,
+              draft: false
+            });
+            
+            console.log('PR criado:', pullRequest.html_url);
+            return pullRequest.number;
+
+      - name: Request Copilot Review
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.create-pr.outputs.result }};
+            
+            // Adiciona labels ao PR
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['auto-deploy', 'vercel-deploy', 'needs-review']
+            });
+            
+            // Solicita review do GitHub Copilot (se configurado)
+            // Adiciona comentário para trigger do Copilot
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: '@github-copilot review this PR for deployment safety'
+            });
+
+  # Job separado para fazer merge automático após checks
+  auto-merge:
+    needs: check-author-and-create-pr
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Wait for checks
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:deploy/auto-pr-*`
+            });
+            
+            if (prs.length === 0) return;
+            
+            const pr = prs[0];
+            console.log(`Verificando PR #${pr.number}`);
+            
+            // Aguarda um tempo para os checks rodarem
+            await new Promise(resolve => setTimeout(resolve, 30000));
+            
+            // Verifica status dos checks
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+            
+            const allPassed = checks.check_runs.every(check => 
+              check.status === 'completed' && check.conclusion === 'success'
+            );
+            
+            if (allPassed) {
+              // Faz merge do PR
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                commit_title: `🚀 Auto-deploy: ${pr.title}`,
+                merge_method: 'squash'
+              });
+              
+              console.log(`PR #${pr.number} foi mergeado automaticamente`);
+              
+              // Remove a branch temporária
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `heads/${pr.head.ref}`
+              });
+              
+            } else {
+              console.log('Nem todos os checks passaram, PR não será mergeado automaticamente');
+            }

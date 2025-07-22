@@ -1,0 +1,89 @@
+# .github/workflows/simple-auto-merge.yml
+name: Simple Auto Merge
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git as KonoJoao
+        run: |
+          git config --local user.email "konojoao@users.noreply.github.com"
+          git config --local user.name "KonoJoao"
+
+      - name: Get PR Info and Cherry-pick
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          PR_AUTHOR=${{ github.event.pull_request.user.login }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          
+          echo "Processing PR #$PR_NUMBER from $PR_AUTHOR"
+          
+          # Fetch PR branch
+          git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
+          
+          # Get commits from PR
+          COMMITS=$(git rev-list --reverse main..pr-$PR_NUMBER)
+          
+          # Cherry-pick each commit
+          for commit in $COMMITS; do
+            echo "Cherry-picking $commit"
+            git cherry-pick $commit --no-commit
+            
+            # Get original commit message
+            ORIGINAL_MSG=$(git log -1 --pretty=format:"%s" $commit)
+            
+            # Commit as KonoJoao with reference to original author
+            git commit -m "$ORIGINAL_MSG
+
+          Co-authored-by: $PR_AUTHOR <$PR_AUTHOR@users.noreply.github.com>
+          Merged-by: KonoJoao (auto-merge)"
+          done
+          
+          # Push to main
+          git push origin main
+
+      - name: Close PR and Comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Fecha o PR
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              state: 'closed'
+            });
+            
+            // Adiciona comentário
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: `## ✅ Merged automaticamente por @KonoJoao
+              
+              🎉 **Status:** Commits aplicados na branch main
+              👤 **Merged by:** KonoJoao
+              📝 **Original author:** @${pr.user.login}
+              🚀 **Deploy:** Vercel deploy iniciado automaticamente
+              
+              Obrigado pela contribuição!`
+            });
