@@ -62,6 +62,7 @@ const ModalPlanos = ({ alertCustom }) => {
     adm: "/dashboard",
     manager: "/manager",
     "": "/home",
+    employee: "/dashboard",
   };
   const navigate = useNavigate();
   const [modal, setModal] = useState({
@@ -437,7 +438,7 @@ const ModalPlanos = ({ alertCustom }) => {
                     <CardHeader
                       avatar={
                         <Avatar
-                          src={`https://srv744360.hstgr.cloud/tonsus/api/images/user/${depoimento.usuario.id}/${depoimento.usuario.foto}`}
+                          src={`${process.env.REACT_APP_BACK_TONSUS}/images/user/${depoimento.usuario.id}/${depoimento.usuario.foto}`}
                           aria-label="recipe"
                         >
                           {depoimento.avatar}

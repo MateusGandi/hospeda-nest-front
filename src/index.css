@@ -100,3 +100,10 @@ button {
   align-items: center;
   flex-wrap: wrap-reverse;
 }
+
+.justify-end-wrap {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  flex-wrap: wrap-reverse;
+}

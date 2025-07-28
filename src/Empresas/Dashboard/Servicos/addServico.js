@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Grid2 as Grid } from "@mui/material";
+import { Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../../Componentes/Modal";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatMoney, formatTime } from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
+import Icon from "../../../Assets/Emojis";
+import CommissionCalculator from "../Comissao";
 
 const Servico = ({
   formData,
@@ -17,6 +19,8 @@ const Servico = ({
   buttons,
   barbeariaId,
   alertCustom,
+  funcionarios,
+  setFuncionarios,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -61,7 +65,6 @@ const Servico = ({
 
   const handleSave = async () => {
     try {
-      console.log(formData);
       let servicosAtualizados;
       if (formData) {
         servicosAtualizados = [
@@ -82,18 +85,28 @@ const Servico = ({
           },
         ];
       }
-      console.log(servicosAtualizados);
-      if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
+      if (servicosAtualizados.find((item) => item.tempoGasto.length < 5)) {
         return alertCustom("Horário no formato inválido");
+      }
 
       if (
-        servicosAtualizados.find((item) =>
-          Object.values(item).some((value) => !value)
-        )
-      )
+        servicosAtualizados
+          .map(({ foto, ...item }) => item)
+          .find((item) => Object.values(item).some((value) => !value))
+      ) {
         return alertCustom("Informe todos os campos obrigatórios");
+      }
 
       await apiService.query("POST", `/service`, servicosAtualizados);
+      await apiService.query(
+        "POST",
+        `/service/commission-configurations/${formData.id}`,
+        funcionarios.map(({ id, percentual, valorFixo }) => ({
+          valor: percentual || valorFixo,
+          funcionarioId: id,
+          tipo: percentual ? "PORCENTAGEM" : "VALOR",
+        }))
+      );
 
       setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
       setOpen(false);
@@ -107,6 +120,18 @@ const Servico = ({
         formData ? "Erro ao atualizar serviço!" : "Erro ao cadastrar serviço!"
       );
     }
+  };
+
+  const onChangeCommission = (comissoes) => {
+    const updatedFuncionarios = funcionarios.map((f) => {
+      const comissao = comissoes.find((c) => c.id === f.id);
+      return {
+        ...f,
+        percentual: comissao ? comissao.percentual : 0,
+        valorFixo: comissao ? comissao.valorFixo : 0,
+      };
+    });
+    setFuncionarios(updatedFuncionarios);
   };
 
   return (
@@ -158,7 +183,7 @@ const Servico = ({
           />
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 12 }}>
+        <Grid item size={12}>
           <CustomInput
             label="Descrição"
             multiline={true}
@@ -171,6 +196,44 @@ const Servico = ({
             fullWidth
           />
         </Grid>
+        {!formData?.id ? (
+          <Grid item size={12}>
+            <Typography variant="h6" className="show-box">
+              <Icon>💸</Icon> Comissões
+              <Typography variant="body1">
+                As comissões são calculadas automaticamente com base no preço do
+                serviço. Você pode definir uma comissão fixa ou percentual para
+                cada funcionário.{" "}
+                <span style={{ fontWeight: 600 }}>
+                  É necessário criar o serviço primeiro!
+                </span>
+              </Typography>
+            </Typography>
+          </Grid>
+        ) : (
+          funcionarios &&
+          funcionarios.length && (
+            <>
+              <Grid item size={12}>
+                <Typography variant="h6" className="show-box">
+                  <Icon>💸</Icon> Comissões
+                  <Typography variant="body1">
+                    Configure as comissões para os funcionários que realizarão
+                    este serviço. Você pode definir uma comissão fixa ou
+                    percentual para cada funcionário.
+                  </Typography>
+                </Typography>
+              </Grid>
+              <Grid item size={12}>
+                <CommissionCalculator
+                  funcionarios={funcionarios}
+                  servico={{ valor: data.preco, nome: data.nome }}
+                  onChange={onChangeCommission}
+                />
+              </Grid>
+            </>
+          )
+        )}
       </Grid>
     </Modal>
   );

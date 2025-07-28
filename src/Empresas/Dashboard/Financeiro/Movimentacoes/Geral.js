@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
 import Modal from "../../../../Componentes/Modal";
 import { ptBR } from "date-fns/locale";
+import { Rows } from "../../../../Componentes/Lista/Rows";
 
 const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   const [dados, _setDados] = useState({
@@ -108,14 +109,19 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       </Grid>
 
       <Grid size={12}>
-        <PaperList
+        {" "}
+        <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
+          Histórico Movimentações
+        </Typography>
+        <Rows
+          oneTapMode={true}
           variant="contained"
           items={
             dados.vendasFiltradas.length > 0
               ? [
                   ...dados.vendasFiltradas.map((venda) => ({
                     ...venda,
-
+                    action: () => abrirDetalhes(venda),
                     titulo: (
                       <Box
                         sx={{
@@ -136,12 +142,8 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                     subtitulo: (
                       <Typography>
                         R$ {venda.valor} em {venda.data}
-                        <Typography
-                          variant="body1"
-                          className="show-link"
-                          onClick={() => abrirDetalhes(venda)}
-                        >
-                          Ver Detalhes
+                        <Typography variant="body1">
+                          Clique para ver Detalhes
                         </Typography>{" "}
                       </Typography>
                     ),
@@ -175,11 +177,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                   },
                 ]
           }
-        >
-          <Typography variant="h6" sx={{ m: "10px 15px", color: "#fff" }}>
-            Histórico Movimentações
-          </Typography>
-        </PaperList>
+        />
       </Grid>
 
       {/* Modal de Detalhes da Movimentação */}

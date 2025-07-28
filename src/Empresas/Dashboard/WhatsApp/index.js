@@ -15,8 +15,10 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import Icon from "../../../Assets/Emojis";
 import LogoTonsus from "../../../Assets/tonsus_logo.png";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useNavigate } from "react-router-dom";
 
 const WhatsApp = ({ barbearia, alertCustom }) => {
+  const navigate = useNavigate();
   const [mensagensChat] = useState([
     { remetente: "cliente", texto: "Olá, bom dia." },
     {
@@ -32,7 +34,6 @@ const WhatsApp = ({ barbearia, alertCustom }) => {
     },
   ]);
 
-  const [modalSessoes, setModalSessoes] = useState(false);
   const mensagemBoasVindas = `Olá! 👋 Seja bem-vindo à *${barbearia.nome}*. 
 
 Em breve lhe atenderemos, mas se quiser ajuda a qualquer momento, conte com o nosso atendente virtual para te ajudar com agendamentos, horários e informações, está sempre disponível.
@@ -44,23 +45,9 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
 
   return (
     <>
-      <Button
-        variant="outlined"
-        color="success"
-        startIcon={<WhatsAppIcon />}
-        sx={{
-          border: "1.5px solid rgba(256, 256, 256, 0.2)",
-        }}
-        onClick={() => setModalSessoes(true)}
-        fullWidth
-        size="large"
-      >
-        Atendente Virtual
-      </Button>
-
       <Modal
-        onClose={() => setModalSessoes(false)}
-        open={modalSessoes}
+        onClose={() => navigate(-1)}
+        open={true}
         titulo="Tonsus no WhatsApp"
         maxWidth="lg"
         fullScreen="all"

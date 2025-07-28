@@ -6,6 +6,7 @@ import {
   CircularProgress,
   Chip,
   Button,
+  Divider,
 } from "@mui/material";
 import SearchBarWithFilters from "../../../../Componentes/Search";
 import { PaperList } from "../../../../Componentes/Lista/Paper";
@@ -16,7 +17,7 @@ import {
   toUTC,
 } from "../../../../Componentes/Funcoes";
 import { format, parseISO } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
+import { Rows } from "../../../../Componentes/Lista/Rows";
 import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
 import Modal from "../../../../Componentes/Modal";
 
@@ -63,23 +64,15 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         "funcionarios",
         funcionarios.map((item) => ({
           ...item,
-          image: item.foto
-            ? `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`
+          imagem: item.foto
+            ? `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`
             : null,
           titulo: `${item.nome} - ${item.telefone}`,
-          subtitulo: (
-            <Typography
-              variant="body1"
-              className="show-link"
-              onClick={() => {
-                setDetails("funcionario", item);
-                setDetails("open", true);
-              }}
-              sx={{ cursor: "pointer", color: "#1976d2" }}
-            >
-              Ver Movimentações
-            </Typography>
-          ),
+          action: () => {
+            setDetails("funcionario", item);
+            setDetails("open", true);
+          },
+          subtitulo: "Clique para ver as movimentações",
         }))
       );
     } catch (error) {
@@ -133,25 +126,35 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   return (
     <Grid container spacing={2} sx={{ p: 2 }}>
       <Grid size={12}>
-        <PaperList
+        <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
+          Movimentações dos Funcionários
+        </Typography>
+
+        <Rows
+          oneTapMode={true}
           variant="contained"
           items={
             dados.funcionarios.length
               ? dados.funcionarios
+              : dados.loading
+              ? [
+                  {
+                    titulo: dados.loading ? (
+                      <LoadingBox message="Buscando..." />
+                    ) : (
+                      "Nenhuma venda encontrada"
+                    ),
+                    subtitulo: "",
+                  },
+                ]
               : [
                   {
-                    titulo: dados.loading
-                      ? "Buscando..."
-                      : "Nenhuma venda encontrada...",
+                    titulo: "Nenhuma venda encontrada!",
                     subtitulo: "",
                   },
                 ]
           }
-        >
-          <Typography variant="h6" sx={{ m: "10px 15px", color: "#fff" }}>
-            Movimentações dos Funcionários
-          </Typography>
-        </PaperList>
+        />
       </Grid>
 
       <Modal
@@ -212,7 +215,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                 <LoadingBox message={"Carregando..."} />
               </Box>
             ) : (
-              <PaperList
+              <Rows
                 items={
                   dados.vendasFiltradas?.length > 0
                     ? [
@@ -238,22 +241,13 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                               </Box>
                             </Box>
                           ),
-                          subtitulo: (
-                            <Typography>
-                              R$ ${venda.valor}
-                              <Typography
-                                className="show-link"
-                                onClick={() =>
-                                  setModalDetalhe({
-                                    open: true,
-                                    movimentacao: venda,
-                                  })
-                                }
-                              >
-                                Ver Detalhes
-                              </Typography>
-                            </Typography>
-                          ),
+                          action: () => {
+                            setModalDetalhe({
+                              open: true,
+                              movimentacao: venda,
+                            });
+                          },
+                          subtitulo: <Typography>R$ ${venda.valor}</Typography>,
                         })),
                         {
                           titulo: (

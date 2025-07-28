@@ -14,7 +14,7 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router/Path";
 import Permissions from "./Componentes/Permissions";
-// mateus gayyy
+// joão gayyy
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -23,6 +23,9 @@ const theme = createTheme({
     },
     primary: {
       main: "#0195F7",
+    },
+    success: {
+      main: "#0F8E26",
     },
     secondary: {
       main: "#fff",
@@ -113,9 +116,6 @@ function App() {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-
-    console.log("mateus gayyyyyy testee");
-
     setTimeoutId(
       setTimeout(() => {
         setAlert((prev) => ({ ...prev, open: false }));

@@ -7,7 +7,7 @@ import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
-import { getLocalItem } from "../../../Componentes/Funcoes";
+import { formatPhone, getLocalItem } from "../../../Componentes/Funcoes";
 import WorkSchedule from "../Escala";
 
 const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
@@ -97,14 +97,14 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
 
   const fetchFuncionarios = async () => {
     try {
-      const { funcionarios } = await Api.query(
+      const funcionarios = await Api.query(
         "GET",
-        `/establishment?establishmentId=${modal.barbeariaId}`
+        `/establishment/employees/${modal.barbeariaId}`
       );
       setFuncionarios(
         funcionarios.map((item) => ({
           ...item,
-          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${
+          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${
             item.idOrig || item.id
           }/${item.foto}`,
           titulo: `${item.nome} - ${item.telefone}`,
@@ -204,7 +204,11 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
                 items={funcionarios}
                 keys={[
                   { label: "", value: "nome" },
-                  { label: "", value: "telefone" },
+                  {
+                    label: "",
+                    value: "telefone",
+                    format: (value) => formatPhone(value),
+                  },
                 ]}
               />
             </Grid>
@@ -224,7 +228,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
               Nenhum funcionário cadastrado
             </Typography>
           </Typography>
-        )}
+        )}{" "}
       </Modal>
       <FuncionarioForm
         funcionarios={funcionarios}
@@ -241,15 +245,6 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
         barbeariaId={modal.barbeariaId}
         alertCustom={alertCustom}
         buscarDados={fetchFuncionarios}
-      />
-      <WorkSchedule
-        dados={modal.funcionario}
-        type="modal"
-        openModal={modal.escala}
-        alertCustom={alertCustom}
-        handleCloseModal={() =>
-          setModal((prev) => ({ ...prev, escala: false }))
-        }
       />
     </>
   );

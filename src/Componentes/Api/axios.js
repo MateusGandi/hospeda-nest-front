@@ -2,12 +2,6 @@ import axios from "axios";
 import { getLocalItem, setLocalItem } from "../Funcoes";
 
 class ApiService {
-  constructor(baseURL) {
-    this.api = axios.create({
-      baseURL: "https://srv744360.hstgr.cloud/tonsus/api", //process.env.REACT_APP_BACK_TONSUS,
-    });
-  }
-
   setKey(data) {
     if (data) Object.keys(data).map((key) => setLocalItem(key, data[key]));
   }
@@ -26,9 +20,11 @@ class ApiService {
     };
 
     try {
-      const response = await this.api({
+      const url = `${process.env.REACT_APP_BACK_TONSUS}${route}`;
+      console.log("API URL:", url);
+      const response = await axios({
         method,
-        url: route,
+        url: url,
         headers: { ...defaultHeaders, ...headers },
         ...(body ? { data: body } : {}),
       });

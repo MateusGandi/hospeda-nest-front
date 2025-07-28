@@ -52,7 +52,6 @@ const Modal = ({
   loadingButton = false,
   sx,
   disablePadding,
-  route = "",
   componentName = "",
   alignItems = "start",
 }) => {

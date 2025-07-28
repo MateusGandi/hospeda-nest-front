@@ -49,7 +49,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
             <Card elevation={0} sx={{ position: "relative" }}>
               <Box
                 sx={{
-                  backgroundImage: `url(https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/banner/${barbearia.banner} )`,
+                  backgroundImage: `url(${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner} )`,
                   backgroundColor: "#212121",
                   height: 160,
                   backgroundSize: "cover",
@@ -58,7 +58,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
               />
 
               <Avatar
-                src={`https://srv744360.hstgr.cloud/tonsus/api/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
+                src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                 sx={{
                   width: "160px",
                   height: "160px",

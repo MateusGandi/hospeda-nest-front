@@ -61,15 +61,6 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   useEffect(() => {
     if (!subPath) {
       onClose();
-      setForm({
-        barbearia: barbearia,
-        barbeiro: barbearia.funcionarios.find(
-          (f) => f.id === getLocalItem("userId")
-        ),
-        cliente: null,
-        servicos: null,
-        agendamento: null,
-      });
     }
   }, [subPath]);
 
@@ -135,6 +126,10 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   useEffect(() => {
     setEmpresa(barbearia);
   }, []);
+
+  useEffect(() => {
+    console.log("form", form);
+  }, [form]);
 
   useEffect(() => {
     setPage((prev) => ({

@@ -48,7 +48,7 @@ const Funcionario = ({
     const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
     const funcionariosFinais = [...semAtual, data];
 
-    await apiService.query("PATCH", `/establishment/${barbeariaId.id}`, {
+    await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
       funcionarios: funcionariosFinais.map((item) => ({
         userId: item.id,
         servicesId: item.servicosPrestados.map((service) => service.id),
@@ -128,7 +128,7 @@ const Funcionario = ({
                       id: item.id,
                       nome: item.nome,
                       telefone: item.telefone,
-                      imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
+                      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
                       foto: item.foto,
                     }));
                   }}
@@ -201,6 +201,7 @@ const Funcionario = ({
               <Grid size={{ xs: 12, md: 3 }}>
                 {" "}
                 <WorkSchedule
+                  type="button"
                   alertCustom={alertCustom}
                   dados={data}
                   disabled={!funcionario}

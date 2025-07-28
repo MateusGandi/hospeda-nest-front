@@ -173,7 +173,7 @@ const Empresa = ({ alertCustom }) => {
           subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
             item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
           }`,
-          imagem: `https://srv744360.hstgr.cloud/tonsus/api/images/user/${item.id}/${item.foto}`,
+          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
         }));
     }
     if (pagina == "servicos") {
