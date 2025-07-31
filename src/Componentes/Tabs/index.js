@@ -11,12 +11,14 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
           zIndex: 9999,
           px: 0.5,
         }}
+        centered
         value={selected}
         onChange={(e, newValue) => onChange(newValue)}
         TabIndicatorProps={{ style: { display: "none" } }}
       >
-        {tabs.map(({ label, id, icon }, index) => (
+        {tabs.map(({ label, id, icon, disabled }, index) => (
           <Tab
+            disabled={disabled}
             key={id || index}
             label={
               <>
@@ -27,6 +29,8 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
                     borderRadius: "50%",
                     ...(selected == id || selected == index
                       ? { background: "rgba(255, 255, 255, 0.5)" }
+                      : disabled
+                      ? { background: "#212121" }
                       : {}),
                     width: "60px",
                     height: "60px",

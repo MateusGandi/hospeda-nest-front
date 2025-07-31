@@ -87,7 +87,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     try {
       await Api.query("PATCH", `/establishment/${dados.id}`, info);
 
-      await fetch();
+      if (!!getLocalItem("establishmentId")) await fetch();
       message &&
         alertCustom("Dados do estabelecimento atualizados com sucesso!");
     } catch (error) {

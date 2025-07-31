@@ -7,6 +7,7 @@ import {
   IconButton,
   CircularProgress,
   Typography,
+  Button,
 } from "@mui/material";
 import { height, styled } from "@mui/system";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -15,6 +16,8 @@ import { ptBR } from "date-fns/locale";
 import Calendario from "../Calendar/Simple";
 import { formatDate } from "../Funcoes";
 import Modal from "../Modal";
+import { useGoogleLogin } from "@react-oauth/google";
+import GoogleIcon from "../../Assets/Login/google-icon.svg";
 
 const CustomTextField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -222,5 +225,39 @@ export const LoadingBox = ({ message, variant = "body1" }) => {
       <CircularProgress size={25} />
       <Typography variant={variant}>{message}</Typography>
     </Box>
+  );
+};
+
+export const GoogleLoginButton = ({ onError, onSuccess, text }) => {
+  const login = useGoogleLogin({
+    onSuccess: onError,
+    onError: onSuccess,
+  });
+
+  return (
+    <Button
+      onClick={login}
+      fullWidth
+      color="terciary"
+      variant="outlined"
+      size="large"
+      sx={{
+        borderRadius: "50px",
+        textTransform: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1.5,
+        height: 45,
+        fontWeight: 500,
+      }}
+    >
+      <img
+        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+        alt="Google"
+        style={{ width: 20, height: 20 }}
+      />
+      Fazer login com Google
+    </Button>
   );
 };

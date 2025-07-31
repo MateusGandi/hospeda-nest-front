@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
-import ServicoForm from "./addServico";
+import ServicoForm from "./Manager";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { getLocalItem } from "../../../Componentes/Funcoes";
-import apiService from "../../../Componentes/Api/axios";
 
 const GerenciarServicos = ({ alertCustom, onClose }) => {
   const handleCancelEdit = () => {
@@ -63,7 +61,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       titulo: `Editar ${item.nome}`,
       servicoSelecionado: { ...item, tempoGasto: item.tempoGasto.slice(0, 5) },
       barbeariaId: getLocalItem("establishmentId"),
-      actionText: "Editar",
+      actionText: "Salvar",
     });
     await fetchFuncionarios(item.id);
   };
@@ -229,7 +227,11 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
           onSubmit={modal.onSubmit}
           submitText={modal.submitText}
           setOpen={(e) =>
-            setModal((prev) => ({ ...prev, open: e, servicoSelecionado: null }))
+            setModal((prev) => ({
+              ...prev,
+              open: e,
+              servicoSelecionado: null,
+            }))
           }
           funcionarios={funcionarios}
           setFuncionarios={setFuncionarios}
@@ -238,7 +240,8 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
           barbeariaId={modal.barbeariaId}
           servicos={servicos}
           alertCustom={alertCustom}
-        />{" "}
+        />
+
         {servicos && servicos.length ? (
           <Grid container spacing={2}>
             {" "}

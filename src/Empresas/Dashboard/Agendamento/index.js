@@ -70,7 +70,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
       establishmentId: empresa.id,
-      services: form.servicos.map(({ id }) => id),
+      services: form.servicos.map(({ id }) => `${id}`),
       userName: form.cliente.nome,
       userId: form.cliente.id,
       barberId: barbearia.funcionarios.find(

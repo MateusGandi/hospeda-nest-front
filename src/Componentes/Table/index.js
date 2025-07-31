@@ -107,6 +107,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
                   textAlign: "center",
                   color: "#aaa",
                   padding: "16px",
+                  borderBottom: "none",
                 }}
               >
                 <Typography variant="body1">

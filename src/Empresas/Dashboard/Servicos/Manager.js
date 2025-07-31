@@ -5,7 +5,13 @@ import { CustomInput } from "../../../Componentes/Custom";
 import { formatMoney, formatTime } from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
-import CommissionCalculator from "../Comissao";
+import Commission from "./Commission";
+import CustomTabs from "../../../Componentes/Tabs";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Discount from "./Discount";
+import { Build } from "@mui/icons-material";
+import DiscountOutlinedIcon from "@mui/icons-material/DiscountOutlined";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 const Servico = ({
   formData,
@@ -29,6 +35,23 @@ const Servico = ({
     preco: "",
   });
   const [horario, setHorario] = useState(null);
+
+  const [tab, setTab] = useState(0);
+  const tabs = [
+    { icon: <Build />, label: "Serviço", id: 0 },
+    {
+      icon: <LocalOfferOutlinedIcon />,
+      label: "Comissões",
+      id: 1,
+      disabled: !formData,
+    },
+    {
+      icon: <DiscountOutlinedIcon />,
+      label: "Descontos",
+      id: 2,
+      disabled: !formData,
+    },
+  ];
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -122,31 +145,8 @@ const Servico = ({
     }
   };
 
-  const onChangeCommission = (comissoes) => {
-    const updatedFuncionarios = funcionarios.map((f) => {
-      const comissao = comissoes.find((c) => c.id === f.id);
-      return {
-        ...f,
-        percentual: comissao ? comissao.percentual : 0,
-        valorFixo: comissao ? comissao.valorFixo : 0,
-      };
-    });
-    setFuncionarios(updatedFuncionarios);
-  };
-
-  return (
-    <Modal
-      open={open}
-      onClose={() => setOpen(false)}
-      titulo={titulo}
-      onAction={handleSave}
-      actionText={actionText}
-      onSubmit={onSubmit}
-      submitText={submitText}
-      fullScreen="all"
-      component="view"
-      buttons={buttons}
-    >
+  const RenderForm = () => {
+    return (
       <Grid container spacing={4} sx={{ mt: 4 }}>
         <Grid item size={{ xs: 12, md: 4 }}>
           <CustomInput
@@ -196,45 +196,42 @@ const Servico = ({
             fullWidth
           />
         </Grid>
-        {!formData?.id ? (
-          <Grid item size={12}>
-            <Typography variant="h6" className="show-box">
-              <Icon>💸</Icon> Comissões
-              <Typography variant="body1">
-                As comissões são calculadas automaticamente com base no preço do
-                serviço. Você pode definir uma comissão fixa ou percentual para
-                cada funcionário.{" "}
-                <span style={{ fontWeight: 600 }}>
-                  É necessário criar o serviço primeiro!
-                </span>
-              </Typography>
-            </Typography>
-          </Grid>
-        ) : (
-          funcionarios &&
-          funcionarios.length && (
-            <>
-              <Grid item size={12}>
-                <Typography variant="h6" className="show-box">
-                  <Icon>💸</Icon> Comissões
-                  <Typography variant="body1">
-                    Configure as comissões para os funcionários que realizarão
-                    este serviço. Você pode definir uma comissão fixa ou
-                    percentual para cada funcionário.
-                  </Typography>
-                </Typography>
-              </Grid>
-              <Grid item size={12}>
-                <CommissionCalculator
-                  funcionarios={funcionarios}
-                  servico={{ valor: data.preco, nome: data.nome }}
-                  onChange={onChangeCommission}
-                />
-              </Grid>
-            </>
-          )
-        )}
       </Grid>
+    );
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      titulo={titulo}
+      onAction={handleSave}
+      actionText={actionText}
+      onSubmit={onSubmit}
+      submitText={submitText}
+      fullScreen="all"
+      component="view"
+      buttons={buttons}
+    >
+      <CustomTabs
+        tabs={tabs}
+        onChange={(e) => setTab(e)}
+        selected={tab}
+        views={[
+          <RenderForm />,
+          <Commission
+            servico={data}
+            funcionarios={funcionarios}
+            setFuncionarios={setFuncionarios}
+          />,
+          formData?.id && (
+            <Discount
+              dados={{ barbeariaId, serviceId: data.id }}
+              alertCustom={alertCustom}
+            />
+          ),
+        ]}
+      />
     </Modal>
   );
 };

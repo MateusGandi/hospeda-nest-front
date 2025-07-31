@@ -27,6 +27,8 @@ const SearchBarWithFilters = ({
   aditionalFilters = null,
   aditionalFiltersFocus = false,
   children,
+  variant = "contained",
+  size = "large",
 }) => {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -103,6 +105,16 @@ const SearchBarWithFilters = ({
     setSearchValue("");
     setSelectedFilters([]);
   };
+  const styles = (prop) => {
+    return {
+      contained: {
+        background: "#212121",
+      },
+      outlined: {
+        border: "1.7px solid #484848",
+      },
+    }[prop];
+  };
 
   return (
     <Box sx={{ width: "100%" }} onBlur={handleBlur} tabIndex={-1}>
@@ -134,8 +146,8 @@ const SearchBarWithFilters = ({
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: "none",
                 },
-                p: "5px 10px",
-                background: "#363636",
+                ...styles(variant),
+                ...(size == "large" ? { p: "5px 10px" } : { px: "10px" }),
                 borderRadius: "100px",
               },
             }}

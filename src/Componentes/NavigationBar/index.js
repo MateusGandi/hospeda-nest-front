@@ -287,7 +287,7 @@ const NavigationBar = ({ alertCustom }) => {
     <>
       <Box sx={{ display: "none" }}>
         <GoogleLogin
-          useOneTap
+          useOneTap={!getLocalItem("accessType")}
           onSuccess={({ credential }) => handleLogin(credential)}
           onError={() => alertCustom("Erro ao realizar login com Google!")}
           buttonText="Login"

@@ -302,13 +302,15 @@ const WorkSchedule = ({
     <>
       {type === "button" && (
         <Button
+          sx={{ minWidth: "200px" }}
           disableElevation
           variant="contained"
-          color="success"
+          color="primary"
+          size="large"
           onClick={() => setOpen(true)}
           disabled={disabled}
         >
-          Configurar Escala
+          Configurar
         </Button>
       )}
 
