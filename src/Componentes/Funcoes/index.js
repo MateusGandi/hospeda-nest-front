@@ -135,10 +135,11 @@ export const formatDate = (valor) => {
 };
 
 export const formatMoney = (valor) => {
-  if (!valor) return "";
-  const numeros = valor.replace(/\D/g, "");
+  if (!valor) return "0.00";
 
-  const numeroFormatado = (parseInt(numeros || 0, 10) / 100).toFixed(2);
+  const numeros = valor.toString().replace(/\D/g, "");
+
+  const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
   return numeroFormatado;
 };
@@ -277,7 +278,7 @@ export function diferencaEmMinutos(dataInicial, dataFinal) {
 
   const diffMs = fim - inicio;
   const diffMin = Math.floor(diffMs / 1000 / 60);
-
+  console.log(diffMin, dataInicial, dataFinal);
   return diffMin;
 }
 

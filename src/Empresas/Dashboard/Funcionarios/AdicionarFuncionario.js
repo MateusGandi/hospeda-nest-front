@@ -186,7 +186,7 @@ const Funcionario = ({
               container
               spacing={2}
               className="justify-between"
-              sx={{ flexWrap: "nowrap" }}
+              sx={{ flexWrap: { xs: "wrap", md: "nowrap" } }}
             >
               {funcionario ? (
                 <Typography variant="body1">

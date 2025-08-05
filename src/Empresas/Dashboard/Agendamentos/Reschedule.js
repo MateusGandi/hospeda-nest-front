@@ -6,21 +6,22 @@ import {
   Typography,
 } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarData, getLocalItem } from "../../../Componentes/Funcoes";
+import { formatarData } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
-import Horario from "../../../Componentes/Horario/fixed";
 import Modal from "../../../Componentes/Modal";
 
-const Reagendamento = ({ form, setForm, alertCustom }) => {
+const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
-  const [modal, setModal] = useState({ open: false });
+  const [modal, _setModal] = useState({ open: false });
   const [loading, setLoading] = useState(false);
+
+  const setModal = (dados) => _setModal((prev) => ({ ...prev, ...dados }));
 
   const handleOpen = () => {
     setModal({
       open: true,
-      onClose: () => setModal((prev) => ({ ...prev, open: false })),
+      onClose: () => setModal({ open: false }),
       maxWidth: "xs",
       titulo: "Selecione uma data específica",
       component: "modal",
@@ -32,13 +33,11 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
   const buscarVagas = async (idBarbeiro, idServicos, dataAtual) => {
     setLoading(true);
     try {
-      const info = await Api.query(
+      return await Api.query(
         "GET",
         `/scheduling/employee/${idBarbeiro}/${dataAtual}?servicesId=${idServicos}`
-      );
-      return info;
+      ).then((response) => response);
     } catch (error) {
-      console.error("Erro ao buscar vagas:", error);
       alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
       return [];
     } finally {
@@ -62,11 +61,11 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
         const [hr, min] = horario.split(":");
         const newDate = new Date(dia);
         newDate.setHours(hr, min);
-        setForm((prev) => ({ ...prev, agendamento: newDate.toISOString() }));
+        setForm({ agendamento: newDate.toISOString() });
       }
     };
 
-    buscar().then(() => setModal((prev) => ({ ...prev, open: false })));
+    buscar().then(() => setModal({ open: false }));
   }, [form.dia]);
 
   useEffect(() => {
@@ -83,6 +82,10 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
 
   const handleSelect = (item) => {
     setForm({ ...form, agendamento: item });
+  };
+
+  const views = {
+    horario: {},
   };
 
   return (
@@ -130,7 +133,6 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
           fullScreen="mobile"
           loading={modal.loading}
         >
-          {" "}
           <Grid container spacing={1}>
             <Grid size={{ xs: 12, md: 12 }}>
               <Calendario
@@ -140,7 +142,7 @@ const Reagendamento = ({ form, setForm, alertCustom }) => {
                 }}
               />
             </Grid>
-          </Grid>{" "}
+          </Grid>
         </Modal>
       </Grid>
     </Container>

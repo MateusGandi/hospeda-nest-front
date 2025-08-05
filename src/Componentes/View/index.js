@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import {
   Box,
   Container,
+  Divider,
   Grid2 as Grid,
   Paper,
   Typography,
@@ -28,7 +29,7 @@ const View = ({
   children,
   titulo,
 
-  maxWidth = "md",
+  maxWidth,
   color = "primary",
   backAction,
   loading = false,
@@ -57,36 +58,49 @@ const View = ({
     <Grid
       container
       sx={{
+        minHeight: "calc(100vh - 60px)",
         width: "100%",
-        height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
       }}
     >
-      {" "}
-      <Grid size={12} sx={{ background: "red" }}>
-        {" "}
-        <Box className="justify-between-wrap">
-          {backAction ? (
-            <Button
-              disableElevation
-              variant="contained"
-              onClick={backAction.action}
-              size="large"
-              sx={{
-                background: "transparent",
-                color: "#fff",
-              }}
-              startIcon={<ArrowBackIcon />}
-            >
-              {backAction.titulo}
-            </Button>
-          ) : (
-            titulo && <Typography variant="h6">{titulo}</Typography>
+      <Grid size={12} sx={{ p: 2 }}>
+        <Container maxWidth={maxWidth}>
+          {titulo && (
+            <Box className="justify-between">
+              {backAction ? (
+                <Button
+                  disableElevation
+                  variant="contained"
+                  onClick={backAction.action}
+                  size="large"
+                  sx={{
+                    background: "transparent",
+                    color: "#fff",
+                  }}
+                  startIcon={<ArrowBackIcon />}
+                >
+                  {backAction.titulo}
+                </Button>
+              ) : (
+                <div></div>
+              )}
+              {titulo && <Typography variant="h6">{titulo}</Typography>}
+              <p></p>
+            </Box>
           )}
-          <p></p>
-        </Box>
+        </Container>
+        <Divider sx={{ mb: -2, mt: 2 }} />
+      </Grid>
+      <Grid
+        size={12}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          pt: 1,
+        }}
+      >
         <Container
           maxWidth={maxWidth}
           PaperProps={{
@@ -94,7 +108,6 @@ const View = ({
               ...sx,
               borderRadius: 0,
               position: "relative",
-              maxHeight: "70vh",
               overflowY: "scroll",
             },
           }}
@@ -113,7 +126,7 @@ const View = ({
                   justifyContent: "center",
                   alignItems: "center",
                   height: "100%",
-                  minHeight: "200px",
+                  minHeight: "80vh",
                   zIndex: 1,
                 }}
               >
@@ -144,7 +157,7 @@ const View = ({
                   </Paper>
                 </Grid>
               </>
-            )}{" "}
+            )}
           </Grid>
         </Container>
       </Grid>

@@ -151,10 +151,13 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
 
       const funcionariosComComissoes = funcionarios.map((func) => {
         const comissao = comissoes.find((c) => c.funcionarioId === func.id);
+        const percentual = comissao.tipo == "PERCENTUAL" ? comissao.valor : 0;
+        const valorFixo = comissao.tipo == "VALOR" ? comissao.valor : 0;
         return {
           ...func,
-          percentual: comissao?.percentual || 0,
-          valorFixo: comissao?.valorFixo || 0,
+          percentual,
+          valorFixo,
+          comissao,
         };
       });
 

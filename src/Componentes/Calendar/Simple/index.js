@@ -150,7 +150,7 @@ const Calendario = ({ onSelect, all = false, data = null }) => {
               </IconButton>
             </Box>
           </Grid>
-          <Grid container spacing={1} sx={{ width: "100%", maxHeight: "10px" }}>
+          <Grid container spacing={1} sx={{ width: "100%", height: "15px" }}>
             {diasDaSemana.map((dia, index) => (
               <Grid
                 size={12 / 7}

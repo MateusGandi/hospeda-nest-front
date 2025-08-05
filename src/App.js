@@ -111,6 +111,7 @@ function App() {
   const [timeoutId, setTimeoutId] = useState(null);
 
   const alertCustom = (message) => {
+    if (typeof message !== "string") return;
     setAlert({ message: message, open: true });
 
     if (timeoutId) {

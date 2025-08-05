@@ -21,8 +21,9 @@ import Icon from "../../../Assets/Emojis";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import Filter from "../../../Componentes/Filter";
 import { useNavigate } from "react-router-dom";
+import View from "../../../Componentes/View";
 
-const Agendamentos = ({ alertCustom, onClose }) => {
+const Agendamentos = ({ alertCustom }) => {
   const navigate = useNavigate();
   const [dataSelecionada, setDataSelecionada] = useState(
     new Date().toISOString()
@@ -201,6 +202,9 @@ const Agendamentos = ({ alertCustom, onClose }) => {
     }
   };
 
+  const onClose = () => {
+    navigate("/dashboard");
+  };
   return (
     <Modal
       open={true}

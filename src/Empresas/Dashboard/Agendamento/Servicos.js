@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
 
-const Servicos = ({ setError, format, form, setForm, alertCustom }) => {
+const Servicos = ({ setError, format, form, setForm }) => {
   const [servicos, setServicos] = useState([]);
 
   useEffect(() => {

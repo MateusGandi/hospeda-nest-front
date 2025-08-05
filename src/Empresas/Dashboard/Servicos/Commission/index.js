@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Icon from "../../../../Assets/Emojis";
 import EditableTable from "../../../../Componentes/Table";
+import { formatMoney } from "../../../../Componentes/Funcoes";
 
 export default function Commission({ funcionarios, setFuncionarios, servico }) {
   const [rows, setRows] = useState(
@@ -10,6 +11,7 @@ export default function Commission({ funcionarios, setFuncionarios, servico }) {
       nome: f.nome,
       percentual: f.percentual || 0,
       valorFixo: f.valorFixo || 0,
+      id: f.comissao?.id || null,
     }))
   );
   const [servicoData, setServicoData] = useState(null);
@@ -19,6 +21,7 @@ export default function Commission({ funcionarios, setFuncionarios, servico }) {
       const comissao = comissoes.find((c) => c.id === f.id);
       return {
         ...f,
+        id: comissao.id || null,
         percentual: comissao ? comissao.percentual : 0,
         valorFixo: comissao ? comissao.valorFixo : 0,
       };
@@ -32,13 +35,13 @@ export default function Commission({ funcionarios, setFuncionarios, servico }) {
       field: "percentual",
       headerName: "% Comissão",
       editable: true,
-      type: "number",
+      type: "text",
     },
     {
       field: "valorFixo",
       headerName: "R$ Comissão",
       editable: true,
-      type: "number",
+      type: "text",
     },
   ];
 
@@ -46,22 +49,21 @@ export default function Commission({ funcionarios, setFuncionarios, servico }) {
     const recalculated = updatedRows.map((row, index) => {
       if (index !== rowIndex) return row;
 
-      const novoValor = parseFloat(value) || 0;
       let percentual = row.percentual;
       let valorFixo = row.valorFixo;
 
       if (field === "percentual") {
-        percentual = Math.max(0, Math.min(novoValor, 100));
-        valorFixo = 0;
+        percentual = Math.max(0, Math.min(value, 100));
+        valorFixo = "";
       } else if (field === "valorFixo") {
-        valorFixo = Math.max(0, Math.min(novoValor, servico.valor));
+        valorFixo = formatMoney(value); // << aqui usamos a nova função
         percentual = 0;
       }
 
       return {
         ...row,
         percentual: +percentual.toFixed(2),
-        valorFixo: +valorFixo.toFixed(2),
+        valorFixo,
       };
     });
 

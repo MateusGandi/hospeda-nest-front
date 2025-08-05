@@ -141,7 +141,7 @@ const Modal = ({
               maxWidth={maxWidth}
               sx={{
                 height: "100%",
-                p: "0 !important",
+                p: "0px !important",
                 borderRadius: { xs: 0, md: "0" },
               }}
               onSubmit={(e) => {
@@ -157,7 +157,7 @@ const Modal = ({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: alignItems,
-                  pt: { xs: 0, md: 3 },
+                  pt: { xs: 0, md: 2 },
                   height: "100%",
                 }}
               >

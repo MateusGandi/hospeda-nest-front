@@ -7,6 +7,7 @@ import {
   Container,
   Grid2 as Grid,
   Button,
+  CircularProgress,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { formatDataToString, isMobile } from "../../Funcoes";
@@ -20,6 +21,7 @@ import { MultiBackend, TouchTransition } from "react-dnd-multi-backend";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { Preview } from "react-dnd-multi-backend";
+import { LoadingBox } from "../../Custom";
 
 const HTML5toTouch = {
   backends: [
@@ -96,6 +98,7 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         userSelect: "none",
         borderRadius: "6px",
         cursor: allowDrag ? "grab" : "grabbing !important",
+        p: 1,
       }}
     >
       <Box
@@ -104,28 +107,21 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Box
-          sx={{
-            mr: 1,
-            fontSize: 18,
-            userSelect: "none",
-          }}
-        >
-          ⠿
-        </Box>
         <Typography variant="body2" fontWeight="bold" flexGrow={1} noWrap>
           {event.title}
         </Typography>
-        <IconButton
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(event.id);
-          }}
-          sx={{ color: "white" }}
-        >
-          <Close fontSize="small" />
-        </IconButton>
+        {onDelete && (
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(event.id);
+            }}
+            sx={{ color: "white" }}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        )}
       </Box>
       <Typography variant="body2">{event.description}</Typography>
     </Paper>
@@ -178,6 +174,7 @@ export default function WeekCalendar({
   legend,
   startHour = 7,
   endHour = 20,
+  loading = false,
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [internalEvents, setInternalEvents] = useState([]);
@@ -200,6 +197,7 @@ export default function WeekCalendar({
     const diff = d.getDate() - day; // volta para domingo
     d.setHours(0, 0, 0, 0);
     d.setDate(diff);
+
     return d;
   }, [currentDate]);
 
@@ -212,6 +210,17 @@ export default function WeekCalendar({
       }),
     [startOfWeek]
   );
+
+  // useEffect(() => {
+  //   const sunday = new Date(startOfWeek);
+  //   sunday.setHours(0, 0, 0, 0);
+
+  //   const saturday = new Date(sunday);
+  //   saturday.setDate(saturday.getDate() + 6);
+  //   saturday.setHours(0, 0, 0, 0);
+  //   console.log("calculei de novo ", saturday, sunday);
+  //   onWeekChange(saturday, sunday);
+  // }, [startOfWeek]);
 
   const hours = Array.from(
     { length: endHour - startHour + 1 },
@@ -260,6 +269,16 @@ export default function WeekCalendar({
       </Box>
     );
   };
+  // useEffect(() => {
+  //   const sunday = new Date(startOfWeek);
+  //   sunday.setHours(0, 0, 0, 0);
+
+  //   const saturday = new Date(sunday);
+  //   saturday.setDate(saturday.getDate() + 6);
+  //   saturday.setHours(0, 0, 0, 0);
+  //   console.log("calculei de novo ", saturday, sunday);
+  //   onWeekChange(saturday, sunday);
+  // }, [startOfWeek]);
 
   const goWeek = (dir) => {
     const newDate = new Date(currentDate);
@@ -273,7 +292,6 @@ export default function WeekCalendar({
     const saturday = new Date(sunday);
     saturday.setDate(saturday.getDate() + 6);
     saturday.setHours(23, 59, 59, 999);
-
     onWeekChange(saturday, sunday);
   };
 
@@ -322,12 +340,13 @@ export default function WeekCalendar({
                 }}
               >
                 <Button
-                  variant="outlined"
-                  color="terciary"
+                  variant="contained"
+                  color="primary"
                   size="large"
                   onClick={onAction}
                   startIcon={actionIcon}
                   sx={{ width: { xs: "100%", md: "auto" } }}
+                  disableElevation={0}
                 >
                   {actionText}
                 </Button>
@@ -342,7 +361,12 @@ export default function WeekCalendar({
                     "mes",
                     "ano",
                   ])}
-                </Typography>
+                </Typography>{" "}
+                {loading && (
+                  <IconButton disabled>
+                    <CircularProgress color="inherit" size={25} />
+                  </IconButton>
+                )}
               </Box>
               {tools && (
                 <>
@@ -369,7 +393,13 @@ export default function WeekCalendar({
 
           <Grid
             size={12}
-            sx={{ overflowX: "scroll", background: "#212121", p: "24px 16px" }}
+            sx={{
+              overflowX: "auto",
+              background: "#212121",
+              p: "24px",
+              borderRadius: "24px",
+            }}
+            elevation={0}
             component={Paper}
           >
             <table
@@ -398,7 +428,10 @@ export default function WeekCalendar({
                   {Array.from({ length: 8 }).map((_, i) => (
                     <td
                       key={i}
-                      style={{ borderRight: "1px solid #444", height: "15px" }}
+                      style={{
+                        borderRight: "1px solid #444",
+                        height: "15px",
+                      }}
                     ></td>
                   ))}
                 </tr>
@@ -418,7 +451,11 @@ export default function WeekCalendar({
                         .padStart(2, "0")}:00`}</span>
                     </td>
                     <td
-                      style={{ borderTop: "1px solid #444", width: "10px" }}
+                      style={{
+                        borderTop: "1px solid #444",
+                        borderBottom: "1px solid #444",
+                        width: "10px",
+                      }}
                     ></td>
                     {weekDates.map((date, dayIndex) => (
                       <td
@@ -495,7 +532,7 @@ export default function WeekCalendar({
                                       key={event.id}
                                       event={event}
                                       onSelect={onEventClick}
-                                      onDelete={() => {}}
+                                      // onDelete={() => {}}
                                       allowDrag={
                                         allowEventMove && !isDisabledEvent
                                       }

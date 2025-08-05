@@ -38,8 +38,8 @@ const SwipeIndicator = ({ children }) => {
   }, []);
 
   return (
-    <Box sx={{ position: "relative", display: "inline-block" }}>
-      <Box sx={{ maxWidth: "calc(100vw - 20px)" }}>{children}</Box>
+    <Box sx={{ position: "relative", display: "inline-block", width: "100%" }}>
+      <Box sx={{ width: "100%" }}>{children}</Box>
       {visible && (
         <Box
           sx={{

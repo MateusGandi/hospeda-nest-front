@@ -57,9 +57,13 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     agendamento: null,
   });
   const [page, setPage] = useState(null);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!subPath) {
+    if (!subPath && !initialized) {
+      navigate("cliente");
+      setInitialized(true);
+    } else if (!subPath) {
       onClose();
     }
   }, [subPath]);
@@ -123,19 +127,15 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       alertCustom("Erro interno!");
     }
   };
+
   useEffect(() => {
     setEmpresa(barbearia);
   }, []);
 
   useEffect(() => {
-    console.log("form", form);
-  }, [form]);
-
-  useEffect(() => {
     setPage((prev) => ({
       ...prev,
       onClose: () => {
-        onClose();
         navigate("/dashboard");
         setForm({
           barbearia: barbearia,

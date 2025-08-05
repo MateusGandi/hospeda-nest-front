@@ -145,61 +145,6 @@ const Servico = ({
     }
   };
 
-  const RenderForm = () => {
-    return (
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        <Grid item size={{ xs: 12, md: 4 }}>
-          <CustomInput
-            label="Nome do serviço"
-            placeholder="Nome do serviço"
-            name="nome"
-            value={data.nome}
-            onChange={handleChange}
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
-        <Grid item size={{ xs: 12, md: 4 }}>
-          <CustomInput
-            label="Duração média"
-            placeholder="hh:mm"
-            name="tempoGasto"
-            value={data.tempoGasto}
-            onChange={handleChange}
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
-        <Grid item size={{ xs: 12, md: 4 }}>
-          <CustomInput
-            label="Preço do serviço"
-            placeholder="Preço do serviço"
-            name="preco"
-            startIcon={"R$"}
-            value={data.preco}
-            onChange={handleChange}
-            variant="outlined"
-            fullWidth
-          />
-        </Grid>
-
-        <Grid item size={12}>
-          <CustomInput
-            label="Descrição"
-            multiline={true}
-            minRows={4}
-            name="descricao"
-            value={data.descricao}
-            onChange={handleChange}
-            variant="outlined"
-            type="number"
-            fullWidth
-          />
-        </Grid>
-      </Grid>
-    );
-  };
-
   return (
     <Modal
       open={open}
@@ -218,7 +163,56 @@ const Servico = ({
         onChange={(e) => setTab(e)}
         selected={tab}
         views={[
-          <RenderForm />,
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            <Grid item size={{ xs: 12, md: 4 }}>
+              <CustomInput
+                label="Nome do serviço"
+                placeholder="Nome do serviço"
+                name="nome"
+                value={data.nome}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+              />
+            </Grid>
+            <Grid item size={{ xs: 12, md: 4 }}>
+              <CustomInput
+                label="Duração média"
+                placeholder="hh:mm"
+                name="tempoGasto"
+                value={data.tempoGasto}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+              />
+            </Grid>
+            <Grid item size={{ xs: 12, md: 4 }}>
+              <CustomInput
+                label="Preço do serviço"
+                placeholder="Preço do serviço"
+                name="preco"
+                startIcon={"R$"}
+                value={data.preco}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item size={12}>
+              <CustomInput
+                label="Descrição"
+                multiline={true}
+                minRows={4}
+                name="descricao"
+                value={data.descricao}
+                onChange={handleChange}
+                variant="outlined"
+                type="number"
+                fullWidth
+              />
+            </Grid>
+          </Grid>,
           <Commission
             servico={data}
             funcionarios={funcionarios}

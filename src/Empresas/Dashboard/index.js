@@ -50,7 +50,6 @@ import GetUserLocation from "../../Componentes/Location/Modal";
 import LoadingImagePulse from "../../Componentes/Effects/loading";
 import Modal from "../../Componentes/Modal";
 import CustomCard from "../../Componentes/Card";
-import LeftNavigationBar from "../../Componentes/NavigationBar/Drawer";
 
 import Onboarding from "./Onboarding";
 import EditData from "./Edit";
@@ -447,6 +446,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                           }}
                         >
                           <EditData
+                            tipo="button"
                             open={false}
                             onClose={() => navigate(-1)}
                             barbearia={barbearia}
@@ -498,12 +498,6 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                           >
                             Robô WhatsApp
                           </Button>{" "}
-                          {/* <LeftNavigationBar
-                            renderPage={false}
-                            pages={pages}
-                            footer={footer}
-                            onChangePage={() => {}}
-                          /> */}
                         </Grid>
                       </Grid>
                     </Grid>

@@ -32,10 +32,30 @@ import BarberShopMenu from "../../../Empresas/Dashboard";
 import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
 import LoadingImagePulse from "../../Effects/loading";
 
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
+import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
+import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
+import RequestPageIcon from "@mui/icons-material/RequestPage";
+import StarIcon from "@mui/icons-material/Star";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded";
+import {
+  Store,
+  Settings,
+  People,
+  Build,
+  CalendarMonth,
+  Home,
+} from "@mui/icons-material";
+
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dados, setDados] = useState(null);
+  const [selected, setSelected] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,6 +82,12 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     fetchRoutesAllowed();
   }, [pathSelecionado]);
 
+  const handleClose = () => {
+    navigate(-1);
+  };
+
+  /*Funções globais*/
+
   const fetch = async () => {
     try {
       const data = await Api.query(
@@ -69,7 +95,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         `/establishment?establishmentId=${getLocalItem("establishmentId")}`
       );
 
-      const [latitude, longitude] = data.longitudeAndLatitude || [];
+      const [latitude, longitude] = data.longitudeAndLatitude.split(",") || [];
       const { horarioFechamento, horarioAbertura } = data;
 
       setDados({
@@ -82,6 +108,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       alertCustom("Erro ao buscar informações do estabelecimento!");
     }
   };
+
   const handleSave = async (info, message = true) => {
     if (!dados) return;
     try {
@@ -100,9 +127,105 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     fetch();
   }, []);
 
-  const handleClose = () => {
-    navigate(-1);
+  /*end - Funções globais*/
+
+  const subPaths = {
+    "": {
+      icon: <Home />,
+      titulo: "Início",
+      componente: (
+        <BarberShopMenu
+          alertCustom={alertCustom}
+          barbearia={dados}
+          reload={fetch}
+          onSave={handleSave}
+        />
+      ),
+    },
+    agendamentos: {
+      icon: <CalendarMonth />,
+      titulo: "Agendamentos",
+      componente: (
+        <Agendamentos alertCustom={alertCustom} onClose={handleClose} />
+      ),
+    },
+    funcionarios: {
+      icon: <People />,
+      titulo: "Funcionários",
+      componente: (
+        <GerenciarFuncionarios
+          alertCustom={alertCustom}
+          onClose={handleClose}
+        />
+      ),
+    },
+    servicos: {
+      icon: <Build />,
+      titulo: "Serviços",
+      componente: (
+        <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
+      ),
+    },
+    financeiro: {
+      icon: <BusinessCenterRoundedIcon />,
+      titulo: "Financeiro",
+      componente: (
+        <GestaoFinancas
+          alertCustom={alertCustom}
+          onClose={handleClose}
+          barbearia={dados}
+        />
+      ),
+    },
+    escala: {
+      icon: <Settings />,
+      titulo: "Minha Escala",
+      componente: (
+        <WorkSchedule
+          alertCustom={alertCustom}
+          openModal={true}
+          type="other"
+          onClose={handleClose}
+        />
+      ),
+    },
+    whatsapp: {
+      icon: <WhatsAppIcon />,
+      titulo: "WhatsApp",
+      componente: <WhatsApp barbearia={dados} alertCustom={alertCustom} />,
+    },
+    agendamento: {
+      icon: <CalendarMonth />,
+      titulo: "Agendar",
+      componente: (
+        <AgendamentoManual
+          barbearia={dados}
+          alertCustom={alertCustom}
+          onClose={handleClose}
+        />
+      ),
+    },
+    editar: {
+      icon: <Store />,
+      titulo: "Barbearia",
+      componente: (
+        <EditData
+          onClose={handleClose}
+          barbearia={dados}
+          alertCustom={alertCustom}
+          onSave={handleSave}
+        />
+      ),
+    },
   };
+
+  const pages = Object.entries(subPaths).map(([key, value], index) => ({
+    path: key,
+    id: index,
+    icon: value.icon,
+    titulo: value.titulo,
+    componente: value.componente,
+  }));
 
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
@@ -112,67 +235,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/complete": <Login page="complete" alertCustom={alertCustom} />,
     "/home": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
-    "/barbearia": <Empresa alertCustom={alertCustom} />,
-    "/dashboard": (
-      <SubRoutes
-        dados={dados}
-        views={{
-          "/agendamentos": (
-            <Agendamentos alertCustom={alertCustom} onClose={handleClose} />
-          ),
-          "/funcionarios": (
-            <GerenciarFuncionarios
-              alertCustom={alertCustom}
-              onClose={handleClose}
-            />
-          ),
-          "/servicos": (
-            <GerenciarServicos
-              alertCustom={alertCustom}
-              onClose={handleClose}
-            />
-          ),
-          "/financeiro": (
-            <GestaoFinancas
-              alertCustom={alertCustom}
-              onClose={handleClose}
-              barbearia={dados}
-            />
-          ),
-          "/escala": (
-            <WorkSchedule
-              alertCustom={alertCustom}
-              openModal={true}
-              type="other"
-              onClose={handleClose}
-            />
-          ),
-          "/whatsapp": <WhatsApp barbearia={dados} alertCustom={alertCustom} />,
-          "/agendamento": (
-            <AgendamentoManual
-              barbearia={dados}
-              alertCustom={alertCustom}
-              onClose={handleClose}
-            />
-          ),
-          "/editar": (
-            <EditData
-              onClose={handleClose}
-              barbearia={dados}
-              alertCustom={alertCustom}
-              onSave={handleSave}
-            />
-          ),
-        }}
-      >
-        <BarberShopMenu
-          alertCustom={alertCustom}
-          barbearia={dados}
-          reload={fetch}
-          onSave={handleSave}
-        />
-      </SubRoutes>
-    ),
+    "/barbearia": <Empresa alertCustom={alertCustom} />, //barbearia tbm tem subrotas, mas como elas não são independentes, não podemos usar SubRoutes
     "/manager": <Manager alertCustom={alertCustom} />,
     "/me": <UserData alertCustom={alertCustom} />,
     "/plans": <Plans alertCustom={alertCustom} onClose={handleClose} />,
@@ -181,6 +244,8 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/review": <Reviews alertCustom={alertCustom} />,
     "/faq": <FAQ />,
     "/envite": <Envite alertCustom={alertCustom} />,
+
+    "/dashboard": <SubRoutes dados={dados} views={subPaths} pages={pages} />,
   };
 
   if (isLoading) {
@@ -205,13 +270,10 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
   if (!pathAtual) {
     return <Navigate to="/login" />;
   } else {
-    if (
-      !["/login", "/create", "/recover", "/change", "/complete"].some(
-        (rot) => rot == lastPath
-      )
-    ) {
-      setLocalItem("lastRoute", lastPath);
-    }
+    !["/login", "/create", "/recover", "/change", "/complete"].some(
+      (rot) => rot == lastPath
+    ) && setLocalItem("lastRoute", lastPath);
+
     return (
       <Box
         sx={{

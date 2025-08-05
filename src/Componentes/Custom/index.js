@@ -19,9 +19,11 @@ import Modal from "../Modal";
 import { useGoogleLogin } from "@react-oauth/google";
 import GoogleIcon from "../../Assets/Login/google-icon.svg";
 
-const CustomTextField = styled(TextField)({
+const CustomTextField = styled(TextField)(({ disableElevation }) => ({
   "& .MuiOutlinedInput-root": {
-    backgroundColor: "rgba(256, 256, 256, 0.1)",
+    backgroundColor: disableElevation
+      ? "transparent"
+      : "rgba(256, 256, 256, 0.1)",
     borderRadius: 8,
     border: "none",
     color: "#fff !important",
@@ -46,7 +48,7 @@ const CustomTextField = styled(TextField)({
       color: "rgba(255,255,255,0.7)",
     },
   },
-});
+}));
 
 export const CustomInput = ({
   placeholder,
@@ -175,14 +177,15 @@ export default function CustomDateInput({ value, onChange, label, ...props }) {
     }));
     onChange(data, true);
   };
-
   return (
     <>
       <CustomInput
         fullWidth
         placeholder={"dd/mm/aaaa"}
         label={label}
-        value={dados.dataFormatada || format(value, "dd/MM/yyyy")}
+        value={
+          dados.dataFormatada || (value ? format(value, "dd/MM/yyyy") : "")
+        }
         onChange={handleTextChange}
         startIcon={
           <IconButton onClick={() => setDados("open", true)}>

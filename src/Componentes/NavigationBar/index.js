@@ -298,6 +298,7 @@ const NavigationBar = ({ alertCustom }) => {
         sx={{
           position: "absolute",
           left: 0,
+          zIndex: 998,
           background: "none",
         }}
       >
