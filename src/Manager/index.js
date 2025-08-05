@@ -5,7 +5,7 @@ import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 
 import Sales from "./Pages/Sales";
-import LeftNavigationBar from "../Componentes/NavigationBar/Drawer";
+//import LeftNavigationBar from "../Componentes/NavigationBar/Drawer";
 
 export default function Manager() {
   const pages = [
@@ -28,5 +28,5 @@ export default function Manager() {
     },
   ];
 
-  return <LeftNavigationBar pages={pages} footer={footer} />;
+  return <div>oi</div>; //<LeftNavigationBar pages={pages} footer={footer} />;
 }

@@ -81,6 +81,13 @@ button {
   align-items: center;
 }
 
+.justify-center-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .justify-between {
   display: flex;
   justify-content: space-between;

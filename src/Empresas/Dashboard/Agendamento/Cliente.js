@@ -1,23 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
   Typography,
   Grid2 as Grid,
   Box,
-  IconButton,
   Avatar,
 } from "@mui/material";
-import { PersonAdd, PersonSearch } from "@mui/icons-material"; // Ícones
-import ClienteForm from "./ClienteForm";
-import SearchField from "../../../../Componentes/AutoComplete/searchAutocomplete";
+import { PersonAdd, PersonSearch } from "@mui/icons-material";
+import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
+import { CustomInput } from "../../../Componentes/Custom";
+import { formatPhone } from "../../../Componentes/Funcoes";
 
-export default function ClienteSelecionar({ formaData, setFormData }) {
+export default function ClienteSelecionar({ formData, setFormData }) {
   const [option, setOption] = useState(0);
 
   const handleChangeOption = (value) => {
     setFormData((prev) => ({ ...prev, cliente: null }));
     setOption(value);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      cliente: {
+        ...prev.cliente,
+        [name]: name === "telefone" ? formatPhone(value) : value,
+      },
+    }));
   };
 
   return (
@@ -27,18 +38,18 @@ export default function ClienteSelecionar({ formaData, setFormData }) {
           { id: 0, label: "Buscar Cliente", icon: <PersonSearch /> },
           { id: 1, label: "Novo Cliente", icon: <PersonAdd /> },
         ].map((item) => (
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid key={item.id} item size={{ xs: 12, md: 6 }}>
             <Card
               elevation={0}
               variant="outlined"
               sx={{
                 cursor: "pointer",
                 border:
-                  option == item.id
+                  option === item.id
                     ? "2px solid rgba(256,256,256,0.1)"
                     : "2px solid transparent",
                 backgroundColor:
-                  option == item.id
+                  option === item.id
                     ? "rgba(256, 256, 256, 0.05)"
                     : "transparent",
                 p: 3,
@@ -61,13 +72,32 @@ export default function ClienteSelecionar({ formaData, setFormData }) {
       </Grid>
 
       <Box mt={5}>
-        {option == 1 ? (
-          <ClienteForm
-            formaData={formaData?.cliente}
-            setformaData={(item) =>
-              setFormData((prev) => ({ ...prev, cliente: item }))
-            }
-          />
+        {option === 1 ? (
+          <Grid container spacing={4}>
+            <Grid item size={{ xs: 12, md: 6 }}>
+              <CustomInput
+                fullWidth
+                placeholder="Digite o nome"
+                label="Nome"
+                name="nome"
+                value={formData.cliente?.nome}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item size={{ xs: 12, md: 6 }}>
+              <CustomInput
+                fullWidth
+                label="Telefone"
+                name="telefone"
+                placeholder="Digite o telefone"
+                value={formData.cliente?.telefone}
+                onChange={handleChange}
+                variant="outlined"
+                type="tel"
+              />
+            </Grid>
+          </Grid>
         ) : (
           <SearchField
             fields={["telefone", "nome"]}
@@ -76,7 +106,7 @@ export default function ClienteSelecionar({ formaData, setFormData }) {
             setItemSelecionado={(item) =>
               setFormData((prev) => ({ ...prev, cliente: item }))
             }
-            itemSelecionado={formaData?.cliente}
+            itemSelecionado={formData?.cliente}
           />
         )}
       </Box>

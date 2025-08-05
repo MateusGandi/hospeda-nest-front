@@ -57,9 +57,13 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     agendamento: null,
   });
   const [page, setPage] = useState(null);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!subPath) {
+    if (!subPath && !initialized) {
+      navigate("cliente");
+      setInitialized(true);
+    } else if (!subPath) {
       onClose();
     }
   }, [subPath]);
@@ -70,7 +74,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
       establishmentId: empresa.id,
-      services: form.servicos.map(({ id }) => id),
+      services: form.servicos.map(({ id }) => `${id}`),
       userName: form.cliente.nome,
       userId: form.cliente.id,
       barberId: barbearia.funcionarios.find(
@@ -123,19 +127,15 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       alertCustom("Erro interno!");
     }
   };
+
   useEffect(() => {
     setEmpresa(barbearia);
   }, []);
 
   useEffect(() => {
-    console.log("form", form);
-  }, [form]);
-
-  useEffect(() => {
     setPage((prev) => ({
       ...prev,
       onClose: () => {
-        onClose();
         navigate("/dashboard");
         setForm({
           barbearia: barbearia,

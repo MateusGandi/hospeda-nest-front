@@ -10,11 +10,16 @@ import {
   ListItemAvatar,
 } from "@mui/material";
 
-export const PaperList = ({ children, items = [], variant = "outlined" }) => {
+export const PaperList = ({
+  children,
+  items = [],
+  variant = "outlined",
+  sx = {},
+}) => {
   return (
     <Paper
       variant={variant}
-      sx={{ background: "transparent", overflow: "hidden" }}
+      sx={{ background: "transparent", overflow: "hidden", ...sx }}
     >
       {children}
       <Divider />
@@ -28,8 +33,8 @@ export const PaperList = ({ children, items = [], variant = "outlined" }) => {
                   <Avatar
                     src={item.image}
                     sx={{
-                      width: 60,
-                      height: 60,
+                      width: item.size || 60,
+                      height: item.size || 60,
                       bgcolor: !item.image ? "primary.main" : "transparent",
                     }}
                   >

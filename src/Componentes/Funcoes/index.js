@@ -135,9 +135,9 @@ export const formatDate = (valor) => {
 };
 
 export const formatMoney = (valor) => {
-  if (!valor) return "";
+  if (!valor) return "0.00";
 
-  const numeros = valor.replace(/\D/g, "");
+  const numeros = valor.toString().replace(/\D/g, "");
 
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
@@ -266,6 +266,21 @@ export const getLocalItem = (key) => {
 
 export const primeiraMaiuscula = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);
+
+export function isAllUppercase(str) {
+  const onlyLetters = str.replace(/[^a-zA-Z]/g, "");
+  return onlyLetters === onlyLetters.toUpperCase();
+}
+
+export function diferencaEmMinutos(dataInicial, dataFinal) {
+  const inicio = new Date(dataInicial);
+  const fim = new Date(dataFinal);
+
+  const diffMs = fim - inicio;
+  const diffMin = Math.floor(diffMs / 1000 / 60);
+  console.log(diffMin, dataInicial, dataFinal);
+  return diffMin;
+}
 
 export const getStatus = (status) => {
   switch (status) {

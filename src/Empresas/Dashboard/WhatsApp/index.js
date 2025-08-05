@@ -134,49 +134,53 @@ Se preferir, estamos no Tonsus, pode agendar com  a gente por lá também!
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 5 }}>
-            <Stack>
-              <Card elevation={0} sx={{ background: "transparent" }}>
-                <CardContent>
+            <Box
+              sx={{
+                width: "350px",
+                height: "500px",
+                margin: "0 auto",
+                position: "relative",
+                backgroundColor: "#fff",
+                boxShadow: "0 0 20px rgba(0,0,0,0.2)",
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                  padding: 2,
+                  overflowY: "auto",
+                }}
+              >
+                {mensagensChat.map((mensagem, index) => (
                   <Box
+                    key={index}
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 1,
-                      borderRadius: 2,
-                      padding: 1.5,
-                      fontSize: "0.9rem",
-                      height: "100%",
+                      alignSelf:
+                        mensagem.remetente === "bot"
+                          ? "flex-end"
+                          : "flex-start",
+                      background:
+                        mensagem.remetente === "bot" ? "#d1f7d6" : "#ffffff",
+                      borderRadius:
+                        mensagem.remetente === "bot"
+                          ? "10px 10px 0px 10px"
+                          : "10px 10px 10px 0px",
+                      padding: "8px 12px",
+                      maxWidth: "80%",
+                      whiteSpace: "pre-line",
+                      color: "#000",
+                      fontSize: "0.85rem",
                     }}
                   >
-                    {mensagensChat.map((mensagem, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          alignSelf:
-                            mensagem.remetente === "bot"
-                              ? "flex-end"
-                              : "flex-start",
-                          background:
-                            mensagem.remetente === "bot"
-                              ? "#d1f7d6"
-                              : "#ffffff",
-                          borderRadius:
-                            mensagem.remetente === "bot"
-                              ? "10px 10px 0px 10px"
-                              : "10px 10px 10px 0px",
-                          padding: "8px 12px",
-                          maxWidth: "80%",
-                          whiteSpace: "pre-line",
-                          color: "#000",
-                        }}
-                      >
-                        {mensagem.texto}
-                      </Box>
-                    ))}
+                    {mensagem.texto}
                   </Box>
-                </CardContent>
-              </Card>{" "}
-            </Stack>
+                ))}
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Modal>

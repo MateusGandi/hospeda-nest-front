@@ -10,7 +10,9 @@ import {
   Paper,
   styled,
   Typography,
+  Button,
 } from "@mui/material";
+import CustomDateInput from "../Custom";
 
 const CustomField = styled(TextField)({
   "& .MuiOutlinedInput-root": {
@@ -40,7 +42,7 @@ const CustomField = styled(TextField)({
 });
 
 const EditableTable = ({ columns, rows, onChange }) => {
-  const handleCellChange = (rowIndex, field, value) => {
+  const handleCellChange = (rowIndex, field, value, valid, e) => {
     try {
       const updatedRows = [...rows];
       updatedRows[rowIndex] = {
@@ -78,10 +80,10 @@ const EditableTable = ({ columns, rows, onChange }) => {
                 key={col.field}
                 sx={{
                   width: col.width
-                    ? { xs: col.width, md: col.width / 2 }
+                    ? { xs: col.width * 2, lg: col.width }
                     : "auto",
                   maxWidth: col.width
-                    ? { xs: col.width, md: col.width / 2 }
+                    ? { xs: col.width * 2, lg: col.width }
                     : "auto",
                   borderRight:
                     index !== columns.length - 1 ? "1px solid #505050" : "none",
@@ -107,6 +109,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
                   textAlign: "center",
                   color: "#aaa",
                   padding: "16px",
+                  borderBottom: "none",
                 }}
               >
                 <Typography variant="body1">
@@ -132,28 +135,53 @@ const EditableTable = ({ columns, rows, onChange }) => {
                         );
                       } else if (
                         col.editable &&
-                        (col.type === "text" || col.type === "number")
+                        (col.type === "text" ||
+                          col.type === "number" ||
+                          col.type === "date")
                       ) {
-                        cellContent = (
-                          <CustomField
-                            fullWidth
-                            type={col.type}
-                            value={
-                              col.format
-                                ? col.format(rowIndex, col.field, value, value)
-                                : value || ""
-                            }
-                            placeholder={col.placeholder || ""}
-                            onChange={(e) =>
-                              handleCellChange(
-                                rowIndex,
-                                col.field,
-                                e.target.value,
-                                value
-                              )
-                            }
-                          />
-                        );
+                        cellContent =
+                          col.type == "date" ? (
+                            <CustomDateInput
+                              disableElevation
+                              type="text"
+                              fullWidth
+                              value={value}
+                              placeholder={col.placeholder || ""}
+                              onChange={(data, valid) =>
+                                handleCellChange(
+                                  rowIndex,
+                                  col.field,
+                                  data,
+                                  valid
+                                )
+                              }
+                            />
+                          ) : (
+                            <CustomField
+                              fullWidth
+                              type={col.type}
+                              value={
+                                col.format
+                                  ? col.format(
+                                      rowIndex,
+                                      col.field,
+                                      value,
+                                      value
+                                    )
+                                  : value
+                              }
+                              placeholder={col.placeholder || ""}
+                              onChange={(e) =>
+                                handleCellChange(
+                                  rowIndex,
+                                  col.field,
+                                  e.target.value,
+                                  value,
+                                  e
+                                )
+                              }
+                            />
+                          );
                       } else {
                         const displayValue = col.format
                           ? col.format(value, row)

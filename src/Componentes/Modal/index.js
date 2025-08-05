@@ -22,6 +22,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import LoadingImagePulse from "../Effects/loading";
 import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
 import { isMobile } from "../Funcoes";
+import { GoogleLoginButton } from "../Custom";
 
 const full = {
   [undefined]: { xs: false, md: false, sec: false },
@@ -140,7 +141,7 @@ const Modal = ({
               maxWidth={maxWidth}
               sx={{
                 height: "100%",
-                p: "0 !important",
+                p: "0px !important",
                 borderRadius: { xs: 0, md: "0" },
               }}
               onSubmit={(e) => {
@@ -156,7 +157,7 @@ const Modal = ({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: alignItems,
-                  pt: { xs: 0, md: 3 },
+                  pt: { xs: 0, md: 2 },
                   height: "100%",
                 }}
               >
@@ -206,7 +207,7 @@ const Modal = ({
                             },
                       m: 0,
                       p: ["modal"].includes(component)
-                        ? "10px 0"
+                        ? "10px"
                         : { xs: "0 16px", md: "0px 24px" },
                       background: "transparent",
                     }}
@@ -221,6 +222,7 @@ const Modal = ({
                               p: "20px 0",
                               height: "100%",
                               display: "flex",
+                              flexWrap: "nowrap",
                               justifyContent: "space-between",
                               flexDirection: "column",
                             }
@@ -248,7 +250,7 @@ const Modal = ({
                                   disabled={loadingButton}
                                   type="submit"
                                   sx={{
-                                    height: "40px",
+                                    height: 45,
                                     background:
                                       "linear-gradient(to right, #2C69D1, #0ABCF9)",
                                     ...buttonStyle,
@@ -270,7 +272,12 @@ const Modal = ({
                                     </Divider>
                                   </Grid>
                                   <Grid size={12}>
-                                    <GoogleLogin
+                                    <GoogleLoginButton
+                                      text={buttons[0]?.text || "signin_with"}
+                                      onError={(e) => buttons[0]?.action(e)}
+                                      onSuccess={(e) => buttons[0]?.action(e)}
+                                    />
+                                    {/* <GoogleLogin
                                       width="100%"
                                       disable
                                       size="large"
@@ -280,7 +287,7 @@ const Modal = ({
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                       onError={(e) => buttons[0]?.action(e)}
                                       buttonText="Login"
-                                    />
+                                    /> */}
                                   </Grid>
                                 </>
                               )}
@@ -317,7 +324,9 @@ const Modal = ({
               }}
               sx={{
                 display: "flex",
-                flexWrap: "wrap",
+                alignItems: "start",
+                justifyContent: "end",
+                flexWrap: { xs: "wrap", md: "nowrap" },
                 gap: 1,
                 m: 1,
               }}

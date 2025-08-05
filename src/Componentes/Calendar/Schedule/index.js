@@ -7,18 +7,52 @@ import {
   Container,
   Grid2 as Grid,
   Button,
+  CircularProgress,
 } from "@mui/material";
-import { Close, ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { formatDataToString } from "../../Funcoes";
+import { Close } from "@mui/icons-material";
+import { formatDataToString, isMobile } from "../../Funcoes";
 import BoxSuspenso from "../../Popover/Suspenso";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { MultiBackend, TouchTransition } from "react-dnd-multi-backend";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { Preview } from "react-dnd-multi-backend";
+import { LoadingBox } from "../../Custom";
+
+const HTML5toTouch = {
+  backends: [
+    {
+      id: "html5",
+      backend: HTML5Backend,
+      transition: undefined,
+    },
+    {
+      id: "touch",
+      backend: TouchBackend,
+      preview: true,
+      transition: TouchTransition,
+      options: {
+        enableMouseEvents: true,
+      },
+    },
+  ],
+};
+
 const ItemTypes = {
   EVENT: "event",
+};
+
+const isDisabledDateTime = (disabledRanges, dateTime) => {
+  if (!Array.isArray(disabledRanges)) return false;
+
+  return disabledRanges.some(({ inicio, fim }) => {
+    if (!inicio || !fim) return false;
+    return dateTime >= inicio && dateTime < fim;
+  });
 };
 
 function Event({ event, onSelect, onDelete, allowDrag }) {
@@ -52,7 +86,7 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         left: 4,
         right: 4,
         height: eventHeight,
-        bgcolor: "#00aaff",
+        bgcolor: event.color || "#00aaff",
         color: "#fff",
         padding: "4px 6px",
         display: "flex",
@@ -61,9 +95,10 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         alignItems: "flex-start",
         overflow: "hidden",
         zIndex: 99,
-        cursor: allowDrag ? "grab" : "default",
         userSelect: "none",
         borderRadius: "6px",
+        cursor: allowDrag ? "grab" : "grabbing !important",
+        p: 1,
       }}
     >
       <Box
@@ -72,21 +107,23 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         alignItems="center"
         justifyContent="space-between"
       >
-        <Box sx={{ mr: 1, fontSize: 18, userSelect: "none" }}>⠿</Box>
         <Typography variant="body2" fontWeight="bold" flexGrow={1} noWrap>
           {event.title}
         </Typography>
-        <IconButton
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(event.id);
-          }}
-          sx={{ color: "white" }}
-        >
-          <Close fontSize="small" />
-        </IconButton>
+        {onDelete && (
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(event.id);
+            }}
+            sx={{ color: "white" }}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        )}
       </Box>
+      <Typography variant="body2">{event.description}</Typography>
     </Paper>
   );
 }
@@ -126,12 +163,18 @@ export default function WeekCalendar({
   actionText = "Novo Evento",
   actionIcon = null,
   tools,
-  disabledTime = [],
+  toolsText = "Opções",
+  disable = null,
   allowEventMove = true,
   onEventClick = () => {},
   onEventMove = () => {},
   onWeekChange = () => {},
   onCellClick = () => {},
+  onError = () => {},
+  legend,
+  startHour = 7,
+  endHour = 20,
+  loading = false,
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [internalEvents, setInternalEvents] = useState([]);
@@ -154,6 +197,7 @@ export default function WeekCalendar({
     const diff = d.getDate() - day; // volta para domingo
     d.setHours(0, 0, 0, 0);
     d.setDate(diff);
+
     return d;
   }, [currentDate]);
 
@@ -167,18 +211,47 @@ export default function WeekCalendar({
     [startOfWeek]
   );
 
-  const hours = Array.from({ length: 11 }, (_, i) => 13 + i);
+  // useEffect(() => {
+  //   const sunday = new Date(startOfWeek);
+  //   sunday.setHours(0, 0, 0, 0);
+
+  //   const saturday = new Date(sunday);
+  //   saturday.setDate(saturday.getDate() + 6);
+  //   saturday.setHours(0, 0, 0, 0);
+  //   console.log("calculei de novo ", saturday, sunday);
+  //   onWeekChange(saturday, sunday);
+  // }, [startOfWeek]);
+
+  const hours = Array.from(
+    { length: endHour - startHour + 1 },
+    (_, i) => startHour + i
+  );
 
   // Atualiza evento na nova data/hora/minuto
   const handleDropEvent = (id, dayIndex, hour, minute) => {
     const newDate = new Date(weekDates[dayIndex]);
     newDate.setHours(hour, minute, 0, 0);
 
+    const eventoExistente = internalEvents.find(
+      (ev) => ev.id !== id && ev.date.getTime() === newDate.getTime()
+    );
+
+    if (eventoExistente) {
+      onError({
+        message: "Já existe um evento nesse horário.",
+      });
+      return; // impede sobreposição
+    }
+
     const updated = internalEvents.map((ev) =>
       ev.id === id ? { ...ev, date: newDate } : ev
     );
+
     setInternalEvents(updated);
-    onEventMove(updated.find((e) => e.id === id));
+    onEventMove(
+      updated.find((e) => e.id === id),
+      newDate
+    );
   };
 
   // Formata cabeçalho dias da semana
@@ -196,16 +269,56 @@ export default function WeekCalendar({
       </Box>
     );
   };
+  // useEffect(() => {
+  //   const sunday = new Date(startOfWeek);
+  //   sunday.setHours(0, 0, 0, 0);
+
+  //   const saturday = new Date(sunday);
+  //   saturday.setDate(saturday.getDate() + 6);
+  //   saturday.setHours(0, 0, 0, 0);
+  //   console.log("calculei de novo ", saturday, sunday);
+  //   onWeekChange(saturday, sunday);
+  // }, [startOfWeek]);
 
   const goWeek = (dir) => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + dir * 7);
     setCurrentDate(newDate);
-    onWeekChange(newDate);
+
+    const sunday = new Date(newDate);
+    sunday.setDate(sunday.getDate() - sunday.getDay());
+    sunday.setHours(0, 0, 0, 0);
+
+    const saturday = new Date(sunday);
+    saturday.setDate(saturday.getDate() + 6);
+    saturday.setHours(23, 59, 59, 999);
+    onWeekChange(saturday, sunday);
+  };
+
+  const generatePreview = ({ itemType, item, style }) => {
+    if (itemType === "event") {
+      return (
+        <div
+          style={{
+            ...style,
+            padding: "4px 6px",
+            backgroundColor: "#00aaff",
+            color: "#fff",
+            borderRadius: "6px",
+            width: "150px",
+            zIndex: 9999,
+          }}
+        >
+          {item.title || "Evento"}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+      {isMobile && <Preview generator={generatePreview} />}
       <Container
         maxWidth="lg"
         sx={{
@@ -217,7 +330,7 @@ export default function WeekCalendar({
       >
         <Grid container justifyContent="center">
           <Grid size={12}>
-            <Box className="justify-between-wrap" sx={{ mb: 2 }}>
+            <Box className="justify-between-wrap" sx={{ my: 3 }}>
               {" "}
               <Box
                 className="justify-center-wrap"
@@ -227,12 +340,13 @@ export default function WeekCalendar({
                 }}
               >
                 <Button
-                  variant="outlined"
-                  color="terciary"
+                  variant="contained"
+                  color="primary"
                   size="large"
                   onClick={onAction}
                   startIcon={actionIcon}
                   sx={{ width: { xs: "100%", md: "auto" } }}
+                  disableElevation={0}
                 >
                   {actionText}
                 </Button>
@@ -247,7 +361,12 @@ export default function WeekCalendar({
                     "mes",
                     "ano",
                   ])}
-                </Typography>
+                </Typography>{" "}
+                {loading && (
+                  <IconButton disabled>
+                    <CircularProgress color="inherit" size={25} />
+                  </IconButton>
+                )}
               </Box>
               {tools && (
                 <>
@@ -257,7 +376,7 @@ export default function WeekCalendar({
                   <Box sx={{ display: { xs: "flex", md: "none" } }}>
                     {" "}
                     <BoxSuspenso
-                      title="Opções"
+                      title={toolsText}
                       open={toolsOpen}
                       setOpen={setToolsOpen}
                       icon={<FilterAltIcon />}
@@ -270,9 +389,17 @@ export default function WeekCalendar({
               )}
             </Box>
           </Grid>
+          {legend && <Grid size={12}>{legend}</Grid>}
+
           <Grid
             size={12}
-            sx={{ p: 5, overflowX: "scroll", bgcolor: "#131314" }}
+            sx={{
+              overflowX: "auto",
+              background: "#212121",
+              p: "24px",
+              borderRadius: "24px",
+            }}
+            elevation={0}
             component={Paper}
           >
             <table
@@ -301,7 +428,10 @@ export default function WeekCalendar({
                   {Array.from({ length: 8 }).map((_, i) => (
                     <td
                       key={i}
-                      style={{ borderRight: "1px solid #444", height: "15px" }}
+                      style={{
+                        borderRight: "1px solid #444",
+                        height: "15px",
+                      }}
                     ></td>
                   ))}
                 </tr>
@@ -321,7 +451,11 @@ export default function WeekCalendar({
                         .padStart(2, "0")}:00`}</span>
                     </td>
                     <td
-                      style={{ borderTop: "1px solid #444", width: "10px" }}
+                      style={{
+                        borderTop: "1px solid #444",
+                        borderBottom: "1px solid #444",
+                        width: "10px",
+                      }}
                     ></td>
                     {weekDates.map((date, dayIndex) => (
                       <td
@@ -350,25 +484,62 @@ export default function WeekCalendar({
                               evDate.getMinutes() < cellStartMinute + 10
                             );
                           });
-
+                          const isDisabled = isDisabledDateTime(
+                            disable,
+                            cellDateTime
+                          );
                           return (
                             <Cell
                               key={subIndex}
                               day={dayIndex}
                               hour={hour}
                               minute={cellStartMinute}
-                              onDropEvent={handleDropEvent}
-                              onCellClick={onCellClick}
+                              onDropEvent={
+                                isDisabled
+                                  ? () =>
+                                      onError({
+                                        message: "Horário não disponível",
+                                      })
+                                  : handleDropEvent
+                              }
+                              onCellClick={
+                                isDisabled
+                                  ? () =>
+                                      onError({
+                                        message: "Horário não disponível",
+                                      })
+                                  : onCellClick
+                              }
                             >
-                              {cellEvents.map((event) => (
-                                <Event
-                                  key={event.id}
-                                  event={event}
-                                  onSelect={onEventClick}
-                                  onDelete={() => {}}
-                                  allowDrag={allowEventMove}
-                                />
-                              ))}
+                              <div
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  backgroundColor: isDisabled
+                                    ? "#333"
+                                    : undefined,
+                                  opacity: isDisabled ? 0.5 : 1,
+                                  pointerEvents: isDisabled ? "none" : "auto",
+                                }}
+                              >
+                                {cellEvents.map((event) => {
+                                  const isDisabledEvent = isDisabledDateTime(
+                                    disable,
+                                    event.date
+                                  );
+                                  return (
+                                    <Event
+                                      key={event.id}
+                                      event={event}
+                                      onSelect={onEventClick}
+                                      // onDelete={() => {}}
+                                      allowDrag={
+                                        allowEventMove && !isDisabledEvent
+                                      }
+                                    />
+                                  );
+                                })}
+                              </div>
                             </Cell>
                           );
                         })}

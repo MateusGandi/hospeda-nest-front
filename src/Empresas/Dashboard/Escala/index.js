@@ -67,16 +67,25 @@ const WorkSchedule = ({
   );
 
   const [lunchRows, setLunchRows] = useState([{ inicio: "", fim: "" }]);
-  const [absences, setAbsences] = useState([
-    { motivo: "", inicio: "", fim: "" },
-  ]);
+  const [absences, setAbsences] = useState([]);
 
   const handleAddAbsence = () => {
-    setAbsences([...absences, { motivo: "", inicio: "", fim: "" }]);
+    setAbsences([
+      ...absences,
+      { motivo: "", horarioInicio: "", horarioFim: "" },
+    ]);
   };
-  const handleRemoveAbsence = (indexToRemove) => {
+
+  const handleRemoveAbsence = async (id, indexToRemove) => {
     setAbsences((prev) => prev.filter((_, i) => i !== indexToRemove));
+    if (id) {
+      await apiService.query("DELETE", `/user/fault/${id}`).catch((error) => {
+        console.error("Erro ao remover ausência:", error);
+        alertCustom("Erro ao remover ausência.");
+      });
+    }
   };
+
   const handleGetHelp = () => {
     setOpened(true);
   };
@@ -100,7 +109,7 @@ const WorkSchedule = ({
       }))
     );
     setLunchRows([{ inicio: "", fim: "" }]);
-    setAbsences([{ motivo: "", inicio: "", fim: "" }]);
+    setAbsences([]);
   };
 
   const setDefaultSchedule = () => {
@@ -117,19 +126,33 @@ const WorkSchedule = ({
 
   const handleSave = async () => {
     try {
+      const id = dados?.id || getLocalItem("userId");
+
       await apiService.query(
         "PUT",
-        `/user/${dados?.id || getLocalItem("userId")}`,
+        `/user/work-schedule/${id}`,
         workDays.map(({ day, ...rest }) => rest)
       );
+      await apiService.query("PUT", `/user/off-hour/${id}`, {
+        horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
+        horarioForaInicial: lunchRows[0].inicio + ":00" || "00:00:00",
+      });
       await apiService.query(
-        "PATCH",
-        `/user/${dados?.id || getLocalItem("userId")}`,
-        { lunch: lunchRows, absences }
+        "POST",
+        `/user/fault/${id}`,
+        absences.map((a) => ({
+          ...a,
+          dia: a.dia.split("T")[0],
+          horarioInicio: a.horarioInicio + ":00",
+          horarioFim: a.horarioFim + ":00",
+          funcionarioId: id,
+        }))
       );
+
       alertCustom("Escala de trabalho salva com sucesso!");
-      setOpen(false);
+      navigate(-1);
     } catch (e) {
+      console.log(e);
       alertCustom("Erro ao salvar a escala.");
     }
   };
@@ -210,30 +233,38 @@ const WorkSchedule = ({
       width: 200,
     },
     {
-      field: "inicio",
-      headerName: "Início",
+      field: "dia",
+      headerName: "Dia",
       editable: true,
-      type: "text",
-      placeholder: "DD/MM/YYYY HH:MM",
-      width: 120,
-      format: (i, f, v, va) => toUTC(v),
+      type: "date",
+      width: 140,
+      placeholder: "DD/MM/YYYY",
     },
     {
-      field: "fim",
-      headerName: "Fim",
+      field: "horarioInicio",
+      headerName: "Horário Inicial",
       editable: true,
       type: "text",
-      placeholder: "DD/MM/YYYY",
-      width: 120,
-      format: (i, f, v, va) => toUTC(v),
+      width: 100,
+      format: (i, f, v, va) => formatTime(v, va),
+      placeholder: "HH:MM",
+    },
+    {
+      field: "horarioFim",
+      headerName: "Horário Fim",
+      editable: true,
+      type: "text",
+      width: 100,
+      format: (i, f, v, va) => formatTime(v, va),
+      placeholder: "HH:MM",
     },
     {
       headerName: "Remover",
       headerName: "",
-      width: 80,
-      renderCell: (_, index) => (
+      width: 30,
+      renderCell: (value, index) => (
         <Tooltip title="Excluir">
-          <IconButton onClick={() => handleRemoveAbsence(index)}>
+          <IconButton onClick={() => handleRemoveAbsence(value.id, index)}>
             <Close fontSize="small" />
           </IconButton>
         </Tooltip>
@@ -279,13 +310,20 @@ const WorkSchedule = ({
           }
 
           if (Array.isArray(d.ausencia)) {
-            setAbsences(
-              d.ausencia.map((a) => ({
+            const teste = d.ausencia.map((a) => {
+              const dia = new Date(a.dia);
+              dia.setHours(dia.getHours() + 6);
+
+              return {
+                ...a,
+                dia: dia.toISOString(),
                 motivo: a.motivo || "",
-                inicio: `${a.dia}T${a.horarioInicio}`,
-                fim: `${a.dia}T${a.horarioFim}`,
-              }))
-            );
+                horarioInicio: a.horarioInicio,
+                horarioFim: a.horarioFim,
+              };
+            });
+            console.log("teste", teste);
+            setAbsences(teste);
           }
         })
 
@@ -302,13 +340,15 @@ const WorkSchedule = ({
     <>
       {type === "button" && (
         <Button
+          sx={{ minWidth: "200px" }}
           disableElevation
           variant="contained"
-          color="success"
+          color="primary"
+          size="large"
           onClick={() => setOpen(true)}
           disabled={disabled}
         >
-          Configurar Escala
+          Configurar
         </Button>
       )}
 

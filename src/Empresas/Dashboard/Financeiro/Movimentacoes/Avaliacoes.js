@@ -33,7 +33,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
       if (!depoimentos.length) {
         setHas(false);
         setLoading(false);
-        return alertCustom("Sem mais comentários");
+        return; //alertCustom("Sem mais comentários");
       }
       page === 1 && setHas(true);
       setAvaliacoes(depoimentos || []);
@@ -52,7 +52,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
   return (
     <Box sx={{ p: 2 }}>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <Rating value={media} readOnly precision={0.1} />
             <Typography sx={{ ml: 1 }}>{media.toFixed(1)} / 5</Typography>
@@ -87,11 +87,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
           ) : loading ? (
             <LoadingBox message={"Carregando..."} />
           ) : (
-            <Typography
-              className="show-box"
-              typography="body1"
-              sx={{ m: "10px 0" }}
-            >
+            <Typography typography="body1" sx={{ m: "10px 0" }}>
               <Typography variant="h6">
                 <Icon>🔥</Icon> Sem comentários ainda
               </Typography>
@@ -123,8 +119,8 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Box component={Paper} className={isMobile ? "" : "show-box"}>
+        <Grid size={{ xs: 12, md: 7 }}>
+          <Box className={isMobile ? "" : "show-box"}>
             <Typography variant="h6" gutterBottom>
               <Icon>🔍</Icon> O poder de uma boa avaliação!
             </Typography>
