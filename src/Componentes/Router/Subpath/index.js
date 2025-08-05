@@ -36,13 +36,15 @@ export function SubRoutes({
 
   const pages = useMemo(
     () =>
-      Object.entries(views).map(([key, value], index) => ({
-        path: key,
-        id: index,
-        icon: value.icon,
-        titulo: value.titulo,
-        componente: value.componente,
-      })),
+      Object.entries(views)
+        .filter(([key, value]) => !value.acessoRapido)
+        .map(([key, value], index) => ({
+          path: key,
+          id: index,
+          icon: value.icon,
+          titulo: value.titulo,
+          componente: value.componente,
+        })),
     [views]
   );
 
@@ -78,6 +80,8 @@ export function SubRoutes({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
+
+  if (!selected) return views[path]?.componente;
 
   if (!dados) return "Carregando...";
 

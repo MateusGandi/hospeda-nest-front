@@ -129,6 +129,14 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
 
   /*end - Funções globais*/
 
+  const footer = [
+    {
+      id: "duvidas",
+      titulo: "Dúvidas Frequentes",
+      icon: <Home />,
+    },
+  ];
+
   const subPaths = {
     "": {
       icon: <Home />,
@@ -197,6 +205,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     agendamento: {
       icon: <CalendarMonth />,
       titulo: "Agendar",
+      acessoRapido: true, //define se deve aparecer na tela principal ao inves do menu lateral
       componente: (
         <AgendamentoManual
           barbearia={dados}
@@ -219,14 +228,6 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     },
   };
 
-  const pages = Object.entries(subPaths).map(([key, value], index) => ({
-    path: key,
-    id: index,
-    icon: value.icon,
-    titulo: value.titulo,
-    componente: value.componente,
-  }));
-
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
     "/create": <Login page="create" alertCustom={alertCustom} />,
@@ -245,7 +246,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/faq": <FAQ />,
     "/envite": <Envite alertCustom={alertCustom} />,
 
-    "/dashboard": <SubRoutes dados={dados} views={subPaths} pages={pages} />,
+    "/dashboard": <SubRoutes dados={dados} views={subPaths} footer={footer} />,
   };
 
   if (isLoading) {
