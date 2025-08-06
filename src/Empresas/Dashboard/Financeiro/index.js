@@ -246,7 +246,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={10}>
+              <Grid size={11}>
                 <CustomTabs
                   sx={{ mt: 5 }}
                   selected={dados.tab.id}
