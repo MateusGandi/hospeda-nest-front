@@ -64,8 +64,8 @@ const Funcionario = ({
     });
     alertCustom(
       data.id
-        ? "Funcionário adicionado com sucesso!"
-        : "Funcionário atualizado com sucesso!"
+        ? "Funcionário atualizado com sucesso!"
+        : "Funcionário adicionado com sucesso!"
     );
   };
 

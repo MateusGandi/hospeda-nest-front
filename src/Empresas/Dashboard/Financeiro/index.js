@@ -9,6 +9,7 @@ import {
   Avatar,
   Paper,
   IconButton,
+  Box,
 } from "@mui/material";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -125,7 +126,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
           open={true}
           titulo="Financeiro"
           fullScreen="all"
-          maxWidth="md"
+          maxWidth="lg"
           disablePadding={true}
           loading={dados.loading}
           route="financeiro"
@@ -136,55 +137,58 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               container
               spacing={1}
               justifyContent="center"
-              sx={{ mt: "-10px", p: 1 }}
+              sx={{ pt: "10px", mx: -1, mt: -1 }}
             >
               <Grid size={12} sx={{ mb: "-75px" }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    height: "180px",
-                    width: "100%",
-                    background: { xs: "none", lg: "#363636" },
-                    position: "relative",
-                    borderRadius: { xs: 0, lg: "10px" },
-                  }}
-                >
-                  <Card
+                {barbearia && barbearia.nome && (
+                  <Paper
                     elevation={0}
                     sx={{
-                      background: "none",
-                      position: "absolute",
-                      top: "15px",
-                      ml: { xs: 0, md: "50px" },
+                      height: "180px",
+                      width: "100%",
+                      backgroundImage: `url(${`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner}`})`,
+                      //background: { xs: "none", lg: "#363636" },
+                      position: "relative",
+                      borderRadius: { xs: 0, lg: "10px" },
                     }}
                   >
-                    <CardHeader
-                      avatar={
-                        <Avatar
-                          sx={{
-                            width: 70,
-                            height: 70,
-                            fontSize: 30,
-                            fontWeight: 600,
-                          }}
-                          src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
-                        >
-                          {barbearia.nome[0].toUpperCase()}
-                        </Avatar>
-                      }
-                      title={
-                        <Typography variant="h6">
-                          {getLocalItem("nome")}
-                        </Typography>
-                      }
-                      subheader={
-                        <Typography variant="body2" sx={{ mt: -0.5 }}>
-                          {barbearia.nome} | {formatCNPJ(barbearia.cnpj)}
-                        </Typography>
-                      }
-                    />
-                  </Card>
-                </Paper>
+                    <Card
+                      elevation={0}
+                      sx={{
+                        background: "none",
+                        position: "absolute",
+                        top: "15px",
+                        ml: { xs: 0, md: "50px" },
+                      }}
+                    >
+                      <CardHeader
+                        avatar={
+                          <Avatar
+                            sx={{
+                              width: 70,
+                              height: 70,
+                              fontSize: 30,
+                              fontWeight: 600,
+                            }}
+                            src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
+                          >
+                            {barbearia.nome[0].toUpperCase()}
+                          </Avatar>
+                        }
+                        title={
+                          <Typography variant="h6">
+                            {getLocalItem("nome")}
+                          </Typography>
+                        }
+                        subheader={
+                          <Typography variant="body2" sx={{ mt: -0.5 }}>
+                            {barbearia.nome} | {formatCNPJ(barbearia.cnpj)}
+                          </Typography>
+                        }
+                      />
+                    </Card>
+                  </Paper>
+                )}
               </Grid>
 
               <Grid size={{ xs: 12, md: 3.5 }} sx={{ zIndex: 1, m: "0 10px" }}>
@@ -242,7 +246,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={12}>
+              <Grid size={10}>
                 <CustomTabs
                   sx={{ mt: 5 }}
                   selected={dados.tab.id}

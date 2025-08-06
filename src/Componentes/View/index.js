@@ -65,7 +65,7 @@ const View = ({
         justifyContent: "space-between",
       }}
     >
-      <Grid size={12} sx={{ p: 2 }}>
+      {/* <Grid size={12} sx={{ p: 2 }}>
         <Container maxWidth={maxWidth}>
           {titulo && (
             <Box className="justify-between">
@@ -91,8 +91,7 @@ const View = ({
             </Box>
           )}
         </Container>
-        <Divider sx={{ mb: -2, mt: 2 }} />
-      </Grid>
+      </Grid> */}
       <Grid
         size={12}
         sx={{

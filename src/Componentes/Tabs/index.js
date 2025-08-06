@@ -64,7 +64,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
               sx={{
                 color: "#fff !important",
                 borderRadius: "10px !important",
-                px: 0,
+                px: { xs: 1, md: 0 },
                 minWidth: "fit-content",
                 borderBottom: "none !important",
                 "&:hover": {
@@ -82,7 +82,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
         sx={{
           m: "0 4px",
           borderRadius: "10px",
-          background: "#2A2A2A",
+          background: "transparent",
         }}
       >
         <Grid container>

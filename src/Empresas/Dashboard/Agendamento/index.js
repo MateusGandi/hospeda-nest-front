@@ -49,7 +49,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     barbearia: barbearia,
-    barbeiro: barbearia.funcionarios.find(
+    barbeiro: barbearia?.funcionarios.find(
       (f) => f.id === getLocalItem("userId")
     ),
     cliente: null,
@@ -62,10 +62,14 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   useEffect(() => {
     if (!subPath && !initialized) {
       navigate("cliente");
-      setInitialized(true);
-    } else if (!subPath) {
+    }
+    if (!subPath) {
       onClose();
     }
+    if (subPath !== "cliente" && !initialized) {
+      onClose();
+    }
+    setInitialized(true);
   }, [subPath]);
 
   const handleSaveAgendamento = async () => {

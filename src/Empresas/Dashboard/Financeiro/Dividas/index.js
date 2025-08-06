@@ -19,7 +19,7 @@ import Modal from "../../../../Componentes/Modal";
 import Banner from "../../../../Assets/Cobranca/cobranca_banner.png";
 import EditableTable from "../../../../Componentes/Table";
 import CustomDateInput from "../../../../Componentes/Custom";
-import Icon from "../../../../Assets/Emojis";
+import BannerFind from "../../../../Assets/Cobranca/find_banner.png";
 
 const contasMock = [
   {
@@ -160,46 +160,55 @@ const Dividas = () => {
   return (
     <Grid
       container
-      spacing={2}
+      spacing={1}
       sx={{
         p: 2,
       }}
     >
       <Grid
-        size={{ xs: 12, md: 6 }}
+        size={{ xs: 12, md: 4 }}
         sx={{
           display: "flex",
           alignItems: { xs: "center", md: "start" },
           justifyContent: "start",
           flexDirection: "column",
-          gap: 2,
+          gap: 1,
+          flex: 1,
         }}
       >
         {" "}
         <Paper
           elevation={0}
-          sx={{ p: 2, width: { xs: "100%", md: "300px" }, background: "none" }}
+          sx={{
+            p: 2,
+            width: "100%",
+            minHeight: "120px",
+            backgroundImage: `url(${BannerFind})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "bottom",
+          }}
         >
           <Typography variant="body2">
             <Typography
               component="span"
               variant="body1"
               sx={{
-                color: "#00FF2F",
                 display: "flex",
                 alignItems: "center",
                 gap: 0.5,
               }}
             >
-              <span style={{ color: "#fff" }}> Cerca de </span>
+              <span style={{ color: "#fff" }}>Total de </span>
               R$ {totalPagar.toFixed(2)}{" "}
               <ArrowUpwardRoundedIcon fontSize="small" />{" "}
               <span style={{ color: "#fff" }}> pendentes</span>
             </Typography>
             {`Total de ${contasMock.length} dívidas em aberto`}
           </Typography>
-        </Paper>
-      </Grid>
+        </Paper>{" "}
+      </Grid>{" "}
+      <Grid size={{ xs: 12, md: 2 }}></Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <Rows
           oneTapMode={true}
@@ -218,7 +227,6 @@ const Dividas = () => {
           }))}
         />
       </Grid>
-
       <Modal
         fullScreen="all"
         component="view"

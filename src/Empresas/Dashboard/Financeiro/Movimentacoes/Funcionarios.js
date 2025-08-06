@@ -179,7 +179,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         ]}
       >
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <CustomDateInput
               onChange={(v, valid) => {
                 if (valid) {
@@ -216,10 +216,12 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
               </Box>
             ) : (
               <Rows
+                oneTapMode={true}
                 items={
                   dados.vendasFiltradas?.length > 0
                     ? [
                         ...dados.vendasFiltradas.map((venda) => ({
+                          disabled: true,
                           titulo: (
                             <Box
                               sx={{

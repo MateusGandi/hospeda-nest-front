@@ -1,18 +1,12 @@
 import React from "react";
 import { Typography, Box, Paper, Grid2 as Grid, Divider } from "@mui/material";
-import Banner from "../../../../Assets/search_undraw.svg";
+import Banner from "../../../../Assets/Cobranca/logistic.png";
 
 const FornecedoresInfo = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Grid container spacing={1} alignItems="center">
         {" "}
-        <Grid size={12}>
-          {" "}
-          <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
-            Aguarde, estamos preparando uma nova ferramenta!
-          </Typography>
-        </Grid>
         {/* Imagem à esquerda */}
         <Grid
           size={{ xs: 12, md: 6 }}
@@ -28,6 +22,7 @@ const FornecedoresInfo = () => {
             sx={{
               width: "80%",
               height: "80%",
+              borderRadius: "10px",
               objectFit: "cover",
               maxHeight: 250,
             }}
@@ -35,6 +30,10 @@ const FornecedoresInfo = () => {
         </Grid>
         {/* Texto à direita */}
         <Grid size={{ xs: 12, md: 6 }}>
+          {" "}
+          <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
+            Aguarde, estamos preparando uma nova ferramenta!
+          </Typography>
           <Typography variant="body1" gutterBottom>
             O Tonsus está desenvolvendo uma nova ferramenta que facilitará a
             busca por fornecedores confiáveis de produtos para barbearias.

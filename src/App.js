@@ -34,7 +34,7 @@ const theme = createTheme({
       main: "#E57F01",
     },
     background: {
-      default: "#000",
+      default: "#1b1b1b",
     },
   },
   components: {
@@ -101,6 +101,7 @@ function App() {
     "/review/:barbeariaId",
     "/faq/:title?",
     "/envite/:establishmentId?/:token?",
+    "/support",
   ]);
 
   const [alert, setAlert] = useState({

@@ -21,7 +21,7 @@ export default function Footer() {
           height: "100px",
           marginTop: "-100px",
           background:
-            "linear-gradient( to top,rgba(0, 0, 0, 1) 5%,rgba(0, 0, 0, 0.6) 50%,transparent 100%)",
+            "linear-gradient( to top,rgba(27, 27, 27, 1) 5%,rgba(27, 27, 27, 0.6) 50%,transparent 100%)",
         }}
       ></Box>
       <Box
