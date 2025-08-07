@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Box, Typography, Button } from "@mui/material";
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  Button,
+  Avatar,
+} from "@mui/material";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import Login from "../../../Login";
@@ -22,6 +28,7 @@ import { SubRoutes } from "../Subpath";
 import Agendamentos from "../../../Empresas/Dashboard/Agendamentos";
 import GerenciarFuncionarios from "../../../Empresas/Dashboard/Funcionarios";
 import GerenciarServicos from "../../../Empresas/Dashboard/Servicos";
+import GerenciarProdutos from "../../../Empresas/Dashboard/Produtos";
 import WorkSchedule from "../../../Empresas/Dashboard/Escala";
 import GestaoFinancas from "../../../Empresas/Dashboard/Financeiro";
 import WhatsApp from "../../../Empresas/Dashboard/WhatsApp";
@@ -39,6 +46,7 @@ import AttachMoneyRoundedIcon from "@mui/icons-material/AttachMoneyRounded";
 import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
 import RequestPageIcon from "@mui/icons-material/RequestPage";
 import StarIcon from "@mui/icons-material/Star";
+import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded";
 import {
@@ -48,8 +56,10 @@ import {
   Build,
   CalendarMonth,
   Home,
+  Person,
 } from "@mui/icons-material";
 import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
+import Suporte from "../../../Support";
 
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -62,7 +72,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     const fetchRoutesAllowed = async () => {
       try {
         const paths = await Api.getAccess();
-        setPathsAllowed([...paths, "/envite", "/manager", "/support"]);
+        setPathsAllowed([...paths, "/envite", "/manager"]);
       } catch (error) {
         setPathsAllowed([
           "/login",
@@ -133,7 +143,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     support: {
       titulo: "Dúvidas Frequentes",
       icon: <QuestionAnswerRoundedIcon color="primary" />,
-      componente: <div>oi</div>,
+      componente: <Suporte alertCustom={alertCustom} />,
       acessoRapido: true,
       footer: true,
     },
@@ -168,14 +178,6 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         />
       ),
     },
-    servicos: {
-      icon: <Build />,
-      titulo: "Serviços",
-      acessoRapido: true,
-      componente: (
-        <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
-      ),
-    },
     financeiro: {
       icon: <BusinessCenterRoundedIcon />,
       titulo: "Financeiro",
@@ -187,6 +189,22 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         />
       ),
     },
+    produtos: {
+      icon: <LocalMallRoundedIcon />,
+      titulo: "Produtos",
+      componente: (
+        <GerenciarProdutos alertCustom={alertCustom} onClose={handleClose} />
+      ),
+    },
+    servicos: {
+      icon: <Build />,
+      titulo: "Serviços",
+      acessoRapido: true,
+      componente: (
+        <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
+      ),
+    },
+
     escala: {
       icon: <Settings />,
       titulo: "Minha Escala",
@@ -228,6 +246,24 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         />
       ),
     },
+    me: {
+      icon: (
+        <Avatar
+          sx={{
+            width: 32,
+            height: 32,
+            fontSize: 16,
+            bgcolor: "#1976d2",
+            color: "#fff",
+            ml: -0.5,
+          }}
+        >
+          {(getLocalItem("nome") || "T")[0].toUpperCase()}
+        </Avatar>
+      ),
+      titulo: "Meu perfil",
+      componente: <Navigate to="/me" />,
+    },
   };
 
   const paths = {
@@ -247,7 +283,6 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/review": <Reviews alertCustom={alertCustom} />,
     "/faq": <FAQ />,
     "/envite": <Envite alertCustom={alertCustom} />,
-    "/support": <div>oi</div>,
 
     "/dashboard": <SubRoutes dados={dados} views={subPaths} />,
   };

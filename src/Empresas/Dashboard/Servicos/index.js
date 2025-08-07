@@ -252,7 +252,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
               {" "}
               <Typography variant="body1" className="show-box">
                 <Typography variant="h6">
-                  <Icon>💡</Icon>Ajuda rápida
+                  <Icon>💡</Icon> Ajuda rápida
                 </Typography>
                 Clique sobre um <b>SERVIÇO</b> para adicionar uma foto ou em{" "}
                 <b>EDITAR</b> para alterar informações
@@ -278,11 +278,6 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
                 items={servicos.map((item, index) => ({
                   ...item,
                   imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,
-                  titulo: item.nome,
-                  subtitulo:
-                    item.tempoGasto && item.descricao
-                      ? `Duração: ${item.tempoGasto} - ${item.descricao}`
-                      : "Sem descrição",
                 }))}
               />
             </Grid>

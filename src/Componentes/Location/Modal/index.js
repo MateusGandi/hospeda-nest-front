@@ -114,13 +114,13 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
       maxWidth="xs"
       buttons={[
         {
-          titulo: "Minha Atual",
+          titulo: "de Onde estou",
           variant: "contained",
           color: "primary",
           action: handleUseCurrentLocation,
         },
         {
-          titulo: "Do trabalho",
+          titulo: "Da empresa",
           variant: "text",
           color: "secondary",
           action: handleUseProvidedAddress,
