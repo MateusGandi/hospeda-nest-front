@@ -166,7 +166,7 @@ const Dividas = () => {
       }}
     >
       <Grid
-        size={{ xs: 12, md: 4 }}
+        size={{ xs: 12, md: 5 }}
         sx={{
           display: "flex",
           alignItems: { xs: "center", md: "start" },
@@ -208,7 +208,7 @@ const Dividas = () => {
           </Typography>
         </Paper>{" "}
       </Grid>{" "}
-      <Grid size={{ xs: 12, md: 2 }}></Grid>
+      <Grid size={{ xs: 12, md: 1 }}></Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <Rows
           oneTapMode={true}
