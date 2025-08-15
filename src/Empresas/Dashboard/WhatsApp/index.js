@@ -44,7 +44,7 @@ Basta clicar no link abaixo e começar a conversar
 Se preferir, estamos no Tonsus, pode agendar com a gente por lá também!
 👉 tonsus.com.br`,
     },
-    { remetente: "cliente", texto: "Certo, obirgado!" },
+    { remetente: "cliente", texto: "Certo, obrigado!" },
   ];
 
   // Conversa do bot (ponto de vista bot)

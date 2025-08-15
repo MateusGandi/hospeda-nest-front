@@ -54,28 +54,28 @@ export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
     setSelected(pages.find((item) => item.path == key));
   }, [path]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        drawerRef.current &&
-        !drawerRef.current.contains(event.target) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(event.target)
-      ) {
-        setOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (
+  //       drawerRef.current &&
+  //       !drawerRef.current.contains(event.target) &&
+  //       toggleButtonRef.current &&
+  //       !toggleButtonRef.current.contains(event.target)
+  //     ) {
+  //       setOpen(false);
+  //     }
+  //   };
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
+  //   if (open) {
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //   } else {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   }
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [open]);
 
   if (!selected) return views[path]?.componente;
 
@@ -151,7 +151,7 @@ export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
           </List>
         </Box>
       </Drawer>
-      <Tooltip title="Mais opções" sx={{ zIndex: 9999 }}>
+      <Tooltip title={open ? "Fechar" : "Mais opções"} sx={{ zIndex: 9999 }}>
         <Paper
           elevation={0}
           sx={{

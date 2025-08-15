@@ -16,6 +16,7 @@ import { Folder, FolderOpen, InsertDriveFile } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 import Doc from "./documento.json";
 import Icon from "../../Assets/Emojis";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
 const FAQ = ({ filtro }) => {
   const navigate = useNavigate();
@@ -85,104 +86,120 @@ const FAQ = ({ filtro }) => {
   };
 
   return (
-    <Container
-      maxWidth="md"
-      sx={{
-        minHeight: "calc(100vh - 130px)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      {carregando ? (
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <CircularProgress />
-        </Box>
-      ) : documentos.length === 0 ? (
-        <Typography variant="body1" color="text.secondary">
-          Nenhum documento encontrado para "{filtro || title}"
-        </Typography>
-      ) : (
-        <List>
-          {documentos.map((doc, index) => (
-            <Box key={index}>
-              <ListItemButton
-                onClick={() => toggleAbertura(index)}
-                sx={{ borderRadius: "10px", mb: 1 }}
-              >
-                <ListItemIcon>
-                  {abertos[index] ? <FolderOpen /> : <Folder />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: formatarTexto(doc.title),
-                      }}
-                    />
-                  }
-                />
-              </ListItemButton>
-              <Collapse in={abertos[index]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding sx={{ pl: 4 }}>
-                  {doc.sections.map((section, idx) => (
-                    <Box key={idx} sx={{ mb: 3 }}>
-                      <Box display="flex" alignItems="center" mb={1}>
-                        <ListItemIcon sx={{ minWidth: 32 }}>
-                          <InsertDriveFile fontSize="small" />
-                        </ListItemIcon>
-                        <Typography
-                          variant="subtitle1"
-                          fontWeight="bold"
-                          dangerouslySetInnerHTML={{
-                            __html: formatarTexto(section.heading),
-                          }}
-                        />
-                      </Box>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 1 }}
+    <>
+      <Box sx={{ width: "100%", px: 2.5 }}>
+        <Button
+          size="large"
+          color="terciary"
+          startIcon={<ArrowBackRoundedIcon />}
+          onClick={() => navigate(-1)}
+        >
+          Voltar
+        </Button>
+      </Box>
+      <Container
+        maxWidth="md"
+        sx={{
+          minHeight: "calc(100vh - 130px)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        {carregando ? (
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress />
+          </Box>
+        ) : documentos.length === 0 ? (
+          <Typography variant="body1" color="text.secondary">
+            Nenhum documento encontrado para "{filtro || title}"
+          </Typography>
+        ) : (
+          <List>
+            {documentos.map((doc, index) => (
+              <Box key={index}>
+                <ListItemButton
+                  onClick={() => toggleAbertura(index)}
+                  sx={{ borderRadius: "10px", mb: 1 }}
+                >
+                  <ListItemIcon>
+                    {abertos[index] ? <FolderOpen /> : <Folder />}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <span
                         dangerouslySetInnerHTML={{
-                          __html: formatarTexto(section.text),
+                          __html: formatarTexto(doc.title),
                         }}
                       />
-                      {section.links?.map((link, lid) => (
-                        <Box key={lid}>
-                          <Link
-                            href={link.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="show-link"
-                          >
-                            {link.label}
-                          </Link>
+                    }
+                  />
+                </ListItemButton>
+                <Collapse in={abertos[index]} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding sx={{ pl: 4 }}>
+                    {doc.sections.map((section, idx) => (
+                      <Box key={idx} sx={{ mb: 3 }}>
+                        <Box display="flex" alignItems="center" mb={1}>
+                          <ListItemIcon sx={{ minWidth: 32 }}>
+                            <InsertDriveFile fontSize="small" />
+                          </ListItemIcon>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight="bold"
+                            dangerouslySetInnerHTML={{
+                              __html: formatarTexto(section.heading),
+                            }}
+                          />
                         </Box>
-                      ))}
-                    </Box>
-                  ))}
-                </List>
-              </Collapse>
-            </Box>
-          ))}
-        </List>
-      )}
-      {title && (
-        <Box sx={{ mt: 4, textAlign: "center" }}>
-          <Button onClick={() => navigate("/faq")}>Veja completo</Button>
-        </Box>
-      )}
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 1 }}
+                          dangerouslySetInnerHTML={{
+                            __html: formatarTexto(section.text),
+                          }}
+                        />
+                        {section.links?.map((link, lid) => (
+                          <Box key={lid}>
+                            <Link
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="show-link"
+                            >
+                              {link.label}
+                            </Link>
+                          </Box>
+                        ))}
+                      </Box>
+                    ))}
+                  </List>
+                </Collapse>
+              </Box>
+            ))}
+          </List>
+        )}
+        {title && (
+          <Box sx={{ mt: 4, textAlign: "center" }}>
+            <Button onClick={() => navigate("/faq")}>Veja completo</Button>
+          </Box>
+        )}
 
-      <Typography className="show-box" typography="body1" sx={{ m: "10px 0" }}>
-        <Typography variant="h6">
-          <Icon>💻</Icon> Atenção
+        <Typography
+          className="show-box"
+          typography="body1"
+          sx={{ m: "10px 0" }}
+        >
+          <Typography variant="h6">
+            <Icon>💻</Icon> Atenção
+          </Typography>
+          Bem vindo aos termos e condições do Tonsus, aqui você tira suas
+          dúvidas sobre políticas de uso, privacidade e segurança, além de
+          compreender funcionalidades e promoções do sistema. Caso tenha alguma
+          dúvida, entre em contato com nossa equipe de suporte.
         </Typography>
-        Bem vindo aos termos e condições do Tonsus, aqui você tira suas dúvidas
-        sobre políticas de uso, privacidade e segurança, além de compreender
-        funcionalidades e promoções do sistema. Caso tenha alguma dúvida, entre
-        em contato com nossa equipe de suporte.
-      </Typography>
-    </Container>
+      </Container>
+    </>
   );
 };
 

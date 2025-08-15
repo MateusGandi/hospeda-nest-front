@@ -22,6 +22,12 @@ const EditData = ({
   }, [barbearia]);
 
   const handleChange = (field) => (event) => {
+    if (field === "aberto") {
+      console.log(event.target.checked, field);
+      setFormData({ ...formData, [field]: event.target.checked });
+      return;
+    }
+
     if (field === "telefone") {
       const formattedValue = event.target.value.replace(/\D/g, "");
       setFormData({ ...formData, [field]: formattedValue });
@@ -43,6 +49,8 @@ const EditData = ({
     ) {
       return alertCustom("Preencha todos os campos corretamente");
     }
+    const { longitudeAndLatitude, location, ...rest } = formData;
+    formData.longitudeAndLatitude = Object.values(location);
     onSave(formData);
   };
 
@@ -50,6 +58,7 @@ const EditData = ({
     try {
       await onSave(
         {
+          longitudeAndLatitude: formData.longitudeAndLatitude.split(","),
           aberto: aberto,
         },
         false
@@ -147,10 +156,7 @@ const EditData = ({
                 <span style={{ width: "30px" }}>
                   <Switch
                     checked={formData.aberto}
-                    onChange={async (e) => {
-                      setFormData({ ...formData, aberto: e.target.checked });
-                      await onChangeAndSave(e.target.checked);
-                    }}
+                    onChange={handleChange("aberto")}
                     color="primary"
                   />
                 </span>

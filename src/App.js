@@ -101,7 +101,6 @@ function App() {
     "/review/:barbeariaId",
     "/faq/:title?",
     "/envite/:establishmentId?/:token?",
-    "/support",
   ]);
 
   const [alert, setAlert] = useState({

@@ -33,6 +33,7 @@ import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PublicIcon from "@mui/icons-material/Public";
+import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
 
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -84,13 +85,13 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
         {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendar Cliente",
+          title: "Agendar",
           acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendamentos",
+          title: "Agendados",
           acessoRapido: true,
         },
         {
@@ -133,15 +134,20 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           acessoRapido: true,
         },
         {
+          to: "produtos",
+          icon: <LocalMallRoundedIcon sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Produtos",
+        },
+        {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendar Cliente",
+          title: "Agendar",
           acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendamentos",
+          title: "Agendados",
           acessoRapido: true,
         },
       ],
@@ -167,6 +173,11 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
           acessoRapido: true,
+        },
+        {
+          to: "produtos",
+          icon: <LocalMallRoundedIcon sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Produtos",
         },
         {
           to: "/me",
@@ -198,15 +209,20 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           acessoRapido: true,
         },
         {
+          to: "produtos",
+          icon: <LocalMallRoundedIcon sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Produtos",
+        },
+        {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendar Cliente",
+          title: "Agendar",
           acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendamentos",
+          title: "Agendados",
           acessoRapido: true,
         },
         {
@@ -534,10 +550,11 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
               <Box className="justify-center">
                 <span
                   style={{
-                    background: gerarGradient(color),
+                    background: "#333333", //gerarGradient(color),
                     borderRadius: 50,
-                    width: "100%",
-                    height: "10px",
+                    width: "30%",
+                    height: "8px",
+                    marginTop: "5px",
                   }}
                 ></span>
               </Box>
@@ -553,7 +570,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
             </AppBar>
 
             {renderCards().barraCenter.map(({ icon, title, to }, i) => (
-              <Grid item key={i} size={{ xs: 12, md: 3 }}>
+              <Grid item key={i} size={{ xs: 12, md: 12 / 4 }}>
                 <CustomCard onClick={() => navigate(to)}>
                   {icon}
                   <Typography variant="body1" sx={{ ml: 1 }}>
