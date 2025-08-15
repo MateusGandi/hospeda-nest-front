@@ -17,7 +17,7 @@ import {
 } from "../../../../Componentes/Funcoes";
 import { format } from "date-fns";
 import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
-import Modal from "../../../../Componentes/Modal";
+import Modal from "../../../../Componentes/Modal/Simple";
 import { ptBR } from "date-fns/locale";
 import { Rows } from "../../../../Componentes/Lista/Rows";
 

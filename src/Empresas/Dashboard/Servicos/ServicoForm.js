@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatMoney, formatTime } from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
@@ -15,7 +15,6 @@ import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 const Servico = ({
   formData,
-  servicos,
   open,
   setOpen,
   titulo,
@@ -27,6 +26,7 @@ const Servico = ({
   alertCustom,
   funcionarios,
   setFuncionarios,
+  comissoes,
 }) => {
   const [data, setData] = useState({
     nome: "",
@@ -88,48 +88,36 @@ const Servico = ({
 
   const handleSave = async () => {
     try {
-      let servicosAtualizados;
-      if (formData) {
-        servicosAtualizados = [
-          ...servicos.filter((item) => item.id !== formData.id),
-          { ...data, barbeariaId: barbeariaId, preco: +data.preco },
-        ];
-      } else {
-        servicosAtualizados = [
-          ...servicos.map(({ foto, ...item }) => ({
-            ...item,
-            barbeariaId: barbeariaId,
-          })),
-          {
-            ...data,
-            barbeariaId: barbeariaId,
-            preco: +data.preco,
-            disabled: true,
-          },
-        ];
-      }
-      if (servicosAtualizados.find((item) => item.tempoGasto.length < 5)) {
+      if (data.tempoGasto.length < 5)
         return alertCustom("Horário no formato inválido");
-      }
 
-      if (
-        servicosAtualizados
-          .map(({ foto, ...item }) => item)
-          .find((item) => Object.values(item).some((value) => !value))
-      ) {
+      const { foto, id, calculoComissao, ...rest } = data;
+
+      if (Object.values(rest).some((value) => !value))
         return alertCustom("Informe todos os campos obrigatórios");
-      }
 
-      await apiService.query("POST", `/service`, servicosAtualizados);
       await apiService.query(
-        "POST",
-        `/service/commission-configurations/${formData.id}`,
-        funcionarios.map(({ id, percentual, valorFixo }) => ({
-          valor: percentual || valorFixo,
-          funcionarioId: id,
-          tipo: percentual ? "PORCENTAGEM" : "VALOR",
-        }))
+        id ? "PATCH" : "POST",
+        id ? `/service/${id}` : `/service`,
+        data
       );
+      console.log("funcionarios", funcionarios);
+      if (funcionarios.comissao)
+        await apiService.query(
+          "POST",
+          `/service/commission-configurations/${id}`,
+          funcionarios.map(
+            ({
+              id: funcionarioId,
+              comissao: { id, percentual, valorFixo },
+            }) => ({
+              id,
+              valor: percentual || valorFixo,
+              funcionarioId: funcionarioId,
+              tipo: percentual ? "PORCENTAGEM" : "VALOR",
+            })
+          )
+        );
 
       setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
       setOpen(false);
@@ -139,6 +127,7 @@ const Servico = ({
           : "Serviço cadastrado com sucesso!"
       );
     } catch (error) {
+      console.error("Erro ao salvar serviço:", error);
       alertCustom(
         formData ? "Erro ao atualizar serviço!" : "Erro ao cadastrar serviço!"
       );
@@ -215,6 +204,7 @@ const Servico = ({
           </Grid>,
           <Commission
             servico={data}
+            comissoes={comissoes}
             funcionarios={funcionarios}
             setFuncionarios={setFuncionarios}
           />,

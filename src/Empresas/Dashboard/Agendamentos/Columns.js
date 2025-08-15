@@ -24,7 +24,7 @@ import { format } from "date-fns";
 import apiService from "../../../Componentes/Api/axios";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import SquareRoundedIcon from "@mui/icons-material/SquareRounded";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import View from "../../../Componentes/View";

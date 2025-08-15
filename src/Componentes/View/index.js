@@ -125,7 +125,7 @@ const View = ({
                   justifyContent: "center",
                   alignItems: "center",
                   height: "100%",
-                  minHeight: "80vh",
+                  minHeight: "75vh",
                   zIndex: 1,
                 }}
               >

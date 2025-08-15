@@ -13,7 +13,7 @@ import {
   Stack,
   Box,
 } from "@mui/material";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
@@ -402,11 +402,11 @@ const ModalPlanos = ({ alertCustom }) => {
                 <span>Avaliações: </span>
                 <Rating
                   name="read-only"
-                  value={modal.avaliacao.toFixed(0)}
+                  value={modal.avaliacao?.toFixed(0)}
                   readOnly
                   sx={{ color: "#ffb200" }}
                 />
-                <span>{modal.avaliacao.toFixed(2)}/5</span>
+                <span>{modal.avaliacao?.toFixed(2)}/5</span>
               </Typography>
             </Typography>
           </Grid>

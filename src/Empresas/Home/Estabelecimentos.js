@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Api from "../../Componentes/Api/axios";
 import SearchBarWithFilters from "../../Componentes/Search";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
 import { Button, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";

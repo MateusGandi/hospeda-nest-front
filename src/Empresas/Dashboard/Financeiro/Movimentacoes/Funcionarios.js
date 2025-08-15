@@ -14,12 +14,33 @@ import apiService from "../../../../Componentes/Api/axios";
 import {
   getLocalItem,
   getStatus,
+  primeiraMaiuscula,
   toUTC,
 } from "../../../../Componentes/Funcoes";
-import { format, parseISO } from "date-fns";
+import { format, set } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Rows } from "../../../../Componentes/Lista/Rows";
-import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
-import Modal from "../../../../Componentes/Modal";
+import {
+  CustomMonthSelector,
+  CustomYearSelector,
+  LoadingBox,
+} from "../../../../Componentes/Custom";
+import Modal from "../../../../Componentes/Modal/Simple";
+
+const meses = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
 
 const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   const [dados, _setDados] = useState({
@@ -31,6 +52,19 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     pageSize: 10,
     data: new Date().toISOString(),
     loading: true,
+
+    ano: [
+      {
+        id: new Date().getFullYear(),
+        titulo: new Date().getFullYear(),
+      },
+    ],
+    mes: [
+      {
+        id: new Date().getMonth(),
+        titulo: primeiraMaiuscula(format(new Date(), "MMMM", { locale: ptBR })),
+      },
+    ],
   });
 
   const [details, _setDetails] = useState({
@@ -123,6 +157,24 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     }
   }, [details.open, dados.data]);
 
+  useEffect(() => {
+    if (dados.ano.length && dados.mes.length) {
+      const ano = dados.ano[0].id;
+      const mes = dados.mes[0].id + 1;
+      setDados(
+        "data",
+        set(new Date(), {
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          year: ano,
+          month: mes - 1,
+          date: 1,
+        }).toISOString()
+      );
+    }
+  }, [dados.mes, dados.ano]);
+
   return (
     <Grid container spacing={2} sx={{ p: 2 }}>
       <Grid size={12}>
@@ -180,16 +232,17 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       >
         <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid size={{ xs: 12, md: 3 }}>
-            <CustomDateInput
-              onChange={(v, valid) => {
-                if (valid) {
-                  setDados("data", format(v, "yyyy-MM-dd"));
-                }
-              }}
-              value={dados.data}
+            <CustomYearSelector
+              onSelect={(item) => setDados("ano", [item])}
+              selected={dados.ano}
             />
           </Grid>
-          <Grid size={{ xs: 0, md: 2 }}></Grid>
+          <Grid size={{ xs: 0, md: 3 }}>
+            <CustomMonthSelector
+              onSelect={(item) => setDados("mes", [item])}
+              selected={dados.mes}
+            />
+          </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <SearchBarWithFilters
               initial={dados.vendas}

@@ -47,7 +47,7 @@ export default function Footer() {
               display: "flex",
               justifyContent: "space-around",
               flexWrap: "wrap",
-              xs: { textAlign: "center" },
+              textAlign: { xs: "center", md: "left" },
             }}
           >
             <Grid size={{ xs: 12, md: 3 }}>

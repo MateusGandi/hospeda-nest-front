@@ -16,7 +16,7 @@ import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
-import Modal from "../Modal";
+import Modal from "../Modal/Simple";
 import { Rows } from "../Lista/Rows";
 import { getLocalItem, isMobile } from "../Funcoes";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import Icon from "../../../Assets/Emojis";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import {
   formatarHorario,
@@ -34,7 +34,6 @@ const Funcionario = ({
   });
 
   useEffect(() => {
-    console.log("funcionario", funcionario);
     if (funcionario && open) {
       setData({
         ...funcionario,
@@ -117,6 +116,7 @@ const Funcionario = ({
                       return setData((prev) => ({
                         ...prev,
                         id: null,
+                        idOrig: null,
                         nome: "",
                         telefone: "",
                         servicosPrestados: [],

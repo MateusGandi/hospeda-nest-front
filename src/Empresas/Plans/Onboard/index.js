@@ -5,7 +5,7 @@ import {
   Grid2 as Grid,
   Typography,
 } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
 import { useNavigate, useParams } from "react-router-dom";

@@ -4,28 +4,21 @@ import Icon from "../../../../Assets/Emojis";
 import EditableTable from "../../../../Componentes/Table";
 import { formatMoney } from "../../../../Componentes/Funcoes";
 
-export default function Commission({ funcionarios, setFuncionarios, servico }) {
-  const [rows, setRows] = useState(
-    funcionarios.map((f) => ({
-      id: f.id,
-      nome: f.nome,
-      percentual: f.percentual || 0,
-      valorFixo: f.valorFixo || 0,
-      id: f.comissao?.id || null,
-    }))
-  );
+export default function Commission({
+  servico,
+  comissoes,
+  funcionarios,
+  setFuncionarios,
+}) {
+  const [rows, setRows] = useState(comissoes || []);
   const [servicoData, setServicoData] = useState(null);
 
-  const onChangeCommission = (comissoes) => {
+  const onChangeCommission = (comissoesAtt) => {
     const updatedFuncionarios = funcionarios.map((f) => {
-      const comissao = comissoes.find((c) => c.id === f.id);
-      return {
-        ...f,
-        id: comissao.id || null,
-        percentual: comissao ? comissao.percentual : 0,
-        valorFixo: comissao ? comissao.valorFixo : 0,
-      };
+      const comissao = comissoesAtt.find((c) => c.id === f.id);
+      return { ...f, comissao: comissao };
     });
+
     setFuncionarios(updatedFuncionarios);
   };
 
@@ -56,7 +49,11 @@ export default function Commission({ funcionarios, setFuncionarios, servico }) {
         percentual = Math.max(0, Math.min(value, 100));
         valorFixo = "";
       } else if (field === "valorFixo") {
-        valorFixo = formatMoney(value); // << aqui usamos a nova função
+        valorFixo = formatMoney(
+          Number(formatMoney(value)) > servicoData.valor
+            ? servicoData.valor
+            : value
+        );
         percentual = 0;
       }
 

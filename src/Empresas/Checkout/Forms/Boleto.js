@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid2 as Grid, Container } from "@mui/material";
 import axios from "axios";
-import { CustomInput } from "../../Componentes/Custom";
+import { CustomInput } from "../../../Componentes/Custom";
 
 const BoletoPayment = ({ setForm, form }) => {
   return (

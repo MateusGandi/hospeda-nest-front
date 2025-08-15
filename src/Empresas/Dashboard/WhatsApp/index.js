@@ -7,7 +7,7 @@ import {
   Badge,
   Button,
 } from "@mui/material";
-import Modal from "../../../Componentes/Modal"; // Sua Modal personalizada
+import Modal from "../../../Componentes/Modal/Simple"; // Sua Modal personalizada
 import { useNavigate } from "react-router-dom";
 import { isMobile } from "../../../Componentes/Funcoes";
 import View from "../../../Componentes/View";

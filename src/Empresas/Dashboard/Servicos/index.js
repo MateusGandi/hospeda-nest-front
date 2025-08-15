@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../../../Componentes/Modal";
-import ServicoForm from "./Manager";
+import Modal from "../../../Componentes/Modal/Simple";
+import ServicoForm from "./ServicoForm";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
@@ -28,6 +28,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
   });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
+  const [comissoes, setComissoes] = useState([]);
   const [openAlertModal, setOpenAlertModal] = useState(false);
 
   const handleDelete = async (item) => {
@@ -139,29 +140,31 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
 
   const fetchFuncionarios = async (serviceId) => {
     try {
-      const funcionarios = await Api.query(
+      const func = await Api.query(
         "GET",
         `/establishment/employees/${modal.barbeariaId}`
       );
-
-      const comissoes = await Api.query(
+      setFuncionarios(func);
+      const coms = await Api.query(
         "GET",
         `/service/commission-configurations/${serviceId}`
       );
-
-      const funcionariosComComissoes = funcionarios.map((func) => {
-        const comissao = comissoes.find((c) => c.funcionarioId === func.id);
-        const percentual = comissao.tipo == "PERCENTUAL" ? comissao.valor : 0;
-        const valorFixo = comissao.tipo == "VALOR" ? comissao.valor : 0;
-        return {
-          ...func,
-          percentual,
-          valorFixo,
-          comissao,
-        };
-      });
-
-      setFuncionarios(funcionariosComComissoes);
+      setComissoes(
+        coms.map((comissao) => {
+          const percentual = comissao.tipo == "PERCENTUAL" ? comissao.valor : 0;
+          const valorFixo = comissao.tipo == "VALOR" ? comissao.valor : 0;
+          const funcionarioSelecionado = func.find(
+            (f) => f.id == comissao.funcionarioId
+          );
+          return {
+            funcionario: funcionarioSelecionado,
+            nome: funcionarioSelecionado?.nome,
+            ...comissao,
+            percentual,
+            valorFixo,
+          };
+        })
+      );
     } catch (error) {
       console.error("Erro ao buscar funcionários:", error);
       alertCustom("Erro ao buscar funcionários!");
@@ -241,8 +244,8 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
           titulo={modal.titulo}
           buttons={modal.buttons}
           barbeariaId={modal.barbeariaId}
-          servicos={servicos}
           alertCustom={alertCustom}
+          comissoes={comissoes}
         />
 
         {servicos && servicos.length ? (

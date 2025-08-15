@@ -19,10 +19,10 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useLocation } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import LoadingImagePulse from "../Effects/loading";
-import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
-import { isMobile } from "../Funcoes";
-import { GoogleLoginButton } from "../Custom";
+import LoadingImagePulse from "../../Effects/loading";
+import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
+import { isMobile } from "../../Funcoes";
+import { GoogleLoginButton } from "../../Custom";
 
 const full = {
   [undefined]: { xs: false, md: false, sec: false },

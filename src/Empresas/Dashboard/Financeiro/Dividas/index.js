@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,85 +13,89 @@ import { data, useNavigate } from "react-router-dom";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import { Rows } from "../../../../Componentes/Lista/Rows";
 import DiscountRoundedIcon from "@mui/icons-material/DiscountRounded";
-import { toUTC } from "../../../../Componentes/Funcoes";
+import { getLocalItem, toUTC } from "../../../../Componentes/Funcoes";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import Modal from "../../../../Componentes/Modal";
+import Modal from "../../../../Componentes/Modal/Simple";
 import Banner from "../../../../Assets/Cobranca/cobranca_banner.png";
 import EditableTable from "../../../../Componentes/Table";
-import CustomDateInput from "../../../../Componentes/Custom";
+import CustomDateInput, { LoadingBox } from "../../../../Componentes/Custom";
 import BannerFind from "../../../../Assets/Cobranca/find_banner.png";
-
-const contasMock = [
-  {
-    id: 1,
-    nome: "Conta Luz",
-    valor: 150.5,
-    juros: 0,
-    atraso: 0,
-    vencimento: "2025-07-10",
-    status: "Pendente",
-  },
-  {
-    id: 2,
-    nome: "Conta Água",
-    valor: 80,
-    juros: 2.5,
-    atraso: 3,
-    vencimento: "2025-07-08",
-    status: "Atrasada",
-  },
-  {
-    id: 3,
-    nome: "Internet",
-    valor: 120,
-    juros: 0,
-    atraso: 0,
-    vencimento: "2025-07-12",
-    status: "Pendente",
-  },
-  {
-    id: 4,
-    nome: "Telefone",
-    valor: 60,
-    juros: 1,
-    atraso: 1,
-    vencimento: "2025-07-09",
-    status: "Pago",
-  },
-  {
-    id: 5,
-    nome: "Telefone",
-    valor: 60,
-    juros: 1,
-    atraso: 1,
-    vencimento: "2025-07-09",
-    status: "Pago",
-  },
-  {
-    id: 6,
-    nome: "Telefone",
-    valor: 60,
-    juros: 1,
-    atraso: 1,
-    vencimento: "2025-07-09",
-    status: "Atrasada",
-  },
-];
+import apiService from "../../../../Componentes/Api/axios";
 
 const chipColors = {
-  Pendente: "warning",
-  Atrasada: "error",
-  Pago: "success",
+  PENDING: "warning",
+  OK: "success",
+  OVERDUE: "inherit",
 };
 
-const Dividas = () => {
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState({ data: new Date(), status: null });
+const Dividas = ({ alertCustom }) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState({
+    data: new Date(),
+    status: null,
+  });
+  const [content, _setContent] = useState({
+    loading: true,
+    transacoes: [],
+    total: 0,
+  });
 
-  const totalPagar = contasMock
-    .filter((i) => "Pendente" == i.status)
-    .reduce((acc, c) => acc + (c.valor ?? 0) + (c.juros ?? 0), 0);
+  const setContent = (value) => _setContent((prev) => ({ ...prev, ...value }));
+
+  const handleGetData = async () => {
+    setContent({ loading: true });
+    try {
+      const data = await apiService.query(
+        "GET",
+        `/payment/pending-payment/${getLocalItem("establishmentId")}`
+      );
+      const transacoes_pendentes = data.filter(
+        ({ status }) => status == "PENDING"
+      );
+      const total = transacoes_pendentes
+        .filter(({ status }) => status == "PENDING")
+        .reduce((acc, item) => acc + parseFloat(item.precoComTaxa || 0), 0);
+
+      const transacoes = data.map((item) => {
+        const vencimento = item.dataCreated
+          ? new Date(item.dataCreated)
+          : new Date();
+
+        return {
+          id: item.id,
+          nome: item.subscription || "Não informado",
+          valor: parseFloat(item.precoComTaxa || 0),
+          juros: 0,
+          atraso: 0,
+          vencimento,
+          status: item.status,
+        };
+      });
+
+      setContent({
+        transacoes,
+        total,
+        dividas_titulo:
+          total > 0
+            ? `Total de R$ ${total.toFixed(2)} pendentes`
+            : "Nenhuma conta a pagar",
+        dividas_subtitulo:
+          total > 0
+            ? `Constam ${transacoes_pendentes.length} dívidas em aberto`
+            : "Você não possui dívidas em aberto",
+      });
+    } catch (error) {
+      console.error(error);
+      setContent({ transacoes: [], total: 0 });
+    } finally {
+      setContent({ loading: false });
+    }
+  };
+
+  useEffect(() => {
+    handleGetData();
+  }, []);
 
   const colunas = [
     {
@@ -148,7 +152,7 @@ const Dividas = () => {
           fullWidth
           variant="text"
           size="small"
-          disabled={!["Pendente", "Atrasada"].includes(params.status)}
+          disabled={!["PENDING", "OVERDUE"].includes(params.status)}
           onClick={() => navigate(`/checkout/${params.id}`)}
         >
           Pagar
@@ -158,15 +162,9 @@ const Dividas = () => {
   ];
 
   return (
-    <Grid
-      container
-      spacing={1}
-      sx={{
-        p: 2,
-      }}
-    >
+    <Grid container spacing={1}>
       <Grid
-        size={{ xs: 12, md: 5 }}
+        size={{ xs: 12, md: 4.5 }}
         sx={{
           display: "flex",
           alignItems: { xs: "center", md: "start" },
@@ -176,7 +174,6 @@ const Dividas = () => {
           flex: 1,
         }}
       >
-        {" "}
         <Paper
           elevation={0}
           sx={{
@@ -197,35 +194,37 @@ const Dividas = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 0.5,
+                color: "#fff",
               }}
             >
-              <span style={{ color: "#fff" }}>Total de </span>
-              R$ {totalPagar.toFixed(2)}{" "}
-              <ArrowUpwardRoundedIcon fontSize="small" />{" "}
-              <span style={{ color: "#fff" }}> pendentes</span>
+              {content.dividas_titulo}
             </Typography>
-            {`Total de ${contasMock.length} dívidas em aberto`}
+            {content.dividas_subtitulo}
           </Typography>
-        </Paper>{" "}
-      </Grid>{" "}
-      <Grid size={{ xs: 12, md: 1 }}></Grid>
-      <Grid size={{ xs: 12, md: 6 }}>
-        <Rows
-          oneTapMode={true}
-          items={contasMock.slice(0, 3).map((item) => ({
-            action: () => setOpen(true),
-            icon: <DiscountRoundedIcon />,
-            titulo: (
-              <Typography
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <span> {item.nome}</span>
-                <span> {toUTC(new Date(item.vencimento).toISOString())}</span>
-              </Typography>
-            ),
-            subtitulo: `R$ ${item.valor.toFixed(2)}`,
-          }))}
-        />
+        </Paper>
+      </Grid>
+      <Grid size={{ xs: 12, md: 2.5 }}></Grid>
+      <Grid size={{ xs: 12, md: 5 }}>
+        {content.loading ? (
+          <LoadingBox message="Carregando..." />
+        ) : content.transacoes.length ? (
+          <Rows
+            oneTapMode={true}
+            items={content.transacoes.slice(0, 3).map((item) => ({
+              action: () => setOpen(true),
+              icon: <DiscountRoundedIcon />,
+              titulo: (
+                <Typography
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{item.nome}</span>
+                  <span>{toUTC(new Date(item.vencimento).toISOString())}</span>
+                </Typography>
+              ),
+              subtitulo: `R$ ${item.valor.toFixed(2)}`,
+            }))}
+          />
+        ) : null}
       </Grid>
       <Modal
         fullScreen="all"
@@ -237,7 +236,6 @@ const Dividas = () => {
         alignItems="center"
       >
         <Grid container spacing={2}>
-          {" "}
           <Grid
             size={{ xs: 12, md: 3 }}
             sx={{
@@ -245,6 +243,7 @@ const Dividas = () => {
               flexWrap: "wrap",
               gap: 2,
               position: "relative",
+              maxHeight: "250px",
             }}
           >
             <Typography
@@ -268,7 +267,6 @@ const Dividas = () => {
               sx={{ display: "flex", flexWrap: "wrap", justifyContent: "end" }}
             >
               <Grid size={{ xs: 8, md: 3 }} sx={{ mt: 3 }}>
-                {" "}
                 <CustomDateInput
                   value={filter.data}
                   onChange={(data, valid) =>
@@ -278,15 +276,14 @@ const Dividas = () => {
                 />
               </Grid>
               <Grid size={12}>
-                {" "}
                 <SwipeIndicaton>
                   <EditableTable
                     columns={colunas}
-                    rows={contasMock}
+                    rows={content.transacoes}
                     onChange={(e) => console.log(e)}
                   />
                 </SwipeIndicaton>
-              </Grid>{" "}
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import Modal from "../Modal";
+import Modal from "../Modal/Simple";
 import { Rows } from "../Lista/Rows";
 import { Tooltip } from "@mui/material";
 

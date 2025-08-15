@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Grid2 as Grid, Typography, Box, Button } from "@mui/material";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import { CustomInput } from "../../Componentes/Custom";
 import apiService from "../../Componentes/Api/axios";
 import { getLocalItem } from "../../Componentes/Funcoes";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Chip, Typography, Box, CircularProgress } from "@mui/material";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import { Rows } from "../../Componentes/Lista/Rows";
 import apiService from "../../Componentes/Api/axios";
 import { format } from "date-fns";

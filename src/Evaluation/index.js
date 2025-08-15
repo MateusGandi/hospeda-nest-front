@@ -9,7 +9,7 @@ import {
   Paper,
   Grid2 as Grid,
 } from "@mui/material";
-import Modal from "../Componentes/Modal";
+import Modal from "../Componentes/Modal/Simple";
 import { CustomInput } from "../Componentes/Custom";
 import apiService from "../Componentes/Api/axios";
 import { getLocalItem, isMobile } from "../Componentes/Funcoes";

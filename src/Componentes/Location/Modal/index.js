@@ -10,7 +10,7 @@ import {
   Stack,
 } from "@mui/material";
 import axios from "axios";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../Modal/Simple";
 
 const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
   const [showModal, setShowModal] = useState(false);
@@ -134,7 +134,7 @@ const LocationModal = ({ alertCustom, address, onLocationSelected }) => {
     >
       <Stack spacing={1} sx={{ width: "100%", textAlign: "center" }}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Qual Sua localização?
+          Esteja visível!
         </Typography>
 
         <Typography variant="body1" sx={{ pb: 4 }}>
