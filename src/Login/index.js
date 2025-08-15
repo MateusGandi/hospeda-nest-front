@@ -6,7 +6,7 @@ import Recover from "./Recover";
 import ChangePassword from "./ChangePassword";
 
 import { Grid2 as Grid, Typography } from "@mui/material";
-import Modal from "../Componentes/Modal";
+import Modal from "../Componentes/Modal/Simple";
 import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
 import Banner from "../Assets/Login/tonsus_mosaico.png";
@@ -215,7 +215,7 @@ const LoginPage = ({ page, alertCustom }) => {
       { campo: "nome", validacoes: "required, minLength(10)" },
       {
         campo: "telefone",
-        validacoes: "required, minLength(18), telefone",
+        validacoes: "required, minLength(16), telefone",
       },
       {
         campo: "senha",

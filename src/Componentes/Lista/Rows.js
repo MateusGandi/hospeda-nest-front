@@ -34,6 +34,7 @@ export const Rows = ({
   collapse = false,
   distribution = items.length ?? 1,
   focusInItem = true,
+  checkmode = true,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -110,6 +111,7 @@ export const Rows = ({
                   }}
                 >
                   {Array.isArray(selected) &&
+                    checkmode &&
                     focusInItem &&
                     selected?.some((opcao) => opcao.id === item.id) && (
                       <CheckCircleIcon

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Grid2 as Grid, Switch, Typography } from "@mui/material";
 import { Rows } from "../../../../Componentes/Lista/Rows";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import Modal from "../../../../Componentes/Modal";
+import Modal from "../../../../Componentes/Modal/Simple";
 import {
   CustomInput,
   CustomSelect,

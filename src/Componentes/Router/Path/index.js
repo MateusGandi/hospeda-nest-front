@@ -133,13 +133,8 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     }
   };
 
-  useEffect(() => {
-    fetch();
-  }, []);
-
   /*end - Funções globais*/
-
-  const subPaths = {
+  const routes = {
     support: {
       titulo: "Dúvidas Frequentes",
       icon: <QuestionAnswerRoundedIcon color="primary" />,
@@ -204,7 +199,6 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
       ),
     },
-
     escala: {
       icon: <Settings />,
       titulo: "Minha Escala",
@@ -225,7 +219,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     agendamento: {
       icon: <CalendarMonth />,
       titulo: "Agendar",
-      acessoRapido: true, //define se deve aparecer na tela principal ao inves do menu lateral
+      acessoRapido: true,
       componente: (
         <AgendamentoManual
           barbearia={dados}
@@ -266,6 +260,59 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     },
   };
 
+  const accessMap = {
+    adm: [
+      "me",
+      "editar",
+      "agendamento",
+      "whatsapp",
+      "escala",
+      "servicos",
+      "produtos",
+      "financeiro",
+      "funcionarios",
+      "agendamentos",
+      "",
+      "support",
+    ],
+    admemployee: [
+      "me",
+      "editar",
+      "agendamento",
+      "whatsapp",
+      "escala",
+      "servicos",
+      "produtos",
+      "financeiro",
+      "funcionarios",
+      "agendamentos",
+      "",
+      "support",
+    ],
+    employee: [
+      "me",
+      "agendamento",
+      "escala",
+      "financeiro",
+      "agendamentos",
+      "",
+      "support",
+    ],
+  };
+
+  const accessType =
+    getLocalItem("funcionario") && getLocalItem("accessType") == "adm"
+      ? "admemployee"
+      : getLocalItem("accessType");
+
+  const subPaths = Object.keys(routes).reduce((obj, key) => {
+    const access = accessMap[accessType];
+    if (access && access.includes(key)) {
+      obj[key] = routes[key]; // pega do objeto original
+    }
+    return obj;
+  }, {});
+
   const paths = {
     "/login": <Login page="login" alertCustom={alertCustom} />,
     "/create": <Login page="create" alertCustom={alertCustom} />,
@@ -284,7 +331,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/faq": <FAQ />,
     "/envite": <Envite alertCustom={alertCustom} />,
 
-    "/dashboard": <SubRoutes dados={dados} views={subPaths} />,
+    "/dashboard": <SubRoutes fetch={fetch} dados={dados} views={subPaths} />,
   };
 
   if (isLoading) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Profile from "./Perfil/Edit";
 import apiService from "../Componentes/Api/axios";
 import { getLocalItem, isMobile } from "../Componentes/Funcoes";
-import Modal from "../Componentes/Modal";
+import Modal from "../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import ListaAgendamentos from "./Perfil/Agendamentos";

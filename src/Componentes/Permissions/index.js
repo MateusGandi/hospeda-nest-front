@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import apiService from "../Api/axios";
 import { getLocalItem } from "../Funcoes";
-import Modal from "../Modal";
+import Modal from "../Modal/Simple";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
 

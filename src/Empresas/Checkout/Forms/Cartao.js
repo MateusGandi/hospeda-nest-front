@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid2 as Grid } from "@mui/material";
-import { CustomInput } from "../../Componentes/Custom";
-import { formatCardInfo } from "../../Componentes/Funcoes";
+import { CustomInput } from "../../../Componentes/Custom";
+import { formatCardInfo } from "../../../Componentes/Funcoes";
 
 const CardPayment = ({ setForm, form }) => {
   const handleChange = (e) => {

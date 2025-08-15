@@ -11,7 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import {
   formatTime,
   getLocalItem,

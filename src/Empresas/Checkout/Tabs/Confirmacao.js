@@ -9,11 +9,11 @@ import {
   IconButton,
   Grid2 as Grid,
 } from "@mui/material";
-import { QRCodeGenerator } from "../../Componentes/QRCode";
-import { CustomInput } from "../../Componentes/Custom";
+import { QRCodeGenerator } from "../../../Componentes/QRCode";
+import { CustomInput } from "../../../Componentes/Custom";
 import axios from "axios";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { PaperList } from "../../Componentes/Lista/Paper";
+import { PaperList } from "../../../Componentes/Lista/Paper";
 const teste = [
   {
     method: "pix",

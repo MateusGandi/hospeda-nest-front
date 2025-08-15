@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Grid2 as Grid, Typography } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";

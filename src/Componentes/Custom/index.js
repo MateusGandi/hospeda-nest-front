@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Typography,
   Button,
+  Paper,
 } from "@mui/material";
 import { height, styled } from "@mui/system";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -15,9 +16,24 @@ import { format, isValid, parse, set } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Calendario from "../Calendar/Simple";
 import { formatDate } from "../Funcoes";
-import Modal from "../Modal";
+import Modal from "../Modal/Simple";
 import { useGoogleLogin } from "@react-oauth/google";
-import GoogleIcon from "../../Assets/Login/google-icon.svg";
+import { Rows } from "../Lista/Rows";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+const meses = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
 
 const CustomTextField = styled(TextField)(({ disableElevation }) => ({
   "& .MuiOutlinedInput-root": {
@@ -264,3 +280,101 @@ export const GoogleLoginButton = ({ onError, onSuccess, text }) => {
     </Button>
   );
 };
+
+export function CustomMonthSelector({ selected, onSelect }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Box
+        component={Paper}
+        elevation={0}
+        onClick={() => setOpen(true)}
+        sx={{
+          background: "rgba(256, 256, 256, 0.1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderRadius: "8px",
+          px: 2,
+          py: "7px",
+          cursor: "pointer",
+        }}
+      >
+        <Typography>{selected[0]?.titulo || "Selecione o mês"}</Typography>
+        <IconButton size="small">
+          <ExpandMoreIcon />
+        </IconButton>
+      </Box>
+
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        titulo="Selecione o mês"
+      >
+        <Rows
+          items={meses.map((mes, index) => ({
+            id: index,
+            titulo: mes,
+          }))}
+          selectedItems={selected || []}
+          onSelect={(item) => {
+            onSelect(item);
+            setOpen(false);
+          }}
+        />
+      </Modal>
+    </>
+  );
+}
+
+export function CustomYearSelector({ selected, onSelect, range = 15 }) {
+  const [open, setOpen] = useState(false);
+
+  const anos = Array.from({ length: range }, (_, i) => {
+    const ano = new Date().getFullYear() - 5 + i;
+    return { id: ano, titulo: ano.toString() };
+  });
+
+  return (
+    <>
+      <Box
+        onClick={() => setOpen(true)}
+        sx={{
+          background: "rgba(256, 256, 256, 0.1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderRadius: "8px",
+          px: 2,
+          py: "8px",
+          cursor: "pointer",
+        }}
+      >
+        <Typography>
+          {selected?.length ? selected[0].titulo : "Selecione o ano"}
+        </Typography>
+        <IconButton size="small">
+          <ExpandMoreIcon />
+        </IconButton>
+      </Box>
+
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        titulo="Selecione o ano"
+      >
+        <Rows
+          items={anos}
+          selectedItems={selected || []}
+          onSelect={(item) => {
+            onSelect(item);
+            setOpen(false);
+          }}
+        />
+      </Modal>
+    </>
+  );
+}

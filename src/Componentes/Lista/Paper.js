@@ -19,6 +19,7 @@ export const PaperList = ({
   return (
     <Paper
       variant={variant}
+      elevation={0}
       sx={{ background: "transparent", overflow: "hidden", ...sx }}
     >
       {children}

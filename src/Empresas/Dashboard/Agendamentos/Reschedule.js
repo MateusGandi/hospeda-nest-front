@@ -9,7 +9,7 @@ import { Rows } from "../../../Componentes/Lista/Rows";
 import { formatarData } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 
 const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);

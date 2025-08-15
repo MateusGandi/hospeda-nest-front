@@ -1,43 +1,32 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Box,
-  Divider,
-  Grid2 as Grid,
-  Paper,
-} from "@mui/material";
-import PaymentMethods from "./PaymentMethods";
-import PixPayment from "./PixPayment";
-import CardPayment from "./CardPayment";
-import BoletoPayment from "./BoletoPayment";
-import Modal from "../../Componentes/Modal";
-import { useNavigate } from "react-router-dom";
-import PixIcon from "@mui/icons-material/Pix";
-import BarcodeIcon from "../../Assets/barcode.png";
-import CardIcon from "@mui/icons-material/CreditCard";
-import { PaperList } from "../../Componentes/Lista/Paper";
-import apiService from "../../Componentes/Api/axios";
-import Confirmacao from "./Confirmacao";
+import React, { useEffect, useState } from "react";
+import Modal from "../../Componentes/Modal/Simple";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Confirmacao from "./Tabs/Confirmacao";
+import MetodosPagamento from "./Tabs/MetodosPagamento";
+import InformacoesAdicionais from "./Tabs/InformacoesAdicionais";
+import { Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import StepIndicator from "../../Componentes/Step";
+import PartialDrawer from "../../Componentes/Modal/Bottom";
+import { isMobile } from "../../Componentes/Funcoes";
 
 const Checkout = ({ alertCustom }) => {
+  const { key, page } = useParams();
   const navigate = useNavigate();
-  const [form, setForm] = useState({});
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
-  const handleSubmit = async () => {
-    setPaymentConfirmed(true);
-    try {
-      await apiService.query("POST", form);
-    } catch (error) {
-      alertCustom(
-        "Erro ao proceder com o pagamento, tente novamente mais tarde!"
-      );
-    }
-  };
+  const pages = [
+    { label: "Informações adicionais", value: "informacoes" },
+    { label: "Pagamento", value: "pagamento" },
+    { label: "Confirmação", value: "confirmacao" },
+  ];
+
+  const [form, setForm] = useState({});
+  const [selected, setSelected] = useState(null);
+  const [openResumo, setOpenResumo] = useState(false);
+
   const [modal, setModal] = useState({
+    tabIndex: 0,
+    tab: pages[0].value,
     open: true,
     method: null,
     loading: false,
@@ -45,52 +34,77 @@ const Checkout = ({ alertCustom }) => {
     actionText: "Próximo",
   });
 
-  const orderDetails = [
-    {
-      id: 0,
-      titulo: "Fone de Ouvido Bluetooth",
-      preco: 199.99,
-      subtitulo:
-        "Fone sem fio com cancelamento de ruído e bateria de longa duração.",
-    },
-    {
-      id: 1,
-      titulo: "Fone de Ouvido Bluetooth",
-      preco: 199.99,
-      subtitulo:
-        "Fone sem fio com cancelamento de ruído e bateria de longa duração.",
-    },
-  ];
+  useEffect(() => {
+    if (!page) {
+      navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
+      return;
+    }
 
-  const itens = [
+    const foundIndex = pages.findIndex((p) => p.value === page);
+
+    if (foundIndex === -1) {
+      navigate("/dashboard");
+      return;
+    }
+
+    setModal((prev) => ({
+      ...prev,
+      tabIndex: foundIndex,
+      tab: pages[foundIndex].value,
+      actionText: foundIndex === pages.length - 1 ? "Finalizar" : "Próximo",
+    }));
+  }, [page, key]);
+
+  const getPaymentInfo = async () => {};
+
+  const handleNext = () => {
+    if (modal.tabIndex < pages.length - 1) {
+      const nextPage = pages[modal.tabIndex + 1].value;
+      navigate(`/checkout/${key}/${nextPage}`);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (modal.tabIndex > 0) {
+      const prevPage = pages[modal.tabIndex - 1].value;
+      navigate(`/checkout/${key}/${prevPage}`);
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
+  const handleSubmit = async () => {
+    console.log("Finalizando pedido...", form);
+  };
+
+  const onChangeSelected = (item) => {
+    setSelected(item);
+  };
+  const handleStepClick = (stepIndex) => {
+    if (stepIndex !== modal.tabIndex) {
+      const stepValue = pages[stepIndex].value;
+      navigate(`/checkout/${key}/${stepValue}`);
+    }
+  };
+  const stepStatus = [
     {
-      id: 0,
-      titulo: "Pix",
-      subtitulo: "Pagamento com confirmação em segundos",
-      value: "PIX",
-      renderDetails: <PixPayment form={form} setForm={setForm} />,
-      icon: <PixIcon />,
+      label: "Informações adicionais",
+      status: modal.tabIndex > 0 ? "done" : "pending",
     },
     {
-      id: 1,
-      titulo: "Boleto Bancário",
-      subtitulo: "Aprovação pode levar até dois dias",
-      value: "BOLETO",
-      renderDetails: <BoletoPayment form={form} setForm={setForm} />,
-      icon: (
-        <img
-          src={BarcodeIcon}
-          style={{ filter: "invert(100%)", width: "24px" }}
-        />
-      ),
+      label: "Pagamento",
+      status:
+        modal.tabIndex > 1
+          ? "done"
+          : modal.tabIndex === 1
+          ? "error"
+          : "pending",
     },
     {
-      id: 2,
-      titulo: "Cartão Crédito",
-      subtitulo: "Pague em até 12 vezes",
-      value: "CARTAO",
-      renderDetails: <CardPayment form={form} setForm={setForm} />,
-      icon: <CardIcon />,
+      label: "Confirmação",
+      status: modal.tabIndex === 2 ? "pending" : "pending",
     },
   ];
 
@@ -100,56 +114,84 @@ const Checkout = ({ alertCustom }) => {
       component="view"
       fullScreen="all"
       maxWidth="lg"
-      titulo="Pedido #12323988390"
       loading={modal.loading}
-      onClose={modal.onClose}
-      onAction={handleSubmit}
+      onClose={handleBack}
+      onAction={handleNext}
       actionText={modal.actionText}
-      backAction={
-        paymentConfirmed && {
-          action: () => setPaymentConfirmed(false),
-          titulo: "Voltar",
-        }
+      backAction={{
+        action: handleBack,
+        titulo: modal.tabIndex > 0 ? "Voltar" : "Cancelar",
+      }}
+      buttons={
+        isMobile
+          ? [
+              {
+                titulo: "Resumo do pedido",
+                action: () => setOpenResumo(!openResumo),
+                variant: "outlined",
+              },
+            ]
+          : []
       }
     >
-      <Container maxWidth="lg">
-        {paymentConfirmed ? (
-          <Confirmacao alertCustom={alertCustom} />
-        ) : (
+      <PartialDrawer
+        open={openResumo}
+        onClose={() => setOpenResumo(!openResumo)}
+        title={"Mais detalhes"}
+      >
+        <InformacoesAdicionais />
+      </PartialDrawer>
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Stack spacing={4}>
+            {" "}
+            <Typography variant="h6">Informações de pagamento</Typography>
+            <StepIndicator
+              steps={stepStatus}
+              currentStep={modal.tabIndex}
+              onChange={handleStepClick}
+            />
+            <Box sx={{ display: { xs: "none", md: "block" } }}>
+              <InformacoesAdicionais />
+            </Box>
+          </Stack>
+        </Grid>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 5 }}>
-              {" "}
-              <Typography variant="h6" gutterBottom>
-                Escolha uma forma de pagamento
+            {" "}
+            <Grid size={12}>
+              <Typography variant="h6" sx={{ mx: { xs: 0, md: 8 } }}>
+                Título
               </Typography>
-              <PaymentMethods
-                itens={itens}
-                value={modal.method}
-                onChange={(item) =>
-                  setModal((prev) => ({
-                    ...prev,
-                    method: item.value,
-                    action: item.action,
-                    actionText: item.actionText,
-                  }))
-                }
-              />
-            </Grid>{" "}
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Typography variant="h6" gutterBottom>
-                Resumo do pedido
-              </Typography>
-              <PaperList items={orderDetails}>
-                <Paper sx={{ p: 2, borderRadius: 0 }}>
-                  <Typography>Subtotal: R$ 29,90</Typography>
-                  <Typography>Desconto: R$ 9,90</Typography>
-                  <Typography>Total: R$ 20,00</Typography>
-                </Paper>
-              </PaperList>
             </Grid>
+            {modal.tab === "informacoes" && (
+              <Grid size={12}>
+                <div>oi</div>
+              </Grid>
+            )}
+            {modal.tab === "pagamento" && (
+              <>
+                <Grid size={{ xs: 12, md: 7 }} sx={{ mx: { xs: 0, md: 8 } }}>
+                  {selected && selected.component}
+                </Grid>{" "}
+                <Grid size={{ xs: 12, md: 3 }} sx={{ pt: 2.5 }}>
+                  <MetodosPagamento
+                    selected={selected}
+                    onChange={onChangeSelected}
+                    form={form}
+                    setForm={setForm}
+                  />
+                </Grid>
+              </>
+            )}
+            {modal.tab === "confirmacao" && (
+              <Grid size={12}>
+                <Confirmacao form={form} />
+              </Grid>
+            )}{" "}
           </Grid>
-        )}
-      </Container>
+        </Grid>
+      </Grid>
     </Modal>
   );
 };

@@ -8,7 +8,7 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../Modal/Simple";
 import Banner from "../../../Assets/Landing/mock_tonsus.png";
 
 const WhatsAppButton = () => {

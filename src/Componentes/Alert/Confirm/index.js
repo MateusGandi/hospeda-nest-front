@@ -1,7 +1,7 @@
 import React, { Children } from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Modal from "../../Modal"; // Importando o Modal já existente
+import Modal from "../../Modal/Simple"; // Importando o Modal já existente
 import Icon from "../../../Assets/Emojis";
 import { Box } from "@mui/material";
 

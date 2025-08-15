@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { Cards } from "../../../Componentes/Lista/Cards";

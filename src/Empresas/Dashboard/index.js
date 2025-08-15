@@ -49,7 +49,7 @@ import {
 import Api from "../../Componentes/Api/axios";
 import GetUserLocation from "../../Componentes/Location/Modal";
 import LoadingImagePulse from "../../Componentes/Effects/loading";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import CustomCard from "../../Componentes/Card";
 
 import Onboarding from "./Onboarding";

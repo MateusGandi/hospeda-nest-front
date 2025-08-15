@@ -22,7 +22,7 @@ import StarIcon from "@mui/icons-material/Star";
 
 import Api from "../../../Componentes/Api/axios";
 import CustomTabs from "../../../Componentes/Tabs";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import {
   formatCNPJ,
   getLocalItem,
@@ -255,7 +255,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                   views={
                     {
                       adm: [
-                        <Dividas />,
+                        <Dividas alertCustom={alertCustom} />,
                         <ListaMovimentacoes
                           buscar={search}
                           alertCustom={alertCustom}

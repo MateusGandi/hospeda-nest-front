@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Switch, Typography } from "@mui/material";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatPhone, formatTime } from "../../../Componentes/Funcoes";

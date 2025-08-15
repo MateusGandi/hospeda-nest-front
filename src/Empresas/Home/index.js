@@ -7,7 +7,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import Modal from "../../Componentes/Modal";
+import Modal from "../../Componentes/Modal/Simple";
 import Api from "../../Componentes/Api/axios";
 import BarberPresentation from "./Presentation";
 import { useParams, useNavigate } from "react-router-dom";

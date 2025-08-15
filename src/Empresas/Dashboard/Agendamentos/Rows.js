@@ -10,7 +10,7 @@ import {
   primeiraMaiuscula,
 } from "../../../Componentes/Funcoes";
 
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import Calendario from "../../../Componentes/Calendar/Simple";

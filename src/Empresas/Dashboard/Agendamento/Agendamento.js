@@ -5,7 +5,7 @@ import { formatarData } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
 import Horario from "../../../Componentes/Horario/fixed";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import Icon from "../../../Assets/Emojis";
 
 const Agendamento = ({ form, setForm, alertCustom }) => {

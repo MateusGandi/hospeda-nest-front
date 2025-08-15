@@ -1,5 +1,5 @@
 import React from "react";
-import { CustomInput } from "../../Componentes/Custom";
+import { CustomInput } from "../../../Componentes/Custom";
 import { Grid2 as Grid } from "@mui/material";
 
 const PixPayment = ({ form, setForm }) => {

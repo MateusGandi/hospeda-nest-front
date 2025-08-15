@@ -17,14 +17,15 @@ import {
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoImage from "../../../Assets/logo_aut.png";
+import { LoadingBox } from "../../Custom";
 
 const drawerWidth = 250;
 
-export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
+export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
   const { path } = useParams();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState(null);
   const drawerRef = useRef(null);
   const toggleButtonRef = useRef(null);
@@ -50,9 +51,12 @@ export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
 
   useEffect(() => {
     const key = path || "";
-
     setSelected(pages.find((item) => item.path == key));
   }, [path]);
+
+  useEffect(() => {
+    fetch();
+  }, []);
 
   // useEffect(() => {
   //   const handleClickOutside = (event) => {
@@ -79,109 +83,125 @@ export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
 
   if (!selected) return views[path]?.componente;
 
-  if (!dados) return "Carregando...";
-
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={open}
-        sx={{
-          zIndex: 1,
-          width: open ? drawerWidth : 0,
-          flexShrink: 0,
-          position: "absolute",
-          zIndex: 999,
-          transition: "width 0.3s ease-in-out",
-          "& .MuiDrawer-paper": {
-            background: "#212121",
-            width: drawerWidth,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            borderRadius: 0,
-            p: 0,
-          },
-        }}
-        ref={drawerRef}
-      >
-        <Box>
-          <Toolbar>
-            {" "}
-            <img
-              src={LogoImage}
-              style={{ height: "32px", marginLeft: "8px" }}
-            />
-          </Toolbar>
-          <List disablePadding>
-            {pages
-              .filter((item) => !item.footer)
-              .map((item) => (
-                <ListItemButton
-                  key={item.id}
-                  selected={selected?.id === item.id}
-                  onClick={() => handleChange(item)}
-                  sx={{ m: 1, borderRadius: "10px" }}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.titulo} />
-                </ListItemButton>
-              ))}
-          </List>
-        </Box>
-
-        <Box>
-          <Divider />
-          <List>
-            {pages
-              .filter((item) => !!item.footer)
-              .map((item) => (
-                <ListItemButton
-                  key={item.id}
-                  selected={selected?.id === item.id}
-                  onClick={() => handleChange(item)}
-                  sx={{ m: 1, borderRadius: "10px" }}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.titulo} />
-                </ListItemButton>
-              ))}
-          </List>
-        </Box>
-      </Drawer>
-      <Tooltip title={open ? "Fechar" : "Mais opções"} sx={{ zIndex: 9999 }}>
-        <Paper
-          elevation={0}
+    <>
+      {!dados ? (
+        <Box
           sx={{
-            position: "fixed",
-            left: open ? drawerWidth + 5 : 5,
-            bottom: 10,
-            zIndex: 2,
-            borderRadius: "50px",
-            transition: "left 0.2s ease-in-out",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
           }}
-          ref={toggleButtonRef}
         >
-          <IconButton onClick={() => setOpen(!open)} sx={{ p: 2 }}>
-            {open ? <CloseRoundedIcon /> : <WidgetsRoundedIcon />}
-          </IconButton>
-        </Paper>
-      </Tooltip>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          ml: open ? `${drawerWidth}px` : "0px",
-          transition: "margin 0.3s ease-in-out",
-          width: "90px",
-        }}
-      >
-        {views[path]?.componente || views[""].componente || (
-          <div>Página não encontrada</div>
-        )}
-      </Box>
-    </Box>
+          <LoadingBox message="Carregando informações..." />
+        </Box>
+      ) : (
+        <Box sx={{ display: "flex" }}>
+          <CssBaseline />
+          <Drawer
+            variant="persistent"
+            anchor="left"
+            open={open}
+            sx={{
+              zIndex: 1,
+              width: open ? drawerWidth : 0,
+              flexShrink: 0,
+              position: "absolute",
+              zIndex: 999,
+              transition: "width 0.3s ease-in-out",
+              "& .MuiDrawer-paper": {
+                background: "#212121",
+                width: drawerWidth,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                borderRadius: 0,
+                p: 0,
+              },
+            }}
+            ref={drawerRef}
+          >
+            <Box>
+              <Toolbar>
+                {" "}
+                <img
+                  src={LogoImage}
+                  style={{ height: "32px", marginLeft: "8px" }}
+                />
+              </Toolbar>
+              <List disablePadding>
+                {pages
+                  .filter((item) => !item.footer)
+                  .map((item) => (
+                    <ListItemButton
+                      key={item.id}
+                      selected={selected?.id === item.id}
+                      onClick={() => handleChange(item)}
+                      sx={{ m: 1, borderRadius: "10px" }}
+                    >
+                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemText primary={item.titulo} />
+                    </ListItemButton>
+                  ))}
+              </List>
+            </Box>
+
+            <Box>
+              <Divider />
+              <List>
+                {pages
+                  .filter((item) => !!item.footer)
+                  .map((item) => (
+                    <ListItemButton
+                      key={item.id}
+                      selected={selected?.id === item.id}
+                      onClick={() => handleChange(item)}
+                      sx={{ m: 1, borderRadius: "10px" }}
+                    >
+                      <ListItemIcon>{item.icon}</ListItemIcon>
+                      <ListItemText primary={item.titulo} />
+                    </ListItemButton>
+                  ))}
+              </List>
+            </Box>
+          </Drawer>
+          <Tooltip
+            title={open ? "Fechar" : "Mais opções"}
+            sx={{ zIndex: 9999 }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                position: "fixed",
+                left: open ? drawerWidth + 5 : 5,
+                bottom: 10,
+                zIndex: 2,
+                borderRadius: "50px",
+                transition: "left 0.2s ease-in-out",
+              }}
+              ref={toggleButtonRef}
+            >
+              <IconButton onClick={() => setOpen(!open)} sx={{ p: 2 }}>
+                {open ? <CloseRoundedIcon /> : <WidgetsRoundedIcon />}
+              </IconButton>
+            </Paper>
+          </Tooltip>
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              ml: open ? `${drawerWidth}px` : "0px",
+              transition: "margin 0.3s ease-in-out",
+              width: "90px",
+            }}
+          >
+            {views[path]?.componente || views[""].componente || (
+              <div>Página não encontrada</div>
+            )}
+          </Box>
+        </Box>
+      )}{" "}
+    </>
   );
 }

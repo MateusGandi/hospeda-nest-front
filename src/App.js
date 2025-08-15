@@ -97,7 +97,7 @@ function App() {
     "/manager/:page?",
     "/me/:agendamentoId?",
     "/plans/:videoPath?",
-    "/checkout/:key?",
+    "/checkout/:key/:page?",
     "/review/:barbeariaId",
     "/faq/:title?",
     "/envite/:establishmentId?/:token?",

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../../../Componentes/Modal";
+import Modal from "../../../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
 import FuncionarioForm from "./AdicionarFuncionario";
 import { Rows } from "../../../Componentes/Lista/Rows";
