@@ -35,6 +35,7 @@ export const Rows = ({
   distribution = items.length ?? 1,
   focusInItem = true,
   checkmode = true,
+  spacing = 1,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -68,7 +69,7 @@ export const Rows = ({
     >
       <Grid
         container
-        spacing={disableGap ? 0 : 1}
+        spacing={disableGap ? 0 : spacing}
         sx={{ display: "flex", flexWrap: "wrap" }}
       >
         {items.map((item) => (

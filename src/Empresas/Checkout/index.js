@@ -3,28 +3,52 @@ import Modal from "../../Componentes/Modal/Simple";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Confirmacao from "./Tabs/Confirmacao";
-import MetodosPagamento from "./Tabs/MetodosPagamento";
 import InformacoesAdicionais from "./Tabs/InformacoesAdicionais";
-import { Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import StepIndicator from "../../Componentes/Step";
 import PartialDrawer from "../../Componentes/Modal/Bottom";
-import { isMobile } from "../../Componentes/Funcoes";
+import { formatCardInfo, isMobile } from "../../Componentes/Funcoes";
+import { CustomInput } from "../../Componentes/Custom";
+import { Rows } from "../../Componentes/Lista/Rows";
+
+import PixIcon from "@mui/icons-material/Pix";
+import BarcodeIcon from "../../Assets/barcode.png";
+import CardIcon from "@mui/icons-material/CreditCard";
 
 const Checkout = ({ alertCustom }) => {
   const { key, page } = useParams();
   const navigate = useNavigate();
 
+  const items = [
+    { id: 0, titulo: "Pix", value: "PIX", icon: <PixIcon /> },
+    {
+      id: 1,
+      titulo: "Boleto",
+      value: "BOLETO",
+      icon: (
+        <img
+          src={BarcodeIcon}
+          style={{ filter: "invert(100%)", width: "24px" }}
+        />
+      ),
+    },
+    { id: 2, titulo: "Cartão", value: "CARTAO", icon: <CardIcon /> },
+  ];
+
   const pages = [
-    { label: "Informações adicionais", value: "informacoes" },
     { label: "Pagamento", value: "pagamento" },
+    { label: "Descontos", value: "cupom" },
     { label: "Confirmação", value: "confirmacao" },
   ];
 
-  const [form, setForm] = useState({});
-  const [selected, setSelected] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState("PIX"); // PIX, BOLETO, CARTAO
   const [openResumo, setOpenResumo] = useState(false);
-
-  const [modal, setModal] = useState({
+  const [form, setForm] = useState({
+    total_label: "Total R$ 0,00",
+    pedido_label: "Pedido #123123331553",
+    total: 0,
+  });
+  const [modal, _setModal] = useState({
     tabIndex: 0,
     tab: pages[0].value,
     open: true,
@@ -34,6 +58,20 @@ const Checkout = ({ alertCustom }) => {
     actionText: "Próximo",
   });
 
+  const setModal = (value) => {
+    _setModal((prev) => ({ ...prev, ...value }));
+  };
+
+  const handleChange = (e) => {
+    let valor = e.target.value;
+    if (e.target.name === "numeroCartao")
+      valor = formatCardInfo(valor, "numero");
+    if (e.target.name === "validade") valor = formatCardInfo(valor, "data");
+    if (e.target.name === "cvv") valor = valor.slice(0, 3);
+
+    setForm((prev) => ({ ...prev, [e.target.name]: valor }));
+  };
+
   useEffect(() => {
     if (!page) {
       navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
@@ -41,21 +79,17 @@ const Checkout = ({ alertCustom }) => {
     }
 
     const foundIndex = pages.findIndex((p) => p.value === page);
-
     if (foundIndex === -1) {
       navigate("/dashboard");
       return;
     }
 
-    setModal((prev) => ({
-      ...prev,
+    setModal({
       tabIndex: foundIndex,
       tab: pages[foundIndex].value,
       actionText: foundIndex === pages.length - 1 ? "Finalizar" : "Próximo",
-    }));
+    });
   }, [page, key]);
-
-  const getPaymentInfo = async () => {};
 
   const handleNext = () => {
     if (modal.tabIndex < pages.length - 1) {
@@ -76,37 +110,19 @@ const Checkout = ({ alertCustom }) => {
   };
 
   const handleSubmit = async () => {
-    console.log("Finalizando pedido...", form);
+    console.log("Finalizando pedido...", { form, selectedMethod });
   };
 
-  const onChangeSelected = (item) => {
-    setSelected(item);
-  };
   const handleStepClick = (stepIndex) => {
     if (stepIndex !== modal.tabIndex) {
       const stepValue = pages[stepIndex].value;
       navigate(`/checkout/${key}/${stepValue}`);
     }
   };
-  const stepStatus = [
-    {
-      label: "Informações adicionais",
-      status: modal.tabIndex > 0 ? "done" : "pending",
-    },
-    {
-      label: "Pagamento",
-      status:
-        modal.tabIndex > 1
-          ? "done"
-          : modal.tabIndex === 1
-          ? "error"
-          : "pending",
-    },
-    {
-      label: "Confirmação",
-      status: modal.tabIndex === 2 ? "pending" : "pending",
-    },
-  ];
+
+  const status = ["done", "pending", "error"];
+
+  const stepStatus = pages.map((page) => ({ ...page, status: "done" }));
 
   return (
     <Modal
@@ -120,7 +136,7 @@ const Checkout = ({ alertCustom }) => {
       actionText={modal.actionText}
       backAction={{
         action: handleBack,
-        titulo: modal.tabIndex > 0 ? "Voltar" : "Cancelar",
+        titulo: "Voltar",
       }}
       buttons={
         isMobile
@@ -141,54 +157,154 @@ const Checkout = ({ alertCustom }) => {
       >
         <InformacoesAdicionais />
       </PartialDrawer>
-      <Grid container spacing={4}>
+
+      <Grid container spacing={4} justifyContent="space-between">
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={4}>
-            {" "}
-            <Typography variant="h6">Informações de pagamento</Typography>
             <StepIndicator
               steps={stepStatus}
               currentStep={modal.tabIndex}
               onChange={handleStepClick}
             />
+
             <Box sx={{ display: { xs: "none", md: "block" } }}>
-              <InformacoesAdicionais />
+              <InformacoesAdicionais>
+                {" "}
+                <Typography variant="h6">
+                  {form.total_label}
+                  <Typography variant="body1" color="textSecondary">
+                    {form.pedido_label}
+                  </Typography>
+                </Typography>
+              </InformacoesAdicionais>
             </Box>
           </Stack>
         </Grid>
-        <Grid size={{ xs: 12, md: 8 }}>
+
+        {/* Conteúdo principal */}
+        <Grid size={{ xs: 12, md: 7 }}>
           <Grid container spacing={2}>
-            {" "}
-            <Grid size={12}>
-              <Typography variant="h6" sx={{ mx: { xs: 0, md: 8 } }}>
-                Título
-              </Typography>
-            </Grid>
-            {modal.tab === "informacoes" && (
-              <Grid size={12}>
-                <div>oi</div>
-              </Grid>
-            )}
             {modal.tab === "pagamento" && (
               <>
-                <Grid size={{ xs: 12, md: 7 }} sx={{ mx: { xs: 0, md: 8 } }}>
-                  {selected && selected.component}
-                </Grid>{" "}
-                <Grid size={{ xs: 12, md: 3 }} sx={{ pt: 2.5 }}>
-                  <MetodosPagamento
-                    selected={selected}
-                    onChange={onChangeSelected}
-                    form={form}
-                    setForm={setForm}
+                <Grid size={{ xs: 12, md: 8 }}>
+                  {selectedMethod === "PIX" && (
+                    <Typography variant="h6" className="show-box">
+                      Pagamento via Pix
+                      <Typography variant="body1">
+                        Você poderá pagar em até 24 horas após a geração do QR
+                        Code.
+                      </Typography>
+                    </Typography>
+                  )}
+
+                  {selectedMethod === "BOLETO" && (
+                    <Typography variant="h6" className="show-box">
+                      Pagamento via Boleto
+                      <Typography variant="body1">
+                        A confirmação pode levar até 2 dias úteis após o
+                        pagamento.
+                      </Typography>
+                    </Typography>
+                  )}
+
+                  {selectedMethod === "CARTAO" && (
+                    <>
+                      {" "}
+                      <Grid container spacing={2}>
+                        {" "}
+                        <Grid size={12}>
+                          <Typography variant="h6" className="show-box">
+                            Pagamento via Cartão de Crédito
+                            <Typography variant="body1">
+                              Informe os dados do cartão e parcele em até 12
+                              vezes
+                            </Typography>
+                          </Typography>
+                        </Grid>
+                        <Grid size={12}>
+                          <CustomInput
+                            fullWidth
+                            placeholder="Nome do titular do cartão"
+                            name="nome"
+                            value={form.nome || ""}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                        <Grid size={12}>
+                          <CustomInput
+                            fullWidth
+                            placeholder="Número do Cartão"
+                            name="numeroCartao"
+                            value={form.numeroCartao || ""}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                        <Grid size={6}>
+                          <CustomInput
+                            fullWidth
+                            placeholder="Validade (MM/AA)"
+                            name="validade"
+                            value={form.validade || ""}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                        <Grid size={6}>
+                          <CustomInput
+                            fullWidth
+                            placeholder="CVV"
+                            name="cvv"
+                            value={form.cvv || ""}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                      </Grid>
+                    </>
+                  )}
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Rows
+                    checkmode={false}
+                    unSelectMode={true}
+                    styleSelect={{ background: "#0195F7" }}
+                    selectedItems={items.filter(
+                      (item) => item.value === selectedMethod
+                    )}
+                    onSelect={(e) => setSelectedMethod(e.value)}
+                    items={items}
+                    spacing={2}
                   />
                 </Grid>
               </>
             )}
+
+            {modal.tab === "cupom" && (
+              <>
+                {" "}
+                <Grid size={12}>
+                  <Typography variant="h6">
+                    Adicionar cupom de desconto
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <CustomInput
+                    fullWidth
+                    placeholder="Digite seu cupom de desconto"
+                    name="cupom"
+                    value={form.cupom || ""}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Button disableElevation variant="contained" color="primary">
+                  Adicionar
+                </Button>
+              </>
+            )}
+
             {modal.tab === "confirmacao" && (
               <Grid size={12}>
                 <Confirmacao form={form} />
               </Grid>
-            )}{" "}
+            )}
           </Grid>
         </Grid>
       </Grid>

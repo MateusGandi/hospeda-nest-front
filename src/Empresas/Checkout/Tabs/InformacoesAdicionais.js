@@ -18,11 +18,18 @@ const teste = [
   },
 ];
 
-export default function InformacoesAdicionais({ orderDetails = teste }) {
+export default function InformacoesAdicionais({
+  children,
+  orderDetails = teste,
+}) {
   return (
     <PaperList items={orderDetails}>
-      <Paper sx={{ px: 2, py: 1, borderRadius: 0 }}>
-        <Typography variant="h6"> Resumo do pedido</Typography>
+      <Paper sx={{ px: 2, py: 1, borderRadius: 0 }} elevation={0}>
+        {children ? (
+          children
+        ) : (
+          <Typography variant="h6"> Resumo do pedido</Typography>
+        )}
       </Paper>
     </PaperList>
   );

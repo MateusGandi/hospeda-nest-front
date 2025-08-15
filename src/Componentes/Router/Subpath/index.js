@@ -18,6 +18,7 @@ import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoImage from "../../../Assets/logo_aut.png";
 import { LoadingBox } from "../../Custom";
+import { isMobile } from "../../Funcoes";
 
 const drawerWidth = 250;
 
@@ -25,7 +26,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
   const { path } = useParams();
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(!isMobile);
   const [selected, setSelected] = useState(null);
   const drawerRef = useRef(null);
   const toggleButtonRef = useRef(null);
