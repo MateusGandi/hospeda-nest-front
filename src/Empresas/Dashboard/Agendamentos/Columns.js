@@ -95,17 +95,11 @@ export default function AgendamentosByCalendario({ alertCustom }) {
     confirm: "confirmação",
   };
 
-  const [params, _setParams] = useState(() => {
-    const inicio = new Date();
-    const fim = new Date();
-    fim.setDate(fim.getDate() + 7);
-
-    return {
-      search: "",
-      filter: "",
-      inicio: inicio.toISOString().split("T")[0],
-      fim: fim.toISOString().split("T")[0],
-    };
+  const [params, _setParams] = useState({
+    search: "",
+    filter: "",
+    inicio: "",
+    fim: "",
   });
   const [content, _setContent] = useState({
     loading: true,
@@ -136,10 +130,12 @@ export default function AgendamentosByCalendario({ alertCustom }) {
   };
 
   const handleGetAgendamentos = async () => {
-    setContent({ loading: true });
     try {
       const { inicio, fim, filter } = params;
+      if (!inicio || !fim) return;
       const userId = getLocalItem("userId");
+
+      setContent({ loading: true });
 
       let baseUrl = `/scheduling/employee/scheduleds/${userId}/${inicio}`;
       const queryParams = new URLSearchParams();
@@ -247,7 +243,8 @@ export default function AgendamentosByCalendario({ alertCustom }) {
     } catch (error) {
       handleGetAgendamentos();
       alertCustom(
-        error?.response?.data?.message ?? "Erro ao atualizar agendamento!"
+        error?.response?.data?.message?.response?.message ??
+          "Erro ao atualizar agendamento!"
       );
     }
   };
@@ -262,11 +259,12 @@ export default function AgendamentosByCalendario({ alertCustom }) {
 
   return (
     <>
-      <View
+      <Modal
         open={true}
         onClose={onClose}
         fullScreen="all"
         titulo="Agendamentos"
+        maxWidth="lg"
       >
         <WeekCalendar
           loading={content.loading}
@@ -339,7 +337,7 @@ export default function AgendamentosByCalendario({ alertCustom }) {
           actionIcon={<AddRoundedIcon />}
           onAction={() => navigate("/dashboard/agendamento/cliente")}
         />
-      </View>
+      </Modal>
       <Modal
         open={modal.open}
         onClose={() => setModal({ open: false })}

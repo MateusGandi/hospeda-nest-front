@@ -49,12 +49,12 @@ import {
   CalendarMonth,
   Home,
 } from "@mui/icons-material";
+import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dados, setDados] = useState(null);
-  const [selected, setSelected] = useState(null);
 
   const navigate = useNavigate();
 
@@ -62,7 +62,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     const fetchRoutesAllowed = async () => {
       try {
         const paths = await Api.getAccess();
-        setPathsAllowed([...paths, "/envite", "/manager"]);
+        setPathsAllowed([...paths, "/envite", "/manager", "/support"]);
       } catch (error) {
         setPathsAllowed([
           "/login",
@@ -129,15 +129,14 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
 
   /*end - Funções globais*/
 
-  const footer = [
-    {
-      id: "duvidas",
-      titulo: "Dúvidas Frequentes",
-      icon: <Home />,
-    },
-  ];
-
   const subPaths = {
+    support: {
+      titulo: "Dúvidas Frequentes",
+      icon: <QuestionAnswerRoundedIcon color="primary" />,
+      componente: <div>oi</div>,
+      acessoRapido: true,
+      footer: true,
+    },
     "": {
       icon: <Home />,
       titulo: "Início",
@@ -153,6 +152,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     agendamentos: {
       icon: <CalendarMonth />,
       titulo: "Agendamentos",
+      acessoRapido: true,
       componente: (
         <Agendamentos alertCustom={alertCustom} onClose={handleClose} />
       ),
@@ -160,6 +160,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     funcionarios: {
       icon: <People />,
       titulo: "Funcionários",
+      acessoRapido: true,
       componente: (
         <GerenciarFuncionarios
           alertCustom={alertCustom}
@@ -170,6 +171,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     servicos: {
       icon: <Build />,
       titulo: "Serviços",
+      acessoRapido: true,
       componente: (
         <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
       ),
@@ -216,7 +218,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     },
     editar: {
       icon: <Store />,
-      titulo: "Barbearia",
+      titulo: "Editar Barbearia",
       componente: (
         <EditData
           onClose={handleClose}
@@ -245,8 +247,9 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     "/review": <Reviews alertCustom={alertCustom} />,
     "/faq": <FAQ />,
     "/envite": <Envite alertCustom={alertCustom} />,
+    "/support": <div>oi</div>,
 
-    "/dashboard": <SubRoutes dados={dados} views={subPaths} footer={footer} />,
+    "/dashboard": <SubRoutes dados={dados} views={subPaths} />,
   };
 
   if (isLoading) {

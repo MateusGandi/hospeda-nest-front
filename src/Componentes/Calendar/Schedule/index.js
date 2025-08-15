@@ -211,17 +211,6 @@ export default function WeekCalendar({
     [startOfWeek]
   );
 
-  // useEffect(() => {
-  //   const sunday = new Date(startOfWeek);
-  //   sunday.setHours(0, 0, 0, 0);
-
-  //   const saturday = new Date(sunday);
-  //   saturday.setDate(saturday.getDate() + 6);
-  //   saturday.setHours(0, 0, 0, 0);
-  //   console.log("calculei de novo ", saturday, sunday);
-  //   onWeekChange(saturday, sunday);
-  // }, [startOfWeek]);
-
   const hours = Array.from(
     { length: endHour - startHour + 1 },
     (_, i) => startHour + i
@@ -269,30 +258,21 @@ export default function WeekCalendar({
       </Box>
     );
   };
-  // useEffect(() => {
-  //   const sunday = new Date(startOfWeek);
-  //   sunday.setHours(0, 0, 0, 0);
+  useEffect(() => {
+    const sunday = new Date(startOfWeek);
+    sunday.setHours(0, 0, 0, 0);
 
-  //   const saturday = new Date(sunday);
-  //   saturday.setDate(saturday.getDate() + 6);
-  //   saturday.setHours(0, 0, 0, 0);
-  //   console.log("calculei de novo ", saturday, sunday);
-  //   onWeekChange(saturday, sunday);
-  // }, [startOfWeek]);
+    const saturday = new Date(sunday);
+    saturday.setDate(saturday.getDate() + 6);
+    saturday.setHours(0, 0, 0, 0);
+
+    onWeekChange(saturday, sunday);
+  }, [startOfWeek]);
 
   const goWeek = (dir) => {
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + dir * 7);
     setCurrentDate(newDate);
-
-    const sunday = new Date(newDate);
-    sunday.setDate(sunday.getDate() - sunday.getDay());
-    sunday.setHours(0, 0, 0, 0);
-
-    const saturday = new Date(sunday);
-    saturday.setDate(saturday.getDate() + 6);
-    saturday.setHours(23, 59, 59, 999);
-    onWeekChange(saturday, sunday);
   };
 
   const generatePreview = ({ itemType, item, style }) => {

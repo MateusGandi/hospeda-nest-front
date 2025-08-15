@@ -85,11 +85,13 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
+          acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendamentos",
+          acessoRapido: true,
         },
         {
           to: "escala",
@@ -122,21 +124,25 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           to: "funcionarios",
           icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
+          acessoRapido: true,
         },
         {
           to: "servicos",
           icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
+          acessoRapido: true,
         },
         {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
+          acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendamentos",
+          acessoRapido: true,
         },
       ],
       adm: [
@@ -154,11 +160,13 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           to: "funcionarios",
           icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
+          acessoRapido: true,
         },
         {
           to: "servicos",
           icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
+          acessoRapido: true,
         },
         {
           to: "/me",
@@ -181,21 +189,25 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           to: "funcionarios",
           icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Funcionários",
+          acessoRapido: true,
         },
         {
           to: "servicos",
           icon: <Build sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Serviços",
+          acessoRapido: true,
         },
         {
           to: "agendamento/cliente",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendar Cliente",
+          acessoRapido: true,
         },
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Agendamentos",
+          acessoRapido: true,
         },
         {
           to: "escala",
@@ -227,7 +239,9 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
   };
 
   const renderCards = () => {
-    const opcoes = cards(getLocalItem("accessType"));
+    const opcoes = cards(getLocalItem("accessType")).filter(
+      (item) => isMobile || !!item.acessoRapido
+    );
     const barraCenter = isMobile
       ? opcoes.slice(isMobile ? 4 : 0, opcoes.length)
       : opcoes;
@@ -293,8 +307,9 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           await reload();
           alertCustom("Imagem adicionada com sucesso!");
         } catch (uploadError) {
-          alertCustom("Erro ao adicionar imagem!");
-          console.error("Erro ao fazer upload da imagem:", uploadError);
+          alertCustom(
+            "Erro ao adicionar imagem: Verique tipo, tamanho e tente novamente."
+          );
         }
       };
 

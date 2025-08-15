@@ -278,7 +278,6 @@ export function diferencaEmMinutos(dataInicial, dataFinal) {
 
   const diffMs = fim - inicio;
   const diffMin = Math.floor(diffMs / 1000 / 60);
-  console.log(diffMin, dataInicial, dataFinal);
   return diffMin;
 }
 

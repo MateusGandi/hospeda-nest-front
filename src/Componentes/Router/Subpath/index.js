@@ -18,14 +18,9 @@ import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import LogoImage from "../../../Assets/logo_aut.png";
 
-const drawerWidth = 230;
+const drawerWidth = 250;
 
-export function SubRoutes({
-  views = {},
-  dados,
-  footer = [],
-  base = "/dashboard",
-}) {
+export function SubRoutes({ views = {}, dados, base = "/dashboard" }) {
   const { path } = useParams();
   const navigate = useNavigate();
 
@@ -37,13 +32,14 @@ export function SubRoutes({
   const pages = useMemo(
     () =>
       Object.entries(views)
-        .filter(([key, value]) => !value.acessoRapido)
+        .filter(([key, value]) => !value.acessoRapido || value.footer)
         .map(([key, value], index) => ({
           path: key,
           id: index,
           icon: value.icon,
           titulo: value.titulo,
           componente: value.componente,
+          footer: value.footer,
         })),
     [views]
   );
@@ -120,34 +116,38 @@ export function SubRoutes({
             />
           </Toolbar>
           <List disablePadding>
-            {pages.map((item) => (
-              <ListItemButton
-                key={item.id}
-                selected={selected?.id === item.id}
-                onClick={() => handleChange(item)}
-                sx={{ m: 1, borderRadius: "10px" }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.titulo} />
-              </ListItemButton>
-            ))}
+            {pages
+              .filter((item) => !item.footer)
+              .map((item) => (
+                <ListItemButton
+                  key={item.id}
+                  selected={selected?.id === item.id}
+                  onClick={() => handleChange(item)}
+                  sx={{ m: 1, borderRadius: "10px" }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.titulo} />
+                </ListItemButton>
+              ))}
           </List>
         </Box>
 
         <Box>
           <Divider />
           <List>
-            {footer.map((item) => (
-              <ListItemButton
-                key={item.id}
-                selected={selected?.id === item.id}
-                onClick={() => handleChange(item)}
-                sx={{ m: 1, borderRadius: "10px" }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.titulo} />
-              </ListItemButton>
-            ))}
+            {pages
+              .filter((item) => !!item.footer)
+              .map((item) => (
+                <ListItemButton
+                  key={item.id}
+                  selected={selected?.id === item.id}
+                  onClick={() => handleChange(item)}
+                  sx={{ m: 1, borderRadius: "10px" }}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.titulo} />
+                </ListItemButton>
+              ))}
           </List>
         </Box>
       </Drawer>
@@ -173,7 +173,7 @@ export function SubRoutes({
         component="main"
         sx={{
           flexGrow: 1,
-          // ml: open ? `${drawerWidth}px` : "0px",
+          ml: open ? `${drawerWidth}px` : "0px",
           transition: "margin 0.3s ease-in-out",
           width: "90px",
         }}

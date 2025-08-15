@@ -30,6 +30,7 @@ import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
 import { useNavigate } from "react-router-dom";
 import CustomTabs from "../../../Componentes/Tabs";
+import View from "../../../Componentes/View";
 
 const WorkSchedule = ({
   type = "button",
@@ -143,8 +144,8 @@ const WorkSchedule = ({
         absences.map((a) => ({
           ...a,
           dia: a.dia.split("T")[0],
-          horarioInicio: a.horarioInicio + ":00",
-          horarioFim: a.horarioFim + ":00",
+          horarioInicio: a.horarioInicio,
+          horarioFim: a.horarioFim,
           funcionarioId: id,
         }))
       );
@@ -261,7 +262,7 @@ const WorkSchedule = ({
     {
       headerName: "Remover",
       headerName: "",
-      width: 30,
+      width: 50,
       renderCell: (value, index) => (
         <Tooltip title="Excluir">
           <IconButton onClick={() => handleRemoveAbsence(value.id, index)}>
@@ -310,7 +311,7 @@ const WorkSchedule = ({
           }
 
           if (Array.isArray(d.ausencia)) {
-            const teste = d.ausencia.map((a) => {
+            const updated = d.ausencia.map((a) => {
               const dia = new Date(a.dia);
               dia.setHours(dia.getHours() + 6);
 
@@ -322,8 +323,7 @@ const WorkSchedule = ({
                 horarioFim: a.horarioFim,
               };
             });
-            console.log("teste", teste);
-            setAbsences(teste);
+            setAbsences(updated);
           }
         })
 
@@ -352,106 +352,213 @@ const WorkSchedule = ({
         </Button>
       )}
 
-      <Modal
-        open={open}
-        onClose={handleCloseModal ? () => handleCloseModal : () => navigate(-1)}
-        onAction={handleSave}
-        actionText="Salvar"
-        titulo="Configurar Escala de Trabalho"
-        fullScreen="all"
-        maxWidth="md"
-        component="view"
-        buttons={[
-          ...(tab == 2
-            ? [
-                {
-                  titulo: "Adicionar Ausência",
-                  color: "terciary",
-                  action: handleAddAbsence,
-                },
-              ]
-            : []),
-          ...(tab == 0 && !opened
-            ? [
-                {
-                  titulo: "Quero Ajuda",
-                  color: "terciary",
-                  action: handleGetHelp,
-                },
-              ]
-            : []),
-          {
-            titulo: "Limpar tudo",
-            color: "terciary",
-            action: handleClearAll,
-          },
-        ]}
-      >
-        <Grid container spacing={2}>
-          <Grid size={12}>
-            <CustomTabs
-              tabs={tabs}
-              onChange={(e) => setTab(e)}
-              selected={tab}
-              views={[
-                <>
-                  <MenuSuspenso
-                    open={opened}
-                    fixedButton={false}
-                    setOpen={setOpened}
-                    icon={<LightbulbIcon />}
-                    title="Personalizar escala"
-                  >
-                    <Typography variant="body1">
-                      Use escalas predefinidas para facilitar a configuração.
-                    </Typography>
-                    <Stack
-                      direction={{ xs: "column", md: "row" }}
-                      spacing={1}
-                      sx={{ mt: 4, justifyContent: "center" }}
+      {isMobile || type === "button" ? (
+        <Modal
+          open={open}
+          onClose={
+            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
+          }
+          onAction={handleSave}
+          actionText="Salvar"
+          titulo="Configurar Escala de Trabalho"
+          fullScreen="all"
+          maxWidth="md"
+          component="view"
+          buttons={[
+            ...(tab == 2
+              ? [
+                  {
+                    titulo: "Adicionar Ausência",
+                    color: "terciary",
+                    action: handleAddAbsence,
+                  },
+                ]
+              : []),
+            ...(tab == 0 && !opened
+              ? [
+                  {
+                    titulo: "Quero Ajuda",
+                    color: "terciary",
+                    action: handleGetHelp,
+                  },
+                ]
+              : []),
+            {
+              titulo: "Limpar tudo",
+              color: "terciary",
+              action: handleClearAll,
+            },
+          ]}
+        >
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <CustomTabs
+                tabs={tabs}
+                onChange={(e) => setTab(e)}
+                selected={tab}
+                views={[
+                  <>
+                    <MenuSuspenso
+                      open={opened}
+                      fixedButton={false}
+                      setOpen={setOpened}
+                      icon={<LightbulbIcon />}
+                      title="Personalizar escala"
                     >
-                      <Button
-                        variant="text"
-                        fullWidth
-                        disableElevation
-                        color="terciary"
-                        onClick={() => setOpened(false)}
+                      <Typography variant="body1">
+                        Use escalas predefinidas para facilitar a configuração.
+                      </Typography>
+                      <Stack
+                        direction={{ xs: "column", md: "row" }}
+                        spacing={1}
+                        sx={{ mt: 4, justifyContent: "center" }}
                       >
-                        Continuar
-                      </Button>
-                      <Button
-                        disableElevation
-                        variant="contained"
-                        fullWidth
-                        onClick={setDefaultSchedule}
-                      >
-                        Aplicar escala 6x1
-                      </Button>
-                    </Stack>
-                  </MenuSuspenso>
-                  <SwipeIndicator>
-                    <EditableTable
-                      columns={scheduleColumns}
-                      rows={workDays}
-                      onChange={setWorkDays}
-                    />
-                  </SwipeIndicator>
-                </>,
-                <EditableTable
-                  columns={lunchColumns}
-                  rows={lunchRows}
-                  onChange={setLunchRows}
-                />,
-                <EditableTable
-                  columns={absencesColumns}
-                  rows={absences}
-                  onChange={setAbsences}
-                />,
-              ]}
-            />
+                        <Button
+                          variant="text"
+                          fullWidth
+                          disableElevation
+                          color="terciary"
+                          onClick={() => setOpened(false)}
+                        >
+                          Continuar
+                        </Button>
+                        <Button
+                          disableElevation
+                          variant="contained"
+                          fullWidth
+                          onClick={setDefaultSchedule}
+                        >
+                          Aplicar escala 6x1
+                        </Button>
+                      </Stack>
+                    </MenuSuspenso>
+                    <SwipeIndicator>
+                      <EditableTable
+                        columns={scheduleColumns}
+                        rows={workDays}
+                        onChange={setWorkDays}
+                      />
+                    </SwipeIndicator>
+                  </>,
+                  <EditableTable
+                    columns={lunchColumns}
+                    rows={lunchRows}
+                    onChange={setLunchRows}
+                  />,
+                  <EditableTable
+                    columns={absencesColumns}
+                    rows={absences}
+                    onChange={setAbsences}
+                  />,
+                ]}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </Modal>
+        </Modal>
+      ) : (
+        <View
+          open={open}
+          onClose={
+            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
+          }
+          onAction={handleSave}
+          actionText="Salvar"
+          titulo="Configurar Escala de Trabalho"
+          fullScreen="all"
+          maxWidth="md"
+          component="view"
+          buttons={[
+            ...(tab == 2
+              ? [
+                  {
+                    titulo: "Adicionar Ausência",
+                    color: "terciary",
+                    action: handleAddAbsence,
+                  },
+                ]
+              : []),
+            ...(tab == 0 && !opened
+              ? [
+                  {
+                    titulo: "Quero Ajuda",
+                    color: "terciary",
+                    action: handleGetHelp,
+                  },
+                ]
+              : []),
+            {
+              titulo: "Limpar tudo",
+              color: "terciary",
+              action: handleClearAll,
+            },
+          ]}
+        >
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <CustomTabs
+                tabs={tabs}
+                onChange={(e) => setTab(e)}
+                selected={tab}
+                views={[
+                  <>
+                    <MenuSuspenso
+                      open={opened}
+                      fixedButton={false}
+                      setOpen={setOpened}
+                      icon={<LightbulbIcon />}
+                      title="Personalizar escala"
+                    >
+                      <Typography variant="body1">
+                        Use escalas predefinidas para facilitar a configuração.
+                      </Typography>
+                      <Stack
+                        direction={{ xs: "column", md: "row" }}
+                        spacing={1}
+                        sx={{ mt: 4, justifyContent: "center" }}
+                      >
+                        <Button
+                          variant="text"
+                          fullWidth
+                          disableElevation
+                          color="terciary"
+                          onClick={() => setOpened(false)}
+                        >
+                          Continuar
+                        </Button>
+                        <Button
+                          disableElevation
+                          variant="contained"
+                          fullWidth
+                          onClick={setDefaultSchedule}
+                        >
+                          Aplicar escala 6x1
+                        </Button>
+                      </Stack>
+                    </MenuSuspenso>
+                    <SwipeIndicator>
+                      <EditableTable
+                        columns={scheduleColumns}
+                        rows={workDays}
+                        onChange={setWorkDays}
+                      />
+                    </SwipeIndicator>
+                  </>,
+                  <EditableTable
+                    columns={lunchColumns}
+                    rows={lunchRows}
+                    onChange={setLunchRows}
+                  />,
+                  <EditableTable
+                    columns={absencesColumns}
+                    rows={absences}
+                    onChange={setAbsences}
+                  />,
+                ]}
+              />
+            </Grid>
+          </Grid>
+        </View>
+      )}
     </>
   );
 };

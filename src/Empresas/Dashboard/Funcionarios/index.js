@@ -7,8 +7,13 @@ import { Cards } from "../../../Componentes/Lista/Cards";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
-import { formatPhone, getLocalItem } from "../../../Componentes/Funcoes";
+import {
+  formatPhone,
+  getLocalItem,
+  isMobile,
+} from "../../../Componentes/Funcoes";
 import WorkSchedule from "../Escala";
+import View from "../../../Componentes/View";
 
 const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
   const navigate = useNavigate();
@@ -189,7 +194,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
                 <Typography variant="h6">
                   <Icon>💡</Icon>Ajuda rápida
                 </Typography>
-                Clique sobre um funcionário para adicionar uma foto ou em
+                Clique sobre um funcionário para adicionar uma foto ou em{" "}
                 <b>EDITAR</b> para adicionar <b>SERVIÇOS</b> ao atendimento do
                 funcionário
               </Typography>
@@ -230,6 +235,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
           </Typography>
         )}{" "}
       </Modal>
+
       <FuncionarioForm
         funcionarios={funcionarios}
         funcionario={modal.funcionarioSelecionado}

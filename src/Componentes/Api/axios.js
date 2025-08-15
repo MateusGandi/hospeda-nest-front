@@ -21,7 +21,6 @@ class ApiService {
 
     try {
       const url = `${process.env.REACT_APP_BACK_TONSUS}${route}`;
-      console.log("API URL:", url);
       const response = await axios({
         method,
         url: url,
