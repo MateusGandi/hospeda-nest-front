@@ -10,10 +10,11 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 import { QRCodeGenerator } from "../../../Componentes/QRCode";
-import { CustomInput } from "../../../Componentes/Custom";
+import { CustomInput, LoadingBox } from "../../../Componentes/Custom";
 import axios from "axios";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { PaperList } from "../../../Componentes/Lista/Paper";
+
 const teste = [
   {
     method: "pix",
@@ -110,36 +111,71 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
   return (
     <Container maxWidth="xs">
       <Grid container spacing={2}>
-        {" "}
         {method === "pix" && (
           <>
-            <Grid
-              size={12}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <QRCodeGenerator value={paymentData.qrCode} />
-            </Grid>
             <Grid size={12}>
-              {paymentData.linhaDigitavel && (
-                <CustomInput
-                  fullWidth
-                  disabled
-                  value={paymentData.linhaDigitavel}
-                  label="Código copia e cola"
-                  sx={{ mt: 2 }}
-                  endIcon={
-                    <IconButton
-                      onClick={() =>
-                        copyToClipboard(paymentData.linhaDigitavel)
-                      }
+              {!paymentData.qrCode ? (
+                <LoadingBox message="Carregando informações..." />
+              ) : (
+                <Grid
+                  container
+                  component={Paper}
+                  sx={{
+                    backgroundColor: "#fff",
+                    p: 2,
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    justifyContent: "center",
+                    width: "340px",
+                  }}
+                >
+                  {/* QR Code */}
+                  <Grid size={12} item>
+                    <Box display="flex" justifyContent="center">
+                      <QRCodeGenerator value={paymentData.qrCode} />
+                    </Box>
+                  </Grid>
+
+                  {/* Linha Digitável */}
+                  <Grid size={12} item sx={{ mt: 2 }}>
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        borderRadius: 1.5,
+                        backgroundColor: "#e3e3e3ff",
+                      }}
                     >
-                      <ContentCopyIcon />
-                    </IconButton>
-                  }
-                />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          flex: 1,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          color: "#000",
+                          pr: 1,
+                        }}
+                      >
+                        {paymentData.linhaDigitavel}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          copyToClipboard(paymentData.linhaDigitavel)
+                        }
+                      >
+                        <ContentCopyIcon
+                          fontSize="small"
+                          sx={{ color: "#000" }}
+                        />
+                      </IconButton>
+                    </Paper>
+                  </Grid>
+                </Grid>
               )}
             </Grid>
           </>
@@ -164,15 +200,6 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
             </Typography>
           </Grid>
         )}{" "}
-        <Grid size={12}>
-          {" "}
-          <PaperList items={instructions[method]}>
-            <Typography variant="h5" sx={{ p: 1 }}>
-              {" "}
-              Total: RS 18,99
-            </Typography>
-          </PaperList>{" "}
-        </Grid>
       </Grid>
     </Container>
   );

@@ -11,7 +11,7 @@ export const QRCodeGenerator = ({ value }) => {
         justifyContent: "center",
         borderRadius: "10px",
         width: "300px",
-        p: "10px",
+        px: "10px",
       }}
     >
       <QRCodeSVG

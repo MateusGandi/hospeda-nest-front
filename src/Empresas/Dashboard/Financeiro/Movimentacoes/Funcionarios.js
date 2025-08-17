@@ -176,7 +176,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   }, [dados.mes, dados.ano]);
 
   return (
-    <Grid container spacing={2} sx={{ p: 2 }}>
+    <Grid container spacing={2}>
       <Grid size={12}>
         <Typography variant="h6" sx={{ m: "10px 0", color: "#fff" }}>
           Movimentações dos Funcionários
@@ -231,13 +231,13 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         ]}
       >
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid size={{ xs: 12, md: 3 }}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <CustomYearSelector
               onSelect={(item) => setDados("ano", [item])}
               selected={dados.ano}
             />
           </Grid>
-          <Grid size={{ xs: 0, md: 3 }}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <CustomMonthSelector
               onSelect={(item) => setDados("mes", [item])}
               selected={dados.mes}
@@ -252,7 +252,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
               label="Pesquisar venda"
               searchValue={dados.search}
               setSearchValue={(v) => setDados("search", v)}
-              fullWidth
+              fullWidth={true}
             />
           </Grid>
 

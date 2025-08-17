@@ -50,7 +50,7 @@ const ReviewBarbershop = ({ barbearia, alertCustom }) => {
   }, [page]);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 5 }}>
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>

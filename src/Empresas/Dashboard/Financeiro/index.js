@@ -299,12 +299,12 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
           route="financeiro"
           component="view"
         >
-          {!dados.loading && (
+          {!dados.loading && barbearia && (
             <Grid
               container
               spacing={1}
               justifyContent="center"
-              sx={{ mt: "-10px", p: 1 }}
+              sx={{ mt: "-10px" }}
             >
               <Grid size={12} sx={{ mb: "-75px" }}>
                 <Paper
