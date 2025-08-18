@@ -14,7 +14,14 @@ import {
 } from "@mui/material";
 import StepIndicator from "../../Componentes/Step";
 import PartialDrawer from "../../Componentes/Modal/Bottom";
-import { formatCardInfo, isMobile } from "../../Componentes/Funcoes";
+import {
+  formatCardInfo,
+  formatCNPJ,
+  formatCPF,
+  formatPhone,
+  getLocalItem,
+  isMobile,
+} from "../../Componentes/Funcoes";
 import { CustomInput, CustomSelect } from "../../Componentes/Custom";
 import { Rows } from "../../Componentes/Lista/Rows";
 import PaymentSuccess from "../../Assets/Cobranca/payment_confirmed.svg";
@@ -23,39 +30,12 @@ import PixIcon from "@mui/icons-material/Pix";
 import BarcodeIcon from "../../Assets/barcode.png";
 import CardIcon from "@mui/icons-material/CreditCard";
 import apiService from "../../Componentes/Api/axios";
+import Cupom from "./Tabs/Cupom";
 
 const Checkout = ({ alertCustom }) => {
   const { key, page } = useParams();
   const navigate = useNavigate();
-
-  const items = [
-    { id: 0, titulo: "Pix", value: "PIX", icon: <PixIcon /> },
-    {
-      id: 1,
-      titulo: "Boleto",
-      value: "BOLETO",
-      icon: (
-        <img
-          src={BarcodeIcon}
-          style={{ filter: "invert(100%)", width: "24px" }}
-        />
-      ),
-    },
-    { id: 2, titulo: "Cartão", value: "CARTAO", icon: <CardIcon /> },
-  ];
-
-  const pages = [
-    { label: "Método", value: "metodo_pagamento" },
-    { label: "Pagamento", value: "pagamento" },
-    { label: "Confirmação", value: "confirmacao" },
-  ];
-
-  const [parcelas, setParcelas] = useState([
-    { label: "À vista", value: "avista" },
-    { label: "2x 12,99", value: "2x" },
-  ]);
-
-  const [selectedMethod, setSelectedMethod] = useState("PIX"); // PIX, BOLETO, CARTAO
+  const [selectedMethod, setSelectedMethod] = useState("PIX"); // PIX, BOLETO, CREDIT_CARD
   const [openResumo, setOpenResumo] = useState(false);
   const [form, setForm] = useState({
     total_label: "Total R$ 0,00",
@@ -63,56 +43,232 @@ const Checkout = ({ alertCustom }) => {
     total: 0,
     parcelamento: "",
     cupons: [],
+    cupomId: null,
+    status: null,
   });
+
+  const metodos = {
+    PIX: {
+      titulo: "Pix",
+      icon: <PixIcon />,
+    },
+    BOLETO: {
+      titulo: "Boleto",
+      icon: (
+        <img
+          src={BarcodeIcon}
+          style={{ filter: "invert(100%)", width: "24px" }}
+        />
+      ),
+    },
+    CREDIT_CARD: {
+      titulo: "Cartão",
+      icon: <CardIcon />,
+    },
+  };
+
+  const [metodosPagamento, setMetodosPagamento] = useState([]);
+
+  const [parcelas, _setParcelas] = useState({});
+  const setParcelas = (value) =>
+    _setParcelas((prev) => ({ ...prev, ...value }));
+
+  const handleSubmit = async () => {
+    try {
+      const body = {
+        paymentMethod: selectedMethod,
+        discountId: form.cupomId || null,
+      };
+
+      if (selectedMethod === "CREDIT_CARD") {
+        body.creditCard = {
+          holderName: form.nome,
+          number: form.numeroCartao,
+          expiryMonth: form.validade.split("/")[0],
+          expiryYear: form.validade.split("/")[1],
+          ccv: form.cvv,
+        };
+        body.creditCardHolderInfo = {
+          name: form.nome,
+          email: form.email,
+          cpfCnpj: form.cpfCnpj,
+          postalCode: null,
+          addressNumber: "0",
+          addressComplement: "",
+          phone: "",
+          mobilePhone: form.telefone,
+        };
+      }
+      await apiService.query("POST", `/payment/confirm/${key}`, body);
+    } catch (error) {}
+  };
+
+  const pages = [
+    {
+      label: "Dados",
+      value: "dados_pessoais",
+      status: "done",
+    },
+    {
+      label: "Método",
+      value: "metodo_pagamento",
+      status: "done",
+      action: handleSubmit,
+    },
+    {
+      label: "Pagamento",
+      value: "pagamento",
+      status: "done",
+    },
+    { label: "Confirmação", value: "confirmacao", status: "done" },
+  ];
+
   const [modal, _setModal] = useState({
     tabIndex: 0,
     tab: pages[0].value,
+    contextTab: null,
     open: true,
     method: null,
     loading: false,
     onClose: () => navigate(-1),
     actionText: "Próximo",
+    descricoes: {},
   });
-
   const setModal = (value) => {
     _setModal((prev) => ({ ...prev, ...value }));
   };
 
-  const handleChange = (e) => {
-    let valor = e.target.value;
-    if (e.target.name === "numeroCartao")
-      valor = formatCardInfo(valor, "numero");
-    if (e.target.name === "validade") valor = formatCardInfo(valor, "data");
-    if (e.target.name === "cvv") valor = valor.slice(0, 3);
+  const handleGetPayment = async () => {
+    try {
+      const { itens, formasPagamento, transacao, total, instituicao, foto } =
+        await apiService.query("GET", `/payment/transaction/${key}`);
 
-    setForm((prev) => ({ ...prev, [e.target.name]: valor }));
+      const titulos_label = {
+        PIX: "Pagamento via Pix",
+        BOLETO: "Pagamento via Boleto",
+        CREDIT_CARD: "Pagamento via Cartão de Crédito",
+      };
+
+      const subtitulos_label = {
+        PIX: ({ horas }) =>
+          `Você poderá pagar em até ${horas} horas após a geração do QR Code.`,
+        BOLETO: ({ dias }) =>
+          `A confirmação pode levar até ${dias} dias úteis após o pagamento.`,
+        CREDIT_CARD: ({ numParcelasMaximo }) =>
+          `Informe os dados do cartão e parcele em até ${numParcelasMaximo} vezes`,
+      };
+
+      setMetodosPagamento(
+        formasPagamento
+          .filter(({ metodo }) => Object.keys(metodos).includes(metodo))
+          .map(({ metodo, parcelas, numParcelasMaximo }, index) => {
+            _setModal((prev) => ({
+              ...prev,
+              descricoes: {
+                ...prev.descricoes,
+                [metodo]: {
+                  titulo: titulos_label[metodo].titulo,
+                  subtitulo: subtitulos_label[metodo]({
+                    numParcelasMaximo,
+                    horas: 24,
+                    dias: 2,
+                  }),
+                },
+              },
+            }));
+
+            setParcelas({
+              [metodo]: parcelas.map((p) => ({
+                label: `${p.prest}x de R$ ${p.valor.toFixed(2)}`,
+                value: p.prest,
+              })),
+            });
+            console.log({
+              [metodo]: parcelas.map((p) => ({
+                label: `${p.prest}x de R$ ${p.valor.toFixed(2)}`,
+                value: p.prest,
+              })),
+            });
+
+            return {
+              id: index,
+              value: metodo,
+              ...metodos[metodo],
+              parcelas: parcelas,
+              total,
+            };
+          })
+      );
+    } catch (error) {
+      console.error("Erro ao buscar pagamento pendente:", error);
+      alertCustom(error.message || "Erro ao buscar pagamento pendente");
+    }
   };
 
   useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      total_label: "Total R$ 0,00",
+      pedido_label: "Pedido #123123331553",
+      total: 0,
+    }));
+  }, [selectedMethod, form.parcelamento]);
+
+  useEffect(() => {
+    handleGetPayment();
     if (!page) {
       navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
       return;
     }
 
     const foundIndex = pages.findIndex((p) => p.value === page);
+
     if (foundIndex === -1) {
       navigate("/dashboard");
       return;
     }
 
+    if (modal.contextTab == null) {
+      navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
+    }
+
     setModal({
+      contextTab: foundIndex,
       tabIndex: foundIndex,
       tab: pages[foundIndex].value,
       actionText: foundIndex === pages.length - 1 ? "Finalizar" : "Próximo",
     });
   }, [page, key]);
 
-  const handleNext = () => {
-    if (modal.tabIndex < pages.length - 1) {
-      const nextPage = pages[modal.tabIndex + 1].value;
-      navigate(`/checkout/${key}/${nextPage}`);
-    } else {
-      handleSubmit();
+  const handleChange = (e) => {
+    let valor = e.target.value;
+    if (e.target.name === "numeroCartao")
+      valor = formatCardInfo(valor, "numero");
+    if (e.target.name === "validade") valor = formatCardInfo(valor, "data");
+    if (e.target.name === "cpfCnpj")
+      valor =
+        valor.replace(/\D/g, "").length > 11
+          ? formatCNPJ(valor)
+          : formatCPF(valor);
+    if (e.target.name === "telefone") valor = formatPhone(valor);
+    if (e.target.name === "cvv") valor = valor.slice(0, 3);
+
+    setForm((prev) => ({ ...prev, [e.target.name]: valor }));
+  };
+
+  const handleNext = async () => {
+    try {
+      if (modal.tabIndex < pages.length - 1) {
+        if (pages[modal.tabIndex].action)
+          await pages[modal.tabIndex].action().catch((error) => {
+            throw new Error("Erro ao avançar: " + error.message);
+          });
+
+        const nextPage = pages[modal.tabIndex + 1].value;
+        navigate(`/checkout/${key}/${nextPage}`);
+      }
+    } catch (error) {
+      console.error("Erro ao avançar:", error);
     }
   };
 
@@ -125,18 +281,12 @@ const Checkout = ({ alertCustom }) => {
     }
   };
 
-  const handleSubmit = async () => {
-    console.log("Finalizando pedido...", { form, selectedMethod });
-  };
-
   const handleStepClick = (stepIndex) => {
     if (stepIndex !== modal.tabIndex) {
       const stepValue = pages[stepIndex].value;
       navigate(`/checkout/${key}/${stepValue}`);
     }
   };
-
-  const stepStatus = pages.map((page) => ({ ...page, status: "done" }));
 
   const applyDescount = async () => {
     if (!form.cupom) {
@@ -146,18 +296,18 @@ const Checkout = ({ alertCustom }) => {
 
     await apiService
       .query("POST", `/discount/validate`, {
-        codigo: "DESCONTO10",
-        establishmentId: "2",
-        serviceId: "4ae1c519-6d77-40b2-b96b-9c15019ac660",
+        codigo: form.cupom,
+        establishmentId: getLocalItem("establishmentId"),
       })
       .then((response) => {
-        console.log(response);
+        //trocar valor da compra
+
         setForm((prev) => ({
           ...prev,
           cupom: "",
           cupons: [
             ...prev.cupons,
-            { id: prev.cupons.length, value: prev.cupom },
+            { id: prev.cupons.length - 1, value: prev.cupom },
           ],
         }));
       })
@@ -167,11 +317,16 @@ const Checkout = ({ alertCustom }) => {
       });
   };
 
-  const removeCupom = (id) => {
+  const handleRemoveDescount = (id) => {
+    //lógica para remover o desconto do valor da compra
     setForm((prev) => ({
       ...prev,
       cupons: prev.cupons.filter((cupom) => cupom.id !== id),
     }));
+  };
+
+  const onConfirm = (data, success = true) => {
+    if (success) handleNext();
   };
 
   return (
@@ -182,23 +337,21 @@ const Checkout = ({ alertCustom }) => {
       maxWidth="lg"
       loading={modal.loading}
       onClose={handleBack}
-      onAction={handleNext}
+      onAction={modal.status != "OK" && modal.tab != "pagamento" && handleNext}
       actionText={modal.actionText}
       backAction={{
         action: handleBack,
         titulo: "Voltar",
       }}
-      buttons={
-        isMobile
-          ? [
-              {
-                titulo: "Resumo do pedido",
-                action: () => setOpenResumo(!openResumo),
-                variant: "outlined",
-              },
-            ]
-          : []
-      }
+      buttons={[
+        {
+          sx: { display: { xs: "block", md: "none" } },
+          titulo: "Resumo do pedido",
+          action: () => setOpenResumo(!openResumo),
+          variant: "outlined",
+          color: "terciary",
+        },
+      ]}
     >
       <PartialDrawer
         open={openResumo}
@@ -213,45 +366,18 @@ const Checkout = ({ alertCustom }) => {
           <Stack spacing={2}>
             <Typography variant="h5">Finalizar Pedido</Typography>
             <StepIndicator
-              steps={stepStatus}
+              steps={pages}
               currentStep={modal.tabIndex}
               onChange={handleStepClick}
             />
-            <Box sx={{ mt: 3 }}>
-              {!["confirmacao", "pagamento"].includes(modal.tab) && (
-                <CustomInput
-                  fullWidth
-                  placeholder="Cupom de desconto"
-                  name="cupom"
-                  value={form.cupom || ""}
-                  onChange={handleChange}
-                  endIcon={
-                    <Button
-                      disableElevation
-                      color="secondary"
-                      onClick={(e) => {
-                        e.preventDefault(); // impede submit implícito
-                        applyDescount();
-                      }}
-                      sx={{ mr: -1, px: 2 }}
-                    >
-                      Adicionar
-                    </Button>
-                  }
-                />
-              )}
-            </Box>
 
-            <Typography sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {form.cupons.map((cupom) => (
-                <Chip
-                  key={cupom.id}
-                  label={cupom.value}
-                  onDelete={() => removeCupom(cupom.id)}
-                  color="terciary"
-                />
-              ))}
-            </Typography>
+            <Cupom
+              tab={modal.tab}
+              form={form}
+              handleChange={handleChange}
+              applyDescount={applyDescount}
+              onRemoveDescount={handleRemoveDescount}
+            />
 
             <Box sx={{ display: { xs: "none", md: "block" } }}>
               <InformacoesAdicionais>
@@ -268,41 +394,64 @@ const Checkout = ({ alertCustom }) => {
 
         <Grid size={{ xs: 12, md: 7 }}>
           <Grid container spacing={2}>
+            {modal.tab === "dados_pessoais" && (
+              <>
+                {" "}
+                <Grid size={{ xs: 12, md: 8 }}>
+                  <Typography variant="h6" className="show-box">
+                    Confirme seus dados
+                    <Typography variant="body1">
+                      Verifique a veracidade dos seus dados ou do pagador antes
+                      de prosseguir.
+                    </Typography>
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, md: 8 }}>
+                  <CustomInput
+                    fullWidth
+                    placeholder="E-mail do titular"
+                    name="email"
+                    value={form.email || ""}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 0, md: 4 }}></Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <CustomInput
+                    fullWidth
+                    placeholder="CPF ou CNPJ do titular"
+                    name="cpfCnpj"
+                    value={form.cpfCnpj || ""}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <CustomInput
+                    fullWidth
+                    placeholder="Telefone do titular"
+                    name="telefone"
+                    value={form.telefone || ""}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </>
+            )}
             {modal.tab === "metodo_pagamento" && (
               <>
                 <Grid size={{ xs: 12, md: 8 }} order={{ xs: 2, md: 1 }}>
-                  {selectedMethod === "PIX" && (
-                    <Typography variant="h6" className="show-box">
-                      Pagamento via Pix
-                      <Typography variant="body1">
-                        Você poderá pagar em até 24 horas após a geração do QR
-                        Code.
-                      </Typography>
-                    </Typography>
-                  )}
-
-                  {selectedMethod === "BOLETO" && (
-                    <Typography variant="h6" className="show-box">
-                      Pagamento via Boleto
-                      <Typography variant="body1">
-                        A confirmação pode levar até 2 dias úteis após o
-                        pagamento.
-                      </Typography>
-                    </Typography>
-                  )}
-
-                  {selectedMethod === "CARTAO" && (
-                    <>
-                      <Grid container spacing={2}>
-                        <Grid size={12}>
-                          <Typography variant="h6" className="show-box">
-                            Pagamento via Cartão de Crédito
-                            <Typography variant="body1">
-                              Informe os dados do cartão e parcele em até 12
-                              vezes
-                            </Typography>
+                  <Grid container spacing={2}>
+                    {modal.descricoes && selectedMethod && (
+                      <Grid size={12}>
+                        <Typography variant="h6" className="show-box">
+                          {modal.descricoes[selectedMethod].titulo}
+                          <Typography variant="body1">
+                            {modal.descricoes[selectedMethod].subtitulo}
                           </Typography>
-                        </Grid>
+                        </Typography>
+                      </Grid>
+                    )}
+                    {selectedMethod === "CREDIT_CARD" && (
+                      <>
                         <Grid size={12}>
                           <CustomInput
                             fullWidth
@@ -350,23 +499,23 @@ const Checkout = ({ alertCustom }) => {
                                 parcelamento: e.target.value,
                               }))
                             }
-                            options={parcelas}
+                            options={parcelas[selectedMethod] || []}
                           />
                         </Grid>
-                      </Grid>
-                    </>
-                  )}
+                      </>
+                    )}{" "}
+                  </Grid>
                 </Grid>
                 <Grid size={{ xs: 12, md: 4 }} order={{ xs: 1, md: 2 }}>
                   <Rows
                     checkmode={false}
                     unSelectMode={true}
                     styleSelect={{ background: "#0195F7" }}
-                    selectedItems={items.filter(
+                    selectedItems={metodosPagamento.filter(
                       (item) => item.value === selectedMethod
                     )}
                     onSelect={(e) => setSelectedMethod(e.value)}
-                    items={items}
+                    items={metodosPagamento}
                     spacing={2}
                   />
                 </Grid>
@@ -375,7 +524,11 @@ const Checkout = ({ alertCustom }) => {
 
             {modal.tab === "pagamento" && (
               <Grid size={12}>
-                <Confirmacao form={form} alertCustom={alertCustom} />
+                <Confirmacao
+                  form={form}
+                  alertCustom={alertCustom}
+                  onConfirm={onConfirm}
+                />
               </Grid>
             )}
             {modal.tab === "confirmacao" && (
