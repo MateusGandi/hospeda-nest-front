@@ -80,7 +80,7 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
       <Paper
         elevation={0}
         sx={{
-          m: "0 4px",
+          p: 0,
           borderRadius: "10px",
           background: "transparent",
         }}

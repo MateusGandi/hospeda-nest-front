@@ -4,7 +4,7 @@ import Banner from "../../../../Assets/Cobranca/logistic.png";
 
 const FornecedoresInfo = () => {
   return (
-    <Box sx={{ p: 2 }}>
+    <Box>
       <Grid container spacing={1} alignItems="center">
         {" "}
         {/* Imagem à esquerda */}

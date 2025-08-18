@@ -73,6 +73,7 @@ export const CustomInput = ({
   label,
   multiline,
   minRows,
+  sx,
   ...props
 }) => {
   return (
@@ -85,6 +86,7 @@ export const CustomInput = ({
       placeholder={placeholder || label}
       InputLabelProps={{ shrink: true }}
       InputProps={{
+        sx: sx,
         startAdornment: startIcon ? (
           <InputAdornment position="start">{startIcon}</InputAdornment>
         ) : null,
@@ -291,6 +293,7 @@ export function CustomMonthSelector({ selected, onSelect }) {
         elevation={0}
         onClick={() => setOpen(true)}
         sx={{
+          width: "100%",
           background: "rgba(256, 256, 256, 0.1)",
           display: "flex",
           alignItems: "center",

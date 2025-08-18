@@ -160,6 +160,21 @@ export const formatCNPJ = (value) => {
     .replace(/(\d{4})(\d)/, "$1-$2"); // Adiciona o hífen
 };
 
+export const formatCPF = (value) => {
+  // Remove tudo que não for número
+  let digits = value?.replace(/\D/g, "");
+  if (!value) return "";
+
+  // Limita ao formato máximo (11 dígitos para CPF)
+  digits = digits.slice(0, 11);
+
+  // Aplica a formatação XXX.XXX.XXX-XX
+  return digits
+    .replace(/^(\d{3})(\d)/, "$1.$2") // primeiro ponto
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3") // segundo ponto
+    .replace(/\.(\d{3})(\d)/, ".$1-$2"); // hífen
+};
+
 export const formatPhone = (value) => {
   // Remove tudo que não for número
   let digits = value?.replace(/\D/g, "");

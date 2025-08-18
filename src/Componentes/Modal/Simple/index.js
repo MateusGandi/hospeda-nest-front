@@ -100,9 +100,10 @@ const Modal = ({
             onClick={backAction.action}
             size="large"
             sx={{
+              borderRadius: "4px !important",
               background: "transparent",
               color: "#fff",
-              marginLeft: "-20px",
+              marginLeft: "-10px",
             }}
             startIcon={<ArrowBackIcon />}
           >
@@ -370,6 +371,7 @@ const Modal = ({
                     icon={button.icon}
                     variant={button.variant ? button.variant : "outlined"}
                     sx={{
+                      ...(button.sx || {}),
                       ...buttonStyle,
                       ...((["form", "view"].includes(component) ||
                         fullScreen) &&

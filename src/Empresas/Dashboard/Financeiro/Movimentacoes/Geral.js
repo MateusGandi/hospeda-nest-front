@@ -82,7 +82,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ p: 2 }}>
+    <Grid container spacing={2}>
       <Grid size={12}>
         <Grid container spacing={2} justifyContent="space-between">
           <Grid size={{ xs: 12, md: 3 }}>

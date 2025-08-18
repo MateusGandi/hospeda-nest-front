@@ -1,74 +1,48 @@
 import React from "react";
-import { Box, Typography, Avatar, Chip, useMediaQuery } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const StepIndicator = ({ steps = [], currentStep = 0, onChange }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const getColor = (step, index) => {
-    if (step.status === "done") return theme.palette.success.main; // verde
-    if (step.status === "error") return theme.palette.error.main; // vermelho
-    if (index === currentStep) return theme.palette.primary.main; // azul
-    return "transparent"; // cinza
-  };
-
   if (isMobile) {
+    // Mantém o layout mobile como você já fez
     const step = steps[currentStep] || {};
     return (
-      <Typography
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 2,
-          width: "100%",
-        }}
-      >
-        <Chip
-          label={
-            <Box display="flex" alignItems="center" gap={1}>
-              <Typography variant="body2">
-                {currentStep + 1}/{steps.length}
-              </Typography>
-            </Box>
-          }
-          onClick={() => onChange && onChange(currentStep)}
-          sx={{
-            bgcolor: getColor(step, currentStep),
-            color: "#fff",
-          }}
-        />{" "}
+      <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+        <Typography variant="body2">
+          {currentStep + 1}/{steps.length}
+        </Typography>
         <Typography variant="body1">{step.label}</Typography>
-      </Typography>
+      </Box>
     );
   }
 
   return (
-    <Box display="flex" flexDirection="column" gap={2}>
+    <Box display="flex" alignItems="center" sx={{ gap: 1 }}>
       {steps.map((step, index) => (
-        <Box
-          key={index}
-          display="flex"
-          alignItems="center"
-          gap={1}
-          onClick={() => onChange && onChange(index)}
-          sx={{ cursor: "pointer", userSelect: "none" }}
-        >
-          <Avatar
+        < >
+          <Typography
+            variant="body1"
             sx={{
-              bgcolor: getColor(step, index),
-              color: "#fff",
-              width: 25,
-              height: 25,
-              fontSize: 14,
-              fontWeight: "bold",
+              cursor: index < currentStep ? "pointer" : "default",
+              color:
+                index < currentStep
+                  ? theme.palette.primary.main // azul para anteriores
+                  : index === currentStep
+                  ? theme.palette.text.primary // atual preto
+                  : theme.palette.text.secondary, // próximos cinza 
             }}
+            onClick={() => index < currentStep && onChange && onChange(index)}
           >
-            {index + 1}
-          </Avatar>
-          <Typography variant="body1">{step.label}</Typography>
-        </Box>
+            {step.label}
+          </Typography>
+          {index < steps.length - 1 && ( 
+             <ChevronRightIcon/> 
+          )}
+        </ >
       ))}
     </Box>
   );

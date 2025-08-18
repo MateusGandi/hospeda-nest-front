@@ -10,10 +10,11 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 import { QRCodeGenerator } from "../../../Componentes/QRCode";
-import { CustomInput } from "../../../Componentes/Custom";
+import { CustomInput, LoadingBox } from "../../../Componentes/Custom";
 import axios from "axios";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { PaperList } from "../../../Componentes/Lista/Paper";
+
 const teste = [
   {
     method: "pix",
@@ -51,7 +52,7 @@ const instructions = {
     {
       id: 1,
       titulo: "Instruções",
-      subtitulo: "Escaneie o QR Code acima ou use o código copia e cola",
+      subtitulo: "Escaneie o QR Code ou use o código copia e cola",
     },
     {
       id: 0,
@@ -68,7 +69,7 @@ const instructions = {
   ],
 };
 
-const PaymentStatus = ({ data = teste[0], alertCustom }) => {
+const PaymentStatus = ({ data = teste[0], alertCustom, onConfirm }) => {
   const code = {
     E500: "Erro no servidor",
     E400: "Erro ao aprovar pagamento!",
@@ -84,13 +85,15 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
         try {
           const response = await axios.get(paymentData.url);
           setStatus("E" + response.data.status);
+          onConfirm(response.data, false);
         } catch (error) {
           setStatus("E" + error.status);
+          onConfirm(error.message, true);
         }
       };
 
       fetchStatus();
-      const interval = setInterval(fetchStatus, 5000); // Atualiza a cada 5 segundos
+      const interval = setInterval(fetchStatus, 5000);
 
       return () => clearInterval(interval);
     }
@@ -108,73 +111,110 @@ const PaymentStatus = ({ data = teste[0], alertCustom }) => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Grid container spacing={2}>
-        {" "}
-        {method === "pix" && (
-          <>
-            <Grid
-              size={12}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <QRCodeGenerator value={paymentData.qrCode} />
-            </Grid>
-            <Grid size={12}>
-              {paymentData.linhaDigitavel && (
-                <CustomInput
-                  fullWidth
-                  disabled
-                  value={paymentData.linhaDigitavel}
-                  label="Código copia e cola"
-                  sx={{ mt: 2 }}
-                  endIcon={
+    <Grid container spacing={2}>
+      {method === "pix" && (
+        <>
+          <Grid size={{ xs: 12, md: 7 }} className="justify-center">
+            {!paymentData.qrCode ? (
+              <LoadingBox message="Carregando informações..." />
+            ) : (
+              <Grid
+                elevation={0}
+                container
+                component={Paper}
+                sx={{
+                  justifyItems: "center",
+                  backgroundColor: "#fff",
+                  p: 2,
+                  borderRadius: "16px",
+                  boxShadow: 2,
+                  justifyContent: "center",
+                }}
+              >
+                {/* QR Code */}
+                <Grid size={12} item>
+                  <Box display="flex" justifyContent="center">
+                    <QRCodeGenerator value={paymentData.qrCode} />
+                  </Box>
+                </Grid>
+
+                {/* Linha Digitável */}
+                <Grid size={12} item sx={{ mt: 2 }}>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      borderRadius: 1.5,
+                      backgroundColor: "#e3e3e3ff",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        flex: 1,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        color: "#000",
+                        pr: 1,
+                      }}
+                    >
+                      {paymentData.linhaDigitavel}
+                    </Typography>
                     <IconButton
+                      size="small"
                       onClick={() =>
                         copyToClipboard(paymentData.linhaDigitavel)
                       }
                     >
-                      <ContentCopyIcon />
+                      <ContentCopyIcon
+                        fontSize="small"
+                        sx={{ color: "#000" }}
+                      />
                     </IconButton>
-                  }
-                />
-              )}
-            </Grid>
-          </>
-        )}
-        {method === "boleto" && (
-          <Grid size={12} sx={{ textAlign: "center" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2 }}
-              disableElevation
-              onClick={() => window.open(paymentData.url, "_blank")}
-            >
-              Clique aqui e baixe seu Boleto
-            </Button>
+                  </Paper>
+                </Grid>
+              </Grid>
+            )}
           </Grid>
-        )}
-        {method === "cartao" && (
-          <Grid size={12} sx={{ textAlign: "center" }}>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              {paymentData.message}
-            </Typography>
-          </Grid>
-        )}{" "}
-        <Grid size={12}>
-          {" "}
-          <PaperList items={instructions[method]}>
-            <Typography variant="h5" sx={{ p: 1 }}>
-              {" "}
-              Total: RS 18,99
-            </Typography>
-          </PaperList>{" "}
+        </>
+      )}
+      {method === "boleto" && (
+        <Grid size={{ xs: 12, md: 7 }} sx={{ textAlign: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+            disableElevation
+            onClick={() => window.open(paymentData.url, "_blank")}
+          >
+            Clique aqui e baixe seu Boleto
+          </Button>
         </Grid>
-      </Grid>
-    </Container>
+      )}
+      {method === "cartao" && (
+        <Grid size={{ xs: 12, md: 7 }} sx={{ textAlign: "center" }}>
+          <Typography variant="body1" sx={{ mt: 1 }}>
+            {paymentData.message}
+          </Typography>
+        </Grid>
+      )}
+      {method && (
+        <Grid size={{ xs: 12, md: 5 }}>
+          <Typography variant="h6" className="show-box">
+            Instruções
+            {instructions[method].map(({ subtitulo }, index) => (
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                {`${index + 1}. ${subtitulo}.`}
+              </Typography>
+            ))}
+          </Typography>
+        </Grid>
+      )}
+    </Grid>
   );
 };
 
