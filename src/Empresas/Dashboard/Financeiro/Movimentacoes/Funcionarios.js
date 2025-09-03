@@ -191,16 +191,14 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
               : dados.loading
               ? [
                   {
-                    titulo: dados.loading ? (
-                      <LoadingBox message="Buscando..." />
-                    ) : (
-                      "Nenhuma venda encontrada"
-                    ),
+                    disabled: true,
+                    titulo: <LoadingBox message="Buscando..." />,
                     subtitulo: "",
                   },
                 ]
               : [
                   {
+                    disabled: true,
                     titulo: "Nenhuma venda encontrada!",
                     subtitulo: "",
                   },
@@ -324,6 +322,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                       ]
                     : [
                         {
+                          disabled: true,
                           titulo: dados.loading
                             ? "Buscando..."
                             : "Nenhuma venda encontrada...",

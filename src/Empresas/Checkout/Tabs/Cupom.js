@@ -16,8 +16,8 @@ export default function Cupom({
           <CustomInput
             fullWidth
             placeholder="Cupom de desconto"
-            name="cupom"
-            value={form.cupom}
+            name="cupom_text"
+            value={form.cupom_text || ""}
             onChange={handleChange}
             endIcon={
               <Button
@@ -37,14 +37,14 @@ export default function Cupom({
         </Box>
       )}
       <Typography sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-        {form.cupons.map((cupom) => (
+        {form.cupom && (
           <Chip
-            key={cupom.id}
-            label={cupom.value}
-            onDelete={() => onRemoveDescount(cupom.id)}
+            key={form.cupom.id}
+            label={form.cupom.value}
+            onDelete={() => onRemoveDescount(form.cupom.id)}
             color="terciary"
           />
-        ))}
+        )}
       </Typography>
     </>
   );

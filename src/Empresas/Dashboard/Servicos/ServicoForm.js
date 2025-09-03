@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../../Componentes/Modal/Simple";
 import { CustomInput } from "../../../Componentes/Custom";
-import { formatMoney, formatTime } from "../../../Componentes/Funcoes";
+import {
+  formatMoney,
+  formatTime,
+  getLocalItem,
+} from "../../../Componentes/Funcoes";
 import apiService from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Commission from "./Commission";
@@ -32,7 +36,7 @@ const Servico = ({
     nome: "",
     tempoGasto: "",
     descricao: "",
-    preco: "",
+    preco: 0,
   });
   const [horario, setHorario] = useState(null);
 
@@ -68,8 +72,7 @@ const Servico = ({
   };
 
   useEffect(() => {
-    if (!open)
-      setData({ nome: "", tempoGasto: null, preco: null, descricao: "" });
+    if (!open) setData({ nome: "", tempoGasto: null, preco: 0, descricao: "" });
   }, [open]);
 
   useEffect(() => {
@@ -91,7 +94,7 @@ const Servico = ({
       if (data.tempoGasto.length < 5)
         return alertCustom("Horário no formato inválido");
 
-      const { foto, id, calculoComissao, ...rest } = data;
+      const { foto, id, calculoComissao, tempoGasto, ...rest } = data;
 
       if (Object.values(rest).some((value) => !value))
         return alertCustom("Informe todos os campos obrigatórios");
@@ -99,7 +102,13 @@ const Servico = ({
       await apiService.query(
         id ? "PATCH" : "POST",
         id ? `/service/${id}` : `/service`,
-        data
+        [
+          {
+            ...data,
+            tempoGasto: tempoGasto + ":00",
+            barbeariaId: getLocalItem("establishmentId"),
+          },
+        ]
       );
       console.log("funcionarios", funcionarios);
       if (funcionarios.comissao)

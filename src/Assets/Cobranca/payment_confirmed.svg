@@ -7,7 +7,7 @@
 </g>
 <circle cx="1087.07" cy="362.927" r="362.927" fill="white"/>
 <path d="M835.857 750.736C821.389 756.002 806.647 743.631 809.32 728.469L835.494 580.028C838.168 564.866 856.252 558.284 868.046 568.18L983.513 665.068C995.307 674.965 991.965 693.917 977.497 699.183L835.857 750.736Z" fill="white"/>
-<path d="M913 364.798L1060 503L1301 261.615" stroke="#03E55B" stroke-width="100" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M913 364.798L1060 503L1301 261.615" stroke="#23C45D" stroke-width="100" stroke-linecap="round" stroke-linejoin="round"/>
 <defs>
 <pattern id="pattern0_2416_7" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_2416_7" transform="matrix(0.0011534 0 0 0.00115741 0 -0.185185)"/>

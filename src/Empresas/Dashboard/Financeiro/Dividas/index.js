@@ -55,7 +55,7 @@ const Dividas = ({ alertCustom }) => {
       );
       const total = transacoes_pendentes
         .filter(({ status }) => status == "PENDING")
-        .reduce((acc, item) => acc + parseFloat(item.precoComTaxa || 0), 0);
+        .reduce((acc, item) => acc + parseFloat(item.precoSemTaxa || 0), 0);
 
       const transacoes = data.map((item) => {
         const vencimento = item.dataCreated
@@ -64,8 +64,8 @@ const Dividas = ({ alertCustom }) => {
 
         return {
           id: item.id,
-          nome: item.subscription || "Não informado",
-          valor: parseFloat(item.precoComTaxa || 0),
+          nome: item.description || "Não informado",
+          valor: parseFloat(item.precoSemTaxa || 0),
           juros: 0,
           atraso: 0,
           vencimento,
@@ -218,10 +218,16 @@ const Dividas = ({ alertCustom }) => {
                   sx={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <span>{item.nome}</span>
+                </Typography>
+              ),
+              subtitulo: (
+                <Typography
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{`R$ ${item.valor.toFixed(2)}`}</span>
                   <span>{toUTC(new Date(item.vencimento).toISOString())}</span>
                 </Typography>
               ),
-              subtitulo: `R$ ${item.valor.toFixed(2)}`,
             }))}
           />
         ) : null}

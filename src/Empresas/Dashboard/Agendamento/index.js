@@ -122,7 +122,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   const handleBack = () => {
     try {
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo - 1 == -1) {
+      if (pathTo - 1 == -1 || paths[pathTo - 1].key == "cliente") {
         return onClose();
       }
       setTituloModal(paths[pathTo - 1].title);

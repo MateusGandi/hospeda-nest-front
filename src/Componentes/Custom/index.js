@@ -229,26 +229,30 @@ export default function CustomDateInput({ value, onChange, label, ...props }) {
   );
 }
 
-export const LoadingBox = ({ message, variant = "body1" }) => {
+export const LoadingBox = ({
+  disableSpacing = false,
+  message,
+  variant = "body1",
+  sx = {},
+}) => {
   return (
     <Box
       sx={{
         width: "100%",
         textAlign: "center",
-        p: 2,
+        p: disableSpacing ? 0 : 2,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 1,
+        ...sx,
       }}
     >
-      {" "}
       <CircularProgress size={25} />
       <Typography variant={variant}>{message}</Typography>
     </Box>
   );
 };
-
 export const GoogleLoginButton = ({ onError, onSuccess, text }) => {
   const login = useGoogleLogin({
     onSuccess: onError,

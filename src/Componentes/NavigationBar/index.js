@@ -469,7 +469,7 @@ const NavigationBar = ({ alertCustom }) => {
             },
           }}
         />
-        <FAQ filtro={searchValue} />
+        <FAQ filtro={searchValue} back={true} />
       </Modal>
     </>
   );

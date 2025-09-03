@@ -28,7 +28,7 @@ const ProductForm = ({ form, onChange }) => {
 
   return (
     <Grid container spacing={2} sx={{ mt: 2, rowGap: 3 }}>
-      <Grid size={{ xs: 12, md: 8 }}>
+      <Grid size={{ xs: 12, md: 9 }}>
         <CustomInput
           name="nome"
           label="Nome do Produto"
@@ -37,7 +37,7 @@ const ProductForm = ({ form, onChange }) => {
           onChange={handleChange}
         />
       </Grid>{" "}
-      <Grid size={{ xs: 6, md: 4 }}>
+      <Grid size={{ xs: 6, md: 3 }}>
         <CustomInput
           name="valor"
           label="Preço"

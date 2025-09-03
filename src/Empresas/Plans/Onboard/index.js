@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   Grid2 as Grid,
   Typography,
+  Divider,
 } from "@mui/material";
 import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
@@ -137,22 +138,17 @@ const CreateEstablishment = ({ alertCustom }) => {
         fullScreen="all"
         component="view"
       >
-        <Grid container spacing={2} sx={{ mt: 4 }}>
+        <Grid container spacing={2} sx={{ pt: 2 }}>
           <Grid size={12}>
-            <Typography
-              variant="h6"
-              sx={{
-                display: "flex",
-                gap: 1,
-                borderLeft: "2px solid #fff",
-
-                p: "2px 12px",
-                mb: 2,
-                ml: isMobile ? 0 : -2,
-              }}
+            <Divider
+              textAlign="center"
+              component={Typography}
+              color="textSecondary"
+              sx={{ pt: 2 }}
             >
+              {" "}
               Informações Gerais
-            </Typography>
+            </Divider>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
             <CustomInput
@@ -186,21 +182,14 @@ const CreateEstablishment = ({ alertCustom }) => {
             />
           </Grid>
           <Grid size={12}>
-            <Typography
-              variant="h6"
-              sx={{
-                mt: 1.5,
-                display: "flex",
-                gap: 1,
-                borderLeft: "2px solid #fff",
-
-                p: "2px 12px",
-                mb: 2,
-                ml: isMobile ? 0 : -2,
-              }}
+            <Divider
+              textAlign="center"
+              component={Typography}
+              color="textSecondary"
+              sx={{ pt: 2 }}
             >
               Endereço
-            </Typography>
+            </Divider>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
             <CustomInput
@@ -247,21 +236,14 @@ const CreateEstablishment = ({ alertCustom }) => {
             />
           </Grid>
           <Grid size={12}>
-            <Typography
-              variant="h6"
-              sx={{
-                mt: 1.5,
-                display: "flex",
-                gap: 1,
-                borderLeft: "2px solid #fff",
-
-                p: "2px 12px",
-                mb: 2,
-                ml: isMobile ? 0 : -2,
-              }}
+            <Divider
+              textAlign="center"
+              component={Typography}
+              color="textSecondary"
+              sx={{ pt: 2 }}
             >
               Preferências
-            </Typography>
+            </Divider>
           </Grid>{" "}
           <Grid size={{ xs: 12, md: 4 }}>
             <FormControlLabel

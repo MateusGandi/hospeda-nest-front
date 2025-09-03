@@ -248,7 +248,6 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               </Grid>
               <Grid size={11}>
                 <CustomTabs
-                  sx={{ mt: 5 }}
                   selected={dados.tab.id}
                   tabs={tabs}
                   onChange={handleTabChange}

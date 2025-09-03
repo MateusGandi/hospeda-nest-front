@@ -159,7 +159,7 @@ const Modal = ({
                   justifyContent: "center",
                   alignItems: alignItems,
                   pt: { xs: 0, md: 2 },
-                  height: "100%",
+                  // height: "100%",
                 }}
               >
                 {images && (

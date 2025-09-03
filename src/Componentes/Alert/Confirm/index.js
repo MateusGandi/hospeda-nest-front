@@ -13,6 +13,8 @@ const Confirm = ({
   message,
   children,
   icon,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
 }) => {
   return (
     <Modal
@@ -28,13 +30,13 @@ const Confirm = ({
       buttonStyle={{ width: "47%", margin: "0 1%" }}
       buttons={[
         {
-          titulo: "Cancelar",
+          titulo: cancelText,
           action: onClose,
           color: "secondary",
           variant: "text",
         },
         {
-          titulo: "Confirmar",
+          titulo: confirmText,
           action: onConfirm,
           color: "primary",
           variant: "contained",

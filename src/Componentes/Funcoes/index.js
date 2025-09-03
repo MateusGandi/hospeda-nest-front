@@ -134,14 +134,16 @@ export const formatDate = (valor) => {
   return valor.substring(0, 10);
 };
 
-export const formatMoney = (valor) => {
+export const formatMoney = (valor, type = "normal") => {
   if (!valor) return "0.00";
 
   const numeros = valor.toString().replace(/\D/g, "");
 
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
-  return numeroFormatado;
+  return type == "normal"
+    ? numeroFormatado
+    : `R$ ${numeroFormatado}`.replace(".", ",");
 };
 
 export const formatCNPJ = (value) => {
@@ -429,22 +431,30 @@ export async function validarCampos(tipo, dados, componentValidations) {
 
   if (!regras) throw new Error("Tipo inválido");
 
-  for (const { campo, validacoes } of regras) {
+  for (const { campo, validacoes, label } of regras) {
     const valor = dados[campo];
     const listaValidacoes = validacoes.split(",").map((v) => v.trim());
 
     for (const v of listaValidacoes) {
-      if (v === "required" && (valor === undefined || valor === "")) {
-        throw new Error(`${primeiraMaiuscula(campo)} é obrigatório.`);
+      if (
+        v === "required" &&
+        (valor === undefined || valor === "" || valor === null)
+      ) {
+        throw new Error(`${label || primeiraMaiuscula(campo)} é obrigatório.`);
       }
 
       if (v.startsWith("minLength(")) {
         const min = parseInt(v.match(/\d+/)[0], 10);
         if (!valor || valor.length < min) {
           throw new Error(
-            `${primeiraMaiuscula(campo)} deve ter no mínimo ${min} caracteres.`
+            `${
+              label || primeiraMaiuscula(campo)
+            } deve ter no mínimo ${min} caracteres.`
           );
         }
+      }
+      if (v === "email" && valor && !validator.isEmail(valor)) {
+        throw new Error(`${label || primeiraMaiuscula(campo)} inválido`);
       }
 
       if (
@@ -452,16 +462,16 @@ export async function validarCampos(tipo, dados, componentValidations) {
         valor &&
         !validator.isMobilePhone(valor.replace(/\D/g, ""), "pt-BR")
       ) {
-        throw new Error(`${primeiraMaiuscula(campo)} inválido`);
+        throw new Error(`${label || primeiraMaiuscula(campo)} inválido`);
       }
 
       if (v.startsWith("equal(")) {
         const outroCampo = v.match(/\(([^)]+)\)/)[1];
         if (valor !== dados[outroCampo]) {
           throw new Error(
-            `${primeiraMaiuscula(campo)} deve ser igual a ${primeiraMaiuscula(
-              outroCampo
-            )}.`
+            `${
+              label || primeiraMaiuscula(campo)
+            } deve ser igual a ${primeiraMaiuscula(outroCampo)}.`
           );
         }
       }

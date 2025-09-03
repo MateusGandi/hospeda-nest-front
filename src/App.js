@@ -25,13 +25,16 @@ const theme = createTheme({
       main: "#0195F7",
     },
     success: {
-      main: "#03E55B",
+      main: "#23C45D",
     },
     secondary: {
       main: "#fff",
     },
     warning: {
       main: "#E57F01",
+    },
+    quaternary: {
+      main: "#A755F7",
     },
     background: {
       default: "#1b1b1b",

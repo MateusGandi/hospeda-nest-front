@@ -105,7 +105,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         `/establishment?establishmentId=${getLocalItem("establishmentId")}`
       );
 
-      const [latitude, longitude] = data.longitudeAndLatitude.split(",") || [];
+      const [latitude, longitude] = data.longitudeAndLatitude?.split(",") || [];
       const { horarioFechamento, horarioAbertura } = data;
 
       setDados({
@@ -115,6 +115,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         location: { latitude, longitude },
       });
     } catch (error) {
+      console.log(error);
       alertCustom("Erro ao buscar informações do estabelecimento!");
     }
   };
