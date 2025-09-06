@@ -50,6 +50,7 @@ const Dividas = ({ alertCustom }) => {
         "GET",
         `/payment/pending-payment/${getLocalItem("establishmentId")}`
       );
+
       const transacoes_pendentes = data.filter(
         ({ status }) => status == "PENDING"
       );
@@ -61,9 +62,9 @@ const Dividas = ({ alertCustom }) => {
         const vencimento = item.dataCreated
           ? new Date(item.dataCreated)
           : new Date();
-
+        console.log("testet", item);
         return {
-          id: item.id,
+          id: item.checkoutId || item.id,
           nome: item.description || "Não informado",
           valor: parseFloat(item.precoSemTaxa || 0),
           juros: 0,
@@ -153,7 +154,10 @@ const Dividas = ({ alertCustom }) => {
           variant="text"
           size="small"
           disabled={!["PENDING", "OVERDUE"].includes(params.status)}
-          onClick={() => navigate(`/checkout/${params.id}`)}
+          onClick={() => {
+            console.log(params);
+            navigate(`/checkout/${params.id}`);
+          }}
         >
           Pagar
         </Button>

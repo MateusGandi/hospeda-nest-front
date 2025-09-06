@@ -1,59 +1,74 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../../Componentes/Modal/Simple";
+import Modal from "../../../Componentes/Modal/Simple";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Confirmacao from "./Tabs/Confirmacao";
 import InformacoesAdicionais from "./Tabs/InformacoesAdicionais";
-import { Box, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import StepIndicator from "../../Componentes/Step";
-import PartialDrawer from "../../Componentes/Modal/Bottom";
+import StepIndicator from "../../../Componentes/Step";
+import PartialDrawer from "../../../Componentes/Modal/Bottom";
 import {
   formatCardInfo,
+  formatCEP,
   formatCNPJ,
   formatCPF,
   formatMoney,
   formatPhone,
   getLocalItem,
   validarCampos,
-} from "../../Componentes/Funcoes";
+} from "../../../Componentes/Funcoes";
 import {
   CustomInput,
   CustomSelect,
   LoadingBox,
-} from "../../Componentes/Custom";
-import { Rows } from "../../Componentes/Lista/Rows";
-import PaymentSuccess from "../../Assets/Cobranca/payment_confirmed.svg";
+} from "../../../Componentes/Custom";
+import { Rows } from "../../../Componentes/Lista/Rows";
+import PaymentSuccess from "../../../Assets/Cobranca/payment_confirmed.svg";
 
 import PixIcon from "@mui/icons-material/Pix";
-import BarcodeIcon from "../../Assets/barcode.png";
+import BarcodeIcon from "../../../Assets/barcode.png";
 import CardIcon from "@mui/icons-material/CreditCard";
-import apiService from "../../Componentes/Api/axios";
-import Cupom from "./Tabs/Cupom";
-import Confirm from "../../Componentes/Alert/Confirm";
-import Icon from "../../Assets/Emojis";
+import apiService from "../../../Componentes/Api/axios";
+import Confirm from "../../../Componentes/Alert/Confirm";
+import Icon from "../../../Assets/Emojis";
 
 const Checkout = ({ alertCustom }) => {
-  const { key, page } = useParams();
+  const { planId: key, page } = useParams();
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState("PIX"); // PIX, BOLETO, CREDIT_CARD
   const [openResumo, setOpenResumo] = useState(false);
   const [form, setForm] = useState({
     total_label: "",
-    pedido_label: "Pedido #123123331553",
+    pedido_label: "",
     subtotal_label: "",
-    desconto_label: "",
-    parcelamento: null,
     total: 0,
     valor_base: 0,
     status: null,
-    cupom: null,
-    cupom_text: "",
     response: null,
 
+    nome: "",
+    cnpj: "",
     cpfCnpj: "",
     email: "",
     telefone: "",
+    cnpj: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    meAsEmployee: false,
+    logradouro: "",
+
+    nomeTitular: "",
+    numeroCartao: "",
+    validade: "",
+    cvv: "",
+    cep: "",
   });
 
   const metodos = {
@@ -77,47 +92,63 @@ const Checkout = ({ alertCustom }) => {
   };
 
   const [metodosPagamento, setMetodosPagamento] = useState([]);
-  const [parcelas, _setParcelas] = useState({});
-  const setParcelas = (value) =>
-    _setParcelas((prev) => ({ ...prev, ...value }));
 
   const handleSubmit = async () => {
     await handleValidade()
       .then(async () => {
         try {
+          const data = await apiService.query(
+            "GET",
+            `/user/profile/${getLocalItem("userId")}`
+          );
+
+          const { cnpj, bairro, cidade, estado, meAsEmployee, logradouro } =
+            form;
           const body = {
-            paymentMethod: selectedMethod,
-            discountId: form.cupom ? form.cupom.id : undefined,
+            nome: form.nome,
+            formaPagamento: selectedMethod,
+            administrador: data.telefone,
+            funcionarios: meAsEmployee ? [data.telefone] : [],
+            endereco: [bairro, cidade, estado, logradouro].join(", "),
+            telefone: form.telefone.replace(/\D/g, ""),
+            cnpj: cnpj.replace(/\D/g, ""),
+            planId: +key,
           };
 
           if (selectedMethod === "CREDIT_CARD") {
             body.creditCard = {
-              holderName: form.nome,
-              number: form.numeroCartao,
+              holderName: form.nomeTitular,
+              number: form.numeroCartao.replace(/\D/g, ""),
               expiryMonth: form.validade.split("/")[0],
-              expiryYear: form.validade.split("/")[1],
+              expiryYear: "20" + form.validade.split("/")[1],
               ccv: form.cvv,
             };
             body.creditCardHolderInfo = {
-              name: form.nome,
+              name: form.nomeTitular,
               email: form.email,
-              cpfCnpj: form.cpfCnpj,
-              postalCode: null,
+              cpfCnpj: form.cpfCnpj.replace(/\D/g, ""),
+              postalCode: form.cep.replace(/\D/g, ""),
               addressNumber: "0",
-              addressComplement: "",
-              phone: "",
-              mobilePhone: form.telefone,
+              addressComplement: [bairro, cidade, estado, logradouro].join(
+                ", "
+              ),
+              phone: form.telefone.replace(/\D/g, "").replace("55", ""),
+              mobilePhone: form.telefone.replace(/\D/g, "").replace("55", ""),
             };
-            body.installments = form.parcelamento?.value || 1;
           }
           const { payment } = await apiService.query(
             "POST",
-            `/payment/confirm/${key}`,
+            "/establishment",
             body
           );
-          setForm((prev) => ({ ...prev, response: payment }));
+          localStorage.clear();
+          alertCustom("Faça login novamente para começar!");
+          navigate("/login");
         } catch (error) {
           console.error("Erro ao confirmar pagamento:", error);
+          throw new Error(
+            error?.response?.data?.message || "Erro ao confirmar pagamento"
+          );
         }
       })
       .catch((error) => {
@@ -127,18 +158,46 @@ const Checkout = ({ alertCustom }) => {
   };
 
   const validations = {
-    dados_pessoais: [
-      { campo: "email", validacoes: "required, minLength(10), email" },
-      { campo: "cpfCnpj", validacoes: "required, minLength(14)" },
-      { campo: "telefone", validacoes: "required, minLength(16), telefone" },
+    informacoes: [
+      {
+        label: "Nome do local",
+        campo: "nome",
+        validacoes: "required, minLength(5)",
+      },
+      {
+        label: "Telefone",
+        campo: "telefone",
+        validacoes: "required, minLength(16), telefone",
+      },
+
+      {
+        label: "CNPJ",
+        campo: "cnpj",
+        validacoes: "required, minLength(14), cnpj",
+      },
+      { campo: "estado", validacoes: "required, minLength(1)" },
+      { campo: "cidade", validacoes: "required, minLength(1)" },
+      { campo: "bairro", validacoes: "required, minLength(1)" },
+      { campo: "cep", validacoes: "required, minLength(8)" },
+      { campo: "logradouro", validacoes: "required, minLength(1)" },
     ],
     metodo_pagamento: [
       ...(selectedMethod == "CREDIT_CARD"
         ? [
             {
-              campo: "nome",
+              label: "Seu e-mail",
+              campo: "email",
+              validacoes: "required, minLength(10), email",
+            },
+            {
+              campo: "nomeTitular",
               label: "Nome do titular",
               validacoes: "required, minLength(10)",
+            },
+            {
+              campo: "cpfCnpj",
+              label: "CPF ou CNPJ do titular",
+              validacoes: "required, minLength(14), cnpj",
             },
             {
               campo: "numeroCartao",
@@ -152,9 +211,9 @@ const Checkout = ({ alertCustom }) => {
               validacoes: "required, minLength(3)",
             },
             {
-              campo: "parcelamento",
-              label: "Informar número de parcelas",
-              validacoes: "required",
+              campo: "cep",
+              label: "CEP",
+              validacoes: "required, minLength(8)",
             },
           ]
         : []),
@@ -170,23 +229,17 @@ const Checkout = ({ alertCustom }) => {
 
   const pages = [
     {
-      label: "Dados",
-      value: "dados_pessoais",
+      label: "Informações",
+      value: "informacoes",
       status: "done",
       action: handleValidade,
     },
     {
-      label: "Método",
+      label: "Método de pagamento",
       value: "metodo_pagamento",
       status: "done",
       action: handleSubmit,
     },
-    {
-      label: "Pagamento",
-      value: "pagamento",
-      status: "done",
-    },
-    { label: "Confirmação", value: "confirmacao", status: "done" },
   ];
 
   const [modal, _setModal] = useState({
@@ -208,17 +261,11 @@ const Checkout = ({ alertCustom }) => {
 
   const handleGetPayment = async () => {
     try {
-      const { itens, formasPagamento, total } = await apiService.query(
-        "GET",
-        `/payment/transaction/${key}`
-      );
+      const data = await apiService.query("GET", `/plan`);
+      const teste = await apiService.query("GET", `/plan/prices/${key}`);
+      const plano = data.find((p) => p.id === Number(key));
 
-      const { cobrancas } = await apiService.query(
-        "GET",
-        `/payment/pending-checkout-payment/${key}`
-      );
-      if (cobrancas.some(({ status }) => status === "ENVIADO"))
-        throw new Error("Pagamento já realizado!");
+      if (!plano) throw new Error("Plano não encontrado");
 
       const titulos_label = {
         PIX: "Pagamento via Pix",
@@ -227,111 +274,87 @@ const Checkout = ({ alertCustom }) => {
       };
 
       const subtitulos_label = {
-        PIX: ({ horas }) =>
-          `Você poderá pagar em até ${horas} horas após a geração do QR Code.`,
-        BOLETO: ({ dias }) =>
-          `A confirmação pode levar até ${dias} dias úteis após o pagamento.`,
-        CREDIT_CARD: ({ numParcelasMaximo }) =>
-          `Informe os dados do cartão e parcele em até ${numParcelasMaximo} vezes`,
+        PIX: `Pagamentos mensais.`,
+        BOLETO: `A confirmação pode levar até 2 dias úteis após o pagamento.`,
+        CREDIT_CARD: `Informe os dados do cartão para cobranças automáticas. `,
       };
       setModal({
-        items: itens.map((item, index) => ({
-          id: index,
-          subtitulo: `${formatMoney(item.preco, "d")}   ${
-            item.observacao || ""
-          }`,
-          titulo: item.titulo,
-          preco: item.preco,
+        items: plano.produtosContratados.map(({ id, descricao, nome }) => ({
+          id: id,
+          subtitulo: descricao,
+          titulo: nome,
         })),
       });
 
       setMetodosPagamento(
-        formasPagamento
-          .filter(({ metodo }) => Object.keys(metodos).includes(metodo))
-          .map(({ metodo, parcelas, numParcelasMaximo }, index) => {
-            _setModal((prev) => ({
-              ...prev,
-              descricoes: {
-                ...prev.descricoes,
-                [metodo]: {
-                  titulo: titulos_label[metodo],
-                  subtitulo: subtitulos_label[metodo]({
-                    numParcelasMaximo,
-                    horas: 24,
-                    dias: 2,
-                  }),
-                },
+        ["PIX", "BOLETO", "CREDIT_CARD"].map((metodo, index) => {
+          _setModal((prev) => ({
+            ...prev,
+            descricoes: {
+              ...prev.descricoes,
+              [metodo]: {
+                titulo: titulos_label[metodo],
+                subtitulo: subtitulos_label[metodo],
               },
-            }));
+            },
+          }));
 
-            setParcelas({
-              [metodo]: parcelas.map((p) => ({
-                label: `${p.prest}x de R$ ${p.valor.toFixed(2)}`,
-                value: p.prest,
-                total: p.valor * p.prest,
-                valor_base: p.valor * p.prest,
-              })),
-            });
-
-            return {
-              id: index,
-              value: metodo,
-              ...metodos[metodo],
-              parcelas: parcelas,
-              total,
-            };
-          })
+          return {
+            id: index,
+            value: metodo,
+            ...metodos[metodo],
+            total: plano.preco,
+          };
+        })
       );
 
       setForm((prev) => ({
         ...prev,
-        total_label: `Total ${formatMoney(total, "d")}`,
-        valor_base: total,
-        total,
+        pedido_label: plano.nome,
+        total_label: `Total ${formatMoney(plano.preco, "d")}`,
+        valor_base: Number(plano.preco),
+        total: Number(plano.preco),
       }));
     } catch (error) {
-      console.error("Erro ao buscar pagamento pendente:", error);
+      console.error("Erro ao buscar dados da assinatura:", error);
       alertCustom(
-        error?.response?.data?.message || "Erro ao buscar pagamento pendente"
+        error?.response?.data?.message || "Erro ao buscar dados da assinatura"
       );
       setModal({ loading: false, errorCode: true });
     }
   };
 
   useEffect(() => {
-    let baseTotal = form.parcelamento?.total || form.valor_base;
+    let baseTotal = form.valor_base;
 
     if (baseTotal) {
-      const valorFinal = form.cupom
-        ? form.cupom.getValue(baseTotal)
-        : baseTotal;
+      const valorFinal = baseTotal;
 
       setForm((prev) => ({
         ...prev,
-        desconto_label: form.cupom ? `Desconto ${form.cupom.valor_label}` : "",
         subtotal_label: `Subtotal ${formatMoney(baseTotal, "d")}`,
         total_label: `Total ${formatMoney(valorFinal, "d")}`,
         total: valorFinal,
       }));
     }
-  }, [selectedMethod, form.parcelamento, form.cupom]);
+  }, [selectedMethod]);
 
   useEffect(() => {
     if (!page) {
-      navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
+      navigate(`/onboard/${key}/${pages[0].value}`, { replace: true });
       return;
     }
 
     const foundIndex = pages.findIndex((p) => p.value === page);
 
     if (foundIndex === -1) {
-      navigate("/dashboard");
+      navigate("/plans");
       return;
     }
 
     if (modal.contextTab == null) {
       handleGetPayment();
-      navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
+      navigate(`/onboard/${key}/${pages[0].value}`, { replace: true });
     }
 
     setModal({
@@ -343,31 +366,35 @@ const Checkout = ({ alertCustom }) => {
   }, [page, key]);
 
   const handleChange = (e) => {
-    let valor = e.target.value;
-    if (e.target.name === "numeroCartao")
-      valor = formatCardInfo(valor, "numero");
-    if (e.target.name === "validade") valor = formatCardInfo(valor, "data");
-    if (e.target.name === "cpfCnpj")
+    const { name, value, checked } = e.target;
+    var valor = value;
+
+    if (name === "numeroCartao") valor = formatCardInfo(valor, "numero");
+    if (name === "validade") valor = formatCardInfo(valor, "data");
+    if (name === "cpfCnpj")
       valor =
         valor.replace(/\D/g, "").length > 11
           ? formatCNPJ(valor)
           : formatCPF(valor);
-    if (e.target.name === "telefone") valor = formatPhone(valor);
-    if (e.target.name === "cvv") valor = valor.slice(0, 3);
+    if (name === "telefone") valor = formatPhone(valor);
+    if (name === "cvv") valor = valor.slice(0, 3);
+    if (name === "cnpj") valor = formatCNPJ(valor);
+    if (name === "cep") valor = formatCEP(valor);
+    if (name === "meAsEmployee") valor = checked;
 
-    setForm((prev) => ({ ...prev, [e.target.name]: valor }));
+    setForm((prev) => ({ ...prev, [name]: valor }));
   };
 
   const handleNext = async () => {
     try {
-      if (modal.tabIndex < pages.length - 1) {
+      if (modal.tabIndex <= pages.length - 1) {
         if (pages[modal.tabIndex].action)
           await pages[modal.tabIndex].action().catch((error) => {
             throw new Error("Erro ao avançar: " + error.message);
           });
 
         const nextPage = pages[modal.tabIndex + 1].value;
-        navigate(`/checkout/${key}/${nextPage}`);
+        navigate(`/onboard/${key}/${nextPage}`);
       }
     } catch (error) {
       console.error("Erro ao avançar:", error);
@@ -377,70 +404,24 @@ const Checkout = ({ alertCustom }) => {
   const handleBack = () => {
     if (modal.tabIndex > 0) {
       const prevPage = pages[modal.tabIndex - 1].value;
-      navigate(`/checkout/${key}/${prevPage}`);
+      navigate(`/onboard/${key}/${prevPage}`);
     } else {
-      navigate("/dashboard");
+      navigate("/plans");
     }
   };
 
   const handleStepClick = (stepIndex) => {
     if (stepIndex !== modal.tabIndex) {
       const stepValue = pages[stepIndex].value;
-      navigate(`/checkout/${key}/${stepValue}`);
+      navigate(`/onboard/${key}/${stepValue}`);
     }
-  };
-
-  const applyDescount = async () => {
-    if (!form.cupom_text) {
-      return alertCustom("Digite um cupom válido");
-    } else if (form.cupom) {
-      return alertCustom("Cupom já aplicado");
-    }
-
-    await apiService
-      .query("POST", `/discount/validate`, {
-        codigo: form.cupom_text,
-        establishmentId:
-          getLocalItem("establishmentId")?.toString() || undefined,
-        userId: getLocalItem("userId")?.toString() || undefined,
-      })
-      .then(({ valid, discount: { id, tipo, valor }, message }) => {
-        if (!valid) {
-          alertCustom("Cupom inválido ou expirado");
-          return;
-        }
-        setForm((prev) => ({
-          ...prev,
-          cupom_text: "",
-          cupom: {
-            id,
-            valor_label:
-              tipo == "PERCENTUAL"
-                ? `${-valor}%`
-                : `${formatMoney(-valor, "d")}`,
-            value: prev.cupom_text,
-            getValue: (total) =>
-              tipo == "PERCENTUAL"
-                ? total - total * (valor / 100)
-                : total - valor,
-          },
-        }));
-        alertCustom(message);
-      })
-      .catch((error) => {
-        console.error("Erro ao aplicar cupom:", error);
-        alertCustom("Cupom inválido ou expirado");
-      });
   };
 
   const handleRemoveDescount = () =>
     modal.tab === "metodo_pagamento" &&
     setForm((prev) => ({
       ...prev,
-      cupom: null,
-      cupom_text: "",
       total_label: `Total ${formatMoney(prev.valor_base, "d")}`,
-      desconto_label: "",
       subtotal_label: `Subtotal ${formatMoney(prev.valor_base, "d")}`,
       total: prev.valor_base,
     }));
@@ -457,7 +438,9 @@ const Checkout = ({ alertCustom }) => {
       maxWidth="lg"
       loading={modal.loading}
       onClose={() =>
-        navigate(getLocalItem("accessType") == "user" ? "/home" : "/dashboard")
+        navigate(
+          getLocalItem("accessType") == "client" ? "/plans" : "/dashboard"
+        )
       }
       onAction={
         modal.status != "OK" &&
@@ -468,8 +451,7 @@ const Checkout = ({ alertCustom }) => {
       loadingButton={modal.loading}
       actionText={modal.actionText}
       backAction={{
-        action:
-          modal.tab == "confirmacao" ? () => navigate("/home") : handleBack,
+        action: handleBack,
         titulo: "Voltar",
       }}
       buttons={[
@@ -496,7 +478,7 @@ const Checkout = ({ alertCustom }) => {
             <Confirm
               open={true}
               onClose={() => navigate(-1)}
-              onConfirm={() => navigate("/dashboard/support")}
+              onConfirm={() => navigate("/faq")}
               title="Este pagamento não está disponível"
               message="Está com dificuldade de realizar algum pagamento? Favor, entre em contato com o suporte"
               cancelText="Voltar"
@@ -508,19 +490,11 @@ const Checkout = ({ alertCustom }) => {
             {" "}
             <Grid size={{ xs: 12, md: 4 }}>
               <Stack spacing={2}>
-                <Typography variant="h5">Finalizar Pedido</Typography>
+                <Typography variant="h5">Contratar plano</Typography>
                 <StepIndicator
                   steps={pages}
                   currentStep={modal.tabIndex}
                   onChange={handleStepClick}
-                />
-
-                <Cupom
-                  tab={modal.tab}
-                  form={form}
-                  handleChange={handleChange}
-                  applyDescount={applyDescount}
-                  onRemoveDescount={handleRemoveDescount}
                 />
 
                 <Box sx={{ display: { xs: "none", md: "block" } }}>
@@ -532,10 +506,6 @@ const Checkout = ({ alertCustom }) => {
                           <Typography variant="body2" component="span">
                             {" "}
                             {form.subtotal_label}
-                          </Typography>
-                          <Typography variant="body2" component="span">
-                            {" "}
-                            {form.desconto_label}{" "}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -560,43 +530,117 @@ const Checkout = ({ alertCustom }) => {
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
               <Grid container spacing={2}>
-                {modal.tab === "dados_pessoais" && (
+                {modal.tab === "informacoes" && (
                   <>
-                    <Grid size={{ xs: 12, md: 8 }}>
+                    {" "}
+                    <Grid size={12}>
                       <Typography variant="h6" className="show-box">
-                        Confirme seus dados
+                        <Icon>🎁</Icon> Benefícios
                         <Typography variant="body1">
-                          Verifique a veracidade dos seus dados ou do pagador
-                          antes de prosseguir.
+                          Ao fazer seu cadastro você testa durante o mês todo as
+                          principais funcionalidades do sistema sem compromisso
+                          algum! Inicie agora mesmo e veja diferença na sua
+                          rotina e visibilidade!
                         </Typography>
                       </Typography>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 8 }}>
+                    <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1.5 }}>
                       <CustomInput
                         fullWidth
-                        placeholder="E-mail do titular"
-                        name="email"
-                        value={form.email || ""}
+                        label="Nome do estabelecimento"
+                        value={form.nome}
+                        name="nome"
                         onChange={handleChange}
+                        variant="outlined"
                       />
                     </Grid>
-                    <Grid size={{ xs: 0, md: 4 }}></Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
                       <CustomInput
                         fullWidth
-                        placeholder="CPF ou CNPJ do titular"
-                        name="cpfCnpj"
-                        value={form.cpfCnpj || ""}
-                        onChange={handleChange}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <CustomInput
-                        fullWidth
-                        placeholder="Telefone do titular"
+                        label="Telefone"
+                        value={form.telefone}
                         name="telefone"
-                        value={form.telefone || ""}
                         onChange={handleChange}
+                        variant="outlined"
+                        type="tel"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="CNPJ"
+                        value={form.cnpj}
+                        name="cnpj"
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>{" "}
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="Estado"
+                        placeholder="Exemplo: Goiás"
+                        name="estado"
+                        value={form.estado}
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="Cidade"
+                        placeholder="Exemplo: Goiânia"
+                        name="cidade"
+                        value={form.cidade}
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="Bairro"
+                        placeholder="Exemplo: Jabuti"
+                        name="bairro"
+                        value={form.bairro}
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="Logradouro"
+                        placeholder="Exemplo: Rua 1"
+                        name="logradouro"
+                        value={form.logradouro}
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
+                      <CustomInput
+                        fullWidth
+                        label="CEP"
+                        placeholder="74000000"
+                        name="cep"
+                        value={form.cep}
+                        onChange={handleChange}
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            name="meAsEmployee"
+                            checked={form.meAsEmployee}
+                            onChange={handleChange}
+                            color="primary"
+                          />
+                        }
+                        label="Sou funcionário também"
                       />
                     </Grid>
                   </>
@@ -618,12 +662,31 @@ const Checkout = ({ alertCustom }) => {
                         )}
                         {selectedMethod === "CREDIT_CARD" && (
                           <>
+                            {" "}
+                            <Grid size={6}>
+                              <CustomInput
+                                fullWidth
+                                placeholder="E-mail"
+                                name="email"
+                                value={form.email || ""}
+                                onChange={handleChange}
+                              />
+                            </Grid>
+                            <Grid size={6}>
+                              <CustomInput
+                                fullWidth
+                                placeholder="CPF ou CNPJ do titular"
+                                name="cpfCnpj"
+                                value={form.cpfCnpj || ""}
+                                onChange={handleChange}
+                              />
+                            </Grid>
                             <Grid size={12}>
                               <CustomInput
                                 fullWidth
                                 placeholder="Nome do titular do cartão"
-                                name="nome"
-                                value={form.nome || ""}
+                                name="nomeTitular"
+                                value={form.nomeTitular || ""}
                                 onChange={handleChange}
                               />
                             </Grid>
@@ -654,23 +717,6 @@ const Checkout = ({ alertCustom }) => {
                                 onChange={handleChange}
                               />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                              <CustomSelect
-                                fullWidth
-                                placeholder="Parcelamento"
-                                value={form.parcelamento?.value || ""}
-                                onChange={(e) => {
-                                  const selected = (
-                                    parcelas[selectedMethod] || []
-                                  ).find((p) => p.value === e.target.value);
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    parcelamento: selected || null,
-                                  }));
-                                }}
-                                options={parcelas[selectedMethod] || []}
-                              />
-                            </Grid>
                           </>
                         )}
                       </Grid>
@@ -687,32 +733,6 @@ const Checkout = ({ alertCustom }) => {
                         items={metodosPagamento}
                         spacing={2}
                       />
-                    </Grid>
-                  </>
-                )}
-
-                {modal.tab === "pagamento" && (
-                  <Grid size={12}>
-                    <Confirmacao
-                      info={form.response}
-                      alertCustom={alertCustom}
-                      onConfirm={onConfirm}
-                    />
-                  </Grid>
-                )}
-                {modal.tab === "confirmacao" && (
-                  <>
-                    <Grid size={12} className="justify-center">
-                      <img style={{ width: "300px" }} src={PaymentSuccess} />
-                    </Grid>
-                    <Grid size={12} sx={{ textAlign: "center", mt: 2 }}>
-                      <Typography variant="h6">
-                        Seu pagamento foi confirmado!{" "}
-                        <Typography variant="body1">
-                          Você já pode sair desta tela, um comprovante foi
-                          enviado ao e-mail cadastrado.
-                        </Typography>{" "}
-                      </Typography>{" "}
                     </Grid>
                   </>
                 )}

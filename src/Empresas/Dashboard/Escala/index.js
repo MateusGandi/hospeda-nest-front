@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Button,
   Switch,
@@ -27,18 +27,20 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import WorkIcon from "@mui/icons-material/Work";
 import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
+import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
 import { useNavigate } from "react-router-dom";
 import CustomTabs from "../../../Componentes/Tabs";
 import View from "../../../Componentes/View";
+import Preferencies from "./Preferencies";
 
 const WorkSchedule = ({
   type = "button",
   openModal = false,
   dados,
   alertCustom,
-  handleCloseModal,
   disabled,
+  handleCloseModal,
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -46,6 +48,7 @@ const WorkSchedule = ({
   const [opened, setOpened] = useState(false);
   const tabs = [
     { icon: <WorkIcon />, label: "Escala Semanal" },
+    { icon: <ManageAccountsRoundedIcon />, label: "Preferências" },
     { icon: <LunchDiningIcon />, label: "Horário de Almoço" },
     { icon: <LocalCafeIcon />, label: "Ausências" },
   ];
@@ -69,6 +72,9 @@ const WorkSchedule = ({
 
   const [lunchRows, setLunchRows] = useState([{ inicio: "", fim: "" }]);
   const [absences, setAbsences] = useState([]);
+  const [form, setForm] = useState({
+    filaDinamicaClientes: false,
+  });
 
   const handleAddAbsence = () => {
     setAbsences([
@@ -128,7 +134,9 @@ const WorkSchedule = ({
   const handleSave = async () => {
     try {
       const id = dados?.id || getLocalItem("userId");
-
+      await apiService.query("PATCH", `/user/${id}`, {
+        filaDinamicaClientes: form.filaDinamicaClientes,
+      });
       await apiService.query(
         "PUT",
         `/user/work-schedule/${id}`,
@@ -150,8 +158,8 @@ const WorkSchedule = ({
         }))
       );
 
-      alertCustom("Escala de trabalho salva com sucesso!");
-      navigate(-1);
+      alertCustom("Escala de trabalho e preferências salvas com sucesso!");
+      setOpen(false);
     } catch (e) {
       console.log(e);
       alertCustom("Erro ao salvar a escala.");
@@ -334,7 +342,14 @@ const WorkSchedule = ({
     };
     buscarEscala();
     setOpen(openModal);
+    setForm((prev) => ({ ...prev, ...dados }));
   }, [openModal]);
+
+  const handleChangePreferences = async ({ id }) =>
+    setForm((prev) => ({
+      ...prev,
+      filaDinamicaClientes: id,
+    }));
 
   return (
     <>
@@ -355,9 +370,7 @@ const WorkSchedule = ({
       {isMobile || type === "button" ? (
         <Modal
           open={open}
-          onClose={
-            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
-          }
+          onClose={() => setOpen(false)}
           onAction={handleSave}
           actionText="Salvar"
           titulo="Configurar Escala de Trabalho"
@@ -440,6 +453,10 @@ const WorkSchedule = ({
                       />
                     </SwipeIndicator>
                   </>,
+                  <Preferencies
+                    onChange={handleChangePreferences}
+                    selected={form.filaDinamicaClientes}
+                  />,
                   <EditableTable
                     columns={lunchColumns}
                     rows={lunchRows}
@@ -543,6 +560,20 @@ const WorkSchedule = ({
                       />
                     </SwipeIndicator>
                   </>,
+                  <Typography variant="body1">
+                    <span style={{ width: "30px" }}>
+                      <Switch
+                        checked={form.filaDinamicaClientes}
+                        onChange={handleChangePreferences}
+                        color="primary"
+                      />
+                    </span>
+                    <span style={{ minWidth: "700px" }}>
+                      {form.filaDinamicaClientes
+                        ? "Trabalha usando fila"
+                        : "Trabalha com agendamentos"}
+                    </span>
+                  </Typography>,
                   <EditableTable
                     columns={lunchColumns}
                     rows={lunchRows}

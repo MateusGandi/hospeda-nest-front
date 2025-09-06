@@ -83,7 +83,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
       ],
       titulo: `Editar dados de ${item.nome}`,
       funcionarioSelecionado: item,
-      actionText: "Editar",
+      actionText: "Salvar",
       barbeariaId: getLocalItem("establishmentId"),
       funcionario: item,
       escala: false,

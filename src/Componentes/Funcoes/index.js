@@ -162,6 +162,18 @@ export const formatCNPJ = (value) => {
     .replace(/(\d{4})(\d)/, "$1-$2"); // Adiciona o hífen
 };
 
+export const formatCEP = (value) => {
+  // Remove tudo que não for número
+  let digits = value?.replace(/\D/g, "");
+  if (!value) return "";
+
+  // Limita ao formato máximo (8 dígitos para CEP)
+  digits = digits.slice(0, 8);
+
+  // Aplica a formatação XXXXX-XXX
+  return digits.replace(/(\d{5})(\d)/, "$1-$2");
+};
+
 export const formatCPF = (value) => {
   // Remove tudo que não for número
   let digits = value?.replace(/\D/g, "");
@@ -324,6 +336,20 @@ export const getStatus = (status) => {
       return { color: "warning", valor: "Não atendido" };
   }
 };
+
+export function normalizeHour(horario, direcao = "up") {
+  const [horaStr, minutoStr] = horario.split(":");
+  const hora = parseInt(horaStr, 10);
+  const minuto = parseInt(minutoStr, 10);
+
+  if (direcao === "up") {
+    return minuto > 0 ? hora + 1 : hora;
+  } else if (direcao === "down") {
+    return hora;
+  }
+
+  throw new Error('Parâmetro "direcao" deve ser "up" ou "down"');
+}
 
 export function formatDataToString(dataISO, allow) {
   const meses = [

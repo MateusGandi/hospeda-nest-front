@@ -88,7 +88,7 @@ function App() {
     "/home",
     "/create",
     "/complete",
-    "/onboard/:planId?",
+    "/onboard/:planId/:page?",
     "/login",
     "/change/:hash?",
     "/recover",

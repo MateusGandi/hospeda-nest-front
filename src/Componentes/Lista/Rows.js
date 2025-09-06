@@ -153,18 +153,19 @@ export const Rows = ({
 
                     <ListItemText
                       primary={
-                        <Typography sx={{ fontSize: "18px" }}>
+                        <Typography sx={{ fontSize: "18px", mr: 1 }}>
                           {item.titulo}
                         </Typography>
                       }
                       secondary={
-                        <Typography sx={{ fontSize: "16px" }}>
+                        <Typography sx={{ fontSize: "16px", mr: 1 }}>
                           {item.subtitulo}
                         </Typography>
                       }
                     />
 
-                    {actions &&
+                    {!checkmode &&
+                      actions &&
                       actions.map((actionItem, index) =>
                         !actionItem.icon ? (
                           <Button

@@ -24,10 +24,11 @@ import {
   getLocalItem,
   isMobile,
 } from "../../Componentes/Funcoes";
+
 import LogoPartners from "../../Assets/logo_partners.png";
 import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
 import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
-import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.png";
+
 import Icon from "../../Assets/Emojis";
 import { Rows } from "../../Componentes/Lista/Rows";
 import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
