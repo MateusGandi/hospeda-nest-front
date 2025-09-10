@@ -9,10 +9,9 @@ import { Rows } from "../../Componentes/Lista/Rows";
 import { formatarData } from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
 import Calendario from "../../Componentes/Calendar/Simple";
-import Horario from "../../Componentes/Horario/fixed";
 import Modal from "../../Componentes/Modal/Simple";
 
-const Servicos = ({ setError, form, setForm, alertCustom }) => {
+const Servicos = ({ form, setForm, alertCustom }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
   const [modal, setModal] = useState({ open: false });
   const [data, setData] = useState({

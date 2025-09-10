@@ -356,6 +356,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
+                  disabled={loadingButton}
                 >
                   {loadingButton ? "Enviando..." : actionText}
                 </Button>
@@ -408,6 +409,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
+                  disabled={loadingButton}
                 >
                   {actionText}
                 </Button>

@@ -5,6 +5,7 @@ import apiService from "../../../Componentes/Api/axios";
 import { useEffect, useState } from "react";
 import { normalizeHour } from "../../../Componentes/Funcoes";
 import { LoadingBox } from "../../../Componentes/Custom";
+import { GerenciarFila } from "./Fila";
 
 export default function AgendamentosView({ alertCustom }) {
   const theme = useTheme();
@@ -47,11 +48,12 @@ export default function AgendamentosView({ alertCustom }) {
     );
   return (
     <>
-      {isDesktop ? (
+      {/* {isDesktop ? (
         <AgendamentosByCalendario alertCustom={alertCustom} data={data} />
       ) : (
         <Agendamentos alertCustom={alertCustom} data={data} />
-      )}
+      )} */}
+      <GerenciarFila alertCustom={alertCustom} />
     </>
   );
 }
