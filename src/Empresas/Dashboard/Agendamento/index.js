@@ -5,44 +5,19 @@ import Api from "../../../Componentes/Api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import NavigationIcon from "@mui/icons-material/Navigation";
-
+import EntrarFila from "./EntrarFila";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
 import ClienteForm from "./Cliente";
 import { formatarHorario, getLocalItem } from "../../../Componentes/Funcoes";
+import ConfirmacaoAgendamento from "./Confirmacao/Agendamento";
+import ConfirmacaoFila from "./Confirmacao/Fila";
 
 const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
-  const paths = [
-    {
-      key: "cliente",
-      title: "Dados do cliente",
-      item: "cliente",
-    },
-    {
-      key: "servicos",
-      title: "Selecione um ou mais serviços",
-      item: "servicos",
-    },
-    {
-      key: "agendamento",
-      title: "Selecione uma data e horário",
-      item: "agendamento",
-    },
-    {
-      key: "confirmacao",
-      title: "Agendamento confirmado!",
-      item: "confirmacao",
-    },
-    {
-      key: "error",
-      title: "Opps, algo deu errado!",
-      item: "error",
-    },
-  ];
+  const [paths, setPaths] = useState([]);
 
   const navigate = useNavigate();
-  const [tituloModal, setTituloModal] = useState(paths[0].title);
+  const [tituloModal, setTituloModal] = useState("");
   const { subPath } = useParams();
 
   const [empresa, setEmpresa] = useState(null);
@@ -55,8 +30,16 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     cliente: null,
     servicos: [],
     agendamento: null,
+    in_fila: false,
+    fila_info: null,
+    loading: false,
   });
-  const [page, setPage] = useState(null);
+  const [page, setPage] = useState({
+    open: false,
+    onClose: () => {
+      navigate("/dashboard");
+    },
+  });
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -72,8 +55,9 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     setInitialized(true);
   }, [subPath]);
 
-  const handleSaveAgendamento = async () => {
-    await Api.query("POST", "/scheduling/manual", {
+  const handleSave = async () => {
+    const url = subPath == "fila" ? "/scheduling/queue" : "/scheduling/manual";
+    await Api.query("POST", url, {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
@@ -84,23 +68,42 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       barberId: barbearia.funcionarios.find(
         (f) => f.id === getLocalItem("userId")
       ).id,
+      manual: true,
+    }).then((resp) => {
+      if (subPath == "fila")
+        setForm((prev) => ({ ...prev, in_fila: true, fila_info: resp }));
+      return resp;
     });
   };
 
   const handleNext = async () => {
     try {
+      setLoading(true);
+      if (
+        subPath &&
+        ["agendamento-confirmado", "fila-confirmado", "error"].includes(subPath)
+      )
+        return;
+
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
-      if (subPath && !form[resp.item]) {
-        return alertCustom(
-          `Informe as informações necessárias para prosseguir!`
-        );
+      if (
+        subPath &&
+        (!form[resp.item] ||
+          (Array.isArray(form[resp.item]) && !form[resp.item].length)) &&
+        subPath != "fila"
+      ) {
+        return alertCustom("Preencha informações necessárias para prosseguir!");
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (paths[pathTo + 1].key == "confirmacao") {
-        return await handleSaveAgendamento()
+      if (paths[pathTo + 1].key.includes("confirmado")) {
+        return await handleSave()
           .then(() => {
-            alertCustom("Agendamento confirmado!");
+            alertCustom(
+              form.barbeiro.filaDinamicaClientes
+                ? "Aguardando na fila..."
+                : "Agendamento confirmado!"
+            );
             setTituloModal(paths[pathTo + 1].title);
             navigate(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
           })
@@ -112,22 +115,31 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
           });
       }
       setTituloModal(paths[pathTo + 1].title);
-      console.log(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
       navigate(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
     } catch (error) {
       alertCustom("Erro interno!");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleBack = () => {
     try {
+      if (
+        !subPath ||
+        ["agendamento-confirmado", "fila-confirmado", "error"].includes(subPath)
+      )
+        return navigate("/dashboard");
+
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo - 1 == -1 || paths[pathTo - 1].key == "cliente") {
-        return onClose();
+      if (pathTo == 0) {
+        setTituloModal("");
+        return navigate(`/dashboard`);
       }
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/dashboard/agendamento/${paths[pathTo - 1].key}`);
     } catch (error) {
+      console.log(error);
       alertCustom("Erro interno!");
     }
   };
@@ -139,18 +151,8 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   useEffect(() => {
     setPage((prev) => ({
       ...prev,
-      onClose: () => {
-        navigate("/dashboard");
-        setForm({
-          barbearia: barbearia,
-          barbeiro: barbearia.funcionarios.find(
-            (f) => f.id === getLocalItem("userId")
-          ),
-          cliente: null,
-          servicos: null,
-          agendamento: null,
-        });
-      },
+      open: true,
+      onClose: () => navigate("/dashboard"),
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
   }, [empresa]);
@@ -182,6 +184,77 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     }
   };
 
+  const estrategy = () => {
+    const invalidPaths = ["agendamento-confirmado", "error", undefined];
+    if (invalidPaths.includes(subPath))
+      return { action: undefined, text: "", buttons: [] };
+
+    if (["fila-confirmado", "fila"].includes(subPath) && form.in_fila)
+      return {
+        action: undefined,
+        text: "",
+        buttons: [],
+      };
+    else if (subPath == "fila")
+      return { action: handleNext, text: "Inserir cliente na fila" };
+    else return { action: handleNext, text: "Próximo", buttons: [] };
+  };
+
+  useEffect(() => {
+    const verify = () => {
+      const basePages = [
+        {
+          key: "cliente",
+          title: "Dados do cliente",
+          item: "cliente",
+        },
+        {
+          key: "servicos",
+          title: "Selecione um ou mais serviços",
+          item: "servicos",
+        },
+      ];
+
+      const queuePages = [
+        { key: "fila", title: "Fila de atendimento", item: "fila" },
+        {
+          key: "fila-confirmado",
+          title: "",
+          item: "fila-confirmado",
+        },
+      ];
+
+      const schedulePages = [
+        {
+          key: "agendamento",
+          title: "Selecione uma data e horário",
+          item: "agendamento",
+        },
+        {
+          key: "agendamento-confirmado",
+          title: "Agendamento confirmado!",
+          item: "agendamento-confirmado",
+        },
+      ];
+
+      const errorPage = {
+        key: "error",
+        title: "Opps, algo deu errado!",
+        item: "error",
+      };
+
+      const paginas = [
+        ...basePages,
+        ...(form.barbeiro?.filaDinamicaClientes ? queuePages : schedulePages),
+        errorPage,
+      ];
+
+      setPaths(paginas);
+    };
+
+    verify();
+  }, [form]);
+
   const views = {
     cliente: (
       <ClienteForm
@@ -208,67 +281,12 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         setError={alertCustom}
       />
     ),
-    confirmacao: (
-      <Grid
-        container
-        sx={{
-          height: "60vh",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <Grid size={{ md: 12, xs: 12 }}>
-          {" "}
-          <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
-            <span
-              style={{
-                background: "#EA7E11",
-                padding: "8px 16px",
-                borderRadius: "16px",
-                fontWeight: "bold",
-              }}
-            >
-              {format(() => {
-                try {
-                  if (!form?.agendamento?.id) return new Date();
-                  const data = new Date(form?.agendamento?.id);
-                  data.setHours(data.getHours() + 3);
-                  return data;
-                } catch (error) {
-                  return new Date();
-                }
-              }, "dd/MM/yyyy' às 'HH:mm'h'")}
-            </span>
-          </Typography>{" "}
-        </Grid>
-        <Grid
-          size={{ md: 12, xs: 12 }}
-          className="show-box"
-          sx={{ textAlign: "start" }}
-        >
-          <Typography variant="h6">
-            🔔 Notificação
-            <Typography variant="body1">
-              Seu cliente será notificado! Caso ele tenha permitido notificações
-              via WhatsApp
-            </Typography>
-          </Typography>
-        </Grid>
-        <Grid size={{ md: 12, xs: 12 }}></Grid>
-        <Grid size={{ md: 12, xs: 12 }}>
-          <Button
-            disableElevation
-            color="terciary"
-            size="large"
-            onClick={() => navigate("/dashboard")}
-            startIcon={<ArrowBackIcon />}
-          >
-            Voltar a tela inicial
-          </Button>
-        </Grid>
-      </Grid>
+    fila: <EntrarFila />,
+    "agendamento-confirmado": (
+      <ConfirmacaoAgendamento form={form} alertCustom={alertCustom} />
+    ),
+    "fila-confirmado": (
+      <ConfirmacaoFila form={form} alertCustom={alertCustom} />
     ),
     error: (
       <Grid
@@ -308,33 +326,30 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   };
 
   return (
-    page && (
+    page.open && (
       <Modal
-        loading={loading}
-        open={true}
+        open={page.open}
         backAction={{
-          action: !["confirmacao", "error"].includes(subPath)
-            ? handleBack
-            : () => navigate("/dashboard"),
+          action: handleBack,
           titulo: "Voltar",
         }}
         onClose={page.onClose}
-        actionText={"Próximo"}
+        actionText={estrategy().text}
+        onAction={estrategy().action}
         titulo={tituloModal}
-        onAction={
-          subPath && !["confirmacao", "error"].includes(subPath) && handleNext
-        }
         fullScreen="all"
         component="view"
-        maxWidth="sm"
+        buttons={estrategy().buttons}
+        loadingButton={loading}
+        loading={loading}
       >
-        <Grid container>
-          <Grid size={{ xs: 12, md: 12 }}>
+        <Grid container sx={{ display: "flex", justifyContent: "center" }}>
+          <Grid size={{ xs: 12, md: !subPath ? 12 : 8 }}>
             {Object.keys(views).map((key) => (
               <Box
                 sx={{
                   width: "100%",
-                  display: key == subPath ? "block" : "none",
+                  display: key == (subPath || "not") ? "block" : "none",
                 }}
               >
                 {views[key]}

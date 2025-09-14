@@ -127,7 +127,6 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
           titulo="Financeiro"
           fullScreen="all"
           maxWidth="lg"
-          disablePadding={true}
           loading={dados.loading}
           route="financeiro"
           component="view"

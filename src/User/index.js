@@ -5,7 +5,7 @@ import { getLocalItem, isMobile } from "../Componentes/Funcoes";
 import Modal from "../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
 import { Grid2 as Grid, Typography } from "@mui/material";
-import ListaAgendamentos from "./Perfil/Agendamentos";
+import ListaAgendamentos from "./Perfil/Agendamento";
 import ModalRelatorio from "./Perfil/Financeiro";
 import EditUserModal from "./Perfil/Edit";
 import Confirm from "../Componentes/Alert/Confirm";
@@ -109,10 +109,9 @@ const Usuarios = ({ alertCustom }) => {
         fullScreen="all"
         component="view"
         loading={loading}
-        disablePadding={true}
       >
         {" "}
-        <Grid container spacing={isMobile ? 1 : 3} sx={{ p: 2 }}>
+        <Grid container spacing={isMobile ? 1 : 3}>
           <Grid item size={12}>
             <ModalRelatorio
               usuario={userData}

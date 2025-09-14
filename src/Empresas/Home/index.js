@@ -15,7 +15,7 @@ import {
   formatPhone,
   getLocalItem,
 } from "../../Componentes/Funcoes";
-import Fila from "./EntrarFila";
+import EntrarFila from "./EntrarFila";
 import ConfirmacaoAgendamento from "./Confirmacao/Agendamento";
 import ConfirmacaoFila from "./Confirmacao/Fila";
 import CustomSkeleton from "../../Componentes/Loading/skeleton";
@@ -76,7 +76,12 @@ const Empresa = ({ alertCustom }) => {
         return;
 
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
-      if (subPath && !form[resp.item] && resp.item != "fila") {
+      if (
+        subPath &&
+        (!form[resp.item] ||
+          (Array.isArray(form[resp.item]) && !form[resp.item].length)) &&
+        subPath != "fila"
+      ) {
         return alertCustom("Preencha informações necessárias para prosseguir!");
       }
 
@@ -110,7 +115,7 @@ const Empresa = ({ alertCustom }) => {
 
   const handleBack = () => {
     try {
-      if (!subPath || ["confirmacao", "error"].includes(subPath))
+      if (!subPath || ["agendamento-confirmado", "error"].includes(subPath))
         return navigate("/estabelecimentos");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -280,7 +285,7 @@ const Empresa = ({ alertCustom }) => {
         setLoading={setLoading}
       />
     ),
-    fila: <Fila />,
+    fila: <EntrarFila />,
     "agendamento-confirmado": (
       <ConfirmacaoAgendamento form={form} alertCustom={alertCustom} />
     ),
@@ -335,8 +340,10 @@ const Empresa = ({ alertCustom }) => {
     } catch (error) {
       alertCustom(
         error.response.data.message ??
-          "Erro ao sair da fila, tente novamente mais tarde!"
+          "O babeiro removeu você da fila ou ocorreu um erro!"
       );
+      setForm((prev) => ({ ...prev, in_fila: false, fila_info: null }));
+      handleBack();
     } finally {
       setLoading(false);
     }

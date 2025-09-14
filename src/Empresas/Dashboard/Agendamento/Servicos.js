@@ -7,7 +7,6 @@ const Servicos = ({ setError, format, form, setForm }) => {
 
   useEffect(() => {
     try {
-      console.log("Form barbeiro:", form.barbeiro);
       setServicos(format(form.barbeiro.servicosPrestados, "servicos"));
     } catch (error) {
       setError("Não há serviços disponíveis");

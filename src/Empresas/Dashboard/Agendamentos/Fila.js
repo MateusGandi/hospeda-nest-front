@@ -2,9 +2,9 @@ import {
   Chip,
   Grid2 as Grid,
   Typography,
-  Avatar,
   Button,
   Stack,
+  Link,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal/Simple";
@@ -12,12 +12,16 @@ import { useNavigate } from "react-router-dom";
 import apiService from "../../../Componentes/Api/axios";
 import {
   formatarHorario,
+  formatPhone,
   getLocalItem,
   getStatus,
+  primeiraMaiuscula,
 } from "../../../Componentes/Funcoes";
 import { format } from "date-fns";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { PaperList } from "../../../Componentes/Lista/Paper";
+import Confirm from "../../../Componentes/Alert/Confirm";
+import Icon from "../../../Assets/Emojis";
 
 const DESCRIPTION = {
   confirm: "confirmar atendimento",
@@ -26,28 +30,33 @@ const DESCRIPTION = {
 
 export const GerenciarFila = ({ alertCustom }) => {
   const navigate = useNavigate();
-  const handleBack = () => navigate(-1);
+  const handleBack = () => navigate("/dashboard");
 
   const [content, setContent] = useState({
     open: true,
-    back: {
-      action: handleBack,
-      titulo: "Voltar",
-    },
+    back: { action: handleBack, titulo: "Voltar" },
     items: [],
     currentClient: null,
     loading: false,
     disabled: false,
-    buttons: [],
   });
 
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    id: null,
+    action: null,
+    method: null,
+    title: "",
+    message: "",
+  });
   const _setContent = (valor) => setContent((prev) => ({ ...prev, ...valor }));
+  const handleClose = () => {
+    navigate("/dashboard");
+  };
 
-  const handleClose = () => _setContent({ open: false });
-
-  const handleGetQueue = async () => {
+  const handleGetQueue = async (load = true) => {
     try {
-      _setContent({ loading: true });
+      _setContent({ loading: load });
       const barberId = getLocalItem("userId");
       const { fila } = await apiService.query(
         "GET",
@@ -60,10 +69,10 @@ export const GerenciarFila = ({ alertCustom }) => {
           ...item,
           servico: item.servico.map((service) => ({
             ...service,
-            titulo: `${item.posicaoFila} - ${service.nome} | R$ ${service.preco}`,
-            subtitulo: formatarHorario(service.tempoGasto),
+            titulo: `${service.nome} | R$ ${service.preco}`,
+            subtitulo: service.tempoGasto,
           })),
-          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.usuario.id}/${item.usuario.foto}`,
+          icon: <span>{item.posicaoFila}</span>,
           titulo: (
             <Typography
               variant="h6"
@@ -75,25 +84,23 @@ export const GerenciarFila = ({ alertCustom }) => {
               }}
             >
               <span>
-                <span className="show-art">{format(item.data, "HH:mm")}</span>{" "}
-                {item.nomeCliente || "Desconhecido"}
+                {" "}
+                {format(new Date(item.data), "HH:mm")}{" "}
+                {item.usuario?.nome || "Cliente sem nome"}
               </span>
-              <span>
-                {status.manual && <Chip size="small" label={"Manual"} />}
-                <Chip size="small" label={status.valor} color={status.color} />
-              </span>
+              {status.manual && <Chip size="small" label="Manual" />}
             </Typography>
           ),
           subtitulo: (
             <Typography variant="body2">
-              {format(
-                new Date(item.dataFinalizacao),
-                "'Previsão de finalização até ' HH:mm ' horas'"
-              )}
+              Clique para enviar mensagem via WhatsApp -{" "}
+              {formatPhone(item.usuario?.telefone) || "Não informado"}
             </Typography>
           ),
         };
       });
+      if (JSON.stringify(content.items) == JSON.stringify(items_formatted))
+        return;
 
       _setContent({ items: items_formatted });
     } catch (error) {
@@ -114,7 +121,6 @@ export const GerenciarFila = ({ alertCustom }) => {
         method,
         `/scheduling/queue/${action}/${id}`
       );
-      alertCustom(message || `Ação realizada com sucesso!`);
     } catch (error) {
       alertCustom(
         `Erro ao ${
@@ -122,9 +128,20 @@ export const GerenciarFila = ({ alertCustom }) => {
         }, tente novamente mais tarde!`
       );
     } finally {
+      await handleGetOne();
       handleGetQueue();
-      handleGetOne();
     }
+  };
+
+  const openConfirmRemove = (id) => {
+    setConfirmDialog({
+      open: true,
+      id,
+      action: "remove",
+      method: "DELETE",
+      title: "Remover da fila",
+      message: "Tem certeza que deseja remover este cliente da fila?",
+    });
   };
 
   const handleGetOne = async () => {
@@ -135,23 +152,9 @@ export const GerenciarFila = ({ alertCustom }) => {
         `/scheduling/queue/next/${barberId}`
       );
       if (cliente) {
-        _setContent({
-          currentClient: cliente,
-          buttons: [
-            {
-              titulo: "Remover da fila",
-              variant: "contained",
-              color: "error",
-              action: () => handleAction(cliente.id, "remove", "DELETE"),
-            },
-            {
-              titulo: "Marcar como concluído",
-              variant: "contained",
-              color: "primary",
-              action: () => handleAction(cliente.id, "confirm", "PATCH"),
-            },
-          ],
-        });
+        _setContent({ currentClient: cliente });
+      } else {
+        _setContent({ currentClient: null });
       }
     } catch (error) {
       console.error(error);
@@ -159,8 +162,15 @@ export const GerenciarFila = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    handleGetQueue();
     handleGetOne();
+    handleGetQueue();
+
+    const interval = setInterval(() => {
+      handleGetQueue(false);
+      handleGetOne();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -168,71 +178,159 @@ export const GerenciarFila = ({ alertCustom }) => {
       open={content.open}
       backAction={content.back}
       onClose={handleClose}
-      titulo="Gerenciar fila de espera"
       fullScreen="all"
       loading={content.loading}
       component="view"
-      buttons={content.buttons}
+      maxWidth="md"
+      disabledAction={content.items.length == 0}
+      actionText={
+        content.items.length > 1 ? "Chamar próximo" : "Concluir atendimento"
+      }
+      onAction={() =>
+        handleAction(content.currentClient.id, "confirm", "PATCH")
+      }
+      buttons={[
+        {
+          titulo: "Remover atual da fila",
+          variant: "text",
+          color: "secondary",
+          disabled: content.items.length == 0,
+          sx: { px: 2 },
+          action: () => openConfirmRemove(content.currentClient.id),
+        },
+      ]}
     >
       <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
-          <Rows
-            oneTapMode
-            items={content.items}
-            onDelete={(item) => handleAction(item.id, "remove", "DELETE")}
-            disabled={content.disabled}
-          />
-        </Grid>
+        {/* Lista da fila */}{" "}
+        {content.items.length ? (
+          <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
+            <>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Fila de espera
+              </Typography>
+              <Rows
+                disableRipple
+                sx={{ background: "transparent" }}
+                oneTapMode
+                items={content.items}
+                onDelete={(id) => openConfirmRemove(id)}
+                onSelect={(item) => {
+                  // Atualiza cliente atual
+                  _setContent({ currentClient: item });
 
-        {/* Cliente atual */}
-        <Grid item size={{ xs: 12, md: 5 }} order={{ xs: 1, md: 2 }}>
-          {content.currentClient && (
+                  // Envia mensagem via WhatsApp
+                  if (item.usuario?.telefone) {
+                    const telefone = item.usuario.telefone.replace(/\D/g, "");
+                    const mensagem = encodeURIComponent(
+                      "É a sua vez, pode vir!"
+                    );
+                    window.open(
+                      `https://wa.me/${telefone}?text=${mensagem}`,
+                      "_blank"
+                    );
+                  }
+                }}
+                disabled={content.disabled}
+                styleSelect={{ background: "#0195F7" }}
+                selectedItems={
+                  content.currentClient ? [content.currentClient] : []
+                }
+                checkmode={false}
+              />
+            </>
+          </Grid>
+        ) : (
+          <Typography className="show-box" variant="h6" sx={{ width: "100%" }}>
+            <Icon>📅</Icon> Fila Vazia
+            <Typography variant="body1">
+              Nenhum cliente na fila ainda...
+            </Typography>
+          </Typography>
+        )}
+        {/* Detalhes do cliente selecionado */}
+        {content.currentClient && (
+          <Grid item size={{ xs: 12, md: 5 }} order={{ xs: 1, md: 2 }}>
             <Grid container spacing={2}>
-              {/* Foto */}
-              <Grid item size={{ xs: 12 }} sx={{ textAlign: "center" }}>
-                <Avatar
-                  src={`${process.env.REACT_APP_BACK_TONSUS}/images/user/${content.currentClient.id}/${content.currentClient.foto}`}
-                  sx={{ width: 200, height: 200, margin: "0 auto" }}
-                />
-              </Grid>
-
-              {/* Lista de detalhes */}
               <Grid item size={{ xs: 12 }}>
                 <PaperList
                   items={[
                     {
-                      titulo: "Nome",
-                      subtitulo: content.currentClient.nome,
+                      titulo: "Telefone",
+                      subtitulo:
+                        content.items[0] &&
+                        content.items[0].usuario.telefone ? (
+                          <Link
+                            href={`https://wa.me/${content.items[0].usuario.telefone.replace(
+                              /\D/g,
+                              ""
+                            )}?text=É%20a%20sua%20vez...`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            underline="hover"
+                            color="textSecondary"
+                          >
+                            {formatPhone(content.items[0].usuario.telefone)}
+                          </Link>
+                        ) : (
+                          "Não informado"
+                        ),
                     },
                     {
                       titulo: "Serviços",
                       subtitulo: content.currentClient.servicos?.join(", "),
                     },
                     {
-                      titulo: "Tempo estimado",
-                      subtitulo: formatarHorario(
-                        content.currentClient.tempoEstimado
-                      ),
+                      titulo: "Tempo estimado de duração",
+                      subtitulo: content.currentClient.tempoEstimado
+                        ? formatarHorario(content.currentClient.tempoEstimado)
+                        : "Não informado",
                     },
                     {
-                      titulo: "Horário previsto",
-                      subtitulo: format(
-                        new Date(content.currentClient.horarioPrevisto),
-                        "HH:mm"
-                      ),
+                      titulo: "Horário previsto de início",
+                      subtitulo:
+                        content.currentClient.horarioPrevisto &&
+                        format(
+                          new Date(content.currentClient.horarioPrevisto),
+                          "HH:mm"
+                        ),
                     },
                   ]}
                 >
-                  {" "}
-                  <Typography variant="h6" sx={{ p: "5px 15px" }}>
-                    Detalhes do Cliente
+                  <Typography
+                    variant="h6"
+                    sx={{ p: "5px 15px", background: "#363636" }}
+                  >
+                    {primeiraMaiuscula(
+                      content.currentClient.nome || "Cliente sem nome"
+                    )}{" "}
+                    <Typography variant="body2" color="textSecondary" s>
+                      Cliente atual
+                    </Typography>
                   </Typography>
                 </PaperList>
               </Grid>
             </Grid>
-          )}
-        </Grid>
+          </Grid>
+        )}
       </Grid>
+
+      {/* Modal de confirmação */}
+      <Confirm
+        open={confirmDialog.open}
+        onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}
+        onConfirm={() => {
+          handleAction(
+            confirmDialog.id,
+            confirmDialog.action,
+            confirmDialog.method
+          );
+          setConfirmDialog({ ...confirmDialog, open: false });
+        }}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Remover"
+        cancelText="Cancelar"
+      />
     </Modal>
   );
 };

@@ -27,7 +27,7 @@ const Confirm = ({
       }
       type="alert"
       maxWidth="xs"
-      buttonStyle={{ width: "47%", margin: "0 1%" }}
+      buttonStyle={{ width: "46%", margin: "0 1%" }}
       buttons={[
         {
           titulo: cancelText,
@@ -43,10 +43,10 @@ const Confirm = ({
         },
       ]}
     >
-      <Typography typography="body1" sx={{ m: "0 20px" }}>
+      <Typography typography="body1" sx={{ m: "0 1" }}>
         {message}
       </Typography>
-      <Box sx={{ m: 2 }}>{children}</Box>
+      <Box>{children}</Box>
     </Modal>
   );
 };

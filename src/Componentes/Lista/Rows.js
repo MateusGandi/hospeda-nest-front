@@ -36,6 +36,7 @@ export const Rows = ({
   focusInItem = true,
   checkmode = true,
   spacing = 1,
+  disableRipple = false,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -85,6 +86,8 @@ export const Rows = ({
                 key={item.id}
                 disabled={disabled || item.disabled}
                 sx={{ borderRadius: "10px !important" }}
+                disableRipple={disableRipple}
+                disableTouchRipple={disableRipple}
               >
                 <Card
                   onClick={() =>
@@ -102,7 +105,6 @@ export const Rows = ({
                                 border: "1px solid transparent",
                               }
                             : {
-                                background: "rgba(256, 256, 256,0.1)",
                                 border: "1px solid rgb(134, 134, 134)",
                                 background: "rgba(256,256,256,0.05)",
                               }),

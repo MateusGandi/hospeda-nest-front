@@ -9,7 +9,6 @@ const Servicos = ({ setError, format, form, setForm, alertCustom }) => {
   useEffect(() => {
     const handler = () => {
       try {
-        console.log("Form barbeiro:", form.barbeiro);
         setServicos(format(form.barbeiro.servicosPrestados, "servicos"));
       } catch (error) {
         console.log("Erro ao formatar serviços:", error);

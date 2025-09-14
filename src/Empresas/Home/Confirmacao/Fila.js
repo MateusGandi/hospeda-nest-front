@@ -1,5 +1,4 @@
 import { Button, Grid2 as Grid, Paper, Typography } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import { useNavigate } from "react-router-dom";
 import { getLocalItem } from "../../../Componentes/Funcoes";
@@ -7,8 +6,10 @@ import Icon from "../../../Assets/Emojis";
 import BannerFind from "../../../Assets/Cobranca/find_banner.png";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import apiService from "../../../Componentes/Api/axios";
 
-const ConfirmacaoFila = ({ form, alertCustom }) => {
+const ConfirmacaoFila = ({ form }) => {
+  const navigate = useNavigate();
   const [content, setContent] = useState({
     notificacao_label:
       "Você será notificado por mensagem no WhatsApp quando estiver próximo de ser atendido!",
@@ -17,43 +18,67 @@ const ConfirmacaoFila = ({ form, alertCustom }) => {
         <Icon>🔔</Icon> Notificação
       </>
     ),
-
     atendimento_title: (
       <>
         <Icon>🕐</Icon> Horário previsto para atendimento
       </>
     ),
     atendimento_label: "",
-
     posicao_label: "",
     tempo_espera_label: "",
   });
 
+  const getPosicaoFila = async () => {
+    try {
+      const data = await apiService.query(
+        "GET",
+        `/scheduling/queue/position/${getLocalItem("userId")}`
+      );
+
+      if (!data?.inQueue) {
+        setContent((prev) => ({
+          ...prev,
+          posicao_label: "Você não está em nenhuma fila no momento.",
+          tempo_espera_label: "",
+          atendimento_label: "",
+        }));
+        return;
+      }
+
+      const whatsapp_enabled = getLocalItem("flagWhatsapp");
+
+      setContent({
+        notificacao_label: whatsapp_enabled
+          ? "Você será notificado por mensagem no WhatsApp quando estiver próximo de ser atendido!"
+          : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações'.",
+        notificacao_title: (
+          <>
+            <Icon>🔔</Icon> Notificação
+          </>
+        ),
+        atendimento_title: (
+          <>
+            <Icon>🕐</Icon> Horário previsto para atendimento
+          </>
+        ),
+        atendimento_label: format(
+          new Date(data.estimatedTime),
+          "dd/MM/yyyy 'às' HH:mm'h'"
+        ),
+        posicao_label: `Você é o ${data.position}º na fila`,
+        tempo_espera_label: `Tempo médio de espera: ${data.waitTime}`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    if (!form.in_fila || !form.fila_info) return;
-
-    const temp = content;
-
-    const whatsapp_enabled = getLocalItem("flagWhatsapp");
-
-    if (!whatsapp_enabled)
-      temp.notificacao_label =
-        "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre modificações na fila";
-    const {
-      agendamento: { posicaoFila, horarioPrevisto, tempoEspera },
-    } = form.fila_info;
-
-    temp.posicao_label = `Você é o ${posicaoFila}º na fila`;
-    temp.tempo_espera_label = `Tempo médio de espera: ${tempoEspera}`;
-    temp.atendimento_label = format(
-      new Date(horarioPrevisto),
-      "dd/MM/yyyy' às 'HH:mm'h'"
-    );
-
-    setContent(temp);
+    getPosicaoFila();
+    // Atualiza a posição a cada 30s
+    const interval = setInterval(getPosicaoFila, 30000);
+    return () => clearInterval(interval);
   }, []);
-
-  const navigate = useNavigate();
 
   return (
     <Grid
@@ -99,7 +124,6 @@ const ConfirmacaoFila = ({ form, alertCustom }) => {
         className="show-box"
         sx={{ textAlign: "start", display: "flex", flexWrap: "wrap", gap: 2 }}
       >
-        {" "}
         <Typography variant="h6">
           {content.atendimento_title}
           <Typography variant="body1">{content.atendimento_label}</Typography>
@@ -135,7 +159,7 @@ const ConfirmacaoFila = ({ form, alertCustom }) => {
           size="large"
           onClick={() => navigate("/home")}
         >
-          Voltar À tela inicial
+          Voltar à tela inicial
         </Button>
       </Grid>
     </Grid>
