@@ -71,11 +71,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
 
               <CardContent sx={{ textAlign: "center", marginTop: 4 }}>
                 <Typography variant="h6">{barbearia.nome}</Typography>
-                <Typography variant="body1">
-                  {`A ${barbearia.distancia || "?"}km de você - ${
-                    barbearia.endereco
-                  }`}
-                </Typography>
+                <Typography variant="body1">{barbearia.endereco}</Typography>
               </CardContent>
             </Card>
           </Grid>

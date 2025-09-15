@@ -50,22 +50,23 @@ const Dividas = ({ alertCustom }) => {
         "GET",
         `/payment/pending-payment/${getLocalItem("establishmentId")}`
       );
+
       const transacoes_pendentes = data.filter(
         ({ status }) => status == "PENDING"
       );
       const total = transacoes_pendentes
         .filter(({ status }) => status == "PENDING")
-        .reduce((acc, item) => acc + parseFloat(item.precoComTaxa || 0), 0);
+        .reduce((acc, item) => acc + parseFloat(item.precoSemTaxa || 0), 0);
 
       const transacoes = data.map((item) => {
         const vencimento = item.dataCreated
           ? new Date(item.dataCreated)
           : new Date();
-
+        console.log("testet", item);
         return {
-          id: item.id,
-          nome: item.subscription || "Não informado",
-          valor: parseFloat(item.precoComTaxa || 0),
+          id: item.checkoutId || item.id,
+          nome: item.description || "Não informado",
+          valor: parseFloat(item.precoSemTaxa || 0),
           juros: 0,
           atraso: 0,
           vencimento,
@@ -153,7 +154,10 @@ const Dividas = ({ alertCustom }) => {
           variant="text"
           size="small"
           disabled={!["PENDING", "OVERDUE"].includes(params.status)}
-          onClick={() => navigate(`/checkout/${params.id}`)}
+          onClick={() => {
+            console.log(params);
+            navigate(`/checkout/${params.id}`);
+          }}
         >
           Pagar
         </Button>
@@ -218,10 +222,16 @@ const Dividas = ({ alertCustom }) => {
                   sx={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <span>{item.nome}</span>
+                </Typography>
+              ),
+              subtitulo: (
+                <Typography
+                  sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{`R$ ${item.valor.toFixed(2)}`}</span>
                   <span>{toUTC(new Date(item.vencimento).toISOString())}</span>
                 </Typography>
               ),
-              subtitulo: `R$ ${item.valor.toFixed(2)}`,
             }))}
           />
         ) : null}

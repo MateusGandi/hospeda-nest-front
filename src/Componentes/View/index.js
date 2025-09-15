@@ -133,7 +133,7 @@ const View = ({
               </Grid>
             ) : (
               <>
-                <Grid size={12} sx={{}}>
+                <Grid size={12}>
                   <Paper
                     variant="contained"
                     sx={{
@@ -194,12 +194,13 @@ const View = ({
                     width: { xs: "100%", md: "auto" },
                     order: { md: 999, xs: 0 },
                   }}
+                  disabled={loadingButton}
                   disableElevation
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
                 >
-                  {loadingButton ? "Enviando..." : actionText}
+                  {loadingButton ? "Carregando..." : actionText}
                 </Button>
               )}
               {buttons &&

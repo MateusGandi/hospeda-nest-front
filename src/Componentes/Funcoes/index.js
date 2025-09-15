@@ -134,14 +134,16 @@ export const formatDate = (valor) => {
   return valor.substring(0, 10);
 };
 
-export const formatMoney = (valor) => {
+export const formatMoney = (valor, type = "normal") => {
   if (!valor) return "0.00";
 
   const numeros = valor.toString().replace(/\D/g, "");
 
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
-  return numeroFormatado;
+  return type == "normal"
+    ? numeroFormatado
+    : `R$ ${numeroFormatado}`.replace(".", ",");
 };
 
 export const formatCNPJ = (value) => {
@@ -158,6 +160,18 @@ export const formatCNPJ = (value) => {
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Adiciona o segundo ponto
     .replace(/\.(\d{3})(\d)/, ".$1/$2") // Adiciona a barra
     .replace(/(\d{4})(\d)/, "$1-$2"); // Adiciona o hífen
+};
+
+export const formatCEP = (value) => {
+  // Remove tudo que não for número
+  let digits = value?.replace(/\D/g, "");
+  if (!value) return "";
+
+  // Limita ao formato máximo (8 dígitos para CEP)
+  digits = digits.slice(0, 8);
+
+  // Aplica a formatação XXXXX-XXX
+  return digits.replace(/(\d{5})(\d)/, "$1-$2");
 };
 
 export const formatCPF = (value) => {
@@ -323,6 +337,20 @@ export const getStatus = (status) => {
   }
 };
 
+export function normalizeHour(horario, direcao = "up") {
+  const [horaStr, minutoStr] = horario.split(":");
+  const hora = parseInt(horaStr, 10);
+  const minuto = parseInt(minutoStr, 10);
+
+  if (direcao === "up") {
+    return minuto > 0 ? hora + 1 : hora;
+  } else if (direcao === "down") {
+    return hora;
+  }
+
+  throw new Error('Parâmetro "direcao" deve ser "up" ou "down"');
+}
+
 export function formatDataToString(dataISO, allow) {
   const meses = [
     "Janeiro",
@@ -429,22 +457,30 @@ export async function validarCampos(tipo, dados, componentValidations) {
 
   if (!regras) throw new Error("Tipo inválido");
 
-  for (const { campo, validacoes } of regras) {
+  for (const { campo, validacoes, label } of regras) {
     const valor = dados[campo];
     const listaValidacoes = validacoes.split(",").map((v) => v.trim());
 
     for (const v of listaValidacoes) {
-      if (v === "required" && (valor === undefined || valor === "")) {
-        throw new Error(`${primeiraMaiuscula(campo)} é obrigatório.`);
+      if (
+        v === "required" &&
+        (valor === undefined || valor === "" || valor === null)
+      ) {
+        throw new Error(`${label || primeiraMaiuscula(campo)} é obrigatório.`);
       }
 
       if (v.startsWith("minLength(")) {
         const min = parseInt(v.match(/\d+/)[0], 10);
         if (!valor || valor.length < min) {
           throw new Error(
-            `${primeiraMaiuscula(campo)} deve ter no mínimo ${min} caracteres.`
+            `${
+              label || primeiraMaiuscula(campo)
+            } deve ter no mínimo ${min} caracteres.`
           );
         }
+      }
+      if (v === "email" && valor && !validator.isEmail(valor)) {
+        throw new Error(`${label || primeiraMaiuscula(campo)} inválido`);
       }
 
       if (
@@ -452,16 +488,16 @@ export async function validarCampos(tipo, dados, componentValidations) {
         valor &&
         !validator.isMobilePhone(valor.replace(/\D/g, ""), "pt-BR")
       ) {
-        throw new Error(`${primeiraMaiuscula(campo)} inválido`);
+        throw new Error(`${label || primeiraMaiuscula(campo)} inválido`);
       }
 
       if (v.startsWith("equal(")) {
         const outroCampo = v.match(/\(([^)]+)\)/)[1];
         if (valor !== dados[outroCampo]) {
           throw new Error(
-            `${primeiraMaiuscula(campo)} deve ser igual a ${primeiraMaiuscula(
-              outroCampo
-            )}.`
+            `${
+              label || primeiraMaiuscula(campo)
+            } deve ser igual a ${primeiraMaiuscula(outroCampo)}.`
           );
         }
       }

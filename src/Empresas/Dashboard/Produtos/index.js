@@ -12,7 +12,7 @@ import View from "../../../Componentes/View";
 const Products = ({ alertCustom, onClose }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [isSaving, setIsSaving] = useState(false);
   const [productModal, setProductModal] = useState({
     open: false,
     titulo: "Adicionar novo produto",
@@ -85,7 +85,9 @@ const Products = ({ alertCustom, onClose }) => {
       setProducts(
         data.map((item) => ({
           ...item,
-          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/product/${item.id}/${item.fotoPath}`,
+          imagem: item.fotoPath
+            ? `${process.env.REACT_APP_BACK_TONSUS}/images/product/${item.id}/${item.fotoPath}`
+            : null,
         })) || []
       );
     } catch (err) {
@@ -144,11 +146,12 @@ const Products = ({ alertCustom, onClose }) => {
 
   const handleSave = async () => {
     try {
+      setIsSaving(true);
       const { valor, id, ...rest } = formData;
       if (formData.id) {
         await Api.query("PUT", `/product/${id}`, {
           valor: +valor,
-          rest,
+          ...rest,
         });
         alertCustom("Produto atualizado com sucesso!");
       } else {
@@ -163,6 +166,8 @@ const Products = ({ alertCustom, onClose }) => {
       fetchProducts();
     } catch (error) {
       alertCustom("Erro ao salvar produto!");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -179,6 +184,7 @@ const Products = ({ alertCustom, onClose }) => {
   };
 
   const handleChange = (name, value) => {
+    console.log("teste", name, value);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -337,6 +343,7 @@ const Products = ({ alertCustom, onClose }) => {
         titulo={productModal.titulo}
         actionText={productModal.actionText}
         onAction={handleSave}
+        loadingButton={isSaving}
         fullScreen="all"
         component="view"
         maxWidth="md"

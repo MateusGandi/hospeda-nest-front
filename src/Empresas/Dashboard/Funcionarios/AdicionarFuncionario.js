@@ -31,6 +31,7 @@ const Funcionario = ({
     nome: "",
     telefone: "",
     servicosPrestados: [],
+    filaDinamicaClientes: false,
   });
 
   useEffect(() => {
@@ -189,23 +190,26 @@ const Funcionario = ({
               sx={{ flexWrap: { xs: "wrap", md: "nowrap" } }}
             >
               {funcionario ? (
-                <Typography variant="body1">
-                  {" "}
-                  Você pode editar a escala do funcionário, programando dias da
-                  semana, horário de almoço, e ausências previstas.
-                </Typography>
+                <>
+                  <Typography variant="body1">
+                    {" "}
+                    Você pode editar a escala do funcionário, programando dias
+                    da semana para expediente, horário de almoço e ausências
+                    previstas.
+                  </Typography>{" "}
+                  <WorkSchedule
+                    type="button"
+                    alertCustom={alertCustom}
+                    dados={data}
+                    disabled={!funcionario}
+                  />
+                </>
               ) : (
                 <Typography variant="body1">
                   Seu funcionário deve criar uma conta na plataforma e precisará
                   confirmar seu convite para assumiur o cargo.
                 </Typography>
               )}{" "}
-              <WorkSchedule
-                type="button"
-                alertCustom={alertCustom}
-                dados={data}
-                disabled={!funcionario}
-              />
             </Grid>
           </Typography>
         </Grid>

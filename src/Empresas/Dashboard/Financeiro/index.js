@@ -127,7 +127,6 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
           titulo="Financeiro"
           fullScreen="all"
           maxWidth="lg"
-          disablePadding={true}
           loading={dados.loading}
           route="financeiro"
           component="view"
@@ -248,7 +247,6 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               </Grid>
               <Grid size={11}>
                 <CustomTabs
-                  sx={{ mt: 5 }}
                   selected={dados.tab.id}
                   tabs={tabs}
                   onChange={handleTabChange}

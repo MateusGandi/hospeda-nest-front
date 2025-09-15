@@ -29,18 +29,18 @@ import { PaperList } from "../../../Componentes/Lista/Paper";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import View from "../../../Componentes/View";
 
-export default function AgendamentosByCalendario({ alertCustom }) {
+export default function AgendamentosByCalendario({ alertCustom, data }) {
   const navigate = useNavigate();
 
   const colors = {
     primary: "#0195F7",
-    success: "#03E55B",
+    success: "#23C45D",
     warning: "#E57F01",
     error: "#f44336",
   };
   const colorsByStatus = {
     PENDING: "#0195F7",
-    OK: "#03E55B",
+    OK: "#23C45D",
     CANCELLED: "#E57F01",
     NOT_ATTEND: "#f44336",
   };
@@ -243,8 +243,7 @@ export default function AgendamentosByCalendario({ alertCustom }) {
     } catch (error) {
       handleGetAgendamentos();
       alertCustom(
-        error?.response?.data?.message?.response?.message ??
-          "Erro ao atualizar agendamento!"
+        error?.response?.data?.message ?? "Erro ao atualizar agendamento!"
       );
     }
   };
@@ -336,6 +335,8 @@ export default function AgendamentosByCalendario({ alertCustom }) {
           actionText="Novo"
           actionIcon={<AddRoundedIcon />}
           onAction={() => navigate("/dashboard/agendamento/cliente")}
+          startHour={data.startHour ?? 8}
+          endHour={data.endHour ?? 18}
         />
       </Modal>
       <Modal

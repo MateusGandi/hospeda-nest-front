@@ -18,7 +18,7 @@ import Doc from "./documento.json";
 import Icon from "../../Assets/Emojis";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 
-const FAQ = ({ filtro }) => {
+const FAQ = ({ filtro, back = false }) => {
   const navigate = useNavigate();
   const { title } = useParams();
   const [documentos, setDocumentos] = useState([]);
@@ -87,16 +87,18 @@ const FAQ = ({ filtro }) => {
 
   return (
     <>
-      <Box sx={{ width: "100%", px: 2.5 }}>
-        <Button
-          size="large"
-          color="terciary"
-          startIcon={<ArrowBackRoundedIcon />}
-          onClick={() => navigate(-1)}
-        >
-          Voltar
-        </Button>
-      </Box>
+      {!back && (
+        <Box sx={{ width: "100%", px: 2.5 }}>
+          <Button
+            size="large"
+            color="terciary"
+            startIcon={<ArrowBackRoundedIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Voltar
+          </Button>
+        </Box>
+      )}
       <Container
         maxWidth="md"
         sx={{

@@ -32,12 +32,12 @@ const PublicPage = () => {
     ],
     manager: [],
     adm: [
-      { title: "Ver planos disponíveis", action: "/plans" },
+      { title: "Barbearias", action: "/estabelecimentos" },
       { title: "Gerenciar barbearia", action: "/dashboard", force: true },
     ],
     employee: [
-      { title: "Veja os termos de uso", action: "/faq" },
-      { title: "Comece a atender clientes", action: "/dashboard", force: true },
+      { title: "Barbearias", action: "/estabelecimentos" },
+      { title: "Atender clientes", action: "/dashboard", force: true },
     ],
   };
 

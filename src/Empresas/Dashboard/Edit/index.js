@@ -15,7 +15,8 @@ const EditData = ({
   onSave,
   tipo = "view",
 }) => {
-  const [formData, setFormData] = useState(barbearia);
+  const [formData, setFormData] = useState(barbearia || {});
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     setFormData(barbearia);
@@ -51,7 +52,10 @@ const EditData = ({
     }
     const { longitudeAndLatitude, location, ...rest } = formData;
     formData.longitudeAndLatitude = Object.values(location);
-    onSave(formData);
+    setIsSending(true);
+    await onSave(formData).finally(() => {
+      setIsSending(false);
+    });
   };
 
   const onChangeAndSave = async (aberto) => {
@@ -96,6 +100,7 @@ const EditData = ({
           onClose={onClose}
           titulo={"Atualizar dados"}
           onAction={handleSave}
+          loadingButton={isSending}
           actionText={"Salvar"}
           fullScreen="all"
           component="view"

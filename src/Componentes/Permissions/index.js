@@ -96,7 +96,7 @@ const Permissions = ({
 
   const onClose = (force) => {
     setModal({ open: false });
-    Permissions && handleClose();
+    Permissions && !!handleClose && handleClose();
     if (force) Cookies.set("getPermission", "false", { expires: 1 });
   };
 

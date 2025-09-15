@@ -24,10 +24,11 @@ import {
   getLocalItem,
   isMobile,
 } from "../../Componentes/Funcoes";
+
 import LogoPartners from "../../Assets/logo_partners.png";
 import barbeiroConfuso from "../../Assets/Landing/barbeiro-confuso.png";
 import barbeiroConfusoLeft from "../../Assets/Landing/barbeiro-confuso-left.png";
-import gradienteAzul from "../../Assets/Landing/gradiente-azul-bg.png";
+
 import Icon from "../../Assets/Emojis";
 import { Rows } from "../../Componentes/Lista/Rows";
 import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
@@ -140,6 +141,14 @@ const ModalPlanos = ({ alertCustom }) => {
         titulo={modal.nome}
         sx={{ background: "#181818", position: "relative", minHeight: "535px" }}
         component="modal"
+        buttons={[
+          {
+            titulo: "Quero esse!",
+            variant: "contained",
+            action: () => navigate(`/onboard/${modal.idPlan}`),
+            color: "primary",
+          },
+        ]}
       >
         <Grid container spacing={2}>
           <Grid
@@ -223,8 +232,8 @@ const ModalPlanos = ({ alertCustom }) => {
         loading={modal.loading}
         onClose={modal.onClose}
         sx={{
-          backgroundColor: "#212121",
-          backgroundImage: `url(${gradienteAzul})`,
+          // backgroundColor: "#212121",
+          //backgroundImage: `url(${gradienteAzul})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
         }}
@@ -356,6 +365,7 @@ const ModalPlanos = ({ alertCustom }) => {
                         setModal((prev) => ({
                           ...prev,
                           nome: plano.nome,
+                          idPlan: plano.id,
                           openDetalhes: true,
                           detalhes: plano.produtosContratados,
                         }))

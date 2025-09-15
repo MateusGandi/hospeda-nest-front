@@ -1,28 +1,41 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Chip, Typography, Box, CircularProgress } from "@mui/material";
-import Modal from "../../Componentes/Modal/Simple";
-import { Rows } from "../../Componentes/Lista/Rows";
-import apiService from "../../Componentes/Api/axios";
+import { Chip, Typography, Box, Grid2 as Grid } from "@mui/material";
+import Modal from "../../../Componentes/Modal/Simple";
+import { Rows } from "../../../Componentes/Lista/Rows";
+import apiService from "../../../Componentes/Api/axios";
 import { format } from "date-fns";
-import { PaperList } from "../../Componentes/Lista/Paper";
-import { formatarHorario, isMobile } from "../../Componentes/Funcoes";
-import ReviewBarbershopModal from "../../Evaluation";
-import Filter from "../../Componentes/Filter";
-import Confirm from "../../Componentes/Alert/Confirm";
+import { PaperList } from "../../../Componentes/Lista/Paper";
+import { formatarHorario, isMobile } from "../../../Componentes/Funcoes";
+import Filter from "../../../Componentes/Filter";
+import Confirm from "../../../Componentes/Alert/Confirm";
 import { useNavigate, useParams } from "react-router-dom";
-import { CustomInput, LoadingBox } from "../../Componentes/Custom";
-import Icon from "../../Assets/Emojis";
+import { CustomInput, LoadingBox } from "../../../Componentes/Custom";
+import Icon from "../../../Assets/Emojis";
+import Fila from "./Fila";
 
 const ListaAgendamentos = ({ alertCustom, usuario }) => {
   const navigate = useNavigate();
   const { agendamentoId } = useParams();
   const [agendamentos, setAgendamentos] = useState([]);
   const [filterOptions] = useState({
-    PENDING: "Agendados",
+    PENDING: "Pendentes",
     NOT_ATTEND: "Não Compareci",
     CANCELLED: "Cancelados",
     OK: "Concluídos",
   });
+  const colorsByStatus = {
+    PENDING: "#0195F7",
+    OK: "#23C45D",
+    CANCELLED: "#E57F01",
+    NOT_ATTEND: "#f44336",
+  };
+
+  const statusNames = {
+    PENDING: "Agendado",
+    NOT_ATTEND: "Não Compareceu",
+    CANCELLED: "Cancelado",
+    OK: "Concluído",
+  };
 
   // Estado separado para o motivo
   const [motivoCancelamento, setMotivoCancelamento] = useState("");
@@ -33,7 +46,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
     open: false,
     agendamento: null,
     ratingModal: false,
-    filter: { id: 0, valor: "PENDING", titulo: "Agendados" },
+    filter: { id: 0, valor: "PENDING", titulo: "Pendentes" },
     loading: false,
     update: true,
     confirmOpen: false,
@@ -50,14 +63,6 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
       navigate("/me");
     }
   }, [agendamentoId]);
-
-  const handleRatingModal = () => {
-    setModal((prev) => ({
-      ...prev,
-      ratingModal: !prev.ratingModal,
-      open: false,
-    }));
-  };
 
   const handleCancel = async () => {
     if (!motivoCancelamento.trim()) {
@@ -90,11 +95,12 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
       case "PENDING":
         return {
           color: "primary",
-          valor: "Agendado",
+          valor: "Pendente",
           buttons: [
             {
               titulo: "Cancelar agendamento",
               color: "error",
+              variant: "contained",
               action: () => {
                 agendamentoParaCancelar.current = id;
                 setModal((prev) => ({
@@ -139,7 +145,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
     navigate(-1);
   };
 
-  const handleGetScheduling = async () => {
+  const handleGetSchedulings = async () => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
       const data = await apiService.query(
@@ -157,14 +163,20 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
 
   useEffect(() => {
     if (modal.update) {
-      handleGetScheduling();
+      handleGetSchedulings();
       setModal((prev) => ({ ...prev, update: false }));
     }
   }, [modal.update]);
 
   useEffect(() => {
-    handleGetScheduling();
+    handleGetSchedulings();
   }, [modal.filter]);
+
+  const formatTitle = (data) =>
+    `${format(
+      new Date(data).setHours(new Date(data).getHours() + 3),
+      "dd/MM/yyyy HH:mm"
+    )}`;
 
   return (
     <>
@@ -192,42 +204,44 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
         />
       </Confirm>
 
-      {modal.agendamento && (
+      {/* {modal.agendamento && (
         <ReviewBarbershopModal
           barbearia={modal.agendamento.barbearia}
           open={modal.ratingModal}
           onClose={handleRatingModal}
           alertCustom={alertCustom}
         />
-      )}
+      )} */}
 
-      <Typography
-        variant="h6"
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: 1,
-          mt: 2,
-        }}
-      >
-        <span>Meus agendamentos</span>
-        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Typography
-            variant="body1"
-            sx={{ display: { xs: "none", md: "block" } }}
-          >
-            {modal.filter?.titulo}
-          </Typography>
-          <Filter
-            title="Filtrar por"
-            options={filterOptions}
-            filter={modal.filter}
-            setFilter={(filter) => setModal((prev) => ({ ...prev, filter }))}
-          />{" "}
-        </span>
-      </Typography>
+      {modal.filter && (
+        <Typography
+          variant="h6"
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 1,
+            mt: 2,
+          }}
+        >
+          <span>Meus agendamentos</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Typography
+              variant="body1"
+              sx={{ display: { xs: "none", md: "block" } }}
+            >
+              {modal.filter.titulo}
+            </Typography>
+            <Filter
+              title="Filtrar por"
+              options={filterOptions}
+              filter={modal.filter}
+              setFilter={(filter) => setModal((prev) => ({ ...prev, filter }))}
+            />{" "}
+          </span>
+        </Typography>
+      )}
 
       {modal.loading ? (
         <LoadingBox message={"Carregando agendamentos..."} />
@@ -333,42 +347,76 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
         </Typography>
       )}
 
-      {modal.agendamento && (
-        <Modal
-          component="view"
-          open={modal.open}
-          onClose={handleClose}
-          titulo={`${format(
-            new Date(modal.agendamento.data).setHours(
-              new Date(modal.agendamento.data).getHours() + 3
-            ),
-            "dd/MM/yyyy HH:mm"
-          )}`}
-          buttons={modal.agendamento.modalActions}
-          fullScreen="mobile"
-        >
-          <PaperList
-            items={modal.agendamento.servico.map((item) => ({
-              titulo: item.nome,
-              subtitulo: formatarHorario(item.tempoGasto),
-            }))}
+      {modal.agendamento && modal.agendamento.posicaoFila ? (
+        <Fila
+          alertCustom={alertCustom}
+          reload={handleGetSchedulings}
+          dados={modal.agendamento}
+        />
+      ) : (
+        modal.agendamento && (
+          <Modal
+            component="view"
+            open={modal.open}
+            onClose={handleClose}
+            titulo={
+              <Typography
+                variant="h6"
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+              >
+                <Chip
+                  sx={{
+                    bgcolor: colorsByStatus[modal.agendamento.status],
+                    my: 1,
+                  }}
+                  label={statusNames[modal.agendamento.status]}
+                />
+                {formatTitle(modal.agendamento.data)}
+              </Typography>
+            }
+            buttons={modal.agendamento.modalActions}
+            fullScreen="mobile"
+            maxWidth="sm"
           >
-            <Typography variant="h6" sx={{ p: 1 }}>
-              Produtos e serviços
-            </Typography>
-          </PaperList>
-
-          <Typography sx={{ p: 1 }}>
-            Funcionário: {modal.agendamento.atendente?.nome ?? "Não informado"}
-            <br />
-            Situação:{" "}
-            <Chip
-              label={getStatus(modal.agendamento.status).valor}
-              color={getStatus(modal.agendamento.status).color}
-              size="small"
-            />
-          </Typography>
-        </Modal>
+            <Grid container sx={{ mt: -3 }} spacing={2}>
+              <Grid size={12}>
+                <Rows
+                  disabled={true}
+                  items={[
+                    {
+                      titulo: modal.agendamento.atendente.nome,
+                      subtitulo: "Atendente responsável",
+                      size: 50,
+                      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${modal.agendamento.atendente.id}/${modal.agendamento.atendente.foto}`,
+                    },
+                  ]}
+                />
+              </Grid>
+              <Grid size={12}>
+                <PaperList
+                  items={[
+                    ...modal.agendamento.servico.map((item) => ({
+                      titulo: item.nome,
+                      subtitulo: formatarHorario(item.tempoGasto),
+                    })),
+                    ...(modal.agendamento.motivoCancelamento
+                      ? [
+                          {
+                            titulo: "Motivo do cancelamento",
+                            subtitulo: modal.agendamento.motivoCancelamento,
+                          },
+                        ]
+                      : []),
+                  ]}
+                >
+                  <Typography variant="h6" sx={{ p: "5px 10px" }}>
+                    Resumo do pedido
+                  </Typography>
+                </PaperList>
+              </Grid>
+            </Grid>
+          </Modal>
+        )
       )}
     </>
   );

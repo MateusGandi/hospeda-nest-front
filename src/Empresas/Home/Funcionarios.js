@@ -1,24 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
+import Icon from "../../Assets/Emojis";
 
 const Funcionarios = ({ setError, format, form, setForm }) => {
-  const [funcionarios, setFuncionarios] = useState([]);
+  const [content, setContent] = useState({
+    fila: [],
+    agendamento: [],
+    selected: [],
+    total: 0,
+  });
+
+  const formatItems = () => {
+    const rows = [];
+    if (content.fila.length) {
+      rows.push({ titulo: "Trabalham com fila", disabled: true });
+      rows.push(...content.fila);
+    }
+
+    if (content.agendamento.length) {
+      rows.push({ titulo: "Trabalham com agendamento", disabled: true });
+      rows.push(...content.agendamento);
+    }
+    return rows;
+  };
 
   useEffect(() => {
     const handler = () => {
-      console.log("Form barbeira:", form.barbearia);
       try {
         if (form.barbearia && !form.barbearia.funcionarios.length) {
-          console.log("Nenhum funcionário encontrado");
-          setFuncionarios([]);
+          setContent({
+            fila: [],
+            agendamento: [],
+            selected: [],
+            total: 0,
+          });
           return;
         } else {
-          console.log(
-            "Formatando funcionários:",
-            format(form.barbearia.funcionarios, "barbeiros")
-          );
-          setFuncionarios(format(form.barbearia.funcionarios, "barbeiros"));
+          const temp = format(form.barbearia.funcionarios, "barbeiros");
+          setContent({
+            fila: temp.filter((f) => f.filaDinamicaClientes),
+            agendamento: temp.filter((f) => !f.filaDinamicaClientes),
+            selected: [],
+            total: temp.length,
+          });
         }
       } catch (error) {
         setError("Não há funcionários disponíveis");
@@ -28,19 +53,29 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   }, [form.barbearia]);
 
   const handleSelect = (item) => {
-    setForm((prev) => ({ ...prev, barbeiro: item }));
+    setForm((prev) => ({ ...prev, barbeiro: item, selected: [item] }));
+    setContent((prev) => ({ ...prev, selected: [item] }));
   };
+
   return (
     <Grid container>
       <Grid size={{ xs: 12, md: 12 }}>
-        {funcionarios && funcionarios.length ? (
-          <Rows items={funcionarios} onSelect={handleSelect} />
+        {content.total > 0 ? (
+          <Rows
+            selectedItems={content.selected}
+            items={formatItems()}
+            onSelect={handleSelect}
+          />
         ) : (
           <Typography
-            variant="body1"
+            variant="h6"
             sx={{ width: "100%", textAlign: "center" }}
+            className="show-box"
           >
-            Nenhum funcionário disponível!
+            <Icon>✂️</Icon> Nenhum funcionário disponível!
+            <Typography variant="body1">
+              A barbearia ainda não possui funcionários cadastrados.
+            </Typography>
           </Typography>
         )}
       </Grid>

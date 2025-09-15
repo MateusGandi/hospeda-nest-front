@@ -52,9 +52,9 @@ const Modal = ({
   images,
   loadingButton = false,
   sx,
-  disablePadding,
   componentName = "",
   alignItems = "start",
+  disabledAction = false,
 }) => {
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
@@ -137,12 +137,12 @@ const Modal = ({
         </Container>
       ) : (
         <>
-          <DialogContent sx={{ p: disablePadding ? 0 : "10px" }}>
+          <DialogContent sx={{ p: 0 }}>
             <Container
               maxWidth={maxWidth}
               sx={{
                 height: "100%",
-                p: "0px !important",
+                py: 2,
                 borderRadius: { xs: 0, md: "0" },
               }}
               onSubmit={(e) => {
@@ -158,8 +158,8 @@ const Modal = ({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: alignItems,
-                  pt: { xs: 0, md: 2 },
-                  height: "100%",
+                  py: { xs: 0, md: 2 },
+                  // height: "100%",
                 }}
               >
                 {images && (
@@ -248,7 +248,7 @@ const Modal = ({
                                   onClick={() => onAction && onAction()}
                                   variant="contained"
                                   color={color}
-                                  disabled={loadingButton}
+                                  disabled={disabledAction || loadingButton}
                                   type="submit"
                                   sx={{
                                     height: 45,
@@ -356,6 +356,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
+                  disabled={disabledAction || loadingButton}
                 >
                   {loadingButton ? "Enviando..." : actionText}
                 </Button>
@@ -408,6 +409,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
+                  disabled={disabledAction || loadingButton}
                 >
                   {actionText}
                 </Button>

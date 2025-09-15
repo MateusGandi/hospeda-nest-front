@@ -1,54 +1,28 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  Grid2 as Grid,
-  Switch,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../Componentes/Modal/Simple";
 import Api from "../../Componentes/Api/axios";
 import BarberPresentation from "./Presentation";
 import { useParams, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import NavigationIcon from "@mui/icons-material/Navigation";
 
 import Funcioanarios from "./Funcionarios";
 import Servicos from "./Servicos";
 import Agendamento from "./Agendamento";
-import AnimatedCheck from "../../Componentes/Motion/Icons";
 import {
   formatarHorario,
   formatPhone,
   getLocalItem,
 } from "../../Componentes/Funcoes";
+import EntrarFila from "./EntrarFila";
+import ConfirmacaoAgendamento from "./Confirmacao/Agendamento";
+import ConfirmacaoFila from "./Confirmacao/Fila";
+import CustomSkeleton from "../../Componentes/Loading/skeleton";
+import { LoadingBox } from "../../Componentes/Custom";
 
 const Empresa = ({ alertCustom }) => {
-  const paths = [
-    { key: "barbeiros", title: "Selecione um barbeiro", item: "barbeiro" },
-    {
-      key: "servicos",
-      title: "Selecione um ou mais serviços",
-      item: "servicos",
-    },
-    {
-      key: "agendamento",
-      title: "Selecione uma data e horário",
-      item: "agendamento",
-    },
-    {
-      key: "confirmacao",
-      title: "Agendamento confirmado!",
-      item: "confirmacao",
-    },
-    {
-      key: "error",
-      title: "Opps, algo deu errado!",
-      item: "error",
-    },
-  ];
+  const [paths, setPaths] = useState([]);
 
   const [tituloModal, setTituloModal] = useState("");
 
@@ -61,40 +35,68 @@ const Empresa = ({ alertCustom }) => {
     barbeiro: null,
     servicos: [],
     agendamento: null,
+    in_fila: false,
+    fila_info: null,
+    loading: false,
+
+    //para casos em que for removido da fila externamente
+    disabledActionButton: false,
   });
   const [page, setPage] = useState({
     open: false,
     onClose: () => {
-      navigate(-1);
+      navigate("/home");
     },
   });
 
-  const handleSaveAgendamento = async () => {
-    await Api.query("POST", "/scheduling", {
+  const handleSave = async () => {
+    const url = subPath == "fila" ? "/scheduling/queue" : "/scheduling";
+
+    await Api.query("POST", url, {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
         : form.agendamento,
       establishmentId: empresa.id,
       userId: getLocalItem("userId"),
       barberId: form.barbeiro.id,
-      services: form.servicos?.map(({ id }) => id),
+      services: form.servicos.map(({ id }) => id),
+      userName: getLocalItem("nome"),
+      manual: false,
+    }).then((resp) => {
+      if (subPath == "fila")
+        setForm((prev) => ({ ...prev, in_fila: true, fila_info: resp }));
+      return resp;
     });
   };
 
   const handleNext = async () => {
     try {
-      if (subPath && ["confirmacao", "error"].includes(subPath)) return;
+      setLoading(true);
+      if (
+        subPath &&
+        ["agendamento-confirmado", "fila-confirmado", "error"].includes(subPath)
+      )
+        return;
 
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
-      if (subPath && !form[resp.item]) {
+      if (
+        subPath &&
+        (!form[resp.item] ||
+          (Array.isArray(form[resp.item]) && !form[resp.item].length)) &&
+        subPath != "fila"
+      ) {
         return alertCustom("Preencha informações necessárias para prosseguir!");
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (paths[pathTo + 1].key == "confirmacao") {
-        return await handleSaveAgendamento()
+      if (paths[pathTo + 1].key.includes("confirmado")) {
+        return await handleSave()
           .then(() => {
-            alertCustom("Agendamento confirmado!");
+            alertCustom(
+              form.barbeiro.filaDinamicaClientes
+                ? "Aguardando na fila..."
+                : "Agendamento confirmado!"
+            );
             setTituloModal(paths[pathTo + 1].title);
             navigate(`/barbearia/${empresa.path}/${paths[pathTo + 1].key}`);
           })
@@ -108,14 +110,19 @@ const Empresa = ({ alertCustom }) => {
       setTituloModal(paths[pathTo + 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo + 1].key}`);
     } catch (error) {
-      console.log(error);
       alertCustom("Erro interno!");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleBack = () => {
     try {
-      if (!subPath || ["confirmacao", "error"].includes(subPath))
+      if (
+        !subPath ||
+        ["agendamento-confirmado", "error"].includes(subPath) ||
+        form.disabledActionButton
+      )
         return navigate("/estabelecimentos");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -152,6 +159,7 @@ const Empresa = ({ alertCustom }) => {
         setLoading(false);
       }
     };
+
     buscarEmpresa();
   }, []);
 
@@ -162,6 +170,61 @@ const Empresa = ({ alertCustom }) => {
     }));
     setForm((prev) => ({ ...prev, barbearia: empresa }));
   }, [empresa]);
+
+  useEffect(() => {
+    const verify = () => {
+      const basePages = [
+        {
+          key: "barbeiros",
+          title: "Selecione um profissional",
+          item: "barbeiro",
+        },
+        {
+          key: "servicos",
+          title: "Selecione um ou mais serviços",
+          item: "servicos",
+        },
+      ];
+
+      const queuePages = [
+        { key: "fila", title: "Fila de atendimento", item: "fila" },
+        {
+          key: "fila-confirmado",
+          title: "",
+          item: "fila-confirmado",
+        },
+      ];
+
+      const schedulePages = [
+        {
+          key: "agendamento",
+          title: "Selecione uma data e horário",
+          item: "agendamento",
+        },
+        {
+          key: "agendamento-confirmado",
+          title: "Agendamento confirmado!",
+          item: "agendamento-confirmado",
+        },
+      ];
+
+      const errorPage = {
+        key: "error",
+        title: "Opps, algo deu errado!",
+        item: "error",
+      };
+
+      const paginas = [
+        ...basePages,
+        ...(form.barbeiro?.filaDinamicaClientes ? queuePages : schedulePages),
+        errorPage,
+      ];
+
+      setPaths(paginas);
+    };
+
+    verify();
+  }, [form]);
 
   const formatarRows = (items, pagina) => {
     if (pagina == "barbeiros") {
@@ -191,6 +254,7 @@ const Empresa = ({ alertCustom }) => {
       }));
     }
   };
+
   const views = {
     not: (
       <BarberPresentation
@@ -228,87 +292,20 @@ const Empresa = ({ alertCustom }) => {
         setLoading={setLoading}
       />
     ),
-    confirmacao: (
-      <Grid
-        container
-        sx={{
-          height: "60vh",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <Grid size={{ md: 12, xs: 12 }}>
-          {" "}
-          <Typography variant="h5" color="#fff" sx={{ py: 5 }}>
-            <span
-              style={{
-                background: "#EA7E11",
-                padding: "8px 16px",
-                borderRadius: "16px",
-                fontWeight: "bold",
-              }}
-            >
-              {format(() => {
-                try {
-                  if (!form?.agendamento?.id) return new Date();
-                  const data = new Date(form?.agendamento?.id);
-                  data.setHours(data.getHours() + 3);
-                  return data;
-                } catch (error) {
-                  return new Date();
-                }
-              }, "dd/MM/yyyy' às 'HH:mm'h'")}
-            </span>
-          </Typography>{" "}
-        </Grid>
-        <Grid
-          size={{ md: 12, xs: 12 }}
-          className="show-box"
-          sx={{ textAlign: "start" }}
-        >
-          <Typography variant="h6">
-            🔔 Notificação
-            <Typography variant="body1">
-              {getLocalItem("flagWhatsapp")
-                ? "Você será notificado por mensagem no WhatsApp quando estiver próximo do horário marcado!"
-                : "Você não será notificado! Considere permitir as notificações via WhatsApp em 'configurações' para ser notificado sobre seus agendamentos"}
-            </Typography>
-            <Typography variant="body1">
-              <b>Cancelamentos</b> só podem ocorrer com <b>1h</b> de
-              antecedência.
-            </Typography>
-          </Typography>
-        </Grid>
-        <Grid size={{ md: 12, xs: 12 }}>
-          <a
-            href={`https://www.google.com/maps?q=${form?.barbearia?.endereco}`}
-            target="_blank"
-          >
-            <Button
-              disableElevation
-              color="primary"
-              size="large"
-              variant="contained"
-              startIcon={<NavigationIcon />}
-            >
-              Ver Localização
-            </Button>
-          </a>
-        </Grid>
-        <Grid size={{ md: 12, xs: 12 }}>
-          <Button
-            disableElevation
-            color="terciary"
-            size="large"
-            onClick={() => navigate("/home")}
-            startIcon={<ArrowBackIcon />}
-          >
-            Voltar a tela inicial
-          </Button>
-        </Grid>
-      </Grid>
+    fila: <EntrarFila />,
+    "agendamento-confirmado": (
+      <ConfirmacaoAgendamento
+        form={form}
+        setForm={setForm}
+        alertCustom={alertCustom}
+      />
+    ),
+    "fila-confirmado": (
+      <ConfirmacaoFila
+        form={form}
+        setForm={setForm}
+        alertCustom={alertCustom}
+      />
     ),
     error: (
       <Grid
@@ -347,23 +344,80 @@ const Empresa = ({ alertCustom }) => {
       </Grid>
     ),
   };
+
+  const getOutQueue = async () => {
+    try {
+      setLoading(true);
+      await Api.query("DELETE", "/scheduling/queue/self-remove");
+      alertCustom("Você saiu da fila com sucesso!");
+      setForm((prev) => ({ ...prev, in_fila: false, fila_info: null }));
+      handleBack();
+    } catch (error) {
+      alertCustom(
+        error.response.data.message ??
+          "O babeiro removeu você da fila ou ocorreu um erro!"
+      );
+      setForm((prev) => ({ ...prev, in_fila: false }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!form.in_fila && form.fila_info) {
+      setForm((prev) => ({
+        ...prev,
+        fila_info: null,
+        disabledActionButton: true,
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, disabledActionButton: false }));
+    }
+  }, [form.in_fila]);
+
+  const estrategy = () => {
+    const invalidPaths = ["agendamento-confirmado", "error", undefined];
+    if (invalidPaths.includes(subPath))
+      return { action: undefined, text: "", buttons: [] };
+
+    if (["fila-confirmado", "fila"].includes(subPath) && form.in_fila)
+      return {
+        action: undefined,
+        text: "",
+        buttons: [
+          {
+            titulo: "Sair da fila",
+            variant: "contained",
+            color: "error",
+            action: getOutQueue,
+            disabled: loading,
+          },
+        ],
+      };
+    else if (form.disabledActionButton)
+      return { action: undefined, text: "", buttons: [] };
+    else if (subPath == "fila")
+      return { action: handleNext, text: "Entrar na fila" };
+    else return { action: handleNext, text: "Próximo", buttons: [] };
+  };
+
   return (
     page.open && (
       <Modal
-        loading={loading}
         open={page.open}
         backAction={{
           action: handleBack,
           titulo: "Voltar",
         }}
         onClose={page.onClose}
-        actionText={"Próximo"}
+        actionText={estrategy().text}
+        onAction={estrategy().action}
         titulo={tituloModal}
-        onAction={
-          !["confirmacao", "error", undefined].includes(subPath) && handleNext
-        }
         fullScreen="all"
         component="view"
+        buttons={estrategy().buttons}
+        loadingButton={loading}
+        loading={loading}
       >
         <Grid container sx={{ display: "flex", justifyContent: "center" }}>
           <Grid size={{ xs: 12, md: !subPath ? 12 : 8 }}>

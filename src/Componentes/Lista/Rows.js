@@ -36,6 +36,7 @@ export const Rows = ({
   focusInItem = true,
   checkmode = true,
   spacing = 1,
+  disableRipple = false,
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
@@ -85,6 +86,8 @@ export const Rows = ({
                 key={item.id}
                 disabled={disabled || item.disabled}
                 sx={{ borderRadius: "10px !important" }}
+                disableRipple={disableRipple}
+                disableTouchRipple={disableRipple}
               >
                 <Card
                   onClick={() =>
@@ -102,7 +105,6 @@ export const Rows = ({
                                 border: "1px solid transparent",
                               }
                             : {
-                                background: "rgba(256, 256, 256,0.1)",
                                 border: "1px solid rgb(134, 134, 134)",
                                 background: "rgba(256,256,256,0.05)",
                               }),
@@ -153,18 +155,19 @@ export const Rows = ({
 
                     <ListItemText
                       primary={
-                        <Typography sx={{ fontSize: "18px" }}>
+                        <Typography sx={{ fontSize: "18px", mr: 1 }}>
                           {item.titulo}
                         </Typography>
                       }
                       secondary={
-                        <Typography sx={{ fontSize: "16px" }}>
+                        <Typography sx={{ fontSize: "16px", mr: 1 }}>
                           {item.subtitulo}
                         </Typography>
                       }
                     />
 
-                    {actions &&
+                    {!checkmode &&
+                      actions &&
                       actions.map((actionItem, index) =>
                         !actionItem.icon ? (
                           <Button

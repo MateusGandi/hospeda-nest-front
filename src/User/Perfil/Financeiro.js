@@ -38,7 +38,7 @@ const ModalRelatorio = ({
       const data = await Api.query(
         "GET",
         `/financial/user/${usuario.id}?data=${
-          new Date().toISOString().split("t")[0]
+          new Date().toISOString().split("T")[0]
         }`
       );
       setDados({
@@ -99,7 +99,8 @@ const ModalRelatorio = ({
           overflow: "visible",
           m: "-16px -16px 60px -16px",
           p: "8px 24px",
-          borderRadius: { Xs: 0, md: "10px" },
+          borderRadius: { xs: 0, md: "10px" },
+          background: { xs: "none", md: "#363636" },
         }}
       >
         <CardHeader
