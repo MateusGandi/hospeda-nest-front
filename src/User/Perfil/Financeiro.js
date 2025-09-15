@@ -38,7 +38,7 @@ const ModalRelatorio = ({
       const data = await Api.query(
         "GET",
         `/financial/user/${usuario.id}?data=${
-          new Date().toISOString().split("t")[0]
+          new Date().toISOString().split("T")[0]
         }`
       );
       setDados({

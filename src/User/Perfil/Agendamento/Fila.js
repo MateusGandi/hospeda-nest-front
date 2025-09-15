@@ -13,6 +13,10 @@ function Fila({ dados, alertCustom, reload }) {
   const [content, setContent] = useState({
     open: true,
     confirm: false,
+    inQueue: true,
+    title: "Sua posição na fila",
+    waitTime: "",
+    peopleAhead: "",
   });
 
   const handleConfirm = () => {
@@ -24,6 +28,13 @@ function Fila({ dados, alertCustom, reload }) {
       await apiService.query("DELETE", `/scheduling/queue/self-remove`);
       alertCustom("Você saiu da fila com sucesso!");
       reload();
+      setContent((prev) => ({
+        ...prev,
+        inQueue: false,
+        title: "Você saiu da fila",
+        waitTime: "Não definido",
+        peopleAhead: "Nenhuma",
+      }));
     } catch (error) {
       alertCustom(
         error.response?.data?.message ||
@@ -36,10 +47,25 @@ function Fila({ dados, alertCustom, reload }) {
     try {
       const userId = getLocalItem("userId");
 
-      const { inQueue, position, waitTime, peopleAhead } =
-        await apiService.query("GET", `/scheduling/queue/position/${userId}`);
+      const response = await apiService.query(
+        "GET",
+        `/scheduling/queue/position/${userId}`
+      );
 
-      if (!inQueue) return alertCustom("Você não está mais na fila.");
+      if (!response?.inQueue) {
+        alertCustom("Você não está mais na fila.");
+        setContent((prev) => ({
+          ...prev,
+          inQueue: false,
+          title: "Você foi removido da fila",
+          waitTime: "Não definido",
+          peopleAhead: "Nenhuma",
+        }));
+        reload();
+        return;
+      }
+
+      const { inQueue, position, waitTime, peopleAhead } = response;
 
       setContent((prev) => ({
         ...prev,
@@ -55,8 +81,16 @@ function Fila({ dados, alertCustom, reload }) {
   };
 
   useEffect(() => {
+    // busca inicial
     getUpdatePosition();
-  }, []);
+
+    // cria intervalo só se ainda estiver na fila
+    if (!content.inQueue) return;
+
+    const interval = setInterval(getUpdatePosition, 30000);
+
+    return () => clearInterval(interval);
+  }, [content.inQueue]);
 
   const handleClose = () => {
     navigate(-1);
@@ -68,15 +102,19 @@ function Fila({ dados, alertCustom, reload }) {
       component="view"
       open={content.open}
       onClose={handleClose}
-      titulo={content.title || "Sua posição na fila"}
-      buttons={[
-        {
-          titulo: "Sair da fila",
-          variant: "contained",
-          color: "error",
-          action: handleConfirm,
-        },
-      ]}
+      titulo={content.title}
+      buttons={
+        content.inQueue
+          ? [
+              {
+                titulo: "Sair da fila",
+                variant: "contained",
+                color: "error",
+                action: handleConfirm,
+              },
+            ]
+          : []
+      }
       fullScreen="mobile"
       maxWidth="sm"
     >
@@ -87,13 +125,14 @@ function Fila({ dados, alertCustom, reload }) {
             items={[
               {
                 titulo: dados.atendente.nome,
-                subtitulo: "Atendente responsável",
+                subtitulo: "Atendente responsávell",
                 size: 50,
                 imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${dados.atendente.id}/${dados.atendente.foto}`,
               },
             ]}
           />
         </Grid>
+
         <Grid size={12}>
           <PaperList
             items={[

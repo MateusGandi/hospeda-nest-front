@@ -5,6 +5,7 @@ import {
   Button,
   Stack,
   Link,
+  Box,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal/Simple";
@@ -240,11 +241,30 @@ export const GerenciarFila = ({ alertCustom }) => {
             </>
           </Grid>
         ) : (
-          <Typography className="show-box" variant="h6" sx={{ width: "100%" }}>
-            <Icon>📅</Icon> Fila Vazia
-            <Typography variant="body1">
-              Nenhum cliente na fila ainda...
+          <Typography
+            className="show-box"
+            typography="body1"
+            sx={{ m: "10px 0" }}
+          >
+            <Typography variant="h6">
+              <Icon>🔥</Icon> Nenhum cliente em espera!
             </Typography>
+            Gerencie sua fila de atendimento aqui. Quando um cliente entrar na
+            fila ou for adicionado por você, ele aparecerá nesta lista.
+            <Box className="justify-end-wrap">
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  navigate("/dashboard/agendamento/cliente", { replace: true })
+                }
+                disableElevation
+                sx={{ px: 2 }}
+              >
+                Adicionar cliente
+              </Button>
+            </Box>
           </Typography>
         )}
         {/* Detalhes do cliente selecionado */}

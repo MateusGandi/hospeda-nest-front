@@ -3,7 +3,7 @@ import Agendamentos from "./Rows";
 import AgendamentosByCalendario from "./Columns";
 import apiService from "../../../Componentes/Api/axios";
 import { useEffect, useState } from "react";
-import { normalizeHour } from "../../../Componentes/Funcoes";
+import { getLocalItem, normalizeHour } from "../../../Componentes/Funcoes";
 import { LoadingBox } from "../../../Componentes/Custom";
 import { GerenciarFila } from "./Fila";
 
@@ -12,6 +12,7 @@ export default function AgendamentosView({ alertCustom }) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [data, setData] = useState({
     loading: true,
+    filaDinamicaClientes: false,
     startHour: 9,
     endHour: 18,
   });
@@ -19,14 +20,18 @@ export default function AgendamentosView({ alertCustom }) {
   const getEstablishment = async () => {
     try {
       setData((prev) => ({ ...prev, loading: true }));
-      const { horarioAbertura, horarioFechamento } = await apiService.query(
-        "GET",
-        `/establishment?establishmentId=${localStorage.getItem(
-          "establishmentId"
-        )}`
-      );
+      const { horarioAbertura, horarioFechamento, funcionarios } =
+        await apiService.query(
+          "GET",
+          `/establishment?establishmentId=${localStorage.getItem(
+            "establishmentId"
+          )}`
+        );
 
       setData({
+        filaDinamicaClientes:
+          funcionarios.find(({ id }) => id == getLocalItem("userId"))
+            ?.filaDinamicaClientes || false,
         loading: false,
         startHour: normalizeHour(horarioAbertura, "down"),
         endHour: normalizeHour(horarioFechamento, "up"),
@@ -46,14 +51,18 @@ export default function AgendamentosView({ alertCustom }) {
         <LoadingBox message="Carregando informações..." />
       </Box>
     );
-  return (
-    <>
-      {/* {isDesktop ? (
-        <AgendamentosByCalendario alertCustom={alertCustom} data={data} />
-      ) : (
-        <Agendamentos alertCustom={alertCustom} data={data} />
-      )} */}
-      <GerenciarFila alertCustom={alertCustom} />
-    </>
+
+  if (!data)
+    return (
+      <Box className="justify-center">
+        <LoadingBox message="Carregando..." />
+      </Box>
+    );
+  return data.filaDinamicaClientes ? (
+    <GerenciarFila alertCustom={alertCustom} />
+  ) : isDesktop ? (
+    <AgendamentosByCalendario alertCustom={alertCustom} data={data} />
+  ) : (
+    <Agendamentos alertCustom={alertCustom} data={data} />
   );
 }

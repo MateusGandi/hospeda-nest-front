@@ -131,6 +131,21 @@ const WorkSchedule = ({
     setOpened(false);
   };
 
+  const fetch = async () => {
+    try {
+      const { filaDinamicaClientes } = await apiService.query(
+        "GET",
+        `/user/profile/${getLocalItem("userId")}`
+      );
+      setForm((prev) => ({
+        ...prev,
+        filaDinamicaClientes: filaDinamicaClientes,
+      }));
+    } catch (error) {
+      console.error("Erro ao buscar dados da conta:", error);
+    }
+  };
+
   const handleSave = async () => {
     try {
       const id = dados?.id || getLocalItem("userId");
@@ -142,10 +157,11 @@ const WorkSchedule = ({
         `/user/work-schedule/${id}`,
         workDays.map(({ day, ...rest }) => rest)
       );
-      await apiService.query("PUT", `/user/off-hour/${id}`, {
-        horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
-        horarioForaInicial: lunchRows[0].inicio + ":00" || "00:00:00",
-      });
+      if (lunchRows[0].fim.length == 5 && lunchRows[0].fim.length == 5)
+        await apiService.query("PUT", `/user/off-hour/${id}`, {
+          horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
+          horarioForaInicial: lunchRows[0].fim + ":00" || "00:00:00",
+        });
       await apiService.query(
         "POST",
         `/user/fault/${id}`,
@@ -340,6 +356,7 @@ const WorkSchedule = ({
           alertCustom("Erro ao buscar escala");
         });
     };
+    fetch();
     buscarEscala();
     setOpen(openModal);
     setForm((prev) => ({ ...prev, ...dados }));
@@ -560,20 +577,10 @@ const WorkSchedule = ({
                       />
                     </SwipeIndicator>
                   </>,
-                  <Typography variant="body1">
-                    <span style={{ width: "30px" }}>
-                      <Switch
-                        checked={form.filaDinamicaClientes}
-                        onChange={handleChangePreferences}
-                        color="primary"
-                      />
-                    </span>
-                    <span style={{ minWidth: "700px" }}>
-                      {form.filaDinamicaClientes
-                        ? "Trabalha usando fila"
-                        : "Trabalha com agendamentos"}
-                    </span>
-                  </Typography>,
+                  <Preferencies
+                    onChange={handleChangePreferences}
+                    selected={form.filaDinamicaClientes}
+                  />,
                   <EditableTable
                     columns={lunchColumns}
                     rows={lunchRows}

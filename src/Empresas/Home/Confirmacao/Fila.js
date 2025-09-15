@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import apiService from "../../../Componentes/Api/axios";
 
-const ConfirmacaoFila = ({ form }) => {
+const ConfirmacaoFila = ({ form, setForm }) => {
   const navigate = useNavigate();
   const [content, setContent] = useState({
     notificacao_label:
@@ -38,10 +38,12 @@ const ConfirmacaoFila = ({ form }) => {
       if (!data?.inQueue) {
         setContent((prev) => ({
           ...prev,
-          posicao_label: "Você não está em nenhuma fila no momento.",
-          tempo_espera_label: "",
-          atendimento_label: "",
+          posicao_label: "Você foi removido da fila!",
+          tempo_espera_label: "Não definido",
+          atendimento_label: "Não definido",
         }));
+        setForm((prev) => ({ ...prev, in_fila: false }));
+        console.log("Removido da fila");
         return;
       }
 
@@ -75,10 +77,12 @@ const ConfirmacaoFila = ({ form }) => {
 
   useEffect(() => {
     getPosicaoFila();
-    // Atualiza a posição a cada 30s
+
+    if (!form.in_fila) return;
     const interval = setInterval(getPosicaoFila, 30000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [form.in_fila]);
 
   return (
     <Grid

@@ -38,6 +38,9 @@ const Empresa = ({ alertCustom }) => {
     in_fila: false,
     fila_info: null,
     loading: false,
+
+    //para casos em que for removido da fila externamente
+    disabledActionButton: false,
   });
   const [page, setPage] = useState({
     open: false,
@@ -115,7 +118,11 @@ const Empresa = ({ alertCustom }) => {
 
   const handleBack = () => {
     try {
-      if (!subPath || ["agendamento-confirmado", "error"].includes(subPath))
+      if (
+        !subPath ||
+        ["agendamento-confirmado", "error"].includes(subPath) ||
+        form.disabledActionButton
+      )
         return navigate("/estabelecimentos");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -287,10 +294,18 @@ const Empresa = ({ alertCustom }) => {
     ),
     fila: <EntrarFila />,
     "agendamento-confirmado": (
-      <ConfirmacaoAgendamento form={form} alertCustom={alertCustom} />
+      <ConfirmacaoAgendamento
+        form={form}
+        setForm={setForm}
+        alertCustom={alertCustom}
+      />
     ),
     "fila-confirmado": (
-      <ConfirmacaoFila form={form} alertCustom={alertCustom} />
+      <ConfirmacaoFila
+        form={form}
+        setForm={setForm}
+        alertCustom={alertCustom}
+      />
     ),
     error: (
       <Grid
@@ -342,12 +357,23 @@ const Empresa = ({ alertCustom }) => {
         error.response.data.message ??
           "O babeiro removeu você da fila ou ocorreu um erro!"
       );
-      setForm((prev) => ({ ...prev, in_fila: false, fila_info: null }));
-      handleBack();
+      setForm((prev) => ({ ...prev, in_fila: false }));
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!form.in_fila && form.fila_info) {
+      setForm((prev) => ({
+        ...prev,
+        fila_info: null,
+        disabledActionButton: true,
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, disabledActionButton: false }));
+    }
+  }, [form.in_fila]);
 
   const estrategy = () => {
     const invalidPaths = ["agendamento-confirmado", "error", undefined];
@@ -368,6 +394,8 @@ const Empresa = ({ alertCustom }) => {
           },
         ],
       };
+    else if (form.disabledActionButton)
+      return { action: undefined, text: "", buttons: [] };
     else if (subPath == "fila")
       return { action: handleNext, text: "Entrar na fila" };
     else return { action: handleNext, text: "Próximo", buttons: [] };

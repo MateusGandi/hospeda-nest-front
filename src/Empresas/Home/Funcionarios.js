@@ -40,8 +40,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
           const temp = format(form.barbearia.funcionarios, "barbeiros");
           setContent({
             fila: temp.filter((f) => f.filaDinamicaClientes),
-            //agendamento: temp.filter((f) => !f.filaDinamicaClientes),
-            agendamento: [{ ...temp[0], id: 999, filaDinamicaClientes: false }],
+            agendamento: temp.filter((f) => !f.filaDinamicaClientes),
             selected: [],
             total: temp.length,
           });

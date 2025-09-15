@@ -248,7 +248,7 @@ const Modal = ({
                                   onClick={() => onAction && onAction()}
                                   variant="contained"
                                   color={color}
-                                  disabled={disabledAction && loadingButton}
+                                  disabled={disabledAction || loadingButton}
                                   type="submit"
                                   sx={{
                                     height: 45,
@@ -356,7 +356,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
-                  disabled={disabledAction && loadingButton}
+                  disabled={disabledAction || loadingButton}
                 >
                   {loadingButton ? "Enviando..." : actionText}
                 </Button>
@@ -409,7 +409,7 @@ const Modal = ({
                   onClick={() => onAction()}
                   variant="contained"
                   color={color}
-                  disabled={disabledAction && loadingButton}
+                  disabled={disabledAction || loadingButton}
                 >
                   {actionText}
                 </Button>
