@@ -50,6 +50,7 @@ export const GerenciarFila = ({ alertCustom }) => {
     title: "",
     message: "",
   });
+
   const _setContent = (valor) => setContent((prev) => ({ ...prev, ...valor }));
   const handleClose = () => {
     navigate("/dashboard");
@@ -85,7 +86,6 @@ export const GerenciarFila = ({ alertCustom }) => {
               }}
             >
               <span>
-                {" "}
                 {format(new Date(item.data), "HH:mm")}{" "}
                 {item.usuario?.nome || "Cliente sem nome"}
               </span>
@@ -118,10 +118,7 @@ export const GerenciarFila = ({ alertCustom }) => {
         throw new Error("Ação não implementada");
 
       _setContent({ loading: true });
-      const { message } = await apiService.query(
-        method,
-        `/scheduling/queue/${action}/${id}`
-      );
+      await apiService.query(method, `/scheduling/queue/${action}/${id}`);
     } catch (error) {
       alertCustom(
         `Erro ao ${
@@ -134,14 +131,17 @@ export const GerenciarFila = ({ alertCustom }) => {
     }
   };
 
-  const openConfirmRemove = (id) => {
+  const openConfirm = (id, type) => {
     setConfirmDialog({
       open: true,
       id,
-      action: "remove",
-      method: "DELETE",
-      title: "Remover da fila",
-      message: "Tem certeza que deseja remover este cliente da fila?",
+      action: type,
+      method: type == "remove" ? "DELETE" : "PATCH",
+      title: type == "remove" ? "Remover da fila" : "Confirmar atendimento",
+      message:
+        type == "remove"
+          ? "Tem certeza que deseja remover este cliente da fila?"
+          : "Tem certeza que deseja confirmar o atendimento deste cliente e chamar o próximo?",
     });
   };
 
@@ -187,9 +187,7 @@ export const GerenciarFila = ({ alertCustom }) => {
       actionText={
         content.items.length > 1 ? "Chamar próximo" : "Concluir atendimento"
       }
-      onAction={() =>
-        handleAction(content.currentClient.id, "confirm", "PATCH")
-      }
+      onAction={() => openConfirm(content.currentClient.id, "confirm")}
       buttons={[
         {
           titulo: "Remover atual da fila",
@@ -197,12 +195,12 @@ export const GerenciarFila = ({ alertCustom }) => {
           color: "secondary",
           disabled: content.items.length == 0,
           sx: { px: 2 },
-          action: () => openConfirmRemove(content.currentClient.id),
+          action: () => openConfirm(content.currentClient.id, "remove"),
         },
       ]}
     >
       <Grid container spacing={2}>
-        {/* Lista da fila */}{" "}
+        {/* Lista da fila */}
         {content.items.length ? (
           <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
             <>
@@ -214,12 +212,9 @@ export const GerenciarFila = ({ alertCustom }) => {
                 sx={{ background: "transparent" }}
                 oneTapMode
                 items={content.items}
-                onDelete={(id) => openConfirmRemove(id)}
+                onDelete={(id) => openConfirm(id, "remove")}
                 onSelect={(item) => {
-                  // Atualiza cliente atual
                   _setContent({ currentClient: item });
-
-                  // Envia mensagem via WhatsApp
                   if (item.usuario?.telefone) {
                     const telefone = item.usuario.telefone.replace(/\D/g, "");
                     const mensagem = encodeURIComponent(
@@ -323,7 +318,7 @@ export const GerenciarFila = ({ alertCustom }) => {
                     {primeiraMaiuscula(
                       content.currentClient.nome || "Cliente sem nome"
                     )}{" "}
-                    <Typography variant="body2" color="textSecondary" s>
+                    <Typography variant="body2" color="textSecondary">
                       Cliente atual
                     </Typography>
                   </Typography>
@@ -348,7 +343,9 @@ export const GerenciarFila = ({ alertCustom }) => {
         }}
         title={confirmDialog.title}
         message={confirmDialog.message}
-        confirmText="Remover"
+        confirmText={
+          confirmDialog.action === "remove" ? "Remover" : "Confirmar"
+        }
         cancelText="Cancelar"
       />
     </Modal>

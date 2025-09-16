@@ -14,9 +14,14 @@ import {
 } from "../../../Componentes/Funcoes";
 import WorkSchedule from "../Escala";
 import View from "../../../Componentes/View";
+import Confirm from "../../../Componentes/Alert/Confirm";
 
 const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
-  const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = useState({
+    open: false,
+    item: null,
+  });
+
   const [modal, setModal] = useState({
     open: false,
     titulo: "Adicionar novo funcionário",
@@ -72,7 +77,11 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
           color: "terciary",
           variant: "outlined",
           titulo: "Remover funcionário",
-          action: () => handleDelete(item),
+          action: () =>
+            setConfirmDelete({
+              open: true,
+              item: item,
+            }),
         },
         {
           color: "terciary",
@@ -205,7 +214,12 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
                 onEdit={handleSelect}
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
-                onDelete={(item) => handleDelete({ id: item })}
+                onDelete={(id, item) =>
+                  setConfirmDelete({
+                    open: true,
+                    item: item,
+                  })
+                }
                 items={funcionarios}
                 keys={[
                   { label: "", value: "nome" },
@@ -235,6 +249,14 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
           </Typography>
         )}{" "}
       </Modal>
+
+      <Confirm
+        open={confirmDelete.open}
+        onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
+        onConfirm={() => handleDelete(confirmDelete.item)}
+        title="Confirmar Exclusão"
+        message={`Deseja excluir o funcionário ${confirmDelete.item?.nome}?`}
+      />
 
       <FuncionarioForm
         funcionarios={funcionarios}
