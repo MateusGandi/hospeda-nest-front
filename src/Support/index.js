@@ -11,9 +11,8 @@ import {
 } from "@mui/material";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { format, startOfMonth, endOfMonth } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import SendIcon from "@mui/icons-material/Send";
 import apiService from "../Componentes/Api/axios";
 import Modal from "../Componentes/Modal/Simple";
@@ -41,19 +40,24 @@ export default function Suporte({ alertCustom }) {
     mesSelecionado: new Date(),
   });
 
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState({
+    open: false,
+    item: null,
+  });
+
   const allLabels = ["Problema", "Nova Funcionalidade", "Outros"];
 
   const scrollToElement = () => {
-    if (targetRef.current) {
+    if (targetRef.current)
       targetRef.current.scrollIntoView({ behavior: "smooth" });
-    }
   };
-
-  const fetchTickets = async (force = true) => {
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const fetchTickets = async (force = true, showMessage = true) => {
     if (!state.mesSelecionado) return;
     setState((prev) => ({ ...prev, loading: force }));
 
     try {
+      await delay(3000);
       const statusMap = {
         open: "Aberto",
         closed: "Fechado",
@@ -85,12 +89,12 @@ export default function Suporte({ alertCustom }) {
           borderRadius: 1,
           mb: 0.5,
         })),
+        noDelete: t.status === "closed",
       }));
 
       setState((prev) => ({
         ...prev,
         tickets: ticketsAtualizados,
-        // atualiza ticket selecionado se houver
         selectedTicket: prev.selectedTicket
           ? ticketsAtualizados.find((t) => t.id === prev.selectedTicket.id) ||
             prev.selectedTicket
@@ -98,7 +102,7 @@ export default function Suporte({ alertCustom }) {
       }));
     } catch (err) {
       console.error(err);
-      alertCustom("Erro ao carregar tickets.");
+      showMessage && alertCustom("Erro ao carregar tickets.");
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
@@ -109,24 +113,58 @@ export default function Suporte({ alertCustom }) {
   }, [state.mesSelecionado]);
 
   useEffect(() => {
-    const intervalo = setInterval(() => fetchTickets(false), 60000);
-
+    const intervalo = setInterval(() => fetchTickets(false, false), 60000);
     return () => clearInterval(intervalo);
   }, [state.selectedTicket]);
 
   const handleOpenTicket = (ticket) => {
     setState((prev) => ({ ...prev, selectedTicket: ticket, openModal: true }));
-    setTimeout(() => {
-      scrollToElement();
-    }, 500);
+    setTimeout(scrollToElement, 500);
   };
-  const handleCloseTicket = () =>
+
+  const handleDeleteTicket = (_, item) => {
+    setConfirmDeleteOpen({
+      open: true,
+      item: !item ? state.selectedTicket : item,
+    });
+  };
+
+  const handleConfirmDeleteTicket = async () => {
+    try {
+      if (!confirmDeleteOpen.item) return;
+      await apiService.query(
+        "DELETE",
+        `/establishment/ticket/${getLocalItem("establishmentId")}/${
+          confirmDeleteOpen.item.id
+        }/close`
+      );
+      alertCustom("Chamado fechado com sucesso!");
+      setState((prev) => ({
+        ...prev,
+        selectedTicket: null,
+        openModal: false,
+        newMessage: "",
+        tickets: prev.tickets.filter((t) => t.id !== confirmDeleteOpen.item.id),
+      }));
+    } catch (err) {
+      console.error(err);
+      alertCustom("Erro ao fechar chamado, tente novamente mais tarde.");
+    } finally {
+      setConfirmDeleteOpen({
+        open: false,
+        item: null,
+      });
+    }
+  };
+
+  const handleCloseTicketModal = () =>
     setState((prev) => ({
       ...prev,
       selectedTicket: null,
       openModal: false,
       newMessage: "",
     }));
+
   const handleAbrirChamado = () =>
     setState((prev) => ({ ...prev, openChamado: true }));
   const handleCloseChamado = () =>
@@ -179,14 +217,22 @@ export default function Suporte({ alertCustom }) {
 
   const handleConfirmChamado = async () => {
     try {
+      const body = {
+        title: state.title,
+        body: state.body,
+        labels: state.labels,
+      };
+      if (
+        Object.values(body).some(
+          (v) => !v || (Array.isArray(v) && v.length === 0)
+        )
+      )
+        return alertCustom("Preencha todos os campos.");
+
       await apiService.query(
         "POST",
         `/establishment/ticket/${getLocalItem("establishmentId")}`,
-        {
-          title: state.title,
-          body: state.body,
-          labels: state.labels,
-        }
+        body
       );
       setState((prev) => ({
         ...prev,
@@ -200,13 +246,13 @@ export default function Suporte({ alertCustom }) {
       alertCustom("Chamado aberto com sucesso!");
     } catch (err) {
       console.error(err);
-      alertCustom("Erro ao abrir chamado.");
+      alertCustom(err.response?.data?.message || "Erro ao abrir chamado.");
       setState((prev) => ({ ...prev, confirmOpen: false }));
     }
   };
 
   return (
-    <Container sx={{ flexGrow: 1, p: 4 }} maxWidth="lg">
+    <Container maxWidth="lg">
       {/* Cabeçalho */}
       <Grid container spacing={4} alignItems="center" justifyContent="center">
         <Grid size={{ xs: 12, md: 5 }} display="flex" justifyContent="center">
@@ -253,12 +299,12 @@ export default function Suporte({ alertCustom }) {
             </Button>
           </Stack>
         </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }} sx={{ order: 998 }}>
-          {" "}
+      </Grid>
+      <Grid container spacing={4} justifyContent="center" sx={{ mt: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ order: 998, mt: 0 }}>
           <Box gap={2} className="show-box">
             <Typography variant="body1" sx={{ mb: 1 }}>
-              Selecione o mês
+              Selecione o mês de referência
             </Typography>
             <CustomMonthSelector
               onSelect={(item) =>
@@ -279,49 +325,61 @@ export default function Suporte({ alertCustom }) {
             />
           </Box>
         </Grid>
+
         <Grid size={{ xs: 12, md: 8 }} sx={{ order: 999 }}>
           {state.loading ? (
             <LoadingBox message="Carregando chamados..." />
-          ) : (
+          ) : state.tickets.length ? (
             <Rows
               items={state.tickets}
               onSelect={handleOpenTicket}
               oneTapMode
-              onDelete={handleCloseTicket}
+              onDelete={handleDeleteTicket}
+              deleteMessage="Fechar chamado"
             />
+          ) : (
+            <Typography variant="h6" className="show-box">
+              Tudo certo por aqui!
+              <Typography variant="body1">
+                Nenhum chamado em aberto encontrado.
+              </Typography>
+            </Typography>
           )}
         </Grid>
       </Grid>
 
+      {/* Modal ticket */}
       {state.selectedTicket && (
         <Modal
           open={state.openModal}
           titulo={state.selectedTicket.titulo}
-          onClose={handleCloseTicket}
+          onClose={handleCloseTicketModal}
           maxWidth="sm"
           fullScreen="mobile"
           component="modal"
-          modalStyle={{ position: "relative" }}
+          modalStyle={{ position: "relative", padding: "0 !important" }}
           dialogAction={
-            <CustomInput
-              placeholder="Digite sua mensagem..."
-              value={state.newMessage}
-              onChange={(e) =>
-                setState((prev) => ({ ...prev, newMessage: e.target.value }))
-              }
-              fullWidth
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
+            !state.selectedTicket.noDelete && (
+              <CustomInput
+                placeholder="Digite sua mensagem..."
+                value={state.newMessage}
+                onChange={(e) =>
+                  setState((prev) => ({ ...prev, newMessage: e.target.value }))
                 }
-              }}
-              endIcon={
-                <IconButton onClick={handleSendMessage} sx={{ mr: -1 }}>
-                  <SendIcon />
-                </IconButton>
-              }
-            />
+                fullWidth
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                endIcon={
+                  <IconButton onClick={handleSendMessage} sx={{ mr: -1 }}>
+                    <SendIcon />
+                  </IconButton>
+                }
+              />
+            )
           }
         >
           <Stack spacing={2}>
@@ -335,7 +393,7 @@ export default function Suporte({ alertCustom }) {
               id="chat-container"
             >
               {state.selectedTicket.historico.map((h, idx) => {
-                const isUser = h.role === "author"; // cliente
+                const isUser = h.role === "author";
                 return (
                   <Box
                     key={idx}
@@ -372,17 +430,36 @@ export default function Suporte({ alertCustom }) {
               <Typography
                 variant="body2"
                 color="textSecondary"
-                className="show-box-outlined"
-                sx={{ mt: 1 }}
+                sx={{ mt: 1, textAlign: "center" }}
                 ref={targetRef}
               >
-                Respondemos em até 2 dias úteis. Volte aqui caso precise de mais
-                informações.
+                {state.selectedTicket.noDelete ? (
+                  <>Este chamado foi fechado</>
+                ) : (
+                  <>
+                    {" "}
+                    Respondemos em até 2 dias úteis. Volte aqui caso precise de
+                    mais informações. Solucionamos seu caso?
+                    <Box
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        mt: 1,
+                      }}
+                    >
+                      <Button onClick={handleDeleteTicket} sx={{ px: 2 }}>
+                        Feche essa solicitação
+                      </Button>
+                    </Box>
+                  </>
+                )}
               </Typography>
             </Box>
           </Stack>
         </Modal>
       )}
+
       {/* Modal abertura chamado */}
       <Modal
         open={state.openChamado}
@@ -397,6 +474,8 @@ export default function Suporte({ alertCustom }) {
             variant: "contained",
           },
         ]}
+        modalStyle={{ padding: "0 !important" }}
+        fullScreen={"mobile"}
       >
         <Stack spacing={3}>
           <CustomInput
@@ -441,6 +520,22 @@ export default function Suporte({ alertCustom }) {
         title="Confirmar Abertura"
         message="Confirmar a abertura do chamado?"
         confirmText="Sim, enviar"
+        cancelText="Cancelar"
+      />
+
+      {/* Confirm fechamento ticket */}
+      <Confirm
+        open={confirmDeleteOpen.open}
+        onClose={() =>
+          setConfirmDeleteOpen({
+            open: false,
+            item: null,
+          })
+        }
+        onConfirm={handleConfirmDeleteTicket}
+        title="Fechar chamado"
+        message="Deseja realmente fechar este chamado?"
+        confirmText="Sim, fechar"
         cancelText="Cancelar"
       />
     </Container>

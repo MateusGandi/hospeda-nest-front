@@ -41,12 +41,16 @@ const Preferencies = ({ onChange, form }) => {
           <Typography variant="body1">
             <span style={{ width: "30px" }}>
               <Switch
-                checked={form.clienteEntra}
-                onChange={() => onChange({ clienteEntra: !form.clienteEntra })}
+                checked={form.clientesPodemEntrarNaFila}
+                onChange={(e) =>
+                  onChange({
+                    clientesPodemEntrarNaFila: e.target.checked,
+                  })
+                }
                 color="primary"
               />
             </span>
-            <span>[FEATURE] Cliente pode entrar sozinho na fila</span>
+            <span> Cliente pode entrar sozinho na fila</span>
           </Typography>
         )}
       </Grid>

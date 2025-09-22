@@ -173,6 +173,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                     ) : (
                       "Nenhuma venda encontrada"
                     ),
+                    disabled: true,
                     subtitulo: "",
                   },
                 ]
