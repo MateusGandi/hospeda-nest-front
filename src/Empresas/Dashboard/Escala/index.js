@@ -74,6 +74,7 @@ const WorkSchedule = ({
   const [absences, setAbsences] = useState([]);
   const [form, setForm] = useState({
     filaDinamicaClientes: false,
+    clientesPodemEntrarNaFila: false,
   });
 
   const handleAddAbsence = () => {
@@ -133,12 +134,14 @@ const WorkSchedule = ({
 
   const fetch = async () => {
     try {
-      const { filaDinamicaClientes } = await apiService.query(
-        "GET",
-        `/user/profile/${getLocalItem("userId")}`
-      );
+      const { filaDinamicaClientes, clientesPodemEntrarNaFila } =
+        await apiService.query(
+          "GET",
+          `/user/profile/${getLocalItem("userId")}`
+        );
       setForm((prev) => ({
         ...prev,
+        clientesPodemEntrarNaFila: clientesPodemEntrarNaFila,
         filaDinamicaClientes: filaDinamicaClientes,
       }));
     } catch (error) {
@@ -151,6 +154,7 @@ const WorkSchedule = ({
       const id = dados?.id || getLocalItem("userId");
       await apiService.query("PATCH", `/user/${id}`, {
         filaDinamicaClientes: form.filaDinamicaClientes,
+        clientesPodemEntrarNaFila: form.clientesPodemEntrarNaFila,
       });
       await apiService.query(
         "PUT",
@@ -362,17 +366,18 @@ const WorkSchedule = ({
     setForm((prev) => ({ ...prev, ...dados }));
   }, [openModal]);
 
-  const handleChangePreferences = async ({ id, clienteEntra }) => {
-    if (id)
+  const handleChangePreferences = async (props) => {
+    const { id, clientesPodemEntrarNaFila } = props;
+    if ("id" in props)
       setForm((prev) => ({
         ...prev,
         filaDinamicaClientes: id,
       }));
 
-    if (clienteEntra)
+    if ("clientesPodemEntrarNaFila" in props)
       setForm((prev) => ({
         ...prev,
-        clienteEntra,
+        clientesPodemEntrarNaFila,
       }));
   };
 
