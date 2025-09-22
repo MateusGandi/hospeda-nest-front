@@ -338,7 +338,7 @@ export default function Suporte({ alertCustom }) {
               deleteMessage="Fechar chamado"
             />
           ) : (
-            <Typography variant="body1" className="show-box">
+            <Typography variant="h6" className="show-box">
               Tudo certo por aqui!
               <Typography variant="body1">
                 Nenhum chamado em aberto encontrado.
