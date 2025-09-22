@@ -252,7 +252,7 @@ export default function Suporte({ alertCustom }) {
   };
 
   return (
-    <Container sx={{ flexGrow: 1, p: 4 }} maxWidth="lg">
+    <Container maxWidth="lg">
       {/* Cabeçalho */}
       <Grid container spacing={4} alignItems="center" justifyContent="center">
         <Grid size={{ xs: 12, md: 5 }} display="flex" justifyContent="center">
@@ -357,7 +357,7 @@ export default function Suporte({ alertCustom }) {
           maxWidth="sm"
           fullScreen="mobile"
           component="modal"
-          modalStyle={{ position: "relative" }}
+          modalStyle={{ position: "relative", padding: "0 !important" }}
           dialogAction={
             !state.selectedTicket.noDelete && (
               <CustomInput
@@ -474,6 +474,7 @@ export default function Suporte({ alertCustom }) {
             variant: "contained",
           },
         ]}
+        modalStyle={{ padding: "0 !important" }}
         fullScreen={"mobile"}
       >
         <Stack spacing={3}>
