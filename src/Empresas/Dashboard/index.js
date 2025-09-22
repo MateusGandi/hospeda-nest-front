@@ -28,11 +28,8 @@ import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded
 import StyleIcon from "@mui/icons-material/Style";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoIcon from "../../Assets/Login/tonsus_logo_white.png";
-import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PublicIcon from "@mui/icons-material/Public";
+
+import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
 
 import { useNavigate } from "react-router-dom";

@@ -192,9 +192,10 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
             component="main"
             sx={{
               flexGrow: 1,
-              ml: open ? `${drawerWidth}px` : "0px",
+              ml: { xs: "0px", md: open ? `${drawerWidth}px` : "0px" },
               transition: "margin 0.3s ease-in-out",
-              width: "90px",
+              p: 3,
+              mt: 8,
             }}
           >
             {views[path]?.componente || views[""].componente || (
