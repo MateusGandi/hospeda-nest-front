@@ -8,7 +8,11 @@ const Alerta = ({ alert, setAlert }) => {
 
   return (
     <Snackbar
-      anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      anchorOrigin={
+        isMobile
+          ? { vertical: "top", horizontal: "center" }
+          : { vertical: "bottom", horizontal: "left" }
+      }
       open={alert.open}
       message={alert.message}
       onClose={handleClose}
@@ -18,14 +22,6 @@ const Alerta = ({ alert, setAlert }) => {
           backgroundColor: "#353535",
           color: "#fff",
           borderRadius: "10px",
-          ...(isMobile
-            ? {
-                wiposition: "fixed",
-                top: "70px",
-                left: "10px",
-                right: "10px",
-              }
-            : {}),
         },
       }}
     />

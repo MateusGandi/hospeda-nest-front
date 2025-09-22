@@ -474,6 +474,7 @@ export default function Suporte({ alertCustom }) {
             variant: "contained",
           },
         ]}
+        fullScreen={"mobile"}
       >
         <Stack spacing={3}>
           <CustomInput
