@@ -47,6 +47,7 @@ const Modal = ({
   fullScreen,
   loading = false,
   buttons = [], //{titulo, action, color}
+  dialogAction,
   buttonStyle,
   modalStyle,
   images,
@@ -415,7 +416,9 @@ const Modal = ({
                 </Button>
               )}
             </DialogActions>
-          ) : null}
+          ) : (
+            <DialogActions>{dialogAction}</DialogActions>
+          )}
         </>
       )}
     </Dialog>

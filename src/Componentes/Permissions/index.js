@@ -113,7 +113,9 @@ const Permissions = ({
     }
 
     try {
-      const objToSave = {};
+      const objToSave = {
+        filaDinamicaClientes: false,
+      };
       permissionsToCheck.forEach((perm) => {
         objToSave[perm.name] = perm.value;
         localStorage.setItem(perm.name, perm.value);
@@ -124,7 +126,7 @@ const Permissions = ({
         `/user/${getLocalItem("userId")}`,
         objToSave
       );
-      alertCustom("Sucesso ao atualizar suas preferências");
+      alertCustom("Atualizamos suas preferências");
       Cookies.set("getPermission", "false", { expires: 1 });
       setModal({ open: false });
     } catch (error) {

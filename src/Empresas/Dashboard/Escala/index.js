@@ -362,11 +362,19 @@ const WorkSchedule = ({
     setForm((prev) => ({ ...prev, ...dados }));
   }, [openModal]);
 
-  const handleChangePreferences = async ({ id }) =>
-    setForm((prev) => ({
-      ...prev,
-      filaDinamicaClientes: id,
-    }));
+  const handleChangePreferences = async ({ id, clienteEntra }) => {
+    if (id)
+      setForm((prev) => ({
+        ...prev,
+        filaDinamicaClientes: id,
+      }));
+
+    if (clienteEntra)
+      setForm((prev) => ({
+        ...prev,
+        clienteEntra,
+      }));
+  };
 
   return (
     <>
@@ -395,7 +403,7 @@ const WorkSchedule = ({
           maxWidth="md"
           component="view"
           buttons={[
-            ...(tab == 2
+            ...(tab == 3
               ? [
                   {
                     titulo: "Adicionar Ausência",
@@ -472,7 +480,7 @@ const WorkSchedule = ({
                   </>,
                   <Preferencies
                     onChange={handleChangePreferences}
-                    selected={form.filaDinamicaClientes}
+                    form={form}
                   />,
                   <EditableTable
                     columns={lunchColumns}
@@ -579,7 +587,7 @@ const WorkSchedule = ({
                   </>,
                   <Preferencies
                     onChange={handleChangePreferences}
-                    selected={form.filaDinamicaClientes}
+                    form={form}
                   />,
                   <EditableTable
                     columns={lunchColumns}

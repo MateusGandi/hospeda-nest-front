@@ -66,7 +66,14 @@ const NavigationBar = ({ alertCustom }) => {
   const handleLogout = () => {
     Cookies.remove("getPermission");
     googleLogout();
+    const cache = {
+      userLocation: getLocalItem("userLocation"),
+      userAddress: getLocalItem("userAddress"),
+    };
+
     localStorage.clear();
+    localStorage.setItem("userLocation", cache.userLocation);
+    localStorage.setItem("userAddress", cache.userAddress);
     navigate("/login");
   };
 

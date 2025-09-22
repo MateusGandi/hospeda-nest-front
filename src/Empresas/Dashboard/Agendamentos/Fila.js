@@ -94,8 +94,10 @@ export const GerenciarFila = ({ alertCustom }) => {
           ),
           subtitulo: (
             <Typography variant="body2">
-              Clique para enviar mensagem via WhatsApp -{" "}
-              {formatPhone(item.usuario?.telefone) || "Não informado"}
+              Clique para enviar mensagem via WhatsApp{" "}
+              <Typography variant="body2">
+                {formatPhone(item.usuario?.telefone) || "Não informado"}
+              </Typography>
             </Typography>
           ),
         };
@@ -273,9 +275,9 @@ export const GerenciarFila = ({ alertCustom }) => {
                       titulo: "Telefone",
                       subtitulo:
                         content.items[0] &&
-                        content.items[0].usuario.telefone ? (
+                        content.items[0].usuario?.telefone ? (
                           <Link
-                            href={`https://wa.me/${content.items[0].usuario.telefone.replace(
+                            href={`https://wa.me/${content.items[0].usuario?.telefone?.replace(
                               /\D/g,
                               ""
                             )}?text=É%20a%20sua%20vez...`}
@@ -284,7 +286,7 @@ export const GerenciarFila = ({ alertCustom }) => {
                             underline="hover"
                             color="textSecondary"
                           >
-                            {formatPhone(content.items[0].usuario.telefone)}
+                            {formatPhone(content.items[0]?.usuario?.telefone)}
                           </Link>
                         ) : (
                           "Não informado"
@@ -316,7 +318,9 @@ export const GerenciarFila = ({ alertCustom }) => {
                     sx={{ p: "5px 15px", background: "#363636" }}
                   >
                     {primeiraMaiuscula(
-                      content.currentClient.nome || "Cliente sem nome"
+                      content.currentClient.nome ||
+                        content.currentClient.nomeCliente ||
+                        "Cliente sem nome"
                     )}{" "}
                     <Typography variant="body2" color="textSecondary">
                       Cliente atual

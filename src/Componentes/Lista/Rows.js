@@ -96,6 +96,7 @@ export const Rows = ({
                   elevation={0}
                   sx={{
                     ...sx,
+                    ...item.sx,
                     ...(Array.isArray(selected) &&
                     selected?.some((opcao) => opcao.id === item.id)
                       ? {

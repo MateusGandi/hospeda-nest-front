@@ -308,7 +308,9 @@ export function CustomMonthSelector({ selected, onSelect }) {
           cursor: "pointer",
         }}
       >
-        <Typography>{selected[0]?.titulo || "Selecione o mês"}</Typography>
+        <Typography>
+          {selected[0]?.titulo || meses[selected[0]?.id] || "Selecione o mês"}
+        </Typography>
         <IconButton size="small">
           <ExpandMoreIcon />
         </IconButton>

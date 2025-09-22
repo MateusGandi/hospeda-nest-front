@@ -53,6 +53,13 @@ a {
   padding: 20px 15px;
 }
 
+.show-box-outlined {
+  border-radius: 16px;
+  padding: 10px;
+  border: 2px solid #333;
+  padding: 20px 15px;
+}
+
 button {
   border-radius: 50px;
 }
