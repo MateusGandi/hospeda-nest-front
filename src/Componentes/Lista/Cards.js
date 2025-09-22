@@ -143,7 +143,7 @@ export const Cards = ({
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(item.id);
+                    onDelete(item.id, item);
                   }}
                 >
                   <CloseIcon />

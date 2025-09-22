@@ -267,7 +267,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "editar",
       "agendamento",
       "whatsapp",
-      "escala",
+      // "escala",
       "servicos",
       "produtos",
       "financeiro",

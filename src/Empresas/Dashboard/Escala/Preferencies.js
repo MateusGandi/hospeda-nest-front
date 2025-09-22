@@ -1,8 +1,8 @@
-import { Typography } from "@mui/material";
+import { Grid2 as Grid, Switch, Typography } from "@mui/material";
 import React from "react";
 import { Rows } from "../../../Componentes/Lista/Rows";
 
-const Preferencies = ({ onChange, selected = false }) => {
+const Preferencies = ({ onChange, form }) => {
   const options = [
     {
       titulo: "Trabalha com agendamentos",
@@ -18,18 +18,43 @@ const Preferencies = ({ onChange, selected = false }) => {
     },
   ];
   return (
-    <Typography variant="body1">
-      <Rows
-        collapse
-        distribution={2}
-        items={options}
-        onSelect={onChange}
-        selectedItems={options.filter((op) => op.id === selected)}
-        multipleSelect={false}
-        checkmode={true}
-        spacing={1}
-      />
-    </Typography>
+    <Grid container spacing={4}>
+      <Grid size={12}>
+        {" "}
+        <Rows
+          collapse
+          distribution={2}
+          items={options}
+          onSelect={onChange}
+          selectedItems={options.filter(
+            (op) => op.id === form.filaDinamicaClientes
+          )}
+          multipleSelect={false}
+          checkmode={true}
+          spacing={1}
+        />
+      </Grid>
+      <Grid size={{ xs: 0, md: 6 }}></Grid>
+      <Grid size={{ xs: 12, md: 6 }}>
+        {" "}
+        {form.filaDinamicaClientes === true && (
+          <Typography variant="body1">
+            <span style={{ width: "30px" }}>
+              <Switch
+                checked={form.clientesPodemEntrarNaFila}
+                onChange={(e) =>
+                  onChange({
+                    clientesPodemEntrarNaFila: e.target.checked,
+                  })
+                }
+                color="primary"
+              />
+            </span>
+            <span> Cliente pode entrar sozinho na fila</span>
+          </Typography>
+        )}
+      </Grid>
+    </Grid>
   );
 };
 

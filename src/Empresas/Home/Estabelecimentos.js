@@ -120,6 +120,8 @@ const Estabelecimentos = ({ alertCustom }) => {
         <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
           {empresasFiltred && empresasFiltred.length ? (
             <Rows
+              oneTapMode
+              checkmode={false}
               items={empresasFiltred}
               multipleSelect={dados.multipleSelect}
               onSelect={dados.onSelect}

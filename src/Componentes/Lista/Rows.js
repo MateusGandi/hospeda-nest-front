@@ -13,6 +13,7 @@ import {
   Card,
   CardActionArea,
   Grid2 as Grid,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -24,6 +25,7 @@ export const Rows = ({
   selectedItems = [],
   multipleSelect = false,
   onDelete,
+  deleteMessage,
   oneTapMode, // não persiste a seleção, apenas clique
   sx,
   unSelectMode = false,
@@ -96,6 +98,7 @@ export const Rows = ({
                   elevation={0}
                   sx={{
                     ...sx,
+                    ...item.sx,
                     ...(Array.isArray(selected) &&
                     selected?.some((opcao) => opcao.id === item.id)
                       ? {
@@ -204,15 +207,16 @@ export const Rows = ({
                       )}
 
                     {onDelete && !item.noDelete && (
-                      <IconButton
-                        edge="end"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(item.id);
-                        }}
-                      >
-                        <CloseIcon />
-                      </IconButton>
+                      <Tooltip title={deleteMessage || "Remover"}>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(item.id, item);
+                          }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </Tooltip>
                     )}
                   </ListItem>
                 </Card>

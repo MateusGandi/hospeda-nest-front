@@ -14,12 +14,18 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   const formatItems = () => {
     const rows = [];
     if (content.fila.length) {
-      rows.push({ titulo: "Trabalham com fila", disabled: true });
+      rows.push({
+        titulo: "Trabalham com fila",
+        disabled: true,
+      });
       rows.push(...content.fila);
     }
 
     if (content.agendamento.length) {
-      rows.push({ titulo: "Trabalham com agendamento", disabled: true });
+      rows.push({
+        titulo: "Trabalham com agendamento",
+        disabled: true,
+      });
       rows.push(...content.agendamento);
     }
     return rows;
