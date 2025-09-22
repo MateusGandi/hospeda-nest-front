@@ -181,7 +181,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                         }
                         subheader={
                           <Typography variant="body2" sx={{ mt: -0.5 }}>
-                            {barbearia.nome} | {formatCNPJ(barbearia.cnpj)}
+                            {barbearia.nome}
                           </Typography>
                         }
                       />

@@ -52,7 +52,7 @@ export default function Suporte({ alertCustom }) {
       targetRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  const fetchTickets = async (force = true) => {
+  const fetchTickets = async (force = true, showMessage = true) => {
     if (!state.mesSelecionado) return;
     setState((prev) => ({ ...prev, loading: force }));
 
@@ -102,7 +102,7 @@ export default function Suporte({ alertCustom }) {
       }));
     } catch (err) {
       console.error(err);
-      alertCustom("Erro ao carregar tickets.");
+      showMessage && alertCustom("Erro ao carregar tickets.");
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
@@ -113,7 +113,7 @@ export default function Suporte({ alertCustom }) {
   }, [state.mesSelecionado]);
 
   useEffect(() => {
-    const intervalo = setInterval(() => fetchTickets(false), 60000);
+    const intervalo = setInterval(() => fetchTickets(false, false), 60000);
     return () => clearInterval(intervalo);
   }, [state.selectedTicket]);
 
