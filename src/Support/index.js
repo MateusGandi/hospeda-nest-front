@@ -185,7 +185,6 @@ export default function Suporte({ alertCustom }) {
         {
           title: state.title,
           body: state.body,
-          assignees: ["mateusgandi"],
           labels: state.labels,
         }
       );
