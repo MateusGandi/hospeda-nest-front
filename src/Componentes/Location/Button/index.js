@@ -28,8 +28,10 @@ const GetUserLocation = ({
     if (savedLocation && savedAddress) {
       setLocation(JSON.parse(savedLocation));
       setAddress(savedAddress);
+    } else {
+      handleGetLocation();
     }
-  }, [setLocation]);
+  }, []);
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
@@ -94,7 +96,7 @@ const GetUserLocation = ({
             textAlign: "center",
           }}
         >
-          {address}
+          {address || ""}
         </Typography>
       </Grid2>
       <Grid2 size={{ xs: 2, md: 1.2 }}>

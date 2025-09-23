@@ -165,9 +165,7 @@ export const GerenciarFila = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    handleGetOne();
-    handleGetQueue();
-
+    handleGetOne().then(() => handleGetQueue());
     const interval = setInterval(() => {
       handleGetQueue(false);
       handleGetOne();

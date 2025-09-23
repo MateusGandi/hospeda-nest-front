@@ -62,11 +62,6 @@ const Funcionario = ({
       telefone: "",
       servicosPrestados: [],
     });
-    alertCustom(
-      data.id
-        ? "Funcionário atualizado com sucesso!"
-        : "Funcionário adicionado com sucesso!"
-    );
   };
 
   return (

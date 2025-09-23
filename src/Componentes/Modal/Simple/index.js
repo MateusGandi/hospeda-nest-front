@@ -244,7 +244,6 @@ const Modal = ({
                               <Grid size={12}>
                                 <Button
                                   fullWidth
-                                  size="large"
                                   disableElevation
                                   onClick={() => onAction && onAction()}
                                   variant="contained"
@@ -252,7 +251,7 @@ const Modal = ({
                                   disabled={disabledAction || loadingButton}
                                   type="submit"
                                   sx={{
-                                    height: 45,
+                                    height: 40,
                                     background:
                                       "linear-gradient(to right, #2C69D1, #0ABCF9)",
                                     ...buttonStyle,
@@ -274,12 +273,12 @@ const Modal = ({
                                     </Divider>
                                   </Grid>
                                   <Grid size={12}>
-                                    <GoogleLoginButton
+                                    {/* <GoogleLoginButton
                                       text={buttons[0]?.text || "signin_with"}
                                       onError={(e) => buttons[0]?.action(e)}
                                       onSuccess={(e) => buttons[0]?.action(e)}
-                                    />
-                                    {/* <GoogleLogin
+                                    /> */}
+                                    <GoogleLogin
                                       width="100%"
                                       disable
                                       size="large"
@@ -289,7 +288,7 @@ const Modal = ({
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                       onError={(e) => buttons[0]?.action(e)}
                                       buttonText="Login"
-                                    /> */}
+                                    />
                                   </Grid>
                                 </>
                               )}
