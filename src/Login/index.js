@@ -20,8 +20,8 @@ const LoginPage = ({ page, alertCustom }) => {
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
 
-  const verifyAndRedirect = (dadosReceived, message) => {
-    const lastPath = getLocalItem("lastRoute") || "/home";
+  const verifyAndRedirect = (dadosReceived, message, to) => {
+    const lastPath = getLocalItem("lastRoute") || to || "/home";
     if (dadosReceived && dadosReceived.pendencia) {
       alertCustom(dadosReceived.motivo);
       navigate("/complete");
@@ -41,7 +41,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      verifyAndRedirect(data, "Login realizado com sucesso!");
+      verifyAndRedirect(data, "Login realizado com sucesso!", "/home");
     } catch (error) {
       console.log(error);
       alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
@@ -62,7 +62,8 @@ const LoginPage = ({ page, alertCustom }) => {
 
       verifyAndRedirect(
         data,
-        "Senha atualizada com sucesso, faça login novamente!"
+        "Senha atualizada com sucesso, faça login novamente!",
+        "/login"
       );
     } catch (error) {
       console.log(error);
@@ -83,7 +84,7 @@ const LoginPage = ({ page, alertCustom }) => {
       await Api.query("PATCH", `/user/${getLocalItem("userId")}`, {
         telefone: telefone?.replace(/\D/g, ""),
       });
-      verifyAndRedirect(null, "Dados atualizados com sucesso!");
+      verifyAndRedirect(null, "Dados atualizados com sucesso!", "/home");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -126,7 +127,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      verifyAndRedirect(data, "Conta criada com sucesso!");
+      verifyAndRedirect(data, "Conta criada com sucesso!", "/home");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -238,10 +239,15 @@ const LoginPage = ({ page, alertCustom }) => {
     ],
     change: [
       {
+        label: "Nova senha",
         campo: "senha",
-        validacoes: "required, minLength(5), equal(confirmarSenha)",
+        validacoes: "required, minLength(5), equal(confirm)",
       },
-      { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
+      {
+        label: "Senha que você confirmou",
+        campo: "confirm",
+        validacoes: "required, equal(senha)",
+      },
     ],
     complete: [
       {
@@ -292,9 +298,7 @@ const LoginPage = ({ page, alertCustom }) => {
                 {
                   type: "google",
                   text: google(inicialState.componente),
-                  action: async ({ credential }) => {
-                    await submitForm(credential);
-                  },
+                  action: ({ credential }) => submitForm(credential),
                 },
               ]
         }

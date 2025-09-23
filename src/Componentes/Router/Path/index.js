@@ -357,8 +357,8 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
   if (!pathAtual) {
     return <Navigate to="/login" />;
   } else {
-    !["/login", "/create", "/recover", "/change", "/complete"].some(
-      (rot) => rot == lastPath
+    !["/login", "/create", "/recover", "/change", "/complete"].some((rot) =>
+      lastPath.includes(rot)
     ) && setLocalItem("lastRoute", lastPath);
 
     return (

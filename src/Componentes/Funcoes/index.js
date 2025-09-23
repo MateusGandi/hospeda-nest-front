@@ -495,9 +495,9 @@ export async function validarCampos(tipo, dados, componentValidations) {
         const outroCampo = v.match(/\(([^)]+)\)/)[1];
         if (valor !== dados[outroCampo]) {
           throw new Error(
-            `${
-              label || primeiraMaiuscula(campo)
-            } deve ser igual a ${primeiraMaiuscula(outroCampo)}.`
+            `${primeiraMaiuscula(label || campo)} deve ser igual a ${(
+              regras.find((r) => r.campo == outroCampo)?.label || outroCampo
+            ).toLowerCase()}.`
           );
         }
       }
