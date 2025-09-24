@@ -272,13 +272,14 @@ const Modal = ({
                                       ou
                                     </Divider>
                                   </Grid>
-                                  <Grid size={12}>
+                                  <Grid size={12} className="justify-center">
                                     {/* <GoogleLoginButton
                                       text={buttons[0]?.text || "signin_with"}
                                       onError={(e) => buttons[0]?.action(e)}
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                     /> */}
                                     <GoogleLogin
+                                      state_cookie_domain="localhost"
                                       width="100%"
                                       disable
                                       size="large"

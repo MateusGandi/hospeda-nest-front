@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import PlaceIcon from "@mui/icons-material/Place";
+import { getLocalItem } from "../../Funcoes";
 
 const GetUserLocation = ({
   alertCustom,
@@ -22,8 +23,8 @@ const GetUserLocation = ({
 
   // Carregar do localStorage ao iniciar
   useEffect(() => {
-    const savedLocation = localStorage.getItem("userLocation");
-    const savedAddress = localStorage.getItem("userAddress");
+    const savedLocation = getLocalItem("userLocation");
+    const savedAddress = getLocalItem("userAddress");
 
     if (savedLocation && savedAddress) {
       setLocation(JSON.parse(savedLocation));

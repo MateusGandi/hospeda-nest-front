@@ -61,7 +61,7 @@ const Checkout = ({ alertCustom }) => {
     bairro: "",
     cidade: "",
     estado: "",
-    meAsEmployee: false,
+    meAsEmployee: true,
     logradouro: "",
 
     nomeTitular: "",
