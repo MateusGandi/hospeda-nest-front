@@ -84,44 +84,46 @@ const Checkout = ({ alertCustom }) => {
   const handleSubmit = async () => {
     await handleValidade()
       .then(async () => {
-        try {
-          const body = {
-            paymentMethod: selectedMethod,
-            discountId: form.cupom ? form.cupom.id : undefined,
-          };
+        const body = {
+          paymentMethod: selectedMethod,
+          discountId: form.cupom ? form.cupom.id : undefined,
+        };
 
-          if (selectedMethod === "CREDIT_CARD") {
-            body.creditCard = {
-              holderName: form.nome,
-              number: form.numeroCartao,
-              expiryMonth: form.validade.split("/")[0],
-              expiryYear: form.validade.split("/")[1],
-              ccv: form.cvv,
-            };
-            body.creditCardHolderInfo = {
-              name: form.nome,
-              email: form.email,
-              cpfCnpj: form.cpfCnpj,
-              postalCode: null,
-              addressNumber: "0",
-              addressComplement: "",
-              phone: "",
-              mobilePhone: form.telefone,
-            };
-            body.installments = form.parcelamento?.value || 1;
-          }
-          const { payment } = await apiService.query(
-            "POST",
-            `/payment/confirm/${key}`,
-            body
-          );
-          setForm((prev) => ({ ...prev, response: payment }));
-        } catch (error) {
-          console.error("Erro ao confirmar pagamento:", error);
+        if (selectedMethod === "CREDIT_CARD") {
+          body.creditCard = {
+            holderName: form.nome,
+            number: form.numeroCartao,
+            expiryMonth: form.validade.split("/")[0],
+            expiryYear: form.validade.split("/")[1],
+            ccv: form.cvv,
+          };
+          body.creditCardHolderInfo = {
+            name: form.nome,
+            email: form.email,
+            cpfCnpj: form.cpfCnpj,
+            postalCode: null,
+            addressNumber: "0",
+            addressComplement: "",
+            phone: "",
+            mobilePhone: form.telefone,
+          };
+          body.installments = form.parcelamento?.value || 1;
         }
+        const { payment } = await apiService.query(
+          "POST",
+          `/payment/confirm/${key}`,
+          body
+        );
+        setForm((prev) => ({ ...prev, response: payment }));
       })
       .catch((error) => {
-        alertCustom(error.message || "Erro ao submeter o formulário!");
+        let message = error.message;
+
+        if (error?.response?.data?.message) {
+          const parts = error.response.data.message.split(": ");
+          message = parts[parts.length - 1];
+        }
+        alertCustom(message || "Erro ao submeter o formulário!");
         throw new Error(error.message || "Erro ao submeter o formulário!");
       });
   };
@@ -170,14 +172,13 @@ const Checkout = ({ alertCustom }) => {
 
   const pages = [
     {
-      label: "Dados",
-      value: "dados_pessoais",
-      status: "done",
-      action: handleValidade,
-    },
-    {
       label: "Método",
       value: "metodo_pagamento",
+      status: "done",
+    },
+    {
+      label: "Dados",
+      value: "dados_pessoais",
       status: "done",
       action: handleSubmit,
     },
@@ -213,12 +214,12 @@ const Checkout = ({ alertCustom }) => {
         `/payment/transaction/${key}`
       );
 
-      const { cobrancas } = await apiService.query(
+      const { status, observacoes } = await apiService.query(
         "GET",
-        `/payment/pending-checkout-payment/${key}`
+        `/payment/checkout-payment-status/${key}`
       );
-      if (cobrancas.some(({ status }) => status === "ENVIADO"))
-        throw new Error("Pagamento já realizado!");
+      if (status == "APPROVED")
+        throw new Error(observacoes || "Pagamento já realizado!");
 
       const titulos_label = {
         PIX: "Pagamento via Pix",
@@ -290,9 +291,10 @@ const Checkout = ({ alertCustom }) => {
         total,
       }));
     } catch (error) {
-      console.error("Erro ao buscar pagamento pendente:", error);
       alertCustom(
-        error?.response?.data?.message || "Erro ao buscar pagamento pendente"
+        error?.response?.data?.message ||
+          error.message ||
+          "Erro ao buscar pagamento pendente"
       );
       setModal({ loading: false, errorCode: true });
     }
@@ -361,10 +363,7 @@ const Checkout = ({ alertCustom }) => {
   const handleNext = async () => {
     try {
       if (modal.tabIndex < pages.length - 1) {
-        if (pages[modal.tabIndex].action)
-          await pages[modal.tabIndex].action().catch((error) => {
-            throw new Error("Erro ao avançar: " + error.message);
-          });
+        if (pages[modal.tabIndex].action) await pages[modal.tabIndex].action();
 
         const nextPage = pages[modal.tabIndex + 1].value;
         navigate(`/checkout/${key}/${nextPage}`);
