@@ -218,7 +218,10 @@ const Checkout = ({ alertCustom }) => {
         "GET",
         `/payment/checkout-payment-status/${key}`
       );
-      if (status == "APPROVED")
+      if (status == "PAGO")
+        throw new Error(observacoes || "Pagamento já realizado!");
+
+      if (status == "VENCIDO")
         throw new Error(observacoes || "Pagamento já realizado!");
 
       const titulos_label = {

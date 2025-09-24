@@ -53,23 +53,33 @@ const instructions = {
 const PaymentStatus = ({ info, alertCustom, onConfirm }) => {
   const [data] = useState(info);
   useEffect(() => {
+    let intervalId;
+
     const fetchStatus = async () => {
       try {
         const response = await apiService.query(
           "GET",
           `/payment/checkout-payment-status/${data.checkoutId}`
         );
-        if (response.status != "OK") return;
 
+        if (response.status === "VENCIDO") {
+          throw new Error("Pagamento expirado!");
+        }
+
+        if (response.status !== "PAGO") return;
+
+        clearInterval(intervalId);
         onConfirm(response.data, false);
       } catch (error) {
+        clearInterval(intervalId);
         onConfirm(error.message, true);
       }
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
+    intervalId = setInterval(fetchStatus, 5000);
+
+    return () => clearInterval(intervalId);
   }, [data]);
 
   const copyToClipboard = (text) => {
