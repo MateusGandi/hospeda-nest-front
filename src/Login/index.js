@@ -244,7 +244,7 @@ const LoginPage = ({ page, alertCustom }) => {
         validacoes: "required, minLength(5), equal(confirm)",
       },
       {
-        label: "senha que você confirmou",
+        label: "Senha que você confirmou",
         campo: "confirm",
         validacoes: "required, equal(senha)",
       },

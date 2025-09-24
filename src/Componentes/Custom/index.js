@@ -254,7 +254,7 @@ export const LoadingBox = ({
   );
 };
 export const GoogleLoginButton = ({ onError, onSuccess, text }) => {
-  const login = useGoogleLogin({ flow: "implicit", onSuccess, onError });
+  const login = useGoogleLogin({ flow: "auth-code", onSuccess, onError });
 
   return (
     <Button
