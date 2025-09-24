@@ -62,9 +62,8 @@ const Dividas = ({ alertCustom }) => {
         const vencimento = item.dataCreated
           ? new Date(item.dataCreated)
           : new Date();
-        console.log("testet", item);
         return {
-          id: item.checkoutId || item.id,
+          id: item.checkoutId ?? item.id ?? item.hiredPlan.id,
           nome: item.description || "Não informado",
           valor: parseFloat(item.precoSemTaxa || 0),
           juros: 0,

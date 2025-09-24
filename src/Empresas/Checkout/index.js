@@ -109,7 +109,7 @@ const Checkout = ({ alertCustom }) => {
           };
           body.installments = form.parcelamento?.value || 1;
         }
-        const { payment } = await apiService.query(
+        const payment = await apiService.query(
           "POST",
           `/payment/confirm/${key}`,
           body
