@@ -11,31 +11,32 @@ export default function Cupom({
 }) {
   return (
     <>
-      {tab === "metodo_pagamento" && (
-        <Box sx={{ mt: 3 }}>
-          <CustomInput
-            fullWidth
-            placeholder="Cupom de desconto"
-            name="cupom_text"
-            value={form.cupom_text || ""}
-            onChange={handleChange}
-            endIcon={
-              <Button
-                disableElevation
-                color="secondary"
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  applyDescount();
-                }}
-                sx={{ mr: -1, px: 2 }}
-              >
-                Adicionar
-              </Button>
-            }
-          />
-        </Box>
-      )}
+      <Box sx={{ mt: 3 }}>
+        <CustomInput
+          fullWidth
+          placeholder="Cupom de desconto"
+          name="cupom_text"
+          value={form.cupom_text || ""}
+          onChange={handleChange}
+          disabled={tab != "metodo_pagamento"}
+          endIcon={
+            <Button
+              disableElevation
+              color="secondary"
+              type="submit"
+              disabled={!form.cupom_text || tab != "metodo_pagamento"}
+              onClick={(e) => {
+                e.preventDefault();
+                applyDescount();
+              }}
+              sx={{ mr: -1, px: 2 }}
+            >
+              Adicionar
+            </Button>
+          }
+        />
+      </Box>
+
       <Typography sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
         {form.cupom && (
           <Chip

@@ -83,7 +83,7 @@ const PaymentStatus = ({ info = teste[0], alertCustom, onConfirm }) => {
       try {
         const response = await apiService.query(
           "GET",
-          `/payment/pending-checkout-payment/${data.externalReference}?paymentId=${data.id}`
+          `/payment/checkout-payment-status/${data.id}`
         );
         if (response.status != "OK") return;
 
