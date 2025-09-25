@@ -148,6 +148,7 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
       const agendamentos = await apiService.query("GET", url);
 
       const agendamentos_formatados = agendamentos
+        .filter((item) => (!filter.valor ? item.status !== "CANCELLED" : true))
         .map((item) => {
           const data = new Date(item.data);
           data.setHours(data.getHours() + 3);

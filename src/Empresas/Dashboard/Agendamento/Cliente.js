@@ -88,7 +88,7 @@ export default function ClienteSelecionar({ formData, setFormData }) {
             <Grid item size={{ xs: 12, md: 6 }}>
               <CustomInput
                 fullWidth
-                label="Telefone"
+                label="Telefone (Opcional)"
                 name="telefone"
                 placeholder="Digite o telefone"
                 value={formData.cliente?.telefone}

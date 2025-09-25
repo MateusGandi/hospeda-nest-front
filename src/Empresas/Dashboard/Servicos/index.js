@@ -108,8 +108,6 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
       if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
         return alertCustom("Horário no formato inválido");
 
-      console.log(servicosAtualizados);
-
       if (
         servicosAtualizados.find((item) =>
           Object.values(item).some(

@@ -23,13 +23,17 @@ const GetUserLocation = ({
 
   // Carregar do localStorage ao iniciar
   useEffect(() => {
-    const savedLocation = getLocalItem("userLocation");
-    const savedAddress = getLocalItem("userAddress");
+    try {
+      const savedLocation = getLocalItem("userLocation");
+      const savedAddress = getLocalItem("userAddress");
 
-    if (savedLocation && savedAddress) {
-      setLocation(JSON.parse(savedLocation));
-      setAddress(savedAddress);
-    } else {
+      if (savedLocation && savedAddress) {
+        setLocation(savedLocation);
+        setAddress(savedAddress);
+      } else {
+        handleGetLocation();
+      }
+    } catch (error) {
       handleGetLocation();
     }
   }, []);
