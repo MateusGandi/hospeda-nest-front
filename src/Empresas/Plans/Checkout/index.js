@@ -443,7 +443,7 @@ const Checkout = ({ alertCustom }) => {
         )
       }
       onAction={
-        modal.status != "OK" &&
+        modal.status != "PAGO" &&
         modal.tab != "pagamento" &&
         !modal.errorCode &&
         handleNext

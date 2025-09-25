@@ -15,16 +15,18 @@ const Confirm = ({
   icon,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
+  loading = false,
 }) => {
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={!loading && onClose}
       titulo={
         <>
           {icon && <Icon>{icon}</Icon>} {title}
         </>
       }
+      loadingButton={loading}
       type="alert"
       maxWidth="xs"
       buttonStyle={{ width: "46%", margin: "0 1%" }}
@@ -33,12 +35,14 @@ const Confirm = ({
           titulo: cancelText,
           action: onClose,
           color: "secondary",
+          disabled: loading,
           variant: "text",
         },
         {
           titulo: confirmText,
           action: onConfirm,
           color: "primary",
+          disabled: loading,
           variant: "contained",
         },
       ]}

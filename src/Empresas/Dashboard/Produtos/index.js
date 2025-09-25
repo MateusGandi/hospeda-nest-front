@@ -11,7 +11,7 @@ import View from "../../../Componentes/View";
 
 const Products = ({ alertCustom, onClose }) => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [productModal, setProductModal] = useState({
     open: false,
@@ -20,6 +20,7 @@ const Products = ({ alertCustom, onClose }) => {
   });
 
   const [confirmDelete, setConfirmDelete] = useState({
+    loading: false,
     open: false,
     item: null,
   });
@@ -173,6 +174,11 @@ const Products = ({ alertCustom, onClose }) => {
 
   const handleDelete = async (item) => {
     try {
+      setConfirmDelete((prev) => ({
+        ...prev,
+        loading: true,
+      }));
+
       await Api.query("DELETE", `/product/${item.id}`);
       alertCustom("Produto excluído com sucesso!");
       setConfirmDelete({ open: false, item: null });
@@ -180,6 +186,11 @@ const Products = ({ alertCustom, onClose }) => {
       fetchProducts();
     } catch (error) {
       alertCustom("Erro ao excluir produto!");
+    } finally {
+      setConfirmDelete((prev) => ({
+        ...prev,
+        loading: false,
+      }));
     }
   };
 
@@ -373,6 +384,7 @@ const Products = ({ alertCustom, onClose }) => {
         <ProductForm form={formData} onChange={handleChange} />
       </Modal>
       <Confirm
+        loading={confirmDelete.loading}
         open={confirmDelete.open}
         onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
         onConfirm={() => handleDelete(confirmDelete.item)}

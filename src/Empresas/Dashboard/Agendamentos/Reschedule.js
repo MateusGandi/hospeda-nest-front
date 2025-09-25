@@ -81,11 +81,7 @@ const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
   }, []);
 
   const handleSelect = (item) => {
-    setForm({ ...form, agendamento: item });
-  };
-
-  const views = {
-    horario: {},
+    setForm({ ...form, novaDataSelecionada: item });
   };
 
   return (
@@ -101,6 +97,9 @@ const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
                   action: () => handleOpen(),
                 },
                 ...vagasDisponiveis,
+              ]}
+              selectedItems={[
+                formatarData(form.novaDataSelecionada || form.agendamento),
               ]}
               onSelect={handleSelect}
             />

@@ -252,7 +252,6 @@ const Dividas = ({ alertCustom }) => {
               flexWrap: "wrap",
               gap: 2,
               position: "relative",
-              maxHeight: "250px",
             }}
           >
             <Typography

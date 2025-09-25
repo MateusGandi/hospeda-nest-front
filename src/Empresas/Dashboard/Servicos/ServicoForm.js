@@ -32,6 +32,7 @@ const Servico = ({
   setFuncionarios,
   comissoes,
 }) => {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     nome: "",
     tempoGasto: "",
@@ -91,12 +92,13 @@ const Servico = ({
 
   const handleSave = async () => {
     try {
+      setLoading(true);
       if (data.tempoGasto.length < 5)
         return alertCustom("Horário no formato inválido");
 
       const { foto, id, calculoComissao, tempoGasto, ...rest } = data;
 
-      if (Object.values(rest).some((value) => !value))
+      if (Object.values(rest).some((value) => !value && value !== 0))
         return alertCustom("Informe todos os campos obrigatórios");
 
       await apiService.query(
@@ -110,7 +112,6 @@ const Servico = ({
           },
         ]
       );
-      console.log("funcionarios", funcionarios);
       if (funcionarios.comissao)
         await apiService.query(
           "POST",
@@ -140,6 +141,8 @@ const Servico = ({
       alertCustom(
         formData ? "Erro ao atualizar serviço!" : "Erro ao cadastrar serviço!"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -154,7 +157,11 @@ const Servico = ({
       submitText={submitText}
       fullScreen="all"
       component="view"
-      buttons={buttons}
+      buttons={(buttons || []).map((btn) => ({
+        ...btn,
+        disabled: loading || btn.disabled,
+      }))}
+      loadingButton={loading}
     >
       <CustomTabs
         tabs={tabs}

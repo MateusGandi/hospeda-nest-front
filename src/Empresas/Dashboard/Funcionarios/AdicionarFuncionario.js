@@ -27,6 +27,7 @@ const Funcionario = ({
   alertCustom,
   buscarDados,
 }) => {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     nome: "",
     telefone: "",
@@ -45,23 +46,30 @@ const Funcionario = ({
   }, [open]);
 
   const handleSave = async () => {
-    const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
-    const funcionariosFinais = [...semAtual, data];
+    try {
+      setLoading(true);
+      const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
+      const funcionariosFinais = [...semAtual, data];
 
-    await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
-      funcionarios: funcionariosFinais.map((item) => ({
-        userId: item.id,
-        servicesId: item.servicosPrestados.map((service) => service.id),
-      })),
-    });
+      await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
+        funcionarios: funcionariosFinais.map((item) => ({
+          userId: item.id,
+          servicesId: item.servicosPrestados.map((service) => service.id),
+        })),
+      });
 
-    await buscarDados();
-    onClose();
-    setData({
-      nome: "",
-      telefone: "",
-      servicosPrestados: [],
-    });
+      await buscarDados();
+      onClose();
+      setData({
+        nome: "",
+        telefone: "",
+        servicosPrestados: [],
+      });
+    } catch (error) {
+      alertCustom("Erro ao salvar funcionário");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,6 +83,7 @@ const Funcionario = ({
           servicosPrestados: [],
         });
       }}
+      loadingButton={loading}
       titulo={titulo}
       onAction={handleSave}
       actionText={actionText}
@@ -82,7 +91,11 @@ const Funcionario = ({
       submitText={submitText}
       fullScreen="all"
       component="view"
-      buttons={buttons}
+      buttons={(buttons || []).map((btn) => ({
+        ...btn,
+        disabled: btn.disabled || loading,
+      }))}
+      maxWidth="md"
     >
       <Grid container spacing={4} sx={{ mt: 2 }}>
         <Grid size={{ xs: 12, md: 6 }}>
