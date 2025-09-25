@@ -270,10 +270,10 @@ const Checkout = ({ alertCustom }) => {
 
             setParcelas({
               [metodo]: parcelas.map((p) => ({
-                label: `${p.prest}x de R$ ${p.valor.toFixed(2)}`,
+                label: `${p.prest}x de R$ ${Number(p.valor).toFixed(2)}`,
                 value: p.prest,
-                total: p.valor * p.prest,
-                valor_base: p.valor * p.prest,
+                total: Number(p.valor) * p.prest,
+                valor_base: Number(p.valor) * p.prest,
               })),
             });
 
