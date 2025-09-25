@@ -105,7 +105,17 @@ const EditData = ({
           component="view"
           maxWidth={"md"}
         >
-          <Grid container spacing={3.5} sx={{ mt: 4 }}>
+          <Grid container spacing={3.5}>
+            {" "}
+            <Grid item size={12} sx={{ my: 4 }}>
+              <Typography variant="body1" className="show-box">
+                <Typography variant="h6">
+                  <Icon>💡</Icon> Customização
+                </Typography>
+                Complemente com suas informações e alcançe o potencial máximo
+                para atrair clientes
+              </Typography>
+            </Grid>
             <Grid item size={{ xs: 12, md: 4 }}>
               <CustomInput
                 fullWidth
@@ -167,15 +177,6 @@ const EditData = ({
                 <span style={{ minWidth: "700px" }}>
                   {formData.aberto ? "Aberto" : "Fechado"}
                 </span>
-              </Typography>
-            </Grid>
-            <Grid item size={12}>
-              <Typography variant="body1" className="show-box">
-                <Typography variant="h6">
-                  <Icon>💡</Icon> Customização
-                </Typography>
-                Complemente com suas informações e alcançe o potencial máximo
-                para atrair clientes
               </Typography>
             </Grid>
           </Grid>

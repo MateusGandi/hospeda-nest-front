@@ -38,6 +38,7 @@ export default function Suporte({ alertCustom }) {
     labels: [],
     confirmOpen: false,
     mesSelecionado: new Date(),
+    loadingAction: false,
   });
 
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState({
@@ -57,7 +58,7 @@ export default function Suporte({ alertCustom }) {
     setState((prev) => ({ ...prev, loading: force }));
 
     try {
-      await delay(1000);
+      await delay(3000);
       const statusMap = {
         open: "Aberto",
         closed: "Fechado",
@@ -131,6 +132,7 @@ export default function Suporte({ alertCustom }) {
 
   const handleConfirmDeleteTicket = async () => {
     try {
+      setState((prev) => ({ ...prev, loadingAction: true }));
       if (!confirmDeleteOpen.item) return;
       await apiService.query(
         "DELETE",
@@ -150,6 +152,7 @@ export default function Suporte({ alertCustom }) {
       console.error(err);
       alertCustom("Erro ao fechar chamado, tente novamente mais tarde.");
     } finally {
+      setState((prev) => ({ ...prev, loadingAction: false }));
       setConfirmDeleteOpen({
         open: false,
         item: null,
@@ -217,6 +220,7 @@ export default function Suporte({ alertCustom }) {
 
   const handleConfirmChamado = async () => {
     try {
+      setState((prev) => ({ ...prev, loadingAction: true }));
       const body = {
         title: state.title,
         body: state.body,
@@ -248,6 +252,8 @@ export default function Suporte({ alertCustom }) {
       console.error(err);
       alertCustom(err.response?.data?.message || "Erro ao abrir chamado.");
       setState((prev) => ({ ...prev, confirmOpen: false }));
+    } finally {
+      setState((prev) => ({ ...prev, loadingAction: false }));
     }
   };
 
@@ -326,7 +332,7 @@ export default function Suporte({ alertCustom }) {
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 8 }} sx={{ order: 999 }}>
+        <Grid size={{ xs: 12, md: 8 }} sx={{ order: 999, height: "100%" }}>
           {state.loading ? (
             <LoadingBox message="Carregando chamados..." />
           ) : state.tickets.length ? (
@@ -432,6 +438,7 @@ export default function Suporte({ alertCustom }) {
                 color="textSecondary"
                 sx={{ mt: 1, textAlign: "center" }}
                 ref={targetRef}
+                className="show-box-outlined"
               >
                 {state.selectedTicket.noDelete ? (
                   <>Este chamado foi fechado</>
@@ -514,6 +521,7 @@ export default function Suporte({ alertCustom }) {
 
       {/* Confirm abertura chamado */}
       <Confirm
+        loading={state.loadingAction}
         open={state.confirmOpen}
         onClose={() => setState((prev) => ({ ...prev, confirmOpen: false }))}
         onConfirm={handleConfirmChamado}
@@ -525,6 +533,7 @@ export default function Suporte({ alertCustom }) {
 
       {/* Confirm fechamento ticket */}
       <Confirm
+        loading={state.loadingAction}
         open={confirmDeleteOpen.open}
         onClose={() =>
           setConfirmDeleteOpen({

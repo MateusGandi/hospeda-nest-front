@@ -516,6 +516,7 @@ const WorkSchedule = ({
           onClose={
             handleCloseModal ? () => handleCloseModal : () => navigate(-1)
           }
+          loadingButton={loading}
           onAction={handleSave}
           actionText="Salvar"
           titulo="Configurar Escala de Trabalho"
@@ -523,7 +524,7 @@ const WorkSchedule = ({
           maxWidth="md"
           component="view"
           buttons={[
-            ...(tab == 2
+            ...(tab == 3
               ? [
                   {
                     titulo: "Adicionar Ausência",
