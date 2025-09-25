@@ -86,13 +86,21 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         return;
 
       const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
-      if (
-        subPath &&
-        (!form[resp.item] ||
-          (Array.isArray(form[resp.item]) && !form[resp.item].length)) &&
-        subPath != "fila"
-      ) {
-        return alertCustom("Preencha informações necessárias para prosseguir!");
+
+      if (subPath && subPath != "fila") {
+        if (
+          !form[resp.item] ||
+          (Array.isArray(form[resp.item]) && !form[resp.item].length)
+        )
+          throw new Error(
+            "Preencha as informações necessárias para prosseguir!"
+          );
+        else if (
+          subPath == "cliente" &&
+          form[resp.item] &&
+          !form[resp.item].nome
+        )
+          throw new Error("Informe o nome do cliente!");
       }
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
@@ -117,7 +125,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       setTituloModal(paths[pathTo + 1].title);
       navigate(`/dashboard/agendamento/${paths[pathTo + 1].key}`);
     } catch (error) {
-      alertCustom("Erro interno!");
+      alertCustom(error.message || "Estamos com problemas, tente mais tarde!");
     } finally {
       setLoading(false);
     }
@@ -139,7 +147,6 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       setTituloModal(paths[pathTo - 1].title);
       navigate(`/dashboard/agendamento/${paths[pathTo - 1].key}`);
     } catch (error) {
-      console.log(error);
       alertCustom("Erro interno!");
     }
   };

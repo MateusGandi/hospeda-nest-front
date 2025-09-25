@@ -195,7 +195,6 @@ const Products = ({ alertCustom, onClose }) => {
   };
 
   const handleChange = (name, value) => {
-    console.log("teste", name, value);
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 

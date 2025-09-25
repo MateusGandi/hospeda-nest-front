@@ -95,7 +95,9 @@ export default function Discount({ dados, alertCustom }) {
           ...item,
           valor: +item.valor,
           titulo: item.codigo,
-          subtitulo: item.habilitado ? "Ativo" : "Inativo",
+          subtitulo: `${
+            item.habilitado ? "Ativo" : "Inativo"
+          } | Clique para editar`,
         }))
       )
       .then((response) => {
@@ -161,6 +163,7 @@ export default function Discount({ dados, alertCustom }) {
               color="primary"
               onClick={handleOpenModal}
               sx={{ mt: 3 }}
+              disableElevation
             >
               Novo cupom
             </Button>

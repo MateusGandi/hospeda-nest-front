@@ -43,7 +43,6 @@ const ConfirmacaoFila = ({ form, setForm }) => {
           atendimento_label: "Não definido",
         }));
         setForm((prev) => ({ ...prev, in_fila: false }));
-        console.log("Removido da fila");
         return;
       }
 

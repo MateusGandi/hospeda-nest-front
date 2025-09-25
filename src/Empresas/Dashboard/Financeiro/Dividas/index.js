@@ -153,10 +153,7 @@ const Dividas = ({ alertCustom }) => {
           variant="text"
           size="small"
           disabled={!["PENDING", "OVERDUE"].includes(params.status)}
-          onClick={() => {
-            console.log(params);
-            navigate(`/checkout/${params.id}`);
-          }}
+          onClick={() => navigate(`/checkout/${params.id}`)}
         >
           Pagar
         </Button>

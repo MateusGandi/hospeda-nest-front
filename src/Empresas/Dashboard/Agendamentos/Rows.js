@@ -222,10 +222,6 @@ const Agendamentos = ({ alertCustom }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(modalConteudo);
-  }, [modalConteudo]);
-
   const onClose = () => {
     navigate("/dashboard");
   };
