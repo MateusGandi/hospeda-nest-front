@@ -14,7 +14,7 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router/Path";
 import Permissions from "./Componentes/Permissions";
-// mateus gayyy
+// mateus gayyyy
 const theme = createTheme({
   palette: {
     mode: "dark",
