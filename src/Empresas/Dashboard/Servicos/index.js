@@ -8,7 +8,25 @@ import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { getLocalItem } from "../../../Componentes/Funcoes";
 
-const GerenciarServicos = ({ alertCustom, onClose }) => {
+const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
+  const [confirmDelete, setConfirmDelete] = useState({
+    open: false,
+    item: null,
+  });
+  const [modal, setModal] = useState({
+    open: false,
+    titulo: "Adicionar novo serviço",
+    servicoSelecionado: null,
+    actionText: "Adicionar",
+    loading: false,
+    barbeariaId: getLocalItem("establishmentId"),
+    actionLoading: false,
+  });
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [servicos, setServicos] = useState([]);
+  const [comissoes, setComissoes] = useState([]);
+  const [openAlertModal, setOpenAlertModal] = useState(false);
+
   const handleCancelEdit = () => {
     setModal({
       open: false,
@@ -18,28 +36,24 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       barbeariaId: getLocalItem("establishmentId"),
     });
   };
-  const [modal, setModal] = useState({
-    open: false,
-    titulo: "Adicionar novo serviço",
-    servicoSelecionado: null,
-    actionText: "Adicionar",
-    loading: false,
-    barbeariaId: getLocalItem("establishmentId"),
-  });
-  const [funcionarios, setFuncionarios] = useState([]);
-  const [servicos, setServicos] = useState([]);
-  const [comissoes, setComissoes] = useState([]);
-  const [openAlertModal, setOpenAlertModal] = useState(false);
 
   const handleDelete = async (item) => {
     try {
+      setModal((prev) => ({ ...prev, actionLoading: true }));
       await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
       setServicos(servicos.filter((op) => op.id != item.id));
+      reload();
       alertCustom("Serviço deletado com sucesso!");
     } catch (error) {
       alertCustom("Erro ao deletar serviço!");
+    } finally {
+      setConfirmDelete((prev) => ({
+        ...prev,
+        open: false,
+      }));
+      setModal((prev) => ({ ...prev, actionLoading: false }));
+      handleCancelEdit();
     }
-    handleCancelEdit();
   };
 
   const handleSelect = async (item) => {
@@ -49,7 +63,11 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
           color: "terciary",
           variant: "outlined",
           titulo: "Deletar serviço",
-          action: () => handleDelete(item),
+          action: () => () =>
+            setConfirmDelete({
+              open: true,
+              item: item,
+            }),
         },
         {
           color: "terciary",
@@ -79,6 +97,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
   const handleSave = async (dados = []) => {
     const apenasSalvar = dados.length > 0;
     try {
+      setModal((prev) => ({ ...prev, actionLoading: true }));
       const servicosAtualizados = [...dados, ...servicos]
         .filter((item) => (!!item.flag && item.id) || !item.id)
         .map(({ flagUpdate, ...item }) => ({
@@ -103,12 +122,14 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       !apenasSalvar && alertCustom("Serviços atualizados com sucesso!");
     } catch (error) {
       !apenasSalvar && alertCustom("Erro ao cadastrar serviços!");
+    } finally {
+      setModal((prev) => ({ ...prev, actionLoading: false }));
     }
   };
 
   const handleSavePreServices = async () => {
-    setModal((prev) => ({ ...prev, loading: true }));
     try {
+      setModal((prev) => ({ ...prev, actionLoading: true }));
       const data = await Api.query("GET", `/service`);
       if (data.length == 0) {
         setOpenAlertModal(false);
@@ -120,7 +141,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
     } finally {
-      setModal((prev) => ({ ...prev, loading: false }));
+      setModal((prev) => ({ ...prev, actionLoading: false }));
     }
   };
 
@@ -132,6 +153,7 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
+      reload();
     } catch (error) {
       alertCustom("Houve um problema ao buscar serviços");
     }
@@ -150,7 +172,10 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
         `/service/commission-configurations/${serviceId}`
       );
       setComissoes(
-        coms.map((comissao) => {
+        (coms.length
+          ? coms
+          : [{ tipo: "VALOR", valor: 0, funcionarioId: getLocalItem("userId") }]
+        ).map((comissao) => {
           const percentual = comissao.tipo == "PERCENTUAL" ? comissao.valor : 0;
           const valorFixo = comissao.tipo == "VALOR" ? comissao.valor : 0;
           const funcionarioSelecionado = func.find(
@@ -266,7 +291,12 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
               <Cards
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
-                onDelete={(item) => handleDelete({ id: item })}
+                onDelete={(id, item) =>
+                  setConfirmDelete({
+                    open: true,
+                    item: item,
+                  })
+                }
                 label="serviço"
                 keys={[
                   { label: "", value: "nome" },
@@ -304,11 +334,21 @@ const GerenciarServicos = ({ alertCustom, onClose }) => {
       </Modal>
 
       <Confirm
+        loading={modal.actionLoading}
         open={openAlertModal}
         onClose={() => setOpenAlertModal(false)}
         onConfirm={handleSavePreServices}
         title={"Começar com pré-definidos"}
         message="Gostaria de usar e editar serviços pré-definidos?"
+      />
+
+      <Confirm
+        loading={modal.actionLoading}
+        open={confirmDelete.open}
+        onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
+        onConfirm={() => handleDelete(confirmDelete.item)}
+        title="Confirmar Exclusão"
+        message={`Deseja excluir o serviço ${confirmDelete.item?.nome}?`}
       />
     </>
   );

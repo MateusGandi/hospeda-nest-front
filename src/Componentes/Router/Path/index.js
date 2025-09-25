@@ -139,7 +139,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     support: {
       titulo: "Dúvidas Frequentes",
       icon: <QuestionAnswerRoundedIcon color="primary" />,
-      componente: <Suporte alertCustom={alertCustom} />,
+      componente: <Suporte alertCustom={alertCustom} reload={fetch} />,
       acessoRapido: true,
       footer: true,
     },
@@ -160,7 +160,11 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       titulo: "Agendamentos",
       acessoRapido: true,
       componente: (
-        <Agendamentos alertCustom={alertCustom} onClose={handleClose} />
+        <Agendamentos
+          reload={fetch}
+          alertCustom={alertCustom}
+          onClose={handleClose}
+        />
       ),
     },
     funcionarios: {
@@ -169,6 +173,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       acessoRapido: true,
       componente: (
         <GerenciarFuncionarios
+          reload={fetch}
           alertCustom={alertCustom}
           onClose={handleClose}
         />
@@ -179,6 +184,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       titulo: "Financeiro",
       componente: (
         <GestaoFinancas
+          reload={fetch}
           alertCustom={alertCustom}
           onClose={handleClose}
           barbearia={dados}
@@ -189,7 +195,11 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       icon: <LocalMallRoundedIcon />,
       titulo: "Produtos",
       componente: (
-        <GerenciarProdutos alertCustom={alertCustom} onClose={handleClose} />
+        <GerenciarProdutos
+          reload={fetch}
+          alertCustom={alertCustom}
+          onClose={handleClose}
+        />
       ),
     },
     servicos: {
@@ -197,7 +207,11 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       titulo: "Serviços",
       acessoRapido: true,
       componente: (
-        <GerenciarServicos alertCustom={alertCustom} onClose={handleClose} />
+        <GerenciarServicos
+          reload={fetch}
+          alertCustom={alertCustom}
+          onClose={handleClose}
+        />
       ),
     },
     escala: {
@@ -205,6 +219,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       titulo: "Minha Escala",
       componente: (
         <WorkSchedule
+          reload={fetch}
           alertCustom={alertCustom}
           openModal={true}
           type="other"
@@ -215,7 +230,9 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     whatsapp: {
       icon: <WhatsAppIcon />,
       titulo: "WhatsApp",
-      componente: <WhatsApp barbearia={dados} alertCustom={alertCustom} />,
+      componente: (
+        <WhatsApp reload={fetch} barbearia={dados} alertCustom={alertCustom} />
+      ),
     },
     agendamento: {
       icon: <CalendarMonth />,
@@ -223,6 +240,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       acessoRapido: true,
       componente: (
         <AgendamentoManual
+          reload={fetch}
           barbearia={dados}
           alertCustom={alertCustom}
           onClose={handleClose}
@@ -234,6 +252,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       titulo: "Editar Barbearia",
       componente: (
         <EditData
+          reload={fetch}
           onClose={handleClose}
           barbearia={dados}
           alertCustom={alertCustom}

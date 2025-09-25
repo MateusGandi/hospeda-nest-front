@@ -109,7 +109,7 @@ const Checkout = ({ alertCustom }) => {
           };
           body.installments = form.parcelamento?.value || 1;
         }
-        const { payment } = await apiService.query(
+        const payment = await apiService.query(
           "POST",
           `/payment/confirm/${key}`,
           body
@@ -218,7 +218,10 @@ const Checkout = ({ alertCustom }) => {
         "GET",
         `/payment/checkout-payment-status/${key}`
       );
-      if (status == "APPROVED")
+      if (status == "PAGO")
+        throw new Error(observacoes || "Pagamento já realizado!");
+
+      if (status == "VENCIDO")
         throw new Error(observacoes || "Pagamento já realizado!");
 
       const titulos_label = {
@@ -367,6 +370,8 @@ const Checkout = ({ alertCustom }) => {
 
         const nextPage = pages[modal.tabIndex + 1].value;
         navigate(`/checkout/${key}/${nextPage}`);
+      } else {
+        navigate(getLocalItem("accessType") == "user" ? "/home" : "/dashboard");
       }
     } catch (error) {
       console.error("Erro ao avançar:", error);
@@ -459,7 +464,7 @@ const Checkout = ({ alertCustom }) => {
         navigate(getLocalItem("accessType") == "user" ? "/home" : "/dashboard")
       }
       onAction={
-        modal.status != "OK" &&
+        modal.status != "PAGO" &&
         modal.tab != "pagamento" &&
         !modal.errorCode &&
         handleNext

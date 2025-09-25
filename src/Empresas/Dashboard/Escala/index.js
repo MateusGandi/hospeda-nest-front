@@ -43,6 +43,7 @@ const WorkSchedule = ({
   handleCloseModal,
 }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const [opened, setOpened] = useState(false);
@@ -151,6 +152,7 @@ const WorkSchedule = ({
 
   const handleSave = async () => {
     try {
+      setLoading(true);
       const id = dados?.id || getLocalItem("userId");
       await apiService.query("PATCH", `/user/${id}`, {
         filaDinamicaClientes: form.filaDinamicaClientes,
@@ -183,6 +185,8 @@ const WorkSchedule = ({
     } catch (e) {
       console.log(e);
       alertCustom("Erro ao salvar a escala.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -402,6 +406,7 @@ const WorkSchedule = ({
           open={open}
           onClose={() => setOpen(false)}
           onAction={handleSave}
+          loadingButton={loading}
           actionText="Salvar"
           titulo="Configurar Escala de Trabalho"
           fullScreen="all"
@@ -414,6 +419,7 @@ const WorkSchedule = ({
                     titulo: "Adicionar Ausência",
                     color: "terciary",
                     action: handleAddAbsence,
+                    disabled: loading,
                   },
                 ]
               : []),
@@ -423,12 +429,14 @@ const WorkSchedule = ({
                     titulo: "Quero Ajuda",
                     color: "terciary",
                     action: handleGetHelp,
+                    disabled: loading,
                   },
                 ]
               : []),
             {
               titulo: "Limpar tudo",
               color: "terciary",
+              disabled: loading,
               action: handleClearAll,
             },
           ]}
@@ -521,6 +529,7 @@ const WorkSchedule = ({
                     titulo: "Adicionar Ausência",
                     color: "terciary",
                     action: handleAddAbsence,
+                    disabled: loading,
                   },
                 ]
               : []),
@@ -530,6 +539,7 @@ const WorkSchedule = ({
                     titulo: "Quero Ajuda",
                     color: "terciary",
                     action: handleGetHelp,
+                    disabled: loading,
                   },
                 ]
               : []),
@@ -537,6 +547,7 @@ const WorkSchedule = ({
               titulo: "Limpar tudo",
               color: "terciary",
               action: handleClearAll,
+              disabled: loading,
             },
           ]}
         >

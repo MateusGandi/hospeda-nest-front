@@ -16,7 +16,7 @@ import WorkSchedule from "../Escala";
 import View from "../../../Componentes/View";
 import Confirm from "../../../Componentes/Alert/Confirm";
 
-const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
+const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     item: null,
@@ -31,13 +31,14 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
     barbeariaId: getLocalItem("establishmentId"),
     funcionario: null,
     escala: false,
+    actionLoading: false,
   });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
   const handleDelete = async (item) => {
     try {
-      setModal((prev) => ({ ...prev, loading: true }));
+      setModal((prev) => ({ ...prev, loading: true, actionLoading: true }));
       await Api.query("PATCH", `/establishment/${modal.barbeariaId}`, {
         funcionarios: funcionarios
           .filter((op) => op.id != item.id)
@@ -47,11 +48,15 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
           })),
       });
       setFuncionarios(funcionarios.filter((op) => op.id != item.id));
+      setConfirmDelete((prev) => ({
+        ...prev,
+        open: false,
+      }));
       alertCustom("Funcionário removido com sucesso!");
     } catch (error) {
       alertCustom("Erro ao remover funcionários");
     } finally {
-      setModal((prev) => ({ ...prev, loading: false }));
+      setModal((prev) => ({ ...prev, loading: false, actionLoading: false }));
     }
 
     handleCancelEdit();
@@ -100,13 +105,14 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
   };
 
   const addFuncionario = () => {
-    setModal({
+    setModal((prev) => ({
+      ...prev,
       open: true,
       barbeariaId: getLocalItem("establishmentId"),
       titulo: "Adicionar novo funcionário",
       funcionario: null,
       escala: false,
-    });
+    }));
   };
 
   const fetchFuncionarios = async () => {
@@ -127,6 +133,8 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
             : "Sem serviços cadastrados",
         }))
       );
+
+      reload();
     } catch (error) {
       alertCustom("Erro ao buscar funcionários!");
     }
@@ -157,7 +165,6 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
     }
 
     try {
-      // Ajustar o nome do arquivo
       const fileExtension = file.type.split("/")[1];
       const newName = `${file.name.split(".")[0]}.${fileExtension}`;
       const renamedFile = new File([file], newName, { type: file.type });
@@ -195,6 +202,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
         actionText="Adicionar Funcionário"
         fullScreen="all"
         component="view"
+        loadingButton={modal.actionLoading}
       >
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>
@@ -251,6 +259,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose }) => {
       </Modal>
 
       <Confirm
+        loading={modal.actionLoading}
         open={confirmDelete.open}
         onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
         onConfirm={() => handleDelete(confirmDelete.item)}

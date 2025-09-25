@@ -57,7 +57,7 @@ export default function Suporte({ alertCustom }) {
     setState((prev) => ({ ...prev, loading: force }));
 
     try {
-      await delay(3000);
+      await delay(1000);
       const statusMap = {
         open: "Aberto",
         closed: "Fechado",

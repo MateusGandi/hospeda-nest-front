@@ -45,6 +45,7 @@ const Agendamentos = ({ alertCustom }) => {
     size: "md",
     filter: { titulo: "Todos", id: 0, valor: "" },
     action: { titulo: "Concluído", do: () => handleAction("confirm") },
+    novaDataSelecionada: null,
   });
   const status = {
     reschedule: "reagendamento",
@@ -151,7 +152,7 @@ const Agendamentos = ({ alertCustom }) => {
         titulo: "Reagendar",
         color: "terciary",
         route: "reschedule",
-        status: "RESCHEDULED",
+        status: "PENDING",
         action: () =>
           setModalConteudo((prev) => ({
             ...prev,
@@ -161,7 +162,7 @@ const Agendamentos = ({ alertCustom }) => {
             view: "reagendar",
             action: {
               titulo: "Confirmar",
-              do: () => handleAction("reschedule"),
+              do: handleReeschedule,
             },
           })),
       },
@@ -195,12 +196,35 @@ const Agendamentos = ({ alertCustom }) => {
       }));
       buscarAgendamentos();
     } catch (error) {
-      console.log(error);
       alertCustom(
         error?.response?.data?.message ?? `Erro ao realizar ${status[acao]}!`
       );
     }
   };
+
+  const handleReeschedule = async () => {
+    try {
+      await Api.query(
+        "PUT",
+        `/scheduling/${modalConteudo.dados?.id}`,
+        modalConteudo.dados
+      );
+      alertCustom(`Reagendamento realizado com sucesso!`);
+      setModalConteudo((prev) => ({
+        ...prev,
+        open: false,
+      }));
+      buscarAgendamentos();
+    } catch (error) {
+      alertCustom(
+        error?.response?.data?.message ?? `Erro ao realizar Reagendamento!`
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log(modalConteudo);
+  }, [modalConteudo]);
 
   const onClose = () => {
     navigate("/dashboard");
@@ -267,6 +291,12 @@ const Agendamentos = ({ alertCustom }) => {
                     dia: item.data,
                     servicos: item.servico,
                     barbeiro: { id: getLocalItem("userId") },
+
+                    //para reagendamento
+                    _data: item.novaDataSelecionada || "oi",
+                    establishmentId: getLocalItem("establishmentId"),
+                    barberId: item.funcionario.id,
+                    services: item.servico.map((s) => s.id),
                   },
 
                   action: {
@@ -301,10 +331,7 @@ const Agendamentos = ({ alertCustom }) => {
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.size}
-        buttons={buttons[modalConteudo.view].filter(
-          ({ status }) =>
-            status != modalConteudo.dados?.status && status == "CANCELLED"
-        )}
+        buttons={buttons[modalConteudo.view]}
         onAction={
           modalConteudo.dados?.status == "PENDING" && modalConteudo.action.do
         }
@@ -316,19 +343,18 @@ const Agendamentos = ({ alertCustom }) => {
             all={true}
             data={dataSelecionada}
             onSelect={(date) => {
-              console.log(date);
               setDataSelecionada(date);
               setModalConteudo((prev) => ({ ...prev, open: false }));
             }}
           />
         ) : modalConteudo.view === "reagendar" ? (
           <Reagendamento
-            setForm={(form) =>
+            setForm={(dados) =>
               setModalConteudo((prev) => ({
                 ...prev,
                 dados: {
                   ...prev.dados,
-                  ...form,
+                  ...dados,
                 },
               }))
             }

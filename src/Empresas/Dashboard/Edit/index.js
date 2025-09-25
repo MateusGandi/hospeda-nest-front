@@ -62,7 +62,6 @@ const EditData = ({
     try {
       await onSave(
         {
-          longitudeAndLatitude: formData.longitudeAndLatitude.split(","),
           aberto: aberto,
         },
         false

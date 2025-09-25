@@ -71,7 +71,7 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
   const tabs = tabsAccess[getLocalItem("accessType")] || [];
   const [dados, setDados] = useState({
     tab: tabs[0],
-    loading: false,
+    loading: true,
   });
   const [mostrarSaldo, setMostrarSaldo] = useState(false);
   const [financas, setFinancas] = useState({

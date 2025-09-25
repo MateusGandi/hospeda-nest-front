@@ -21,31 +21,6 @@ import apiService from "../../../Componentes/Api/axios";
 import { Download } from "@mui/icons-material";
 import BoletoImage from "../../../Assets/Cobranca/boleto.svg";
 
-const teste = [
-  {
-    method: "pix",
-    data: {
-      qrCode: "000201010211...",
-      url: "https://api.exemplo.com/status-pix",
-      linhaDigitavel:
-        "12345.67890 12345.678904 12345.678904 5 678900000000006789000000000067890000000000",
-    },
-  },
-  {
-    method: "boleto",
-    data: {
-      url: "https://api.exemplo.com/ver-boleto",
-    },
-  },
-  {
-    method: "cartao",
-    data: {
-      message: "Pagamento em processamento...",
-      url: "https://api.exemplo.com/status-cartao",
-    },
-  },
-];
-
 const instructions = {
   BOLETO: [
     {
@@ -75,27 +50,36 @@ const instructions = {
   ],
 };
 
-const PaymentStatus = ({ info = teste[0], alertCustom, onConfirm }) => {
+const PaymentStatus = ({ info, alertCustom, onConfirm }) => {
   const [data] = useState(info);
-
   useEffect(() => {
+    let intervalId;
+
     const fetchStatus = async () => {
       try {
         const response = await apiService.query(
           "GET",
-          `/payment/checkout-payment-status/${data.id}`
+          `/payment/checkout-payment-status/${data.checkoutId}`
         );
-        if (response.status != "OK") return;
 
+        if (response.status === "VENCIDO") {
+          throw new Error("Pagamento expirado!");
+        }
+
+        if (response.status !== "PAGO") return;
+
+        clearInterval(intervalId);
         onConfirm(response.data, false);
       } catch (error) {
+        clearInterval(intervalId);
         onConfirm(error.message, true);
       }
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
+    intervalId = setInterval(fetchStatus, 5000);
+
+    return () => clearInterval(intervalId);
   }, [data]);
 
   const copyToClipboard = (text) => {
@@ -111,9 +95,9 @@ const PaymentStatus = ({ info = teste[0], alertCustom, onConfirm }) => {
 
   return (
     <Grid container spacing={2}>
-      {data && data.billingType && (
+      {data && data.metodoPagamento && (
         <>
-          {data.billingType === "PIX" && (
+          {data.metodoPagamento.nomeApi === "PIX" && (
             <>
               <Grid size={{ xs: 12, md: 7 }} className="justify-center">
                 {!data.payload ? (
@@ -181,7 +165,7 @@ const PaymentStatus = ({ info = teste[0], alertCustom, onConfirm }) => {
               </Grid>
             </>
           )}
-          {data.billingType === "BOLETO" && (
+          {data.metodoPagamento.nomeApi === "BOLETO" && (
             <Grid
               size={{ xs: 12, md: 7 }}
               sx={{
@@ -229,25 +213,27 @@ const PaymentStatus = ({ info = teste[0], alertCustom, onConfirm }) => {
               />
             </Grid>
           )}
-          {data.billingType === "CREDIT_CARD" && (
+          {data.metodoPagamento.nomeApi === "CREDIT_CARD" && (
             <Grid size={{ xs: 12, md: 7 }} sx={{ textAlign: "center" }}>
               <Typography variant="body1" sx={{ mt: 1 }}>
                 {data.message}
               </Typography>
             </Grid>
           )}
-          {data.billingType && (
+          {data.metodoPagamento.nomeApi && (
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography variant="h6" className="show-box">
                 Instruções
-                {instructions[data.billingType].map(({ subtitulo }, index) => (
-                  <Typography variant="body1" sx={{ mb: 1 }}>
-                    {`${index + 1}. ${subtitulo.replace(
-                      "{expirationDate}",
-                      toUTC(data.expirationDate?.replace(" ", "T"))
-                    )}.`}
-                  </Typography>
-                ))}
+                {instructions[data.metodoPagamento.nomeApi].map(
+                  ({ subtitulo }, index) => (
+                    <Typography variant="body1" sx={{ mb: 1 }}>
+                      {`${index + 1}. ${subtitulo.replace(
+                        "{expirationDate}",
+                        toUTC(data.expirationDate?.replace(" ", "T"))
+                      )}.`}
+                    </Typography>
+                  )
+                )}
               </Typography>
             </Grid>
           )}

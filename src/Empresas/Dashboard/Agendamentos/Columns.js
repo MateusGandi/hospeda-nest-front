@@ -224,6 +224,7 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
 
   const handleUpdateAgendamento = async (item, data, discount) => {
     try {
+      setContent({ loading: true });
       const dataCorrigida = new Date(data);
       dataCorrigida.setHours(dataCorrigida.getHours() - 3);
 
@@ -245,6 +246,8 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
       alertCustom(
         error?.response?.data?.message ?? "Erro ao atualizar agendamento!"
       );
+    } finally {
+      setContent({ loading: false });
     }
   };
 
@@ -329,9 +332,6 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
             handleUpdateAgendamento(updatedEvent, newDate);
           }}
           onWeekChange={handleChangeDate}
-          // onCellClick={(day, hour, minute) =>
-          //   navigate("/dashboard/agendamento/cliente")
-          // }
           actionText="Novo"
           actionIcon={<AddRoundedIcon />}
           onAction={() => navigate("/dashboard/agendamento/cliente")}
