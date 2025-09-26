@@ -46,7 +46,8 @@ export default function Commission({
       let valorFixo = row.valorFixo;
 
       if (field === "percentual") {
-        percentual = Math.max(0, Math.min(value, 100));
+        const num = Math.max(0, Math.min(value, 100));
+        percentual = Number((isNaN(num) ? row.percentual : num).toFixed(2));
         valorFixo = "";
       } else if (field === "valorFixo") {
         valorFixo = formatMoney(
@@ -54,12 +55,12 @@ export default function Commission({
             ? servicoData.valor
             : value
         );
-        percentual = 0;
+        percentual = "";
       }
 
       return {
         ...row,
-        percentual: +percentual.toFixed(2),
+        percentual,
         valorFixo,
       };
     });

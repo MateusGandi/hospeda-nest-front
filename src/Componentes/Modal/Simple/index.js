@@ -144,13 +144,17 @@ const Modal = ({
               sx={{
                 height: "100%",
                 py: 2,
+                px: 0,
                 borderRadius: { xs: 0, md: "0" },
               }}
-              onSubmit={(e) => {
-                e.preventDefault();
-                onAction && onAction();
-              }}
               component="form"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (onSubmit) onSubmit();
+                  else if (onAction) onAction();
+                }
+              }}
             >
               <Grid
                 container
@@ -371,6 +375,7 @@ const Modal = ({
                     disabled={button.disabled}
                     onClick={button.action}
                     icon={button.icon}
+                    onSubmit={() => {}}
                     variant={button.variant ? button.variant : "outlined"}
                     sx={{
                       ...(button.sx || {}),

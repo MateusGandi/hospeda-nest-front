@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid2 as Grid, Typography } from "@mui/material";
+import { Box, Button, Chip, Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../Componentes/Modal/Simple";
 import Api from "../../Componentes/Api/axios";
 import BarberPresentation from "./Presentation";
@@ -232,7 +232,20 @@ const Empresa = ({ alertCustom }) => {
         .filter((item) => !!item.servicosPrestados.length)
         .map((item) => ({
           ...item,
-          titulo: item.nome,
+          titulo: item.clientesPodemEntrarNaFila ? (
+            <span>
+              {" "}
+              {item.nome}{" "}
+              <Chip
+                label="Presencial"
+                size="small"
+                color="primary"
+                variant="filled"
+              />
+            </span>
+          ) : (
+            item.nome
+          ),
           subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
             item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
           }`,

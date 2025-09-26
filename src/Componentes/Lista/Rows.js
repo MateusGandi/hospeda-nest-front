@@ -42,25 +42,25 @@ export const Rows = ({
 }) => {
   const [selected, setSelected] = useState(selectedItems ?? []);
 
-  const handleSelect = (item) => {
-    let updatedSelection;
+  const handleSelect = async (item) => {
+    try {
+      let updatedSelection;
+      if (multipleSelect) {
+        updatedSelection = selected.some((op) => op.id === item.id)
+          ? selected.filter((op) => op.id !== item.id)
+          : [...selected, item];
+      } else {
+        updatedSelection =
+          unSelectMode &&
+          Array.isArray(selected) &&
+          selected?.some((op) => op.id === item.id)
+            ? []
+            : [item];
+      }
 
-    if (multipleSelect) {
-      updatedSelection = selected.some((op) => op.id === item.id)
-        ? selected.filter((op) => op.id !== item.id)
-        : [...selected, item];
-    } else {
-      updatedSelection =
-        unSelectMode &&
-        Array.isArray(selected) &&
-        selected?.some((op) => op.id === item.id)
-          ? []
-          : [item];
-    }
-
-    if (!oneTapMode) setSelected(updatedSelection);
-
-    if (onSelect) onSelect(multipleSelect ? updatedSelection : item);
+      if (onSelect) await onSelect(multipleSelect ? updatedSelection : item);
+      if (!oneTapMode) setSelected(updatedSelection);
+    } catch (error) {}
   };
 
   return (
@@ -158,12 +158,12 @@ export const Rows = ({
 
                     <ListItemText
                       primary={
-                        <Typography sx={{ fontSize: "18px", mr: 1 }}>
+                        <Typography sx={{ fontSize: "18px" }}>
                           {item.titulo}
                         </Typography>
                       }
                       secondary={
-                        <Typography sx={{ fontSize: "16px", mr: 1 }}>
+                        <Typography sx={{ fontSize: "16px", mr: 2 }}>
                           {item.subtitulo}
                         </Typography>
                       }
