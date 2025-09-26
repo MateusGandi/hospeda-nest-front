@@ -50,7 +50,6 @@ const Funcionario = ({
       setLoading(true);
       const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
       const funcionariosFinais = [...semAtual, data];
-
       await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
         funcionarios: funcionariosFinais.map((item) => ({
           userId: item.id,
@@ -66,6 +65,7 @@ const Funcionario = ({
         servicosPrestados: [],
       });
     } catch (error) {
+      console.log("Erro ao salvar funcionário:", error);
       alertCustom("Erro ao salvar funcionário");
     } finally {
       setLoading(false);

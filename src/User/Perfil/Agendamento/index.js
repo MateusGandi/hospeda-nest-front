@@ -378,7 +378,7 @@ const ListaAgendamentos = ({ alertCustom, usuario }) => {
             fullScreen="mobile"
             maxWidth="sm"
           >
-            <Grid container sx={{ mt: -3 }} spacing={2}>
+            <Grid container sx={{}} spacing={2}>
               <Grid size={12}>
                 <Rows
                   disabled={true}

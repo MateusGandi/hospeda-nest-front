@@ -24,7 +24,6 @@ const EditData = ({
 
   const handleChange = (field) => (event) => {
     if (field === "aberto") {
-      console.log(event.target.checked, field);
       setFormData({ ...formData, [field]: event.target.checked });
       return;
     }

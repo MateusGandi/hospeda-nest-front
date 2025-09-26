@@ -19,10 +19,6 @@ const Confirm = ({
 }) => {
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onConfirm && onConfirm();
-      }}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -56,7 +52,6 @@ const Confirm = ({
             color: "primary",
             disabled: loading,
             variant: "contained",
-            submit: true,
           },
         ]}
       >
