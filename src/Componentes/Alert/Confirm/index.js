@@ -18,40 +18,54 @@ const Confirm = ({
   loading = false,
 }) => {
   return (
-    <Modal
-      open={open}
-      onClose={!loading && onClose}
-      titulo={
-        <>
-          {icon && <Icon>{icon}</Icon>} {title}
-        </>
-      }
-      loadingButton={loading}
-      type="alert"
-      maxWidth="xs"
-      buttonStyle={{ width: "46%", margin: "0 1%" }}
-      buttons={[
-        {
-          titulo: cancelText,
-          action: onClose,
-          color: "secondary",
-          disabled: loading,
-          variant: "text",
-        },
-        {
-          titulo: confirmText,
-          action: onConfirm,
-          color: "primary",
-          disabled: loading,
-          variant: "contained",
-        },
-      ]}
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onConfirm && onConfirm();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          onConfirm && onConfirm();
+        }
+      }}
     >
-      <Typography typography="body1" sx={{ m: "0 1" }}>
-        {message}
-      </Typography>
-      <Box>{children}</Box>
-    </Modal>
+      <Modal
+        open={open}
+        onClose={!loading && onClose}
+        titulo={
+          <>
+            {icon && <Icon>{icon}</Icon>} {title}
+          </>
+        }
+        loadingButton={loading}
+        type="alert"
+        maxWidth="xs"
+        buttonStyle={{ width: "46%", margin: "0 1%" }}
+        buttons={[
+          {
+            titulo: cancelText,
+            action: onClose,
+            color: "secondary",
+            disabled: loading,
+            variant: "text",
+          },
+          {
+            titulo: confirmText,
+            action: onConfirm,
+            color: "primary",
+            disabled: loading,
+            variant: "contained",
+            submit: true,
+          },
+        ]}
+      >
+        <Typography typography="body1" sx={{ m: "0 1" }}>
+          {message}
+        </Typography>
+        <Box>{children}</Box>
+      </Modal>
+    </form>
   );
 };
 

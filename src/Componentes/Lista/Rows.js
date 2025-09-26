@@ -158,12 +158,12 @@ export const Rows = ({
 
                     <ListItemText
                       primary={
-                        <Typography sx={{ fontSize: "18px", mr: 1 }}>
+                        <Typography sx={{ fontSize: "18px", mr: 2 }}>
                           {item.titulo}
                         </Typography>
                       }
                       secondary={
-                        <Typography sx={{ fontSize: "16px", mr: 1 }}>
+                        <Typography sx={{ fontSize: "16px", mr: 2 }}>
                           {item.subtitulo}
                         </Typography>
                       }

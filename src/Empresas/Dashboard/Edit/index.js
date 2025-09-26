@@ -51,9 +51,9 @@ const EditData = ({
       return alertCustom("Preencha todos os campos corretamente");
     }
     const { longitudeAndLatitude, location, ...rest } = formData;
-    formData.longitudeAndLatitude = Object.values(location);
+
     setIsSending(true);
-    await onSave(formData).finally(() => {
+    await onSave(rest).finally(() => {
       setIsSending(false);
     });
   };

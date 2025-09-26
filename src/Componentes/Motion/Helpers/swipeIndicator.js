@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import SwipeIcon from "@mui/icons-material/Swipe";
 import { isMobile } from "../../Funcoes";
@@ -15,7 +15,7 @@ const SwipeIndicator = ({ children }) => {
       setVisible(false);
       timer.current = setTimeout(() => {
         setVisible(true);
-      }, 15000);
+      }, 3000);
     }
   };
 
@@ -65,8 +65,21 @@ const SwipeIndicator = ({ children }) => {
             }}
             style={{ position: "absolute" }}
           >
-            <SwipeIcon sx={{ fontSize: 60, color: "rgba(256,256,256,0.8)" }} />
+            <SwipeIcon sx={{ fontSize: 60, color: "rgba(256,256,256,0.5)" }} />
           </motion.div>
+          <Typography
+            className="show-box"
+            variant="body1"
+            sx={{
+              backgroundColor: "rgba(0,0,0,0.8)",
+              width: "200px",
+              ml: "-75%",
+              textAlign: "center",
+              mt: 9,
+            }}
+          >
+            Deslize para o lado para ver mais opções
+          </Typography>
         </Box>
       )}
     </Box>

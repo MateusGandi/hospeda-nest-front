@@ -535,27 +535,19 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
             </Grid>
             <AppBar
               position="fixed"
-              elevation={1}
+              elevation={2}
               sx={{
                 bottom: 0,
                 top: "auto",
-                borderRadius: "10px 10px 0 0",
+                pt: 1,
+                // background:
+                //   "linear-gradient( to top,rgba(27, 27, 27, 1) 5%,rgba(27, 27, 27, 0.8) 50%,transparent 100%)",
+                borderRadius: 0,
                 display: { xs: "block", md: "none" },
               }}
-              component={Paper}
             >
-              <Box className="justify-center">
-                <span
-                  style={{
-                    background: "#333333", //gerarGradient(color),
-                    borderRadius: 50,
-                    width: "30%",
-                    height: "8px",
-                    marginTop: "5px",
-                  }}
-                ></span>
-              </Box>
               <Toolbar
+                elevation={0}
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",

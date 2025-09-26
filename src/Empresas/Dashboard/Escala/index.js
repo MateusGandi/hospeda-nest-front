@@ -404,7 +404,9 @@ const WorkSchedule = ({
       {isMobile || type === "button" ? (
         <Modal
           open={open}
-          onClose={() => setOpen(false)}
+          onClose={
+            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
+          }
           onAction={handleSave}
           loadingButton={loading}
           actionText="Salvar"
@@ -495,16 +497,20 @@ const WorkSchedule = ({
                     onChange={handleChangePreferences}
                     form={form}
                   />,
-                  <EditableTable
-                    columns={lunchColumns}
-                    rows={lunchRows}
-                    onChange={setLunchRows}
-                  />,
-                  <EditableTable
-                    columns={absencesColumns}
-                    rows={absences}
-                    onChange={setAbsences}
-                  />,
+                  <SwipeIndicator>
+                    <EditableTable
+                      columns={lunchColumns}
+                      rows={lunchRows}
+                      onChange={setLunchRows}
+                    />
+                  </SwipeIndicator>,
+                  <SwipeIndicator>
+                    <EditableTable
+                      columns={absencesColumns}
+                      rows={absences}
+                      onChange={setAbsences}
+                    />
+                  </SwipeIndicator>,
                 ]}
               />
             </Grid>
@@ -606,16 +612,20 @@ const WorkSchedule = ({
                     onChange={handleChangePreferences}
                     form={form}
                   />,
-                  <EditableTable
-                    columns={lunchColumns}
-                    rows={lunchRows}
-                    onChange={setLunchRows}
-                  />,
-                  <EditableTable
-                    columns={absencesColumns}
-                    rows={absences}
-                    onChange={setAbsences}
-                  />,
+                  <SwipeIndicator>
+                    <EditableTable
+                      columns={lunchColumns}
+                      rows={lunchRows}
+                      onChange={setLunchRows}
+                    />
+                  </SwipeIndicator>,
+                  <SwipeIndicator>
+                    <EditableTable
+                      columns={absencesColumns}
+                      rows={absences}
+                      onChange={setAbsences}
+                    />
+                  </SwipeIndicator>,
                 ]}
               />
             </Grid>
