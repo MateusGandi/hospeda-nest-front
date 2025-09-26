@@ -104,13 +104,19 @@ const Servico = ({
       await apiService.query(
         id ? "PATCH" : "POST",
         id ? `/service/${id}` : `/service`,
-        [
-          {
-            ...data,
-            tempoGasto: tempoGasto + ":00",
-            barbeariaId: getLocalItem("establishmentId"),
-          },
-        ]
+        id
+          ? {
+              ...data,
+              tempoGasto: tempoGasto + ":00",
+              barbeariaId: getLocalItem("establishmentId"),
+            }
+          : [
+              {
+                ...data,
+                tempoGasto: tempoGasto + ":00",
+                barbeariaId: getLocalItem("establishmentId"),
+              },
+            ]
       );
       if (funcionarios.comissao)
         await apiService.query(

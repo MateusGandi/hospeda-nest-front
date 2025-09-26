@@ -110,9 +110,12 @@ const View = ({
               overflowY: "scroll",
             },
           }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            onAction && onAction();
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              if (onSubmit) onSubmit();
+              else if (onAction) onAction();
+            }
           }}
           component="form"
         >

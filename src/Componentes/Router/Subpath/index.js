@@ -148,7 +148,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
               </List>
             </Box>
 
-            <Box>
+            <Box sx={{ pb: { xs: 8, md: 0 } }}>
               <Divider />
               <List>
                 {pages
@@ -172,8 +172,27 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
             sx={{ zIndex: 9999 }}
           >
             <Paper
-              elevation={0}
+              elevation={1}
               sx={{
+                display: { xs: "block", md: "none" },
+                position: "fixed",
+                right: "8%",
+                bottom: 90,
+                zIndex: 2,
+                borderRadius: "50px",
+                transition: "left 0.2s ease-in-out",
+              }}
+              ref={toggleButtonRef}
+            >
+              <IconButton onClick={() => setOpen(!open)} sx={{ p: 2 }}>
+                {open ? <CloseRoundedIcon /> : <WidgetsRoundedIcon />}
+              </IconButton>
+            </Paper>
+
+            <Paper
+              elevation={2}
+              sx={{
+                display: { xs: "none", md: "block" },
                 position: "fixed",
                 left: open ? drawerWidth + 5 : 5,
                 bottom: 10,

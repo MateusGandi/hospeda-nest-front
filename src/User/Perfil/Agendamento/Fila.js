@@ -118,7 +118,7 @@ function Fila({ dados, alertCustom, reload }) {
       fullScreen="mobile"
       maxWidth="sm"
     >
-      <Grid container sx={{ mt: -3 }} spacing={2}>
+      <Grid container spacing={2}>
         <Grid size={12}>
           <Rows
             disabled={true}

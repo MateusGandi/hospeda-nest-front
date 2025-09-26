@@ -38,7 +38,7 @@ export const GerenciarFila = ({ alertCustom }) => {
     back: { action: handleBack, titulo: "Voltar" },
     items: [],
     currentClient: null,
-    loading: false,
+    loading: true,
     disabled: false,
   });
 
