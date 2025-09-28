@@ -181,7 +181,7 @@ const WorkSchedule = ({
       );
 
       alertCustom("Escala de trabalho e preferências salvas com sucesso!");
-      setOpen(false);
+      type == "button" ? navigate(-1) : setOpen(false);
     } catch (e) {
       console.log(e);
       alertCustom("Erro ao salvar a escala.");

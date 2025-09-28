@@ -59,28 +59,30 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
     fetch();
   }, []);
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (
-  //       drawerRef.current &&
-  //       !drawerRef.current.contains(event.target) &&
-  //       toggleButtonRef.current &&
-  //       !toggleButtonRef.current.contains(event.target)
-  //     ) {
-  //       setOpen(false);
-  //     }
-  //   };
+  useEffect(() => {
+    if (isMobile) {
+      const handleClickOutside = (event) => {
+        if (
+          drawerRef.current &&
+          !drawerRef.current.contains(event.target) &&
+          toggleButtonRef.current &&
+          !toggleButtonRef.current.contains(event.target)
+        ) {
+          setOpen(false);
+        }
+      };
 
-  //   if (open) {
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //   } else {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   }
+      if (open) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
 
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [open]);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [open]);
 
   if (!selected) return views[path]?.componente;
 

@@ -8,7 +8,7 @@ const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
     quantidade_fila: 5,
     fila_titulo: "5 pessoas na fila",
-    fila_subtitulo: "Tempo es",
+    fila_subtitulo: "Tempo médio de espera: 25 minutos",
   });
   const handleGetStatus = async () => {
     try {

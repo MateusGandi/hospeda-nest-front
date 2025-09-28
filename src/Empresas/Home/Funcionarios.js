@@ -38,6 +38,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   useEffect(() => {
     const handler = () => {
       try {
+        console.log(form.barbearia, !form.barbearia.funcionarios.length);
         if (form.barbearia && !form.barbearia.funcionarios.length) {
           setContent({
             fila: [],
@@ -48,6 +49,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
           return;
         } else {
           const temp = format(form.barbearia.funcionarios, "barbeiros");
+          console.log(temp);
           setContent({
             fila: temp.filter((f) => f.filaDinamicaClientes),
             agendamento: temp.filter((f) => !f.filaDinamicaClientes),
@@ -70,6 +72,10 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
     setForm((prev) => ({ ...prev, barbeiro: item, selected: [item] }));
     setContent((prev) => ({ ...prev, selected: [item] }));
   };
+
+  useEffect(() => {
+    console.log(formatItems());
+  }, []);
 
   return (
     <>

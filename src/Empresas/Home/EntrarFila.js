@@ -1,13 +1,37 @@
 import React, { useEffect, useState } from "react";
 import BannerFind from "../../Assets/Cobranca/find_banner.png";
 import { Grid2 as Grid, Paper, Stack, Typography } from "@mui/material";
+import Api from "../../Componentes/Api/axios";
 
-const Fila = ({ onAction, alertCustom }) => {
+const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
     quantidade_fila: 5,
     fila_titulo: "5 pessoas na sua frente",
     fila_subtitulo: "Tempo médio de espera: 25 minutos",
   });
+  const handleGetStatus = async () => {
+    try {
+      if (!form.barbeiro && !form.barbeiro.id) return;
+      const { peopleAhead, estimatedTime, waitTime } = await Api.query(
+        "GET",
+        `/scheduling/queue/estimate/${form.barbeiro.id}`
+      );
+
+      setContent({
+        quantidade_fila: peopleAhead,
+        fila_titulo: peopleAhead
+          ? `${peopleAhead} ${peopleAhead === 1 ? "pessoa" : "pessoas"} na fila`
+          : "Nenhuma pessoa na fila",
+        fila_subtitulo: `Tempo médio de espera: ${waitTime}`,
+      });
+    } catch (error) {
+      alertCustom("Erro ao buscar status da fila");
+    }
+  };
+
+  useEffect(() => {
+    handleGetStatus();
+  }, [form.servicos]);
 
   return (
     <Grid container>
@@ -40,9 +64,8 @@ const Fila = ({ onAction, alertCustom }) => {
           <Typography className="show-box" variant="h6">
             Como funciona?
             <Typography variant="body1">
-              Ao entrar na fila, você receberá uma notificação quando estiver
-              próximo de ser atendido. Fique à vontade para aguardar em nosso
-              espaço ou explorar a vizinhança enquanto espera.
+              Ao inserir o cliente na fila, ele receberá uma notificação quando
+              estiver próximo de ser atendido.
             </Typography>
           </Typography>
         </Stack>

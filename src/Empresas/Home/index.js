@@ -305,7 +305,7 @@ const Empresa = ({ alertCustom }) => {
         setLoading={setLoading}
       />
     ),
-    fila: <EntrarFila />,
+    fila: <EntrarFila alertCustom={alertCustom} form={form} />,
     "agendamento-confirmado": (
       <ConfirmacaoAgendamento
         form={form}
