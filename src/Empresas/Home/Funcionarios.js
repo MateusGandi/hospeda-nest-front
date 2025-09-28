@@ -38,7 +38,6 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   useEffect(() => {
     const handler = () => {
       try {
-        console.log(form.barbearia, !form.barbearia.funcionarios.length);
         if (form.barbearia && !form.barbearia.funcionarios.length) {
           setContent({
             fila: [],
@@ -65,8 +64,9 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   }, [form.barbearia]);
 
   const handleSelect = (item) => {
-    if (item.clientesPodemEntrarNaFila) {
+    if (!item.clientesPodemEntrarNaFila) {
       handleInfo(true);
+
       throw new Error("Funcionário não pode ser selecionado");
     }
     setForm((prev) => ({ ...prev, barbeiro: item, selected: [item] }));

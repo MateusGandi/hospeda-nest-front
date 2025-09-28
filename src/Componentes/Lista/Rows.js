@@ -61,8 +61,8 @@ export const Rows = ({
             ? []
             : [item];
       }
-      !selectedItems && setSelected(updatedSelection);
       if (onSelect) await onSelect(multipleSelect ? updatedSelection : item);
+      !selectedItems && setSelected(updatedSelection);
     } catch (error) {}
   };
 
