@@ -229,7 +229,7 @@ const PaymentStatus = ({ info, alertCustom, onConfirm }) => {
                     <Typography variant="body1" sx={{ mb: 1 }}>
                       {`${index + 1}. ${subtitulo.replace(
                         "{expirationDate}",
-                        toUTC(data.expirationDate?.replace(" ", "T"))
+                        toUTC({ data: data.expirationDate?.replace(" ", "T") })
                       )}.`}
                     </Typography>
                   )

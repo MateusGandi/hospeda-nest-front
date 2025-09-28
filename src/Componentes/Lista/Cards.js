@@ -136,17 +136,23 @@ export const Cards = ({
             {onDelete && (
               <Tooltip title="Excluir">
                 <IconButton
+                  size="small"
                   sx={{
                     position: "absolute",
                     top: 8,
                     right: 8,
+                    borderRadius: "10px !important",
+                    ":hover": {
+                      background: "rgba(0,0,0,0.5)",
+                    },
+                    background: "rgba(0,0,0,0.3)",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(item.id, item);
                   }}
                 >
-                  <CloseIcon />
+                  <CloseIcon size="small" />
                 </IconButton>
               </Tooltip>
             )}

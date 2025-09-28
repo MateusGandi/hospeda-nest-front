@@ -28,7 +28,14 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     search: "",
     page: 1,
     pageSize: 10,
-    data: new Date().toISOString(),
+    data: toUTC({
+      data: new Date().toISOString(),
+      onlyDate: true,
+      offsetHoras: -3,
+    })
+      .split("/")
+      .reverse()
+      .join("-"),
     loading: true,
   });
 
@@ -43,12 +50,15 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
   const handleGet = async () => {
     try {
       setDados("loading", true);
+      const id =
+        getLocalItem("accessType") == "adm"
+          ? getLocalItem("establishmentId")
+          : getLocalItem("userId");
+
       const data = await apiService.query(
         "GET",
         buscar[getLocalItem("accessType")].url_transacoes(
-          getLocalItem("accessType") == "adm"
-            ? getLocalItem("establishmentId")
-            : getLocalItem("userId"),
+          id,
           dados.data,
           dados.page,
           dados.pageSize
@@ -58,7 +68,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       const vendas = data.map((item) => ({
         valor: item.preco,
         cliente: item.nomeCliente || "Cliente não informado",
-        data: toUTC(item.data),
+        data: toUTC({ data: item.data }),
         atendimento: item,
         funcionario: item.atendenteNome,
       }));
@@ -221,7 +231,9 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
           <Typography variant="body1">
             <strong>Finalização:</strong>{" "}
             {detalhe.movimentacao?.atendimento.dataFinalizacao
-              ? toUTC(detalhe.movimentacao?.atendimento.dataFinalizacao)
+              ? toUTC({
+                  data: detalhe.movimentacao?.atendimento.dataFinalizacao,
+                })
               : "Não finalizado"}
           </Typography>
           {detalhe.movimentacao?.atendimento.manual && (

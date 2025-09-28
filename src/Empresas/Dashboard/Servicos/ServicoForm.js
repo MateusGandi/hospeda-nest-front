@@ -31,6 +31,7 @@ const Servico = ({
   funcionarios,
   setFuncionarios,
   comissoes,
+  onClose,
 }) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
@@ -48,13 +49,13 @@ const Servico = ({
       icon: <LocalOfferOutlinedIcon />,
       label: "Comissões",
       id: 1,
-      disabled: !formData,
+      display: !!formData,
     },
     {
       icon: <DiscountOutlinedIcon />,
       label: "Descontos",
       id: 2,
-      disabled: !formData,
+      display: !!formData,
     },
   ];
 
@@ -71,10 +72,6 @@ const Servico = ({
     }
     setData({ ...data, [name]: value });
   };
-
-  useEffect(() => {
-    if (!open) setData({ nome: "", tempoGasto: null, preco: 0, descricao: "" });
-  }, [open]);
 
   useEffect(() => {
     if (formData) {
@@ -155,7 +152,7 @@ const Servico = ({
   return (
     <Modal
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={onClose}
       titulo={titulo}
       onAction={handleSave}
       actionText={actionText}

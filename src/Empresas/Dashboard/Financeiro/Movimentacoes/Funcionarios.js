@@ -27,22 +27,17 @@ import {
 } from "../../../../Componentes/Custom";
 import Modal from "../../../../Componentes/Modal/Simple";
 
-const meses = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
-
 const ListaMovimentacoes = ({ buscar, alertCustom }) => {
+  const formatDate = (date = new Date()) =>
+    toUTC({
+      data: new Date(date).toISOString(),
+      onlyDate: true,
+      offsetHoras: -3,
+    })
+      .split("/")
+      .reverse()
+      .join("-");
+
   const [dados, _setDados] = useState({
     funcionarios: [],
     vendas: [],
@@ -50,7 +45,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     search: "",
     page: 1,
     pageSize: 10,
-    data: new Date().toISOString(),
+    data: formatDate(),
     loading: true,
 
     ano: [
@@ -134,7 +129,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       const vendas = data.map((item) => ({
         valor: item.preco,
         cliente: item.nomeCliente || "Cliente não informado",
-        data: toUTC(item.data),
+        data: toUTC({ data: item.data }),
         atendimento: item,
         funcionario: item.atendenteNome,
       }));
@@ -163,14 +158,16 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       const mes = dados.mes[0].id + 1;
       setDados(
         "data",
-        set(new Date(), {
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          year: ano,
-          month: mes - 1,
-          date: 1,
-        }).toISOString()
+        formatDate(
+          set(new Date(), {
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            year: ano,
+            month: mes - 1,
+            date: 1,
+          })
+        )
       );
     }
   }, [dados.mes, dados.ano]);
@@ -381,9 +378,10 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                 </Typography>
                 <Typography variant="body1">
                   <strong>Finalização:</strong>{" "}
-                  {toUTC(
-                    modalDetalhe.movimentacao?.atendimento.dataFinalizacao
-                  )}
+                  {toUTC({
+                    data: modalDetalhe.movimentacao?.atendimento
+                      .dataFinalizacao,
+                  })}
                 </Typography>
                 {modalDetalhe.movimentacao?.atendimento.manual && (
                   <Typography variant="body1">

@@ -223,7 +223,6 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
           alertCustom={alertCustom}
           openModal={true}
           type="other"
-          onClose={handleClose}
         />
       ),
     },

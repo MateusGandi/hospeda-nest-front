@@ -288,7 +288,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         setError={alertCustom}
       />
     ),
-    fila: <EntrarFila />,
+    fila: <EntrarFila alertCustom={alertCustom} form={form} />,
     "agendamento-confirmado": (
       <ConfirmacaoAgendamento form={form} alertCustom={alertCustom} />
     ),

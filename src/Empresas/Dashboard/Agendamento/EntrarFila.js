@@ -1,13 +1,38 @@
 import React, { useEffect, useState } from "react";
 import BannerFind from "../../../Assets/Cobranca/find_banner.png";
 import { Grid2 as Grid, Paper, Stack, Typography } from "@mui/material";
+import Api from "../../../Componentes/Api/axios";
+import { diferencaEmTimestamp, toUTC } from "../../../Componentes/Funcoes";
 
-const Fila = ({ onAction, alertCustom }) => {
+const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
     quantidade_fila: 5,
     fila_titulo: "5 pessoas na fila",
-    fila_subtitulo: "Tempo médio de espera: 25 minutos",
+    fila_subtitulo: "Tempo es",
   });
+  const handleGetStatus = async () => {
+    try {
+      if (!form.barbeiro && !form.barbeiro.id) return;
+      const { peopleAhead, estimatedTime, waitTime } = await Api.query(
+        "GET",
+        `/scheduling/queue/estimate/${form.barbeiro.id}`
+      );
+
+      setContent({
+        quantidade_fila: peopleAhead,
+        fila_titulo: peopleAhead
+          ? `${peopleAhead} ${peopleAhead === 1 ? "pessoa" : "pessoas"} na fila`
+          : "Nenhuma pessoa na fila",
+        fila_subtitulo: `Tempo médio de espera: ${waitTime}`,
+      });
+    } catch (error) {
+      alertCustom("Erro ao buscar status da fila");
+    }
+  };
+
+  useEffect(() => {
+    handleGetStatus();
+  }, [form.servicos]);
 
   return (
     <Grid container>

@@ -8,21 +8,25 @@ import ProductForm from "./ProductForm";
 import { getLocalItem, isMobile } from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
 import View from "../../../Componentes/View";
+import { useNavigate, useParams } from "react-router-dom";
 
-const Products = ({ alertCustom, onClose }) => {
+const Products = ({ alertCustom }) => {
+  const { subPath } = useParams();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [productModal, setProductModal] = useState({
-    open: false,
-    titulo: "Adicionar novo produto",
-    actionText: "Adicionar",
-  });
 
   const [confirmDelete, setConfirmDelete] = useState({
     loading: false,
     open: false,
     item: null,
+  });
+
+  const [productModal, setProductModal] = useState({
+    open: false,
+    titulo: "Adicionar novo produto",
+    actionText: "Adicionar",
   });
 
   const [formData, setFormData] = useState({
@@ -41,43 +45,6 @@ const Products = ({ alertCustom, onClose }) => {
   });
 
   const establishmentId = getLocalItem("establishmentId");
-
-  const handlePhotoUpload = async (e, productId) => {
-    const file = e.target.files[0];
-
-    if (!file) {
-      console.error("Nenhum arquivo selecionado.");
-      return;
-    }
-
-    try {
-      const fileExtension = file.type.split("/")[1];
-      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
-      const renamedFile = new File([file], newName, { type: file.type });
-
-      const formData = new FormData();
-      formData.append("fotos", renamedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const endpoint = `/images/product/${productId}`;
-          await Api.query("POST", endpoint, formData);
-          alertCustom("Foto adicionada com sucesso!");
-          fetchProducts();
-        } catch (uploadError) {
-          alertCustom("Erro ao adicionar foto!");
-          console.error("Erro ao fazer upload da imagem:", uploadError);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Erro ao processar o arquivo:", error);
-    } finally {
-      fetchProducts();
-    }
-  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -98,58 +65,41 @@ const Products = ({ alertCustom, onClose }) => {
     }
   };
 
-  // Abrir modal para adicionar
-  const handleAdd = () => {
-    setFormData({
-      id: null,
-      nome: "",
-      descricao: "",
-      valor: "",
-      quantidade: 0,
-      quantidadeMinima: 0,
-      fotoPath: "",
-      categoria: "",
-      marca: "",
-      codigoBarras: "",
-      ativo: true,
-      disponivel: true,
-    });
-    setProductModal({
-      open: true,
-      titulo: "Adicionar novo produto",
-      actionText: "Adicionar",
-    });
+  const handlePhotoUpload = async (e, productId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const fileExtension = file.type.split("/")[1];
+      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
+      const renamedFile = new File([file], newName, { type: file.type });
+
+      const formData = new FormData();
+      formData.append("fotos", renamedFile);
+
+      await Api.query("POST", `/images/product/${productId}`, formData);
+      alertCustom("Foto adicionada com sucesso!");
+      fetchProducts();
+    } catch (error) {
+      alertCustom("Erro ao adicionar foto!");
+    }
   };
 
-  // Abrir modal para editar
-  const handleEdit = (item) => {
-    setFormData({
-      id: item.id,
-      nome: item.nome || "",
-      descricao: item.descricao || "",
-      valor: item.valor || "",
-      quantidade: item.quantidade || 0,
-      quantidadeMinima: item.quantidadeMinima || 0,
-      fotoPath: item.fotoPath || "",
-      categoria: item.categoria || "",
-      marca: item.marca || "",
-      codigoBarras: item.codigoBarras || "",
-      ativo: item.ativo ?? true,
-      disponivel: item.disponivel ?? true,
-    });
+  const handleAdd = () => navigate("/dashboard/produtos/novo");
 
-    setProductModal({
-      open: true,
-      titulo: `Editar ${item.nome}`,
-      actionText: "Salvar",
-    });
+  const handleEdit = (item) => navigate(`/dashboard/produtos/${item.id}`);
+
+  const handleCloseModal = () => {
+    setProductModal((prev) => ({ ...prev, open: false }));
+    navigate(-1);
   };
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
       const { valor, id, ...rest } = formData;
-      if (formData.id) {
+
+      if (id) {
         await Api.query("PUT", `/product/${id}`, {
           valor: +valor,
           ...rest,
@@ -163,7 +113,8 @@ const Products = ({ alertCustom, onClose }) => {
         });
         alertCustom("Produto adicionado com sucesso!");
       }
-      setProductModal((prev) => ({ ...prev, open: false }));
+
+      handleCloseModal();
       fetchProducts();
     } catch (error) {
       alertCustom("Erro ao salvar produto!");
@@ -174,40 +125,87 @@ const Products = ({ alertCustom, onClose }) => {
 
   const handleDelete = async (item) => {
     try {
-      setConfirmDelete((prev) => ({
-        ...prev,
-        loading: true,
-      }));
-
+      setConfirmDelete((prev) => ({ ...prev, loading: true }));
       await Api.query("DELETE", `/product/${item.id}`);
       alertCustom("Produto excluído com sucesso!");
       setConfirmDelete({ open: false, item: null });
-      setProductModal((prev) => ({ ...prev, open: false }));
+      handleCloseModal();
       fetchProducts();
     } catch (error) {
       alertCustom("Erro ao excluir produto!");
     } finally {
-      setConfirmDelete((prev) => ({
-        ...prev,
-        loading: false,
-      }));
+      setConfirmDelete((prev) => ({ ...prev, loading: false }));
     }
   };
 
-  const handleChange = (name, value) => {
+  const handleChange = (name, value) =>
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Abre o modal correto conforme a rota
+  useEffect(() => {
+    if (subPath === "novo") {
+      setFormData({
+        id: null,
+        nome: "",
+        descricao: "",
+        valor: "",
+        quantidade: 0,
+        quantidadeMinima: 0,
+        fotoPath: "",
+        categoria: "",
+        marca: "",
+        codigoBarras: "",
+        ativo: true,
+        disponivel: true,
+      });
+      setProductModal({
+        open: true,
+        titulo: "Adicionar novo produto",
+        actionText: "Adicionar",
+      });
+      return;
+    }
+
+    const item = products.find((p) => p.id == subPath);
+    if (item) {
+      setFormData({
+        id: item.id,
+        nome: item.nome || "",
+        descricao: item.descricao || "",
+        valor: item.valor || "",
+        quantidade: item.quantidade || 0,
+        quantidadeMinima: item.quantidadeMinima || 0,
+        fotoPath: item.fotoPath || "",
+        categoria: item.categoria || "",
+        marca: item.marca || "",
+        codigoBarras: item.codigoBarras || "",
+        ativo: item.ativo ?? true,
+        disponivel: item.disponivel ?? true,
+      });
+      setProductModal({
+        open: true,
+        titulo: `Editar ${item.nome}`,
+        actionText: "Salvar",
+      });
+    } else {
+      setProductModal({
+        open: false,
+        titulo: "Adicionar novo produto",
+        actionText: "Adicionar",
+      });
+    }
+  }, [subPath, products]);
 
   return (
     <>
       {isMobile ? (
         <Modal
           open={true}
-          onClose={onClose}
+          onClose={handleCloseModal}
           titulo="Gerenciar produtos"
           onAction={handleAdd}
           actionText="Novo Produto"
@@ -215,11 +213,10 @@ const Products = ({ alertCustom, onClose }) => {
           component="view"
           loading={loading}
         >
-          {products && products.length ? (
+          {products.length ? (
             <Grid container spacing={2}>
               <Grid size={12}>
                 <Typography variant="body1" className="show-box">
-                  {" "}
                   <Typography variant="h6">
                     <Icon>💡</Icon> Ajuda rápida
                   </Typography>
@@ -240,7 +237,6 @@ const Products = ({ alertCustom, onClose }) => {
                   label="produto"
                   keys={[
                     { label: "", value: "nome" },
-
                     {
                       label: "",
                       value: "valor",
@@ -254,7 +250,7 @@ const Products = ({ alertCustom, onClose }) => {
                         value > 1 ? `${value} unidades` : `${value} unidade`,
                     },
                   ]}
-                  items={products || []}
+                  items={products}
                 />
               </Grid>
             </Grid>
@@ -278,7 +274,7 @@ const Products = ({ alertCustom, onClose }) => {
       ) : (
         <View
           open={true}
-          onClose={onClose}
+          onClose={handleCloseModal}
           titulo="Gerenciar produtos"
           onAction={handleAdd}
           actionText="Novo Produto"
@@ -286,11 +282,10 @@ const Products = ({ alertCustom, onClose }) => {
           component="view"
           loading={loading}
         >
-          {products && products.length ? (
+          {products.length ? (
             <Grid container spacing={2}>
               <Grid size={12}>
                 <Typography variant="body1" className="show-box">
-                  {" "}
                   <Typography variant="h6">
                     <Icon>💡</Icon> Ajuda rápida
                   </Typography>
@@ -311,7 +306,6 @@ const Products = ({ alertCustom, onClose }) => {
                   label="produto"
                   keys={[
                     { label: "", value: "nome" },
-
                     {
                       label: "",
                       value: "valor",
@@ -325,7 +319,7 @@ const Products = ({ alertCustom, onClose }) => {
                         value > 1 ? `${value} unidades` : `${value} unidade`,
                     },
                   ]}
-                  items={products || []}
+                  items={products}
                 />
               </Grid>
             </Grid>
@@ -346,10 +340,12 @@ const Products = ({ alertCustom, onClose }) => {
             </Typography>
           )}
         </View>
-      )}{" "}
+      )}
+
+      {/* Modal do formulário de produto */}
       <Modal
         open={productModal.open}
-        onClose={() => setProductModal((prev) => ({ ...prev, open: false }))}
+        onClose={handleCloseModal}
         titulo={productModal.titulo}
         actionText={productModal.actionText}
         onAction={handleSave}
@@ -365,23 +361,22 @@ const Products = ({ alertCustom, onClose }) => {
                   variant: "outlined",
                   color: "terciary",
                   action: () =>
-                    setConfirmDelete({
-                      open: true,
-                      item: formData,
-                    }),
+                    setConfirmDelete({ open: true, item: formData }),
+                },
+                {
+                  titulo: "Cancelar Edição",
+                  variant: "outlined",
+                  color: "terciary",
+                  action: handleCloseModal,
                 },
               ]
             : []),
-          {
-            titulo: "Cancelar Edição",
-            variant: "outlined",
-            color: "terciary",
-            action: () => setProductModal((prev) => ({ ...prev, open: false })),
-          },
         ]}
       >
         <ProductForm form={formData} onChange={handleChange} />
       </Modal>
+
+      {/* Confirmação de exclusão */}
       <Confirm
         loading={confirmDelete.loading}
         open={confirmDelete.open}

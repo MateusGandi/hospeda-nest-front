@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -22,7 +22,7 @@ import notFounImage from "../../Assets/vt.png";
 export const Rows = ({
   items = [],
   onSelect,
-  selectedItems = [],
+  selectedItems,
   multipleSelect = false,
   onDelete,
   deleteMessage,
@@ -40,7 +40,11 @@ export const Rows = ({
   spacing = 1,
   disableRipple = false,
 }) => {
-  const [selected, setSelected] = useState(selectedItems ?? []);
+  const [selected, setSelected] = useState(selectedItems || []);
+
+  useEffect(() => {
+    if (selectedItems) setSelected(selectedItems || []);
+  }, [selectedItems]);
 
   const handleSelect = async (item) => {
     try {
@@ -57,9 +61,8 @@ export const Rows = ({
             ? []
             : [item];
       }
-
+      !selectedItems && setSelected(updatedSelection);
       if (onSelect) await onSelect(multipleSelect ? updatedSelection : item);
-      if (!oneTapMode) setSelected(updatedSelection);
     } catch (error) {}
   };
 

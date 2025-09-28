@@ -24,16 +24,47 @@ const timezones = {
   rio_branco: "America/Rio_Branco",
 };
 
-export const toUTC = (dataISO, onlyDate = false) => {
+export const diferencaEmTimestamp = (dataInicial, dataFinal) => {
   try {
-    return dataISO
+    const inicio = new Date(dataInicial).getTime();
+    const fim = new Date(dataFinal).getTime();
+
+    if (isNaN(inicio) || isNaN(fim)) {
+      throw new Error("Data inválida");
+    }
+
+    return fim - inicio;
+  } catch (error) {
+    return 0;
+  }
+};
+
+export const toUTC = ({
+  data: dataISO,
+  onlyDate = false,
+  onlyHours = false,
+  offsetHoras = 0,
+}) => {
+  try {
+    if (!dataISO) return "Data inválida";
+
+    const data = new Date(dataISO);
+
+    if (!isNaN(offsetHoras) && offsetHoras !== 0) {
+      data.setHours(data.getHours() + offsetHoras);
+    }
+
+    const dataLocal = data.toISOString();
+
+    return dataLocal
       .split("T")
       .map((item, i) =>
-        i == 0
+        i === 0
           ? item.split("-").reverse().join("/")
           : item.split(":").slice(0, 2).join(":")
       )
-      .filter((_, index) => (onlyDate ? index == 0 : true))
+      .filter((_, index) => (onlyHours ? index === 1 : true))
+      .filter((_, index) => (onlyDate ? index === 0 : true))
       .join(" ");
   } catch (error) {
     return "Data inválida";

@@ -76,7 +76,7 @@ export default function Suporte({ alertCustom }) {
 
       const ticketsAtualizados = data.map((t) => ({
         ...t,
-        titulo: `#${t.id} ${t.titulo} ${toUTC(t.criadoEm)}`,
+        titulo: `#${t.id} ${t.titulo} ${toUTC({ data: t.criadoEm })}`,
         subtitulo: (
           <Typography variant="body2" color="textSecondary">
             <Chip label={statusMap[t.status] || t.status} size="small" /> Clique
@@ -427,7 +427,7 @@ export default function Suporte({ alertCustom }) {
                         variant="caption"
                         sx={{ display: "block", mt: 0.5, textAlign: "right" }}
                       >
-                        {toUTC(h.createdAt)}
+                        {toUTC({ data: h.createdAt })}
                       </Typography>
                     </Box>
                   </Box>

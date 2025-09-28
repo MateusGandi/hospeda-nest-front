@@ -17,6 +17,7 @@ import {
   getLocalItem,
   getStatus,
   primeiraMaiuscula,
+  toUTC,
 } from "../../../Componentes/Funcoes";
 import { format } from "date-fns";
 import { Rows } from "../../../Componentes/Lista/Rows";
@@ -86,7 +87,7 @@ export const GerenciarFila = ({ alertCustom }) => {
               }}
             >
               <span>
-                {format(new Date(item.data), "HH:mm")}{" "}
+                {toUTC({ data: item.data, onlyDate: true })}{" "}
                 {item.usuario?.nome || "Cliente sem nome"}
               </span>
               {status.manual && <Chip size="small" label="Manual" />}
@@ -169,7 +170,7 @@ export const GerenciarFila = ({ alertCustom }) => {
     const interval = setInterval(() => {
       handleGetQueue(false);
       handleGetOne();
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -304,10 +305,9 @@ export const GerenciarFila = ({ alertCustom }) => {
                       titulo: "Horário previsto de início",
                       subtitulo:
                         content.currentClient.horarioPrevisto &&
-                        format(
-                          new Date(content.currentClient.horarioPrevisto),
-                          "HH:mm"
-                        ),
+                        toUTC(content.currentClient.horarioPrevisto).split(
+                          " "
+                        )[1],
                     },
                   ]}
                 >

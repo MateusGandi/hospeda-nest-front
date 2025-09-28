@@ -125,7 +125,8 @@ const Dividas = ({ alertCustom }) => {
       field: "vencimento",
       headerName: "Vencimento",
       width: 160,
-      renderCell: (value) => toUTC(new Date(value.vencimento).toISOString()),
+      renderCell: (value) =>
+        toUTC({ data: new Date(value.vencimento).toISOString() }),
     },
     {
       field: "status",
@@ -225,7 +226,9 @@ const Dividas = ({ alertCustom }) => {
                   sx={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <span>{`R$ ${item.valor.toFixed(2)}`}</span>
-                  <span>{toUTC(new Date(item.vencimento).toISOString())}</span>
+                  <span>
+                    {toUTC({ data: new Date(item.vencimento).toISOString() })}
+                  </span>
                 </Typography>
               ),
             }))}

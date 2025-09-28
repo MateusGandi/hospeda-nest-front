@@ -267,10 +267,10 @@ export default function Discount({ dados, alertCustom }) {
             <Grid size={12}>
               {" "}
               <Typography variant="body1">
-                Criado em {toUTC(form.createdAt)}
+                Criado em {toUTC({ data: form.createdAt })}
               </Typography>
               <Typography variant="body1">
-                Atualizado em {toUTC(form.updatedAt)}
+                Atualizado em {toUTC({ data: form.updatedAt })}
               </Typography>
             </Grid>
           )}

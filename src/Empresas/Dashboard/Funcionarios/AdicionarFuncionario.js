@@ -7,6 +7,7 @@ import {
   formatarHorario,
   formatPhone,
   getLocalItem,
+  primeiraMaiuscula,
 } from "../../../Componentes/Funcoes";
 import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
 import apiService from "../../../Componentes/Api/axios";
@@ -32,23 +33,33 @@ const Funcionario = ({
     nome: "",
     telefone: "",
     servicosPrestados: [],
-    filaDinamicaClientes: false,
   });
 
   useEffect(() => {
-    if (funcionario && open) {
+    if (funcionario) {
       setData({
         ...funcionario,
         idOrig: funcionario.id,
         title: `${funcionario.nome} - ${funcionario.telefone}`,
       });
+    } else {
+      setData({
+        nome: "",
+        telefone: "",
+        servicosPrestados: [],
+      });
     }
-  }, [open]);
+  }, [funcionario]);
 
   const handleSave = async () => {
     try {
       setLoading(true);
       const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
+
+      if (!data.id) {
+        throw new Error("Selecione um funcionário!");
+      }
+
       const funcionariosFinais = [...semAtual, data];
       await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
         funcionarios: funcionariosFinais.map((item) => ({
@@ -59,14 +70,8 @@ const Funcionario = ({
 
       await buscarDados();
       onClose();
-      setData({
-        nome: "",
-        telefone: "",
-        servicosPrestados: [],
-      });
     } catch (error) {
-      console.log("Erro ao salvar funcionário:", error);
-      alertCustom("Erro ao salvar funcionário");
+      alertCustom(error.message || "Erro ao salvar funcionário");
     } finally {
       setLoading(false);
     }
@@ -75,14 +80,7 @@ const Funcionario = ({
   return (
     <Modal
       open={open}
-      onClose={() => {
-        onClose();
-        setData({
-          nome: "",
-          telefone: "",
-          servicosPrestados: [],
-        });
-      }}
+      onClose={onClose}
       loadingButton={loading}
       titulo={titulo}
       onAction={handleSave}
@@ -101,16 +99,24 @@ const Funcionario = ({
         <Grid size={{ xs: 12, md: 6 }}>
           <Stack alignItems="center" spacing={2}>
             <Avatar
-              alt={(funcionario ?? data)?.nome ?? "Foto do Funcionário"}
-              sx={{ width: 250, height: 250, fontSize: 100 }}
-              src={(funcionario ?? data)?.imagem}
+              alt={data.nome || "Foto do Funcionário"}
+              sx={{
+                width: 225,
+                height: 225,
+                color: "#fff",
+                background: "#0195F7",
+                fontSize: funcionario && data.id ? 100 : 50,
+              }}
+              src={data.imagem}
             >
-              {(funcionario ?? data)?.nome[0]?.toUpperCase() ?? "T"}
+              {funcionario && data.id
+                ? primeiraMaiuscula(data.nome[0])
+                : "Tonsus"}
             </Avatar>
             <Box sx={{ m: "0 24px", width: "100%" }}>
-              {funcionario ? (
+              {data.id && funcionario ? (
                 <Typography variant="h5" sx={{ textAlign: "center" }}>
-                  {data.nome}{" "}
+                  {data.nome}
                   <Typography variant="body1">
                     {formatPhone(data.telefone)}
                   </Typography>
@@ -137,7 +143,9 @@ const Funcionario = ({
                       id: item.id,
                       nome: item.nome,
                       telefone: item.telefone,
-                      imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
+                      imagem:
+                        `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}` ||
+                        null,
                       foto: item.foto,
                     }));
                   }}

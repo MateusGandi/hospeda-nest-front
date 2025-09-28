@@ -7,11 +7,15 @@ import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { getLocalItem } from "../../../Componentes/Funcoes";
+import { useNavigate, useParams } from "react-router-dom";
 
-const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
+const GerenciarServicos = ({ alertCustom, reload }) => {
+  const navigate = useNavigate();
+  const { subPath } = useParams();
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     item: null,
+    origin: "from-list", // from-form
   });
   const [modal, setModal] = useState({
     open: false,
@@ -27,11 +31,11 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
   const [comissoes, setComissoes] = useState([]);
   const [openAlertModal, setOpenAlertModal] = useState(false);
 
-  const handleCancelEdit = () => {
+  const onClose = () => {
+    navigate(-1);
     setModal({
       open: false,
       titulo: "Adicionar novo serviço",
-      servicoSelecionado: null,
       actionText: "Adicionar",
       barbeariaId: getLocalItem("establishmentId"),
     });
@@ -40,19 +44,21 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
   const handleDelete = async (item) => {
     try {
       setModal((prev) => ({ ...prev, actionLoading: true }));
-      await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
-      setServicos(servicos.filter((op) => op.id != item.id));
+      //await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
+      fetchServicos();
       reload();
       alertCustom("Serviço deletado com sucesso!");
+      if (confirmDelete.origin != "from-form") navigate("/dashboard/servicos");
     } catch (error) {
       alertCustom("Erro ao deletar serviço!");
     } finally {
       setConfirmDelete((prev) => ({
         ...prev,
         open: false,
+        origin: "from-list",
       }));
       setModal((prev) => ({ ...prev, actionLoading: false }));
-      handleCancelEdit();
+      onClose();
     }
   };
 
@@ -63,8 +69,9 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
           color: "terciary",
           variant: "outlined",
           titulo: "Deletar serviço",
-          action: () => () =>
+          action: () =>
             setConfirmDelete({
+              origin: "from-form",
               open: true,
               item: item,
             }),
@@ -73,7 +80,7 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
           color: "terciary",
           variant: "outlined",
           titulo: "Cancelar Edição",
-          action: () => handleCancelEdit(),
+          action: onClose,
         },
       ],
       open: true,
@@ -86,6 +93,7 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
   };
 
   const addItem = () => {
+    navigate("/dashboard/servicos/novo");
     setModal({
       open: true,
       servicoSelecionado: null,
@@ -199,8 +207,15 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
   };
 
   useEffect(() => {
-    if (!modal.open) fetchServicos();
-  }, [modal.open]);
+    fetchServicos();
+  }, []);
+
+  useEffect(() => {
+    if (subPath) {
+      const servico = servicos.find((s) => s.id == subPath);
+      if (servico) handleSelect(servico);
+    }
+  }, [subPath]);
 
   const handlePhotoUpload = async (e, serviceId) => {
     const file = e.target.files[0];
@@ -253,6 +268,7 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
         loading={modal.loading}
       >
         <ServicoForm
+          onClose={onClose}
           formData={modal.servicoSelecionado}
           setFormData={setServicos}
           actionText={modal.actionText}
@@ -295,6 +311,7 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
                 oneTapMode={true}
                 onDelete={(id, item) =>
                   setConfirmDelete({
+                    origin: "from-list",
                     open: true,
                     item: item,
                   })
@@ -309,7 +326,7 @@ const GerenciarServicos = ({ alertCustom, onClose, reload }) => {
                       `R$ ${(+value).toFixed(2)}`.replace(".", ","),
                   },
                 ]}
-                onEdit={handleSelect}
+                onEdit={(item) => navigate(`/dashboard/servicos/${item.id}`)}
                 items={servicos.map((item, index) => ({
                   ...item,
                   imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,

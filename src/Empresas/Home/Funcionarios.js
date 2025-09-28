@@ -84,7 +84,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
           ) : (
             <Typography
               variant="h6"
-              sx={{ width: "100%", textAlign: "center" }}
+              sx={{ width: "100%" }}
               className="show-box"
             >
               <Icon>✂️</Icon> Nenhum funcionário disponível!

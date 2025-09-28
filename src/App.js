@@ -14,7 +14,7 @@ import NavigationBar from "./Componentes/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteElement, Redirect } from "./Componentes/Router/Path";
 import Permissions from "./Componentes/Permissions";
-// mateus gayyyyyy
+
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -96,7 +96,7 @@ function App() {
     "/barbearia/:barbeariaName/:subPath?",
     "/agendamento/:barbeariaName/:subPath?",
     "/barbearia",
-    "/dashboard/:path?/:subPath?",
+    "/dashboard/:path?/:subPath?/:modalPath?",
     "/manager/:page?",
     "/me/:agendamentoId?",
     "/plans/:videoPath?",

@@ -63,7 +63,8 @@ const Calendario = ({ onSelect, all = false, data = null }) => {
         </Grid>
       );
     }
-    const isSelectedDay = (ds, d) => toUTC(d, true) == toUTC(ds, true);
+    const isSelectedDay = (ds, d) =>
+      toUTC({ data: d, onlyDate: true }) == toUTC({ data: ds, onlyDate: true });
 
     for (let dia = 1; dia <= diasNoMes; dia++) {
       const mes = ("00" + (mesAtual.getMonth() + 1)).slice(-2);

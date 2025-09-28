@@ -29,7 +29,7 @@ import LunchDiningIcon from "@mui/icons-material/LunchDining";
 import LocalCafeIcon from "@mui/icons-material/LocalCafe";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import SwipeIndicator from "../../../Componentes/Motion/Helpers/swipeIndicator";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomTabs from "../../../Componentes/Tabs";
 import View from "../../../Componentes/View";
 import Preferencies from "./Preferencies";
@@ -40,8 +40,8 @@ const WorkSchedule = ({
   dados,
   alertCustom,
   disabled,
-  handleCloseModal,
 }) => {
+  const { modalPath } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -385,6 +385,12 @@ const WorkSchedule = ({
       }));
   };
 
+  useEffect(() => {
+    if (type == "button") {
+      modalPath == "escala" ? setOpen(true) : setOpen(false);
+    }
+  }, [modalPath]);
+
   return (
     <>
       {type === "button" && (
@@ -394,7 +400,7 @@ const WorkSchedule = ({
           variant="contained"
           color="primary"
           size="large"
-          onClick={() => setOpen(true)}
+          onClick={() => navigate("escala")}
           disabled={disabled}
         >
           Configurar
@@ -404,9 +410,7 @@ const WorkSchedule = ({
       {isMobile || type === "button" ? (
         <Modal
           open={open}
-          onClose={
-            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
-          }
+          onClose={() => navigate(-1)}
           onAction={handleSave}
           loadingButton={loading}
           actionText="Salvar"
@@ -519,9 +523,7 @@ const WorkSchedule = ({
       ) : (
         <View
           open={open}
-          onClose={
-            handleCloseModal ? () => handleCloseModal : () => navigate(-1)
-          }
+          onClose={() => navigate(-1)}
           loadingButton={loading}
           onAction={handleSave}
           actionText="Salvar"

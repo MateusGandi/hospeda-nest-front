@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal/Simple";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FuncionarioForm from "./AdicionarFuncionario";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { Cards } from "../../../Componentes/Lista/Cards";
@@ -12,33 +12,38 @@ import {
   getLocalItem,
   isMobile,
 } from "../../../Componentes/Funcoes";
-import WorkSchedule from "../Escala";
 import View from "../../../Componentes/View";
 import Confirm from "../../../Componentes/Alert/Confirm";
 
-const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
+const INITIAL_FORM = {
+  open: false,
+  titulo: "Adicionar novo funcionário",
+  funcionarioSelecionado: null,
+  actionText: "Adicionar",
+  loading: false,
+  barbeariaId: getLocalItem("establishmentId"),
+  funcionario: null,
+  escala: false,
+  actionLoading: false,
+  buttons: [],
+};
+const GerenciarFuncionarios = ({ alertCustom, reload }) => {
+  const { subPath } = useParams();
+  const navigate = useNavigate();
+
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     item: null,
+    origin: "from-list", // from-form
   });
-
-  const [modal, setModal] = useState({
-    open: false,
-    titulo: "Adicionar novo funcionário",
-    funcionarioSelecionado: null,
-    actionText: "Adicionar",
-    loading: false,
-    barbeariaId: getLocalItem("establishmentId"),
-    funcionario: null,
-    escala: false,
-    actionLoading: false,
-  });
+  const [modal, setModal] = useState(INITIAL_FORM);
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
-  const handleDelete = async (item) => {
+  const handleDelete = async () => {
     try {
-      setModal((prev) => ({ ...prev, loading: true, actionLoading: true }));
+      const { item, origin } = confirmDelete;
+      setModal((prev) => ({ ...prev, actionLoading: true }));
       await Api.query("PATCH", `/establishment/${modal.barbeariaId}`, {
         funcionarios: funcionarios
           .filter((op) => op.id != item.id)
@@ -47,72 +52,82 @@ const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
             servicesId: item.servicosPrestados.map((service) => service.id),
           })),
       });
-      setFuncionarios(funcionarios.filter((op) => op.id != item.id));
+      fetchFuncionarios();
+      if (origin == "from-list") navigate("/dashboard/funcionarios");
+
+      setModal(INITIAL_FORM);
       setConfirmDelete((prev) => ({
         ...prev,
+        origin: "from-list",
         open: false,
       }));
       alertCustom("Funcionário removido com sucesso!");
     } catch (error) {
       alertCustom("Erro ao remover funcionários");
     } finally {
-      setModal((prev) => ({ ...prev, loading: false, actionLoading: false }));
+      setModal((prev) => ({ ...prev, actionLoading: false }));
     }
 
-    handleCancelEdit();
+    handleClose();
   };
 
-  const handleCancelEdit = () => {
-    setModal({
-      open: false,
-      titulo: "Adicionar novo funcionário",
-      funcionarioSelecionado: null,
-      actionText: "Adicionar",
-      barbeariaId: getLocalItem("establishmentId"),
-      funcionario: null,
-      escala: false,
-    });
+  const handleClose = () => {
+    navigate(-1);
   };
 
   const handleSelect = (item) => {
-    setModal({
-      open: true,
-      buttons: [
-        {
-          color: "terciary",
-          variant: "outlined",
-          titulo: "Remover funcionário",
-          action: () =>
-            setConfirmDelete({
-              open: true,
-              item: item,
-            }),
-        },
-        {
-          color: "terciary",
-          variant: "outlined",
-          titulo: "Cancelar Edição",
-          action: () => handleCancelEdit(),
-        },
-      ],
-      titulo: `Editar dados de ${item.nome}`,
-      funcionarioSelecionado: item,
-      actionText: "Salvar",
-      barbeariaId: getLocalItem("establishmentId"),
-      funcionario: item,
-      escala: false,
-    });
+    navigate(`/dashboard/funcionarios/${item.id}`);
   };
 
+  useEffect(() => {
+    if (subPath != "novo") {
+      const funcionario = funcionarios.find((f) => f.id == subPath);
+
+      if (funcionario) {
+        setModal({
+          open: true,
+          buttons: [
+            {
+              color: "terciary",
+              variant: "outlined",
+              titulo: "Remover funcionário",
+              action: () =>
+                setConfirmDelete({
+                  open: true,
+                  origin: "from-form",
+                  item: funcionario,
+                }),
+            },
+            {
+              color: "terciary",
+              variant: "outlined",
+              titulo: "Cancelar Edição",
+              action: () => handleClose(),
+            },
+          ],
+          titulo: `Editar dados de ${funcionario.nome}`,
+          funcionarioSelecionado: funcionario,
+          actionText: "Salvar",
+          barbeariaId: getLocalItem("establishmentId"),
+          funcionario: funcionario,
+          escala: false,
+        });
+      } else {
+        navigate("/dashboard/funcionarios");
+        setModal((prev) => ({
+          ...prev,
+          open: false,
+        }));
+      }
+    }
+  }, [subPath, funcionarios]);
+
   const addFuncionario = () => {
-    setModal((prev) => ({
-      ...prev,
+    setModal({
+      ...INITIAL_FORM,
       open: true,
-      barbeariaId: getLocalItem("establishmentId"),
-      titulo: "Adicionar novo funcionário",
-      funcionario: null,
-      escala: false,
-    }));
+    });
+    navigate(`/dashboard/funcionarios/novo`);
   };
 
   const fetchFuncionarios = async () => {
@@ -196,7 +211,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
       <Modal
         loading={modal.loading}
         open={true}
-        onClose={onClose}
+        onClose={() => navigate("/dashboard")}
         titulo={"Gerenciar funcionários"}
         onAction={addFuncionario}
         actionText="Adicionar Funcionário"
@@ -224,6 +239,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
                 oneTapMode={true}
                 onDelete={(id, item) =>
                   setConfirmDelete({
+                    origin: "from-list",
                     open: true,
                     item: item,
                   })
@@ -262,7 +278,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
         loading={modal.actionLoading}
         open={confirmDelete.open}
         onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
-        onConfirm={() => handleDelete(confirmDelete.item)}
+        onConfirm={handleDelete}
         title="Confirmar Exclusão"
         message={`Deseja excluir o funcionário ${confirmDelete.item?.nome}?`}
       />
@@ -275,7 +291,7 @@ const GerenciarFuncionarios = ({ alertCustom, onClose, reload }) => {
         open={modal.open}
         onSubmit={modal.onSubmit}
         submitText={modal.submitText}
-        onClose={() => setModal((prev) => ({ ...prev, open: false }))}
+        onClose={handleClose}
         titulo={modal.titulo}
         servicos={servicos}
         buttons={modal.buttons}

@@ -23,56 +23,61 @@ const CustomTabs = ({ tabs, onChange, selected, views = [], sx = {} }) => {
             minWidth: "100%",
           }}
         >
-          {tabs.map(({ label, id, icon, disabled }, index) => (
-            <Tab
-              disabled={disabled}
-              key={id || index}
-              label={
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    display: "flex",
-                    justifyContent: "center",
-                    flexWrap: "wrap",
-                  }}
-                >
+          {tabs
+            .filter((item) => !("display" in item) || item.display)
+            .map(({ label, id, icon, disabled }, index) => (
+              <Tab
+                disabled={disabled}
+                key={id || index}
+                label={
                   <Box
-                    variant="outlined"
-                    component={Paper}
                     sx={{
-                      borderRadius: "50%",
-                      width: "60px",
-                      height: "60px",
-                      mb: 1,
-                      ...(selected === id || selected === index
-                        ? { background: "rgba(255, 255, 255, 0.5)" }
-                        : disabled
-                        ? { background: "#212121" }
-                        : {}),
+                      textAlign: "center",
+                      display: "flex",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
                     }}
-                    className="justify-center"
                   >
-                    {icon}
+                    <Box
+                      variant="outlined"
+                      component={Paper}
+                      sx={{
+                        borderRadius: "50%",
+                        width: "60px",
+                        height: "60px",
+                        mb: 1,
+                        ...(selected === id || selected === index
+                          ? { background: "rgba(255, 255, 255, 0.5)" }
+                          : disabled
+                          ? { background: "#212121" }
+                          : {}),
+                      }}
+                      className="justify-center"
+                    >
+                      {icon}
+                    </Box>
+                    <Box
+                      sx={{
+                        display: { xs: "none", lg: "block" },
+                        width: "100%",
+                      }}
+                    >
+                      {primeiraMaiuscula(label)}
+                    </Box>
                   </Box>
-                  <Box
-                    sx={{ display: { xs: "none", lg: "block" }, width: "100%" }}
-                  >
-                    {primeiraMaiuscula(label)}
-                  </Box>
-                </Box>
-              }
-              sx={{
-                color: "#fff !important",
-                borderRadius: "10px !important",
-                px: { xs: 1, md: 0 },
-                minWidth: "fit-content",
-                borderBottom: "none !important",
-                "&:hover": {
-                  opacity: 0.9,
-                },
-              }}
-            />
-          ))}
+                }
+                sx={{
+                  color: "#fff !important",
+                  borderRadius: "10px !important",
+                  px: { xs: 1, md: 0 },
+                  minWidth: "fit-content",
+                  borderBottom: "none !important",
+                  "&:hover": {
+                    opacity: 0.9,
+                  },
+                }}
+              />
+            ))}
         </Tabs>
       </Box>
 
