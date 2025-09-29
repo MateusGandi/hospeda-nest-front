@@ -71,6 +71,8 @@ const Estabelecimentos = ({ alertCustom }) => {
   const formatarRows = (items) => {
     return items.map((item) => ({
       ...item,
+      // disabled: !item.aberto,
+      // sx: { backgroundColor: !item.aberto ? "#363636" : "transparent" },
       titulo: item.nome,
       subtitulo: `${
         item.distancia && item.distancia != 99999

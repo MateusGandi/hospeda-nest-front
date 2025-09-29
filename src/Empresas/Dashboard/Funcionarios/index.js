@@ -21,7 +21,7 @@ const INITIAL_FORM = {
   funcionarioSelecionado: null,
   actionText: "Adicionar",
   loading: false,
-  barbeariaId: getLocalItem("establishmentId"),
+  barbeariaId: null,
   funcionario: null,
   escala: false,
   actionLoading: false,
@@ -36,7 +36,10 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
     item: null,
     origin: "from-list", // from-form
   });
-  const [modal, setModal] = useState(INITIAL_FORM);
+  const [modal, setModal] = useState({
+    ...INITIAL_FORM,
+    barbeariaId: getLocalItem("establishmentId"),
+  });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
 
@@ -52,10 +55,18 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
             servicesId: item.servicosPrestados.map((service) => service.id),
           })),
       });
+      if (item.id == getLocalItem("userId")) {
+        localStorage.setItem("funcionario", false);
+        reload && reload();
+      }
+
       fetchFuncionarios();
       if (origin == "from-list") navigate("/dashboard/funcionarios");
 
-      setModal(INITIAL_FORM);
+      setModal({
+        ...INITIAL_FORM,
+        barbeariaId: getLocalItem("establishmentId"),
+      });
       setConfirmDelete((prev) => ({
         ...prev,
         origin: "from-list",
@@ -119,15 +130,22 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
           open: false,
         }));
       }
+    } else {
+      setModal({
+        ...INITIAL_FORM,
+        barbeariaId: getLocalItem("establishmentId"),
+        open: true,
+      });
     }
   }, [subPath, funcionarios]);
 
   const addFuncionario = () => {
     setModal({
       ...INITIAL_FORM,
+      barbeariaId: getLocalItem("establishmentId"),
       open: true,
     });
-    navigate(`/dashboard/funcionarios/novo`);
+    navigate(`novo`);
   };
 
   const fetchFuncionarios = async () => {
@@ -298,6 +316,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
         barbeariaId={modal.barbeariaId}
         alertCustom={alertCustom}
         buscarDados={fetchFuncionarios}
+        reload={reload}
       />
     </>
   );

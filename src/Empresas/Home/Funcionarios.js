@@ -22,7 +22,12 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
         titulo: "Trabalham com fila",
         disabled: true,
       });
-      rows.push(...content.fila);
+      rows.push(
+        ...content.fila.map((f) => ({
+          ...f,
+          titulo: `${f.titulo} (Presencial)`,
+        }))
+      );
     }
 
     if (content.agendamento.length) {
@@ -48,7 +53,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
           return;
         } else {
           const temp = format(form.barbearia.funcionarios, "barbeiros");
-          console.log(temp);
+
           setContent({
             fila: temp.filter((f) => f.filaDinamicaClientes),
             agendamento: temp.filter((f) => !f.filaDinamicaClientes),
@@ -64,7 +69,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
   }, [form.barbearia]);
 
   const handleSelect = (item) => {
-    if (!item.clientesPodemEntrarNaFila) {
+    if (!item.clientesPodemEntrarNaFila && item.filaDinamicaClientes) {
       handleInfo(true);
 
       throw new Error("Funcionário não pode ser selecionado");
@@ -108,8 +113,8 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
         onConfirm={() => handleInfo(false)}
         confirmText="Entendi"
         cancelText="Voltar"
-        title={"Este barbeiro não está disponível no momento"}
-        message="Este barbeiro trabalha com filas e não permite que você participe dela em casa. Desloque-se à barbearia para que o barbeiro te coloque na fila de espera!"
+        title={"Este funcionário não está disponível no momento"}
+        message="Este funcionário trabalha com filas e não permite que você participe dela em casa. Desloque-se à barbearia para que o barbeiro te coloque na fila de espera!"
       />
     </>
   );
