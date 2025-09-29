@@ -22,12 +22,7 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
         titulo: "Trabalham com fila",
         disabled: true,
       });
-      rows.push(
-        ...content.fila.map((f) => ({
-          ...f,
-          titulo: `${f.titulo} (Presencial)`,
-        }))
-      );
+      rows.push(...content.fila);
     }
 
     if (content.agendamento.length) {

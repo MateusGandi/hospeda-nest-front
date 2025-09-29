@@ -232,20 +232,21 @@ const Empresa = ({ alertCustom }) => {
         .filter((item) => !!item.servicosPrestados.length)
         .map((item) => ({
           ...item,
-          titulo: item.clientesPodemEntrarNaFila ? (
-            <span>
-              {" "}
-              {item.nome}{" "}
-              <Chip
-                label="Presencial"
-                size="small"
-                color="primary"
-                variant="filled"
-              />
-            </span>
-          ) : (
-            item.nome
-          ),
+          titulo:
+            !item.clientesPodemEntrarNaFila && item.filaDinamicaClientes ? (
+              <>
+                <span>{item.nome}</span>
+                <Chip
+                  label="Presencial"
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                  sx={{ ml: 2 }}
+                />
+              </>
+            ) : (
+              item.nome
+            ),
           subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
             item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
           }`,
@@ -332,7 +333,6 @@ const Empresa = ({ alertCustom }) => {
         }}
       >
         <Grid size={{ md: 12, xs: 12 }}>
-          {" "}
           <Typography variant="h5">
             Ocorreu um erro com o agendamento...
             <Typography variant="body1" color="GrayText">
