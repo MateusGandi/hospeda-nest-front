@@ -77,7 +77,6 @@ const Agendamento = ({ form, setForm, alertCustom }) => {
       const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
       setVagasDisponiveis(resp.map((item) => formatarData(item)));
     };
-    console.log(form);
     form.servicos?.length && fetch();
   }, [form.servicos]);
 

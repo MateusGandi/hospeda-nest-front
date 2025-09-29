@@ -314,7 +314,7 @@ export const setLocalItem = (key, value) => {
 
 export const getLocalItem = (key) => {
   const item = window.localStorage.getItem(key);
-  if (item === null) return null;
+  if (item === null || item == "/login") return null;
 
   try {
     const parsed = JSON.parse(item);

@@ -88,7 +88,9 @@ export const GerenciarFila = ({ alertCustom }) => {
             >
               <span>
                 {toUTC({ data: item.data, onlyDate: true })}{" "}
-                {item.usuario?.nome || "Cliente sem nome"}
+                {primeiraMaiuscula(
+                  item.usuario?.nome || item.nomeCliente || "Cliente sem nome"
+                )}
               </span>
               {status.manual && <Chip size="small" label="Manual" />}
             </Typography>
@@ -305,24 +307,25 @@ export const GerenciarFila = ({ alertCustom }) => {
                       titulo: "Horário previsto de início",
                       subtitulo:
                         content.currentClient.horarioPrevisto &&
-                        toUTC(content.currentClient.horarioPrevisto).split(
-                          " "
-                        )[1],
+                        toUTC({
+                          data: content.currentClient.horarioPrevisto,
+                          onlyHours: true,
+                        }),
                     },
                   ]}
                 >
                   <Typography
-                    variant="h6"
+                    variant="h4"
                     sx={{ p: "5px 15px", background: "#363636" }}
                   >
+                    <Typography variant="body2" color="textSecondary">
+                      Cliente atual
+                    </Typography>
                     {primeiraMaiuscula(
                       content.currentClient.nome ||
                         content.currentClient.nomeCliente ||
                         "Cliente sem nome"
                     )}{" "}
-                    <Typography variant="body2" color="textSecondary">
-                      Cliente atual
-                    </Typography>
                   </Typography>
                 </PaperList>
               </Grid>

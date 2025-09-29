@@ -73,10 +73,6 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
     setContent((prev) => ({ ...prev, selected: [item] }));
   };
 
-  useEffect(() => {
-    console.log(formatItems());
-  }, []);
-
   return (
     <>
       <Grid container>
