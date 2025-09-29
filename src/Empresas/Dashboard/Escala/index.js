@@ -65,8 +65,8 @@ const WorkSchedule = ({
         "Sexta-feira",
         "Sábado",
       ][i % 7],
-      horarioForaInicial: "",
-      horarioForaFinal: "",
+      horarioInicio: "",
+      horarioFim: "",
       ativo: false,
     }))
   );
@@ -112,8 +112,8 @@ const WorkSchedule = ({
           "Sexta-feira",
           "Sábado",
         ][i % 7],
-        horarioForaInicial: "",
-        horarioForaFinal: "",
+        horarioInicio: "",
+        horarioFim: "",
         ativo: false,
       }))
     );
@@ -124,8 +124,8 @@ const WorkSchedule = ({
   const setDefaultSchedule = () => {
     const updated = workDays.map((day, index) => ({
       ...day,
-      horarioForaInicial: index < 6 ? "08:00" : "00:00",
-      horarioForaFinal: index < 6 ? "18:00" : "00:00",
+      horarioInicio: index < 6 ? "08:00" : "00:00",
+      horarioFim: index < 6 ? "18:00" : "00:00",
       ativo: index < 6,
     }));
     setWorkDays(updated);
@@ -165,8 +165,8 @@ const WorkSchedule = ({
       );
       if (lunchRows[0].fim.length == 5 && lunchRows[0].fim.length == 5)
         await apiService.query("PUT", `/user/off-hour/${id}`, {
-          horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
-          horarioForaInicial: lunchRows[0].fim + ":00" || "00:00:00",
+          horarioFim: lunchRows[0].fim + ":00" || "00:00:00",
+          horarioInicio: lunchRows[0].fim + ":00" || "00:00:00",
         });
       await apiService.query(
         "POST",
@@ -216,7 +216,7 @@ const WorkSchedule = ({
       width: 160,
     },
     {
-      field: "horarioForaInicial",
+      field: "horarioInicio",
       headerName: "Início",
       editable: true,
       type: "text",
@@ -225,7 +225,7 @@ const WorkSchedule = ({
       format: (i, f, v, va) => formatTime(v, va),
     },
     {
-      field: "horarioForaFinal",
+      field: "horarioFim",
       headerName: "Fim",
       editable: true,
       type: "text",
@@ -326,8 +326,8 @@ const WorkSchedule = ({
                 "Sexta-feira",
                 "Sábado",
               ][i],
-              horarioForaInicial: dia?.horarioInicio?.slice(0, 5) || "",
-              horarioForaFinal: dia?.horarioFim?.slice(0, 5) || "",
+              horarioInicio: dia?.horarioInicio?.slice(0, 5) || "",
+              horarioFim: dia?.horarioFim?.slice(0, 5) || "",
               ativo: !!dia,
             };
           });

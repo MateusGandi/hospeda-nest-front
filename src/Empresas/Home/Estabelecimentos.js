@@ -44,7 +44,7 @@ const Estabelecimentos = ({ alertCustom }) => {
           );
         }
         if (searchValue) {
-          query.push(`estabilishment=${searchValue}`);
+          query.push(`establishment=${searchValue}`);
         }
         if (page) {
           query.push(`page=${page.page}`);
