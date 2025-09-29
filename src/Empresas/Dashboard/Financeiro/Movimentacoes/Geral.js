@@ -124,7 +124,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
           Histórico Movimentações
         </Typography>
         <Rows
-          oneTapMode={true}
+          oneTapMode
           variant="contained"
           items={
             dados.vendasFiltradas.length > 0
@@ -158,30 +158,19 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                       </Typography>
                     ),
                   })),
-                  {
-                    titulo: (
-                      <Box sx={{ textAlign: "center", width: "100%" }}>
-                        <Button
-                          variant="text"
-                          disabled={dados.vendas.length < dados.pageSize}
-                          onClick={() =>
-                            dados.vendas.length === dados.pageSize &&
-                            setDados("pageSize", dados.pageSize + 10)
-                          }
-                        >
-                          Carregar mais
-                        </Button>
-                      </Box>
-                    ),
-                    subtitulo: "",
-                  },
                 ]
               : [
                   {
+                    sx: { background: "transparent" },
                     titulo: dados.loading ? (
                       <LoadingBox message="Buscando..." />
                     ) : (
-                      "Nenhuma venda encontrada"
+                      <Typography
+                        variant="h6"
+                        sx={{ width: "100%", textAlign: "center" }}
+                      >
+                        Nenhuma venda encontrada
+                      </Typography>
                     ),
                     disabled: true,
                     subtitulo: "",
@@ -189,6 +178,20 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
                 ]
           }
         />
+        <Box sx={{ textAlign: "center", width: "100%" }}>
+          <Button
+            color="secondary"
+            variant="text"
+            sx={{ my: 2, px: 2 }}
+            disabled={dados.vendas.length < dados.pageSize}
+            onClick={() =>
+              dados.vendas.length === dados.pageSize &&
+              setDados("pageSize", dados.pageSize + 10)
+            }
+          >
+            Carregar mais
+          </Button>
+        </Box>
       </Grid>
 
       {/* Modal de Detalhes da Movimentação */}

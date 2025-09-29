@@ -45,7 +45,10 @@ const EditUserModal = ({ open, onClose, alertCustom, userData, buscar }) => {
       onClose();
       buscar();
     } catch (error) {
-      alertCustom("Erro ao atualizar os dados, tente novamente mais tarde.");
+      alertCustom(
+        error?.response?.data?.message ||
+          "Erro ao atualizar os dados, tente novamente mais tarde."
+      );
     }
   };
 

@@ -61,8 +61,11 @@ export const Rows = ({
             ? []
             : [item];
       }
-      if (onSelect) await onSelect(multipleSelect ? updatedSelection : item);
-      !selectedItems && setSelected(updatedSelection);
+      if (oneTapMode && onSelect) onSelect([]);
+      if (onSelect && !oneTapMode)
+        await onSelect(multipleSelect ? updatedSelection : item);
+      if (!selectedItems && !oneTapMode && onSelect)
+        setSelected(updatedSelection);
     } catch (error) {}
   };
 

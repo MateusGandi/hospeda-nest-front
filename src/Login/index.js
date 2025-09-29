@@ -60,11 +60,7 @@ const LoginPage = ({ page, alertCustom }) => {
       });
       Api.setKey(data);
 
-      verifyAndRedirect(
-        data,
-        "Senha atualizada com sucesso, faça login novamente!",
-        "/login"
-      );
+      verifyAndRedirect(data, "Senha atualizada com sucesso", "/home");
     } catch (error) {
       console.log(error);
       alertCustom(
