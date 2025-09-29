@@ -141,14 +141,9 @@ const ModalPlanos = ({ alertCustom }) => {
         titulo={modal.nome}
         sx={{ background: "#181818", position: "relative", minHeight: "535px" }}
         component="modal"
-        buttons={[
-          {
-            titulo: "Quero esse!",
-            variant: "contained",
-            action: () => navigate(`/onboard/${modal.idPlan}`),
-            color: "primary",
-          },
-        ]}
+        actionText="Quero esse!"
+        onAction={() => navigate(`/onboard/${modal.idPlan}`)}
+        fullScreen="mobile"
       >
         <Grid container spacing={2}>
           <Grid
@@ -157,8 +152,13 @@ const ModalPlanos = ({ alertCustom }) => {
           >
             <img
               src={Image}
-              style={{ width: "450px", position: "absolute", left: 0 }}
-            ></img>
+              style={{
+                maxWwidth: "450px",
+                width: "100%",
+                position: "absolute",
+                left: 0,
+              }}
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             {" "}
