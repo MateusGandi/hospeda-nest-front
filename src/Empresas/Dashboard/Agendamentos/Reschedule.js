@@ -10,6 +10,7 @@ import { formatarData } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
 import Modal from "../../../Componentes/Modal/Simple";
+import Confirm from "../../../Componentes/Alert/Confirm";
 
 const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
   const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
@@ -52,7 +53,7 @@ const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
         const resp = await buscarVagas(
           form.barbeiro?.id,
           ids,
-          form.dia.toISOString().split("T")[0]
+          new Date(form.dia).toISOString().split("T")[0]
         );
 
         setVagasDisponiveis(resp.map((item) => formatarData(item)));
@@ -138,6 +139,7 @@ const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
                 data={form.dia}
                 onSelect={(value) => {
                   setForm({ ...form, dia: value });
+                  modal.onClose();
                 }}
               />
             </Grid>

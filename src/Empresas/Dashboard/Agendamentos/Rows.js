@@ -22,6 +22,15 @@ import { PaperList } from "../../../Componentes/Lista/Paper";
 import Filter from "../../../Componentes/Filter";
 import { useNavigate } from "react-router-dom";
 import View from "../../../Componentes/View";
+import Confirm from "../../../Componentes/Alert/Confirm";
+
+const CONFIRM_INITIAL = {
+  open: false,
+  action: () => {},
+  loading: false,
+  message: "",
+  title: "",
+};
 
 const Agendamentos = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -53,6 +62,7 @@ const Agendamentos = ({ alertCustom }) => {
     report: "reporte",
     confirm: "confirmação",
   };
+  const [confirmModal, setConfirmModal] = useState(CONFIRM_INITIAL);
 
   const buscarAgendamentos = async () => {
     try {
@@ -183,7 +193,17 @@ const Agendamentos = ({ alertCustom }) => {
   }, [modalConteudo.filter, dataSelecionada]);
 
   const handleAction = async (acao) => {
+    setConfirmModal({
+      open: true,
+      action: async () => await handleConfirm(acao),
+      title: `Confirmação de ${status[acao]}`,
+      message: `Você tem certeza que deseja realizar o(a) ${status[acao]} deste agendamento?`,
+    });
+  };
+
+  const handleConfirm = async (acao) => {
     try {
+      setConfirmModal((prev) => ({ ...prev, loading: true }));
       await Api.query(
         "PATCH",
         `/scheduling/${acao}/${modalConteudo.dados?.id}`,
@@ -199,6 +219,8 @@ const Agendamentos = ({ alertCustom }) => {
       alertCustom(
         error?.response?.data?.message ?? `Erro ao realizar ${status[acao]}!`
       );
+    } finally {
+      setConfirmModal((prev) => ({ ...prev, open: false, loading: false }));
     }
   };
 
@@ -327,7 +349,9 @@ const Agendamentos = ({ alertCustom }) => {
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.size}
-        buttons={buttons[modalConteudo.view]}
+        buttons={buttons[modalConteudo.view].filter(
+          ({ status }) => status !== modalConteudo.dados?.status
+        )}
         onAction={
           modalConteudo.dados?.status == "PENDING" && modalConteudo.action.do
         }
@@ -378,6 +402,16 @@ const Agendamentos = ({ alertCustom }) => {
                   Resumo do pedido
                 </Typography>
               </PaperList>
+              <Confirm
+                loading={confirmModal.loading}
+                open={confirmModal.open}
+                onClose={() =>
+                  setConfirmModal((prev) => ({ ...prev, open: false }))
+                }
+                onConfirm={confirmModal.action}
+                title={confirmModal.title || "Confirmação"}
+                message={confirmModal.message || "Deseja continuar?"}
+              />
             </>
           )
         )}
