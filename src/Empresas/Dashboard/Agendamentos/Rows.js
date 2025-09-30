@@ -349,8 +349,10 @@ const Agendamentos = ({ alertCustom }) => {
         onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
         titulo={modalConteudo.titulo}
         maxWidth={modalConteudo.size}
-        buttons={buttons[modalConteudo.view].filter(
-          ({ status }) => status !== modalConteudo.dados?.status
+        buttons={(buttons[modalConteudo.view] || []).filter(
+          ({ status }) =>
+            status !== modalConteudo.dados?.status &&
+            modalConteudo.dados?.status != "CANCELLED"
         )}
         onAction={
           modalConteudo.dados?.status == "PENDING" && modalConteudo.action.do
