@@ -146,8 +146,8 @@ export default function Suporte({ alertCustom }) {
         selectedTicket: null,
         openModal: false,
         newMessage: "",
-        tickets: prev.tickets.filter((t) => t.id !== confirmDeleteOpen.item.id),
       }));
+      fetchTickets();
     } catch (err) {
       console.error(err);
       alertCustom("Erro ao fechar chamado, tente novamente mais tarde.");
