@@ -91,7 +91,6 @@ const Servico = ({
 
   const handleSaveComission = async () => {
     try {
-      console.log(funcionarios);
       const payload = funcionarios.map(({ id: funcionarioId, comissao }) => ({
         funcionarioId,
         tipo: comissao?.percentual ? "PERCENTUAL" : "VALOR",

@@ -68,7 +68,6 @@ export default function Commission({
         valorFixo = 0;
       } else if (field === "valorFixo") {
         const num = formatMoney(value);
-        console.log(num, servicoData.valor, Number(num) > servicoData.valor);
         valorFixo = Number(num) > servicoData.valor ? servicoData.valor : num;
         percentual = 0;
       }

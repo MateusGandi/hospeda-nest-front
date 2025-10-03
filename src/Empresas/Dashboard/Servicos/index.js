@@ -199,7 +199,6 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
             comissao && comissao.tipo === "PERCENTUAL" ? comissao.valor : 0,
         };
       });
-      console.log(final);
       setComissoes(final);
     } catch (error) {
       console.error("Erro ao buscar funcionários e comissões: ", error);
