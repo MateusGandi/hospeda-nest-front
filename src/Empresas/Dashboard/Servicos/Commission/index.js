@@ -4,6 +4,22 @@ import Icon from "../../../../Assets/Emojis";
 import EditableTable from "../../../../Componentes/Table";
 import { formatMoney } from "../../../../Componentes/Funcoes";
 
+const columns = [
+  { field: "nome", headerName: "Funcionário" },
+  {
+    field: "percentual",
+    headerName: "% Comissão",
+    editable: true,
+    type: "text",
+  },
+  {
+    field: "valorFixo",
+    headerName: "R$ Comissão",
+    editable: true,
+    type: "text",
+  },
+];
+
 export default function Commission({
   servico,
   comissoes,
@@ -15,28 +31,29 @@ export default function Commission({
 
   const onChangeCommission = (comissoesAtt) => {
     const updatedFuncionarios = funcionarios.map((f) => {
-      const comissao = comissoesAtt.find((c) => c.id === f.id);
-      return { ...f, comissao: comissao };
+      const comissao = comissoesAtt.find((c) => c.funcionarioId === f.id);
+      return {
+        ...f,
+        comissao: comissao
+          ? {
+              funcionarioId: f.id,
+              tipo: comissao.percentual ? "PERCENTUAL" : "VALOR",
+              valor: comissao.percentual || comissao.valorFixo || 0,
+              percentual: comissao.percentual,
+              valorFixo: comissao.valorFixo,
+            }
+          : {
+              funcionarioId: f.id,
+              tipo: "VALOR",
+              valor: 0,
+              percentual: 0,
+              valorFixo: 0,
+            },
+      };
     });
 
     setFuncionarios(updatedFuncionarios);
   };
-
-  const columns = [
-    { field: "nome", headerName: "Funcionário" },
-    {
-      field: "percentual",
-      headerName: "% Comissão",
-      editable: true,
-      type: "text",
-    },
-    {
-      field: "valorFixo",
-      headerName: "R$ Comissão",
-      editable: true,
-      type: "text",
-    },
-  ];
 
   const handleTableChange = (updatedRows, rowIndex, field, value) => {
     const recalculated = updatedRows.map((row, index) => {
@@ -46,20 +63,20 @@ export default function Commission({
       let valorFixo = row.valorFixo;
 
       if (field === "percentual") {
-        const num = Math.max(0, Math.min(value, 100));
-        percentual = Number((isNaN(num) ? row.percentual : num).toFixed(2));
-        valorFixo = "";
+        const num = Math.max(0, Math.min(Number(value), 100));
+        percentual = isNaN(num) ? 0 : Number(num.toFixed(2));
+        valorFixo = 0;
       } else if (field === "valorFixo") {
-        valorFixo = formatMoney(
-          Number(formatMoney(value)) > servicoData.valor
-            ? servicoData.valor
-            : value
-        );
-        percentual = "";
+        const num = formatMoney(value);
+        console.log(num, servicoData.valor, Number(num) > servicoData.valor);
+        valorFixo = Number(num) > servicoData.valor ? servicoData.valor : num;
+        percentual = 0;
       }
 
       return {
         ...row,
+        funcionarioId: row.funcionarioId || row.id,
+        nome: row.nome,
         percentual,
         valorFixo,
       };
@@ -69,10 +86,22 @@ export default function Commission({
     onChangeCommission(recalculated);
   };
 
-  useEffect(
-    () => setServicoData({ valor: servico.preco, nome: servico.nome }),
-    [servico]
-  );
+  useEffect(() => {
+    setServicoData({ valor: servico.preco, nome: servico.nome });
+  }, [servico]);
+
+  useEffect(() => {
+    if (comissoes?.length) {
+      setRows(
+        comissoes.map((c) => ({
+          funcionarioId: c.funcionarioId,
+          nome: c.nome,
+          percentual: Number(c.percentual) || 0,
+          valorFixo: Number(c.valorFixo) || 0,
+        }))
+      );
+    }
+  }, [comissoes]);
 
   return (
     <Grid container spacing={2}>

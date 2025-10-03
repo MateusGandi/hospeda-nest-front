@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import BannerFind from "../../Assets/Cobranca/find_banner.png";
 import { Grid2 as Grid, Paper, Stack, Typography } from "@mui/material";
 import Api from "../../Componentes/Api/axios";
+import Icon from "../../Assets/Emojis";
 
 const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
@@ -21,7 +22,7 @@ const Fila = ({ form, alertCustom }) => {
         quantidade_fila: peopleAhead,
         fila_titulo: peopleAhead
           ? `${peopleAhead} ${peopleAhead === 1 ? "pessoa" : "pessoas"} na fila`
-          : "Nenhuma pessoa na fila",
+          : "Fila vazia",
         fila_subtitulo: `Tempo médio de espera: ${waitTime}`,
       });
     } catch (error) {
@@ -31,7 +32,7 @@ const Fila = ({ form, alertCustom }) => {
 
   useEffect(() => {
     handleGetStatus();
-  }, [form.servicos]);
+  }, [form.barbeiro]);
 
   return (
     <Grid container>
@@ -62,11 +63,18 @@ const Fila = ({ form, alertCustom }) => {
             </Typography>
           </Paper>
           <Typography className="show-box" variant="h6">
-            Como funciona?
+            <Icon>💈</Icon> Como funciona?
             <Typography variant="body1">
-              Ao inserir o cliente na fila, ele receberá uma notificação quando
-              estiver próximo de ser atendido.
+              Ao entrar na fila, você receberá uma notificação quando estiver
+              próximo de ser atendido.
             </Typography>
+            {form.barbeiro?.filaDinamicaClientes &&
+              !form.barbeiro?.clientesPodemEntrarNaFila && (
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                  Você não pode entrar na fila por aqui pois o barbeiro está no
+                  controle, compareça ao local para ser atendido!
+                </Typography>
+              )}
           </Typography>
         </Stack>
       </Grid>

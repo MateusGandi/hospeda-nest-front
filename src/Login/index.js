@@ -43,7 +43,6 @@ const LoginPage = ({ page, alertCustom }) => {
       Api.setKey(data);
       verifyAndRedirect(data, "Login realizado com sucesso!", "/home");
     } catch (error) {
-      console.log(error);
       alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
     } finally {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
@@ -62,7 +61,6 @@ const LoginPage = ({ page, alertCustom }) => {
 
       verifyAndRedirect(data, "Senha atualizada com sucesso", "/home");
     } catch (error) {
-      console.log(error);
       alertCustom(
         error?.response?.data?.message ??
           "Erro ao atualizar senha, verifique os dados!"
@@ -97,9 +95,7 @@ const LoginPage = ({ page, alertCustom }) => {
       const { telefone } = dados;
       await Api.query("POST", `/user/recover/${telefone.replace(/\D/g, "")}`);
 
-      alertCustom(
-        "Um link de recuperação será enviado para seu e-mail e WhatsApp!"
-      );
+      alertCustom("Um link de recuperação será enviado para seu e-mail!");
     } catch (error) {
       console.log(error);
       alertCustom(
@@ -209,7 +205,7 @@ const LoginPage = ({ page, alertCustom }) => {
 
   const componentValidations = {
     create: [
-      { campo: "nome", validacoes: "required, minLength(10)" },
+      { campo: "nome", validacoes: "required, minLength(8)" },
       {
         campo: "telefone",
         validacoes: "required, minLength(16), telefone",

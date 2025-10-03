@@ -4,16 +4,18 @@ import { Rows } from "../../Componentes/Lista/Rows";
 import Icon from "../../Assets/Emojis";
 import Confirm from "../../Componentes/Alert/Confirm";
 
-const Funcionarios = ({ setError, format, form, setForm }) => {
+const Funcionarios = ({ setError, format, form, setForm, action }) => {
   const [content, setContent] = useState({
     fila: [],
     agendamento: [],
     selected: [],
+    preSelected: null,
     total: 0,
     alert: false,
   });
 
-  const handleInfo = (open) => setContent((prev) => ({ ...prev, alert: open }));
+  const handleSetInfo = (dados) =>
+    setContent((prev) => ({ ...prev, ...dados }));
 
   const formatItems = () => {
     const rows = [];
@@ -63,14 +65,27 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
     form.barbearia && handler();
   }, [form.barbearia]);
 
-  const handleSelect = (item) => {
-    if (!item.clientesPodemEntrarNaFila && item.filaDinamicaClientes) {
-      handleInfo(true);
-
-      throw new Error("Funcionário não pode ser selecionado");
+  const handleSelect = (item, force = false) => {
+    if (force) {
+      item = content.preSelected;
     }
+
+    if (
+      !item.clientesPodemEntrarNaFila &&
+      item.filaDinamicaClientes &&
+      !force
+    ) {
+      handleSetInfo({ alert: true, preSelected: item });
+    }
+
     setForm((prev) => ({ ...prev, barbeiro: item, selected: [item] }));
     setContent((prev) => ({ ...prev, selected: [item] }));
+  };
+
+  const handleContinue = async () => {
+    handleSetInfo({ alert: false });
+    handleSelect(null, true);
+    action && action();
   };
 
   return (
@@ -100,12 +115,12 @@ const Funcionarios = ({ setError, format, form, setForm }) => {
 
       <Confirm
         open={content.alert}
-        onClose={() => handleInfo(false)}
-        onConfirm={() => handleInfo(false)}
-        confirmText="Entendi"
+        onClose={() => handleSetInfo({ alert: false })}
+        onConfirm={handleContinue}
+        confirmText="Ver fila"
         cancelText="Voltar"
-        title={"Este funcionário não está disponível no momento"}
-        message="Este funcionário trabalha com filas e não permite que você participe dela em casa. Desloque-se à barbearia para que o barbeiro te coloque na fila de espera!"
+        title={"Fila presencial!"}
+        message="Este funcionário trabalha com filas e para entrar nela você precisa se deslocar até a barbearia!"
       />
     </>
   );

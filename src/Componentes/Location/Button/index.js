@@ -77,7 +77,7 @@ const GetUserLocation = ({
         }
       },
       (err) => {
-        alertCustom(err.message);
+        alertCustom("Por favor, permita o acesso à localização.");
         setLoading(false);
       }
     );

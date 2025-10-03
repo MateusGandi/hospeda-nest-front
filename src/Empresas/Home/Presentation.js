@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -20,6 +20,15 @@ import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
 
 const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
   const navigate = useNavigate();
+  const [endereco, setEndereco] = useState("");
+
+  useEffect(() => {
+    if (barbearia && barbearia.endereco) {
+      const enderecoLimpo = barbearia.endereco.replace(/\s+,/g, ",").trim();
+      setEndereco(enderecoLimpo);
+    }
+  }, [barbearia]);
+
   const actions = [
     {
       titulo: handleActionText,
@@ -33,14 +42,19 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
     },
     {
       titulo: "Localização",
-      action: () =>
+      action: () => {
+        const enderecoCompleto = `${endereco}, ${barbearia.nome}`;
         window.open(
-          `https://www.google.com/maps?q=${barbearia.endereco}`,
+          `https://www.google.com/maps?q=${encodeURIComponent(
+            enderecoCompleto
+          )}`,
           "_blank"
-        ),
+        );
+      },
       icon: <LocationOn />,
     },
   ];
+
   return (
     <>
       {barbearia ? (
@@ -71,7 +85,8 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
 
               <CardContent sx={{ textAlign: "center", marginTop: 4 }}>
                 <Typography variant="h6">{barbearia.nome}</Typography>
-                <Typography variant="body1">{barbearia.endereco}</Typography>
+
+                <Typography variant="body1">{endereco}</Typography>
               </CardContent>
             </Card>
           </Grid>

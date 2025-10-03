@@ -96,8 +96,8 @@ export const Cards = ({
               <Typography
                 sx={{
                   position: "absolute",
-                  top: "80%",
-                  width: "100%",
+                  top: "120px",
+                  width: "250px",
                   textAlign: "center",
                   cursor: "pointer",
                   fontSize: "14px",

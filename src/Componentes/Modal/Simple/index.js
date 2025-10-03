@@ -148,6 +148,9 @@ const Modal = ({
                 borderRadius: { xs: 0, md: "0" },
               }}
               component="form"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

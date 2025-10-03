@@ -25,6 +25,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
     loading: false,
     barbeariaId: getLocalItem("establishmentId"),
     actionLoading: false,
+    buttons: [],
   });
   const [funcionarios, setFuncionarios] = useState([]);
   const [servicos, setServicos] = useState([]);
@@ -33,18 +34,19 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
 
   const onClose = () => {
     navigate(-1);
-    setModal({
+    setModal((prev) => ({
+      ...prev,
       open: false,
       titulo: "Adicionar novo serviço",
       actionText: "Adicionar",
       barbeariaId: getLocalItem("establishmentId"),
-    });
+    }));
   };
 
   const handleDelete = async (item) => {
     try {
       setModal((prev) => ({ ...prev, actionLoading: true }));
-      //await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
+      await Api.query("DELETE", `/service/${item.id}/${modal.barbeariaId}`);
       fetchServicos();
       reload();
       alertCustom("Serviço deletado com sucesso!");
@@ -63,7 +65,8 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
   };
 
   const handleSelect = async (item) => {
-    setModal({
+    setModal((prev) => ({
+      ...prev,
       buttons: [
         {
           color: "terciary",
@@ -88,18 +91,19 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
       servicoSelecionado: { ...item, tempoGasto: item.tempoGasto.slice(0, 5) },
       barbeariaId: getLocalItem("establishmentId"),
       actionText: "Salvar",
-    });
+    }));
     await fetchFuncionarios(item.id);
   };
 
   const addItem = () => {
     navigate("/dashboard/servicos/novo");
-    setModal({
+    setModal((prev) => ({
+      ...prev,
       open: true,
       servicoSelecionado: null,
       titulo: "Adicionar novo serviço",
       barbeariaId: getLocalItem("establishmentId"),
-    });
+    }));
   };
 
   const handleSave = async (dados = []) => {
@@ -115,11 +119,10 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
 
       if (servicosAtualizados.find((item) => item.tempoGasto.length < 5))
         return alertCustom("Horário no formato inválido");
-
       if (
         servicosAtualizados.find((item) =>
           Object.values(item).some(
-            (value) => !value && !(typeof value === "boolean")
+            (value) => !value && typeof value != "boolean"
           )
         )
       )
@@ -146,7 +149,13 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
         return alertCustom("Nenhum serviço pré-definido encontrado!");
       }
 
-      handleSave(data.map(({ id, ...item }) => ({ ...item, flag: true })));
+      handleSave(
+        data.map(({ id, foto, ...item }) => ({
+          ...item,
+          flag: true,
+          descricao: item.nome,
+        }))
+      );
       setOpenAlertModal(false);
     } catch (error) {
       alertCustom("Erro ao cadastrar serviços!");
@@ -163,7 +172,6 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
-      reload();
     } catch (error) {
       alertCustom("Houve um problema ao buscar serviços");
     }
@@ -172,37 +180,29 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
 
   const fetchFuncionarios = async (serviceId) => {
     try {
-      const func = await Api.query(
+      const employees = await Api.query(
         "GET",
         `/establishment/employees/${modal.barbeariaId}`
       );
-      setFuncionarios(func);
-      const coms = await Api.query(
+      setFuncionarios(employees);
+      const comissions = await Api.query(
         "GET",
         `/service/commission-configurations/${serviceId}`
       );
-      setComissoes(
-        (coms.length
-          ? coms
-          : [{ tipo: "VALOR", valor: 0, funcionarioId: getLocalItem("userId") }]
-        ).map((comissao) => {
-          const percentual = comissao.tipo == "PERCENTUAL" ? comissao.valor : 0;
-          const valorFixo = comissao.tipo == "VALOR" ? comissao.valor : 0;
-          const funcionarioSelecionado = func.find(
-            (f) => f.id == comissao.funcionarioId
-          );
-          return {
-            funcionario: funcionarioSelecionado,
-            nome: funcionarioSelecionado?.nome,
-            ...comissao,
-            percentual,
-            valorFixo,
-          };
-        })
-      );
+      let final = employees.map((f) => {
+        const comissao = comissions.find((c) => c.funcionarioId === f.id);
+        return {
+          funcionarioId: f.id,
+          nome: f.nome,
+          valorFixo: comissao && comissao.tipo === "VALOR" ? comissao.valor : 0,
+          percentual:
+            comissao && comissao.tipo === "PERCENTUAL" ? comissao.valor : 0,
+        };
+      });
+      console.log(final);
+      setComissoes(final);
     } catch (error) {
-      console.error("Erro ao buscar funcionários:", error);
-      alertCustom("Erro ao buscar funcionários!");
+      console.error("Erro ao buscar funcionários e comissões: ", error);
     }
   };
 
@@ -226,7 +226,6 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
     }
 
     try {
-      // Ajustar o nome do arquivo
       const fileExtension = file.type.split("/")[1];
       const newName = `${file.name.split(".")[0]}.${fileExtension}`;
       const renamedFile = new File([file], newName, { type: file.type });
@@ -269,33 +268,22 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
       >
         <ServicoForm
           onClose={onClose}
+          open={modal.open}
+          fetchServicos={fetchServicos}
           formData={modal.servicoSelecionado}
           setFormData={setServicos}
-          actionText={modal.actionText}
-          open={modal.open}
-          onSubmit={modal.onSubmit}
-          submitText={modal.submitText}
-          setOpen={(e) =>
-            setModal((prev) => ({
-              ...prev,
-              open: e,
-              servicoSelecionado: null,
-            }))
-          }
+          barbeariaId={modal.barbeariaId}
           funcionarios={funcionarios}
-          setFuncionarios={setFuncionarios}
+          comissoes={comissoes}
           titulo={modal.titulo}
           buttons={modal.buttons}
-          barbeariaId={modal.barbeariaId}
           alertCustom={alertCustom}
-          comissoes={comissoes}
+          actionText={modal.actionText}
         />
 
         {servicos && servicos.length ? (
           <Grid container spacing={2}>
-            {" "}
             <Grid size={12}>
-              {" "}
               <Typography variant="body1" className="show-box">
                 <Typography variant="h6">
                   <Icon>💡</Icon> Ajuda rápida
@@ -305,7 +293,6 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
               </Typography>
             </Grid>
             <Grid size={12}>
-              {" "}
               <Cards
                 onUpload={handlePhotoUpload}
                 oneTapMode={true}
@@ -327,7 +314,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
                   },
                 ]}
                 onEdit={(item) => navigate(`/dashboard/servicos/${item.id}`)}
-                items={servicos.map((item, index) => ({
+                items={servicos.map((item) => ({
                   ...item,
                   imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/service/${item.id}/${item.foto}`,
                 }))}

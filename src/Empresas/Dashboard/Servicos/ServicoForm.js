@@ -11,37 +11,36 @@ import apiService from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Commission from "./Commission";
 import CustomTabs from "../../../Componentes/Tabs";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Discount from "./Discount";
 import { Build } from "@mui/icons-material";
-import DiscountOutlinedIcon from "@mui/icons-material/DiscountOutlined";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import { useNavigate } from "react-router-dom";
+
+const INITIAL_FORM = {
+  nome: "",
+  tempoGasto: "",
+  descricao: "",
+  preco: 0,
+};
 
 const Servico = ({
-  formData,
-  open,
-  setOpen,
-  titulo,
-  onSubmit,
-  submitText,
-  actionText,
-  buttons,
-  barbeariaId,
-  alertCustom,
-  funcionarios,
-  setFuncionarios,
-  comissoes,
   onClose,
+  open,
+  fetchServicos,
+  formData,
+  setFormData,
+  barbeariaId,
+  funcionarios: funcionariosProp,
+  comissoes,
+  titulo,
+  buttons,
+  alertCustom,
+  actionText,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({
-    nome: "",
-    tempoGasto: "",
-    descricao: "",
-    preco: 0,
-  });
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [data, setData] = useState(INITIAL_FORM);
   const [horario, setHorario] = useState(null);
-
   const [tab, setTab] = useState(0);
   const tabs = [
     { icon: <Build />, label: "Serviço", id: 0 },
@@ -51,13 +50,17 @@ const Servico = ({
       id: 1,
       display: !!formData,
     },
-    {
-      icon: <DiscountOutlinedIcon />,
-      label: "Descontos",
-      id: 2,
-      display: !!formData,
-    },
+    // {
+    //   icon: <DiscountOutlinedIcon />,
+    //   label: "Descontos",
+    //   id: 2,
+    //   display: !!formData,
+    // },
   ];
+
+  useEffect(() => {
+    setFuncionarios(funcionariosProp);
+  }, [funcionariosProp]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -74,7 +77,7 @@ const Servico = ({
   };
 
   useEffect(() => {
-    if (formData) {
+    if (formData)
       setData({
         flag: true,
         id: formData.id,
@@ -84,8 +87,29 @@ const Servico = ({
         descricao: formData.descricao || "",
         preco: formData.preco || 0,
       });
-    }
   }, [formData]);
+
+  const handleSaveComission = async () => {
+    try {
+      console.log(funcionarios);
+      const payload = funcionarios.map(({ id: funcionarioId, comissao }) => ({
+        funcionarioId,
+        tipo: comissao?.percentual ? "PERCENTUAL" : "VALOR",
+        valor: comissao?.percentual || comissao?.valorFixo || 0,
+      }));
+
+      await apiService.query(
+        "POST",
+        `/service/commission-configurations/${data.id}`,
+        payload
+      );
+
+      alertCustom("Comissões salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar comissões:", error);
+      alertCustom("Erro ao salvar comissões!");
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -98,42 +122,31 @@ const Servico = ({
       if (Object.values(rest).some((value) => !value && value !== 0))
         return alertCustom("Informe todos os campos obrigatórios");
 
-      await apiService.query(
-        id ? "PATCH" : "POST",
-        id ? `/service/${id}` : `/service`,
-        id
-          ? {
-              ...data,
-              tempoGasto: tempoGasto + ":00",
-              barbeariaId: getLocalItem("establishmentId"),
-            }
-          : [
-              {
+      await apiService
+        .query(
+          id ? "PATCH" : "POST",
+          id ? `/service/${id}` : `/service`,
+          id
+            ? {
                 ...data,
                 tempoGasto: tempoGasto + ":00",
                 barbeariaId: getLocalItem("establishmentId"),
-              },
-            ]
-      );
-      if (funcionarios.comissao)
-        await apiService.query(
-          "POST",
-          `/service/commission-configurations/${id}`,
-          funcionarios.map(
-            ({
-              id: funcionarioId,
-              comissao: { id, percentual, valorFixo },
-            }) => ({
-              id,
-              valor: percentual || valorFixo,
-              funcionarioId: funcionarioId,
-              tipo: percentual ? "PORCENTAGEM" : "VALOR",
-            })
-          )
-        );
+              }
+            : [
+                {
+                  ...data,
+                  tempoGasto: tempoGasto + ":00",
+                  barbeariaId: getLocalItem("establishmentId"),
+                },
+              ]
+        )
+        .then(async () => {
+          await handleSaveComission();
+        });
 
-      setData({ nome: "", tempoGasto: 0, preco: 0, descricao: "" });
-      setOpen(false);
+      setData(INITIAL_FORM);
+      fetchServicos();
+      onClose();
       alertCustom(
         formData
           ? "Serviço atualizado com sucesso!"
@@ -156,11 +169,9 @@ const Servico = ({
       titulo={titulo}
       onAction={handleSave}
       actionText={actionText}
-      onSubmit={onSubmit}
-      submitText={submitText}
       fullScreen="all"
       component="view"
-      buttons={(buttons || []).map((btn) => ({
+      buttons={buttons.map((btn) => ({
         ...btn,
         disabled: loading || btn.disabled,
       }))}

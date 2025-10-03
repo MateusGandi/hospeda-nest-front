@@ -22,7 +22,7 @@ const Fila = ({ form, alertCustom }) => {
         quantidade_fila: peopleAhead,
         fila_titulo: peopleAhead
           ? `${peopleAhead} ${peopleAhead === 1 ? "pessoa" : "pessoas"} na fila`
-          : "Nenhuma pessoa na fila",
+          : "Fila vazia",
         fila_subtitulo: `Tempo médio de espera: ${waitTime}`,
       });
     } catch (error) {

@@ -179,14 +179,23 @@ const Empresa = ({ alertCustom }) => {
           title: "Selecione um profissional",
           item: "barbeiro",
         },
+      ];
+
+      const queuePages = [
         {
           key: "servicos",
           title: "Selecione um ou mais serviços",
           item: "servicos",
         },
+        { key: "fila", title: "Fila de atendimento", item: "fila" },
+        {
+          key: "fila-confirmado",
+          title: "",
+          item: "fila-confirmado",
+        },
       ];
 
-      const queuePages = [
+      const onlyShowQueuePages = [
         { key: "fila", title: "Fila de atendimento", item: "fila" },
         {
           key: "fila-confirmado",
@@ -196,6 +205,11 @@ const Empresa = ({ alertCustom }) => {
       ];
 
       const schedulePages = [
+        {
+          key: "servicos",
+          title: "Selecione um ou mais serviços",
+          item: "servicos",
+        },
         {
           key: "agendamento",
           title: "Selecione uma data e horário",
@@ -214,9 +228,14 @@ const Empresa = ({ alertCustom }) => {
         item: "error",
       };
 
+      const barber = form.barbeiro || {};
       const paginas = [
         ...basePages,
-        ...(form.barbeiro?.filaDinamicaClientes ? queuePages : schedulePages),
+        ...(barber.filaDinamicaClientes
+          ? barber.clientesPodemEntrarNaFila
+            ? queuePages
+            : onlyShowQueuePages
+          : schedulePages),
         errorPage,
       ];
 
@@ -235,14 +254,14 @@ const Empresa = ({ alertCustom }) => {
           titulo:
             !item.clientesPodemEntrarNaFila && item.filaDinamicaClientes ? (
               <>
-                <span>{item.nome}</span>
                 <Chip
                   label="Presencial"
                   size="small"
-                  color="primary"
+                  color="warning"
                   variant="filled"
-                  sx={{ ml: 2 }}
-                />
+                  sx={{ mr: 1, mb: 1 }}
+                />{" "}
+                <span>{item.nome}</span>
               </>
             ) : (
               item.nome
@@ -284,6 +303,7 @@ const Empresa = ({ alertCustom }) => {
         setForm={setForm}
         format={formatarRows}
         setError={alertCustom}
+        action={handleNext}
       />
     ),
     servicos: (
@@ -393,7 +413,7 @@ const Empresa = ({ alertCustom }) => {
     if (invalidPaths.includes(subPath))
       return { action: undefined, text: "", buttons: [] };
 
-    if (["fila-confirmado", "fila"].includes(subPath) && form.in_fila)
+    if (["fila-confirmado", "fila"].includes(subPath) && form.in_fila) {
       return {
         action: undefined,
         text: "",
@@ -407,11 +427,20 @@ const Empresa = ({ alertCustom }) => {
           },
         ],
       };
-    else if (form.disabledActionButton)
+    } else if (form.disabledActionButton) {
       return { action: undefined, text: "", buttons: [] };
-    else if (subPath == "fila")
-      return { action: handleNext, text: "Entrar na fila" };
-    else return { action: handleNext, text: "Próximo", buttons: [] };
+    } else if (subPath == "fila") {
+      if (
+        form.barbeiro?.filaDinamicaClientes &&
+        !form.barbeiro?.clientesPodemEntrarNaFila
+      ) {
+        return { action: undefined, text: "", buttons: [] };
+      } else {
+        return { action: handleNext, text: "Entrar na fila" };
+      }
+    } else {
+      return { action: handleNext, text: "Próximo", buttons: [] };
+    }
   };
 
   return (

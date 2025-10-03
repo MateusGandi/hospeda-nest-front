@@ -209,6 +209,14 @@ const Funcionario = ({
                   Nenhum serviço cadastrado. Cadastre alguns antes de
                   prosseguir...
                 </Typography>
+                <Typography sx={{ width: "100%" }} className="justify-center">
+                  <Button
+                    sx={{ px: 2, mt: 2 }}
+                    onClick={() => navigate("/dashboard/servicos")}
+                  >
+                    Cadastrar
+                  </Button>
+                </Typography>
               </Typography>
             )}
           </Grid>{" "}
@@ -229,6 +237,7 @@ const Funcionario = ({
                       previstas.
                     </Typography>{" "}
                     <WorkSchedule
+                      reload={reload}
                       type="button"
                       alertCustom={alertCustom}
                       dados={data}

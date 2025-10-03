@@ -96,11 +96,8 @@ export const GerenciarFila = ({ alertCustom }) => {
             </Typography>
           ),
           subtitulo: (
-            <Typography variant="body2">
+            <Typography variant="body1">
               Clique para enviar mensagem via WhatsApp{" "}
-              <Typography variant="body2">
-                {formatPhone(item.usuario?.telefone) || "Não informado"}
-              </Typography>
             </Typography>
           ),
         };
@@ -200,6 +197,14 @@ export const GerenciarFila = ({ alertCustom }) => {
           sx: { px: 2 },
           action: () => openConfirm(content.currentClient.id, "remove"),
         },
+        {
+          titulo: "Adicionar cliente",
+          variant: "contained",
+          color: "success",
+          sx: { px: 2, color: "#fff" },
+          action: () =>
+            navigate("/dashboard/agendamento/cliente", { replace: true }),
+        },
       ]}
     >
       <Grid container spacing={2}>
@@ -208,7 +213,7 @@ export const GerenciarFila = ({ alertCustom }) => {
           <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
             <>
               <Typography variant="h6" sx={{ mb: 2 }}>
-                Fila de espera
+                Clientes Aguardando
               </Typography>
               <Rows
                 disableRipple
@@ -315,7 +320,7 @@ export const GerenciarFila = ({ alertCustom }) => {
                   ]}
                 >
                   <Typography
-                    variant="h4"
+                    variant="h5"
                     sx={{ p: "5px 15px", background: "#363636" }}
                   >
                     <Typography variant="body2" color="textSecondary">

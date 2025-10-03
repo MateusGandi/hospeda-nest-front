@@ -40,6 +40,7 @@ const WorkSchedule = ({
   dados,
   alertCustom,
   disabled,
+  reload,
 }) => {
   const { modalPath } = useParams();
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const WorkSchedule = ({
     { icon: <WorkIcon />, label: "Escala Semanal" },
     { icon: <ManageAccountsRoundedIcon />, label: "Preferências" },
     { icon: <LunchDiningIcon />, label: "Horário de Almoço" },
-    { icon: <LocalCafeIcon />, label: "Ausências" },
+    // { icon: <LocalCafeIcon />, label: "Ausências" },
   ];
   const [workDays, setWorkDays] = useState(
     [...Array(7)].map((_, i) => ({
@@ -168,19 +169,20 @@ const WorkSchedule = ({
           horarioFim: lunchRows[0].fim + ":00" || "00:00:00",
           horarioInicio: lunchRows[0].fim + ":00" || "00:00:00",
         });
-      await apiService.query(
-        "POST",
-        `/user/fault/${id}`,
-        absences.map((a) => ({
-          ...a,
-          dia: a.dia.split("T")[0],
-          horarioInicio: a.horarioInicio,
-          horarioFim: a.horarioFim,
-          funcionarioId: id,
-        }))
-      );
+      // await apiService.query(
+      //   "POST",
+      //   `/user/fault/${id}`,
+      //   absences.map((a) => ({
+      //     ...a,
+      //     dia: a.dia.split("T")[0],
+      //     horarioInicio: a.horarioInicio,
+      //     horarioFim: a.horarioFim,
+      //     funcionarioId: id,
+      //   }))
+      // );
 
       alertCustom("Escala de trabalho e preferências salvas com sucesso!");
+      reload();
       type == "button" ? navigate(-1) : setOpen(false);
     } catch (e) {
       console.log(e);
@@ -508,13 +510,13 @@ const WorkSchedule = ({
                       onChange={setLunchRows}
                     />
                   </SwipeIndicator>,
-                  <SwipeIndicator>
-                    <EditableTable
-                      columns={absencesColumns}
-                      rows={absences}
-                      onChange={setAbsences}
-                    />
-                  </SwipeIndicator>,
+                  // <SwipeIndicator>
+                  //   <EditableTable
+                  //     columns={absencesColumns}
+                  //     rows={absences}
+                  //     onChange={setAbsences}
+                  //   />
+                  // </SwipeIndicator>,
                 ]}
               />
             </Grid>
@@ -621,13 +623,13 @@ const WorkSchedule = ({
                       onChange={setLunchRows}
                     />
                   </SwipeIndicator>,
-                  <SwipeIndicator>
-                    <EditableTable
-                      columns={absencesColumns}
-                      rows={absences}
-                      onChange={setAbsences}
-                    />
-                  </SwipeIndicator>,
+                  // <SwipeIndicator>
+                  //   <EditableTable
+                  //     columns={absencesColumns}
+                  //     rows={absences}
+                  //     onChange={setAbsences}
+                  //   />
+                  // </SwipeIndicator>,
                 ]}
               />
             </Grid>
