@@ -1,10 +1,14 @@
-import { Snackbar } from "@mui/material";
+import { Snackbar, IconButton, Box, Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { isMobile } from "../../Funcoes";
 
 const Alerta = ({ alert, setAlert }) => {
   const handleClose = () => {
     setAlert((prev) => ({ ...prev, open: false }));
   };
+
+  const isError = alert.message?.toLowerCase().includes("erro");
 
   return (
     <Snackbar
@@ -14,14 +18,38 @@ const Alerta = ({ alert, setAlert }) => {
           : { vertical: "bottom", horizontal: "left" }
       }
       open={alert.open}
-      message={alert.message}
       onClose={handleClose}
       autoHideDuration={5000}
+      message={
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {isError && (
+            <WarningAmberRoundedIcon
+              color="warning"
+              sx={{ fontSize: "25px" }}
+            />
+          )}
+          <Typography sx={{ fontSize: "0.95rem", fontWeight: 500 }}>
+            {alert.message}
+          </Typography>
+        </Box>
+      }
+      action={
+        <IconButton
+          size="small"
+          aria-label="fechar"
+          color="inherit"
+          onClick={handleClose}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      }
       sx={{
         "& .MuiSnackbarContent-root": {
-          backgroundColor: "#353535",
+          backgroundColor: "#1e1e1e",
           color: "#fff",
-          borderRadius: "10px",
+          borderRadius: "12px",
+          fontWeight: "500",
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
         },
       }}
     />

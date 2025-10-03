@@ -37,7 +37,6 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
       .split("/")
       .reverse()
       .join("-");
-
   const [dados, _setDados] = useState({
     funcionarios: [],
     vendas: [],
@@ -115,7 +114,6 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     if (!details.funcionario) return;
     try {
       setDetails("loading", true);
-
       const data = await apiService.query(
         "GET",
         buscar["employee"].url_transacoes(
@@ -144,7 +142,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
 
   useEffect(() => {
     fetchFuncionarios();
-  }, []);
+  }, [dados.data]);
 
   useEffect(() => {
     if (details.open && details.funcionario) {
@@ -212,7 +210,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         open={details.open}
         onClose={() => {
           setDetails("open", false);
-          setDados("data", new Date());
+          setDados("data", formatDate());
         }}
         buttons={[
           {

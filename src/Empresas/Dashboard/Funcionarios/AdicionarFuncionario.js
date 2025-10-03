@@ -232,9 +232,8 @@ const Funcionario = ({
                   <>
                     <Typography variant="body1">
                       {" "}
-                      Você pode editar a escala do funcionário, programando dias
-                      da semana para expediente, horário de almoço e ausências
-                      previstas.
+                      Edite a escala para expediente, horário de almoço e
+                      preferências gerais
                     </Typography>{" "}
                     <WorkSchedule
                       reload={reload}
