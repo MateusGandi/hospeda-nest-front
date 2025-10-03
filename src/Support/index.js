@@ -251,9 +251,12 @@ export default function Suporte({ alertCustom }) {
     } catch (err) {
       console.error(err);
       alertCustom(err.response?.data?.message || "Erro ao abrir chamado.");
-      setState((prev) => ({ ...prev, confirmOpen: false }));
     } finally {
-      setState((prev) => ({ ...prev, loadingAction: false }));
+      setState((prev) => ({
+        ...prev,
+        loadingAction: false,
+        confirmOpen: false,
+      }));
     }
   };
 
