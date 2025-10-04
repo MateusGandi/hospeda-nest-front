@@ -196,7 +196,7 @@ export default function Suporte({ alertCustom }) {
       await apiService.query(
         "POST",
         `/establishment/ticket/${state.selectedTicket.id}/message`,
-        { message: novaMensagem.message }
+        { message: novaMensagem.message, userId: getLocalItem("userId") }
       );
       scrollToElement();
       fetchTickets(false);
@@ -335,7 +335,10 @@ export default function Suporte({ alertCustom }) {
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 8 }} sx={{ order: 999, height: "100%" }}>
+        <Grid
+          size={{ xs: 12, md: 8 }}
+          sx={{ order: 999, height: "100%", pb: 2 }}
+        >
           {state.loading ? (
             <LoadingBox message="Carregando chamados..." />
           ) : state.tickets.length ? (
