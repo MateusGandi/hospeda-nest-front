@@ -42,6 +42,7 @@ import {
   Person,
 } from "@mui/icons-material";
 import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
+import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
 
 const NavigationBar = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -127,6 +128,14 @@ const NavigationBar = ({ alertCustom }) => {
         route: "/logout",
         type: "text",
         icon: <LogoutIcon />,
+      },
+
+      {
+        titulo: "Menu principal",
+        action: () => navigate("/dashboard"),
+        route: "/dashboard",
+        type: "link",
+        icon: <WidgetsRoundedIcon />,
       },
       {
         titulo: "Início",
@@ -261,6 +270,13 @@ const NavigationBar = ({ alertCustom }) => {
         route: "/logout",
         type: "text",
         icon: <LogoutIcon />,
+      },
+      {
+        titulo: "Menu principal",
+        action: () => navigate("/dashboard"),
+        route: "/dashboard",
+        type: "link",
+        icon: <WidgetsRoundedIcon />,
       },
       {
         titulo: "Início",

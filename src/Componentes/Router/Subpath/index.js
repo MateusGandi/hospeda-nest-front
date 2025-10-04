@@ -112,12 +112,11 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
               flexShrink: 0,
               position: "absolute",
               zIndex: 999,
-              display: { xs: "none", md: "block" },
               transition: "width 0.3s ease-in-out",
               "& .MuiDrawer-paper": {
                 background: "#212121",
                 width: drawerWidth,
-                display: "flex",
+                display: { xs: "none", md: "flex" },
                 flexDirection: "column",
                 justifyContent: "space-between",
                 borderRadius: 0,
@@ -177,6 +176,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
             <Paper
               elevation={2}
               sx={{
+                display: { xs: "none", md: "flex" },
                 position: "fixed",
                 left: open ? drawerWidth + 5 : 5,
                 bottom: 10,
