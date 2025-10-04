@@ -326,7 +326,7 @@ export default function WeekCalendar({
                   onClick={onAction}
                   startIcon={actionIcon}
                   sx={{ width: { xs: "100%", md: "auto" } }}
-                  disableElevation={0}
+                  disableElevation
                 >
                   {actionText}
                 </Button>

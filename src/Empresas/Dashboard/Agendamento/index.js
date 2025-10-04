@@ -17,7 +17,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   const [paths, setPaths] = useState([]);
 
   const navigate = useNavigate();
-  const [tituloModal, setTituloModal] = useState("");
+  const [tituloModal, setTituloModal] = useState("Dados do cliente");
   const { subPath } = useParams();
 
   const [empresa, setEmpresa] = useState(null);

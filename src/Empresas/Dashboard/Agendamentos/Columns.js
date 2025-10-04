@@ -27,8 +27,14 @@ import SquareRoundedIcon from "@mui/icons-material/SquareRounded";
 import Modal from "../../../Componentes/Modal/Simple";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import View from "../../../Componentes/View";
-
+import Confirm from "../../../Componentes/Alert/Confirm";
+const CONFIRM_INITIAL = {
+  open: false,
+  action: () => {},
+  loading: false,
+  message: "",
+  title: "",
+};
 export default function AgendamentosByCalendario({ alertCustom, data }) {
   const navigate = useNavigate();
 
@@ -97,7 +103,11 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
 
   const [params, _setParams] = useState({
     search: "",
-    filter: "",
+    filter: {
+      titulo: "Todos",
+      valor: "",
+      id: 0,
+    },
     inicio: "",
     fim: "",
   });
@@ -111,6 +121,8 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
     titulo: "",
     selecionado: null,
   });
+
+  const [confirmModal, setConfirmModal] = useState(CONFIRM_INITIAL);
 
   const setContent = (newContent) => {
     _setContent((prev) => ({ ...prev, ...newContent }));
@@ -204,8 +216,18 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
     }
   };
 
-  const handleAction = async (acao) => {
+  const handleAction = (acao) => {
+    setConfirmModal({
+      open: true,
+      action: async () => await handleConfirmAction(acao),
+      title: `Confirmação de ${status[acao]}`,
+      message: `Você tem certeza que deseja realizar o(a) ${status[acao]} deste agendamento?`,
+    });
+  };
+
+  const handleConfirmAction = async (acao) => {
     try {
+      setConfirmModal((prev) => ({ ...prev, loading: true }));
       await apiService.query(
         "PATCH",
         `/scheduling/${acao}/${modal.selecionado?.id}`,
@@ -220,6 +242,8 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
       alertCustom(
         error?.response?.data?.message ?? `Erro ao realizar ${status[acao]}!`
       );
+    } finally {
+      setConfirmModal((prev) => ({ ...prev, loading: false, open: false }));
     }
   };
 
@@ -240,7 +264,7 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
           : {}),
       });
 
-      alertCustom("Agendamento atualizado com sucesso!");
+      alertCustom("Reagendamento realizado com sucesso!");
       handleGetAgendamentos();
     } catch (error) {
       handleGetAgendamentos();
@@ -269,6 +293,14 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
         titulo="Agendamentos"
         maxWidth="lg"
       >
+        <Confirm
+          loading={confirmModal.loading}
+          open={confirmModal.open}
+          onClose={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+          onConfirm={confirmModal.action}
+          title={confirmModal.title || "Confirmação"}
+          message={confirmModal.message || "Deseja continuar?"}
+        />
         <WeekCalendar
           loading={content.loading}
           legend={

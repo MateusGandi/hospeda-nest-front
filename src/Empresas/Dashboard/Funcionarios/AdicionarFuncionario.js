@@ -180,10 +180,8 @@ const Funcionario = ({
                 <Rows
                   items={servicos.map((item) => ({
                     ...item,
-                    titulo: item.nome,
-                    subtitulo: `R$ ${item.preco} | Duração: ${formatarHorario(
-                      item.tempoGasto
-                    )}`,
+                    titulo: `R$ ${item.preco} ${item.nome}`,
+                    subtitulo: `Duração: ${formatarHorario(item.tempoGasto)}`,
                   }))}
                   onSelect={(value) =>
                     setData({

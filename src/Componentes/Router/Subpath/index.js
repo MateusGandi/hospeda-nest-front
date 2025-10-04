@@ -112,6 +112,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
               flexShrink: 0,
               position: "absolute",
               zIndex: 999,
+              display: { xs: "none", md: "block" },
               transition: "width 0.3s ease-in-out",
               "& .MuiDrawer-paper": {
                 background: "#212121",
@@ -171,30 +172,11 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
           </Drawer>
           <Tooltip
             title={open ? "Fechar" : "Mais opções"}
-            sx={{ zIndex: 9999 }}
+            sx={{ zIndex: 9999, display: { xs: "none", md: "block" } }}
           >
-            <Paper
-              elevation={1}
-              sx={{
-                display: { xs: "block", md: "none" },
-                position: "fixed",
-                right: "8%",
-                bottom: 90,
-                zIndex: 2,
-                borderRadius: "50px",
-                transition: "left 0.2s ease-in-out",
-              }}
-              ref={toggleButtonRef}
-            >
-              <IconButton onClick={() => setOpen(!open)} sx={{ p: 2 }}>
-                {open ? <CloseRoundedIcon /> : <WidgetsRoundedIcon />}
-              </IconButton>
-            </Paper>
-
             <Paper
               elevation={2}
               sx={{
-                display: { xs: "none", md: "block" },
                 position: "fixed",
                 left: open ? drawerWidth + 5 : 5,
                 bottom: 10,

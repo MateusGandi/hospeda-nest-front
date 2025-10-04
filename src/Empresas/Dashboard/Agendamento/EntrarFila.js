@@ -12,7 +12,7 @@ const Fila = ({ form, alertCustom }) => {
   });
   const handleGetStatus = async () => {
     try {
-      if (!form.barbeiro && !form.barbeiro.id) return;
+      if (!form.barbeiro?.id) return;
       const { peopleAhead, estimatedTime, waitTime } = await Api.query(
         "GET",
         `/scheduling/queue/estimate/${form.barbeiro.id}`
@@ -26,6 +26,7 @@ const Fila = ({ form, alertCustom }) => {
         fila_subtitulo: `Tempo médio de espera: ${waitTime}`,
       });
     } catch (error) {
+      console.log(error);
       alertCustom("Erro ao buscar status da fila");
     }
   };

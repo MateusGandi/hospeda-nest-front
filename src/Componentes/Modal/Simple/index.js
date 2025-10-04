@@ -248,7 +248,12 @@ const Modal = ({
                         <>
                           <Grid size={12}>
                             <Grid container>
-                              <Grid size={12}>
+                              <Grid
+                                size={12}
+                                sx={{
+                                  px: 2,
+                                }}
+                              >
                                 <Button
                                   fullWidth
                                   disableElevation
@@ -258,7 +263,7 @@ const Modal = ({
                                   disabled={disabledAction || loadingButton}
                                   type="submit"
                                   sx={{
-                                    height: 40,
+                                    height: 45,
                                     background:
                                       "linear-gradient(to right, #2C69D1, #0ABCF9)",
                                     ...buttonStyle,
@@ -279,7 +284,13 @@ const Modal = ({
                                       ou
                                     </Divider>
                                   </Grid>
-                                  <Grid size={12} className="justify-center">
+                                  <Grid
+                                    size={12}
+                                    className="justify-center google-login-button"
+                                    sx={{
+                                      px: 2,
+                                    }}
+                                  >
                                     {/* <GoogleLoginButton
                                       text={buttons[0]?.text || "signin_with"}
                                       onError={(e) => buttons[0]?.action(e)}
@@ -287,15 +298,15 @@ const Modal = ({
                                     /> */}
                                     <GoogleLogin
                                       state_cookie_domain="localhost"
-                                      width="100%"
-                                      disable
+                                      width="350"
                                       size="large"
-                                      type="dark"
+                                      theme="filled_black"
                                       shape="pill"
                                       text={buttons[0]?.text || "signin_with"}
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                       onError={(e) => buttons[0]?.action(e)}
                                       buttonText="Login"
+                                      logo_alignment="center"
                                     />
                                   </Grid>
                                 </>

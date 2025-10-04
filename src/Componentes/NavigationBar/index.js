@@ -24,13 +24,24 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Cookies from "js-cookie";
-
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
-
 import LogoImage from "../../Assets/logo_aut.png";
 import apiService from "../Api/axios";
-
 import FAQ from "../../Empresas/Termos";
+
+import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import BusinessCenterRoundedIcon from "@mui/icons-material/BusinessCenterRounded";
+import {
+  Store,
+  Settings,
+  People,
+  Build,
+  CalendarMonth,
+  Home,
+  Person,
+} from "@mui/icons-material";
+import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 
 const NavigationBar = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -136,6 +147,33 @@ const NavigationBar = ({ alertCustom }) => {
         type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
+      },
+      {
+        titulo: "Financeiro",
+        action: () => navigate("/dashboard/financeiro"),
+        type: "link",
+        route: "/dashboard/financeiro",
+        icon: <BusinessCenterIcon />,
+      },
+      {
+        titulo: "Suporte",
+        action: () => navigate("/dashboard/support"),
+        type: "link",
+        route: "/dashboard/support",
+        icon: <QuestionAnswerRoundedIcon />,
+      },
+      {
+        titulo: "Meu perfil",
+        action: () => navigate("/me"),
+        type: "link",
+        route: "/me",
+        icon: (
+          <Avatar
+            sx={{ bgcolor: "#0195F7", color: "#fff", width: 40, height: 40 }}
+          >
+            {(getLocalItem("nome") ?? "T")[0]}
+          </Avatar>
+        ),
       },
     ],
     client: [
@@ -243,6 +281,47 @@ const NavigationBar = ({ alertCustom }) => {
         type: "icon",
         icon: <SearchIcon />,
         action: () => setModal(true),
+      },
+      {
+        titulo: "Financeiro",
+        action: () => navigate("/dashboard/financeiro"),
+        type: "link",
+        route: "/dashboard/financeiro",
+        icon: <BusinessCenterIcon />,
+      },
+      {
+        titulo: "Produtos",
+        action: () => navigate("/dashboard/produtos"),
+        type: "link",
+        route: "/dashboard/produtos",
+        icon: <LocalMallRoundedIcon />,
+      },
+      {
+        titulo: "Editar barbearia",
+        action: () => navigate("/dashboard/editar"),
+        type: "link",
+        route: "/dashboard/editar",
+        icon: <BusinessCenterRoundedIcon />,
+      },
+      {
+        titulo: "Suporte",
+        action: () => navigate("/dashboard/support"),
+        type: "link",
+        route: "/dashboard/support",
+        icon: <QuestionAnswerRoundedIcon />,
+      },
+      {
+        titulo: "Meu perfil",
+        action: () => navigate("/me"),
+        type: "link",
+        route: "/me",
+        icon: (
+          <Avatar
+            sx={{ bgcolor: "#0195F7", color: "#fff", width: 40, height: 40 }}
+          >
+            {(getLocalItem("nome") ?? "T")[0]}
+          </Avatar>
+        ),
       },
     ],
   };
@@ -384,7 +463,10 @@ const NavigationBar = ({ alertCustom }) => {
                   }}
                 >
                   {actions
-                    .filter((item) => location.pathname !== item.route)
+                    .filter(
+                      (item) =>
+                        location.pathname !== item.route && item.type != "link"
+                    )
                     .map((item, index) =>
                       item.type === "icon" ? (
                         <IconButton

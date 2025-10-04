@@ -64,6 +64,20 @@ button {
   border-radius: 50px;
 }
 
+div:has(> div > span#button-label) {
+  height: 45px !important;
+  width: 100% !important;
+  border-radius: 100px !important;
+}
+
+div:has(> div > svg:not(.MuiSvgIcon-root)) {
+  background-color: transparent !important;
+}
+
+.google-login-button > div {
+  width: 100% !important;
+}
+
 .show-text {
   color: #212121;
   background: #fff;

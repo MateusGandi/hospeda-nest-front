@@ -14,8 +14,7 @@ const ConfirmacaoAgendamento = ({ form }) => {
     confirmacao_label: "Agendamento confirmado!",
     notificacao_label:
       " Seu cliente será notificado por mensagem no WhatsApp se tiver permitido notificações!",
-    cancelamento_label:
-      "Cancelamentos só podem ocorrer com 1h de antecedência.",
+
     endereco: form?.barbearia?.endereco || "",
   };
 
@@ -86,11 +85,6 @@ const ConfirmacaoAgendamento = ({ form }) => {
         <Typography variant="h6">
           <Icon>🔔</Icon> Notificação{" "}
           <Typography variant="body1">{content.notificacao_label}</Typography>
-        </Typography>
-
-        <Typography variant="h6">
-          <Icon>💡</Icon> Cancelamentos{" "}
-          <Typography variant="body1">{content.cancelamento_label}</Typography>
         </Typography>
       </Grid>
 

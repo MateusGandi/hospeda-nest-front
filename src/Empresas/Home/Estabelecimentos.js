@@ -35,7 +35,6 @@ const Estabelecimentos = ({ alertCustom }) => {
 
   useEffect(() => {
     const buscarDados = async () => {
-      !empresas.length && setLoading(true);
       try {
         let query = [];
         if (location) {
@@ -61,8 +60,6 @@ const Estabelecimentos = ({ alertCustom }) => {
         setEmpresasFiltred(dados || []);
       } catch (error) {
         console.error("Erro ao buscar empresas:", error);
-      } finally {
-        !empresas.length && setLoading(false);
       }
     };
     buscarDados();

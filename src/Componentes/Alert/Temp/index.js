@@ -49,7 +49,7 @@ const Alerta = ({ alert, setAlert }) => {
           color: "#fff",
           borderRadius: "12px",
           fontWeight: "500",
-          boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
+          boxShadow: "0px 4px 12px rgba(256,256,256,0.01)",
         },
       }}
     />
