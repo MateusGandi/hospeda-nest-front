@@ -307,6 +307,7 @@ const Modal = ({
                                       onError={(e) => buttons[0]?.action(e)}
                                       buttonText="Login"
                                       logo_alignment="center"
+                                      useOneTap={false}
                                     />
                                   </Grid>
                                 </>
