@@ -11,6 +11,7 @@ import {
   formatPhone,
   getLocalItem,
   isMobile,
+  orderBy,
 } from "../../../Componentes/Funcoes";
 import View from "../../../Componentes/View";
 import Confirm from "../../../Componentes/Alert/Confirm";
@@ -154,18 +155,18 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
         "GET",
         `/establishment/employees/${modal.barbeariaId}`
       );
-      setFuncionarios(
-        funcionarios.map((item) => ({
-          ...item,
-          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${
-            item.idOrig || item.id
-          }/${item.foto}`,
-          titulo: `${item.nome} - ${item.telefone}`,
-          subtitulo: item.servicosPrestados?.length
-            ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
-            : "Sem serviços cadastrados",
-        }))
-      );
+      const data = funcionarios.map((item) => ({
+        ...item,
+        imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${
+          item.idOrig || item.id
+        }/${item.foto}`,
+        titulo: `${item.nome} - ${item.telefone}`,
+        subtitulo: item.servicosPrestados?.length
+          ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
+          : "Sem serviços cadastrados",
+      }));
+
+      setFuncionarios(orderBy(data || [], "id", "asc"));
 
       reload();
     } catch (error) {

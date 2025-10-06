@@ -32,10 +32,12 @@ export default function Commission({
   const onChangeCommission = (comissoesAtt) => {
     const updatedFuncionarios = funcionarios.map((f) => {
       const comissao = comissoesAtt.find((c) => c.funcionarioId === f.id);
+
       return {
         ...f,
         comissao: comissao
           ? {
+              id: comissao.id,
               funcionarioId: f.id,
               tipo: comissao.percentual ? "PERCENTUAL" : "VALOR",
               valor: comissao.percentual || comissao.valorFixo || 0,
@@ -74,6 +76,7 @@ export default function Commission({
 
       return {
         ...row,
+        id: row.id,
         funcionarioId: row.funcionarioId || row.id,
         nome: row.nome,
         percentual,
@@ -93,10 +96,11 @@ export default function Commission({
     if (comissoes?.length) {
       setRows(
         comissoes.map((c) => ({
+          id: c.id,
           funcionarioId: c.funcionarioId,
           nome: c.nome,
-          percentual: Number(c.percentual) || 0,
-          valorFixo: Number(c.valorFixo) || 0,
+          percentual: formatMoney(c.percentual) || 0,
+          valorFixo: formatMoney(c.valorFixo) || 0,
         }))
       );
     }

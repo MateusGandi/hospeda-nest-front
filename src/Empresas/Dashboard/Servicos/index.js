@@ -6,7 +6,7 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
-import { getLocalItem } from "../../../Componentes/Funcoes";
+import { getLocalItem, orderBy } from "../../../Componentes/Funcoes";
 import { useNavigate, useParams } from "react-router-dom";
 
 const GerenciarServicos = ({ alertCustom, reload }) => {
@@ -168,7 +168,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
     setModal((prev) => ({ ...prev, loading: true }));
     try {
       const data = await Api.query("GET", `/service/${modal.barbeariaId}`);
-      setServicos(data);
+      setServicos(orderBy(data || [], "id", "asc"));
       if (data && !data.length) {
         setOpenAlertModal(true);
       }
@@ -192,6 +192,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
       let final = employees.map((f) => {
         const comissao = comissions.find((c) => c.funcionarioId === f.id);
         return {
+          id: comissao.id,
           funcionarioId: f.id,
           nome: f.nome,
           valorFixo: comissao && comissao.tipo === "VALOR" ? comissao.valor : 0,

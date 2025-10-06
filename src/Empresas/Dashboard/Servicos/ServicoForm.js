@@ -91,17 +91,28 @@ const Servico = ({
 
   const handleSaveComission = async () => {
     try {
+      console.log("funcionarios", funcionarios);
       const payload = funcionarios.map(({ id: funcionarioId, comissao }) => ({
         funcionarioId,
+        id: comissao?.id,
         tipo: comissao?.percentual ? "PERCENTUAL" : "VALOR",
         valor: comissao?.percentual || comissao?.valorFixo || 0,
       }));
+      const updates = payload.filter((c) => !!c.id);
+      const inserts = payload.filter((c) => !c.id);
 
-      await apiService.query(
-        "POST",
-        `/service/commission-configurations/${data.id}`,
-        payload
-      );
+      updates.length &&
+        (await apiService.query(
+          "PUT",
+          `/service/commission-configurations/${data.id}`,
+          updates
+        ));
+      inserts.length &&
+        (await apiService.query(
+          "POST",
+          `/service/commission-configurations/${data.id}`,
+          inserts
+        ));
 
       alertCustom("Comissões salvas com sucesso!");
     } catch (error) {

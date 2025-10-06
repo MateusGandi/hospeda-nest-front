@@ -5,7 +5,7 @@ import Api from "../../../Componentes/Api/axios";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import ProductForm from "./ProductForm";
-import { getLocalItem, isMobile } from "../../../Componentes/Funcoes";
+import { getLocalItem, isMobile, orderBy } from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
 import View from "../../../Componentes/View";
 import { useNavigate, useParams } from "react-router-dom";
@@ -50,14 +50,14 @@ const Products = ({ alertCustom }) => {
     setLoading(true);
     try {
       const data = await Api.query("GET", `/product/${establishmentId}`);
-      setProducts(
+      const dados =
         data.map((item) => ({
           ...item,
           imagem: item.fotoPath
             ? `${process.env.REACT_APP_BACK_TONSUS}/images/product/${item.id}/${item.fotoPath}`
             : null,
-        })) || []
-      );
+        })) || [];
+      setProducts(orderBy(dados || [], "id", "asc"));
     } catch (err) {
       alertCustom("Erro ao buscar produtos!");
     } finally {

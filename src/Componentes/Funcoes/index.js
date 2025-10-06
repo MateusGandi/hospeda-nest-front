@@ -71,6 +71,14 @@ export const toUTC = ({
   }
 };
 
+export function orderBy(array, campo, ordem = "asc") {
+  return array.sort((a, b) => {
+    if (a[campo] < b[campo]) return ordem === "asc" ? -1 : 1;
+    if (a[campo] > b[campo]) return ordem === "asc" ? 1 : -1;
+    return 0;
+  });
+}
+
 export function corPorLetra(letra) {
   const cores = [
     "#F44336", // vermelho
