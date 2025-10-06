@@ -6,10 +6,11 @@ import Icon from "../../Assets/Emojis";
 
 const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
-    quantidade_fila: 5,
-    fila_titulo: "5 pessoas na sua frente",
-    fila_subtitulo: "Tempo médio de espera: 25 minutos",
+    quantidade_fila: 0,
+    fila_titulo: "Fila Vazia",
+    fila_subtitulo: "Tempo médio de espera: --",
   });
+
   const handleGetStatus = async () => {
     try {
       if (!form.barbeiro || !form.barbeiro.id) return;
@@ -31,7 +32,18 @@ const Fila = ({ form, alertCustom }) => {
   };
 
   useEffect(() => {
+    if (!form.barbeiro) return;
+
+    // Executa imediatamente
     handleGetStatus();
+
+    // Atualiza a cada 10 segundos
+    const interval = setInterval(() => {
+      handleGetStatus();
+    }, 10000);
+
+    // Limpa o intervalo ao desmontar ou mudar o barbeiro
+    return () => clearInterval(interval);
   }, [form.barbeiro]);
 
   return (

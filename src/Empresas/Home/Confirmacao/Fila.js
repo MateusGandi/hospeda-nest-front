@@ -1,7 +1,7 @@
 import { Button, Grid2 as Grid, Paper, Typography } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import { useNavigate } from "react-router-dom";
-import { getLocalItem } from "../../../Componentes/Funcoes";
+import { getLocalItem, toUTC } from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
 import BannerFind from "../../../Assets/Cobranca/find_banner.png";
 import { useEffect, useState } from "react";
@@ -62,10 +62,7 @@ const ConfirmacaoFila = ({ form, setForm }) => {
             <Icon>🕐</Icon> Horário previsto para atendimento
           </>
         ),
-        atendimento_label: format(
-          new Date(data.estimatedTime),
-          "dd/MM/yyyy 'às' HH:mm'h'"
-        ),
+        atendimento_label: toUTC({ data: data.estimatedTime }),
         posicao_label: `Você é o ${data.position}º na fila`,
         tempo_espera_label: `Tempo médio de espera: ${data.waitTime}`,
       });

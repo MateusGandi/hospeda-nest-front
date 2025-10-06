@@ -21,7 +21,7 @@ const LoginPage = ({ page, alertCustom }) => {
   const [dados, setDados] = useState({});
 
   const verifyAndRedirect = (dadosReceived, message, to) => {
-    const lastPath = getLocalItem("lastRoute") || to || "/home";
+    const lastPath = to || "/home";
     if (dadosReceived && dadosReceived.pendencia) {
       alertCustom(dadosReceived.motivo);
       navigate("/complete");

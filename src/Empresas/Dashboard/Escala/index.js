@@ -166,8 +166,8 @@ const WorkSchedule = ({
       );
       if (lunchRows[0].fim.length == 5 && lunchRows[0].fim.length == 5)
         await apiService.query("PUT", `/user/off-hour/${id}`, {
-          horarioFim: lunchRows[0].fim + ":00" || "00:00:00",
-          horarioInicio: lunchRows[0].fim + ":00" || "00:00:00",
+          horarioForaInicial: lunchRows[0].inicio + ":00" || "00:00:00",
+          horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
         });
       // await apiService.query(
       //   "POST",
