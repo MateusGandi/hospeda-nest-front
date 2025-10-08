@@ -21,6 +21,7 @@ import notFounImage from "../../Assets/vt.png";
 
 export const Rows = ({
   items = [],
+  avatarProps = {},
   onSelect,
   selectedItems,
   multipleSelect = false,
@@ -154,6 +155,7 @@ export const Rows = ({
                             color: "#fff",
                             width: 50,
                             height: 50,
+                            ...avatarProps,
                             mr: 2,
                           }}
                         >

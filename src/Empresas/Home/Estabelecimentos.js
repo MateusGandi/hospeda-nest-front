@@ -124,6 +124,12 @@ const Estabelecimentos = ({ alertCustom }) => {
               items={empresasFiltred}
               multipleSelect={dados.multipleSelect}
               onSelect={dados.onSelect}
+              sx={{ backgroundColor: "transparent" }}
+              avatarProps={{
+                width: 56,
+                height: 56,
+                backgroundColor: "#212121",
+              }}
             />
           ) : (
             <Typography
