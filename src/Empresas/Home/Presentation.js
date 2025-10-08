@@ -3,16 +3,11 @@ import {
   Avatar,
   Box,
   Card,
-  CardActionArea,
   CardContent,
   Grid2 as Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
   Typography,
 } from "@mui/material";
-import { LocationOn } from "@mui/icons-material";
+import { LocationOn, Share } from "@mui/icons-material";
 import { Rows } from "../../Componentes/Lista/Rows";
 import { useNavigate } from "react-router-dom";
 import ContentCutRoundedIcon from "@mui/icons-material/ContentCutRounded";
@@ -23,16 +18,34 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
   const [endereco, setEndereco] = useState("");
 
   useEffect(() => {
-    if (barbearia && barbearia.endereco) {
+    if (barbearia?.endereco) {
       const enderecoLimpo = barbearia.endereco.replace(/\s+,/g, ",").trim();
       setEndereco(enderecoLimpo);
     }
   }, [barbearia]);
 
+  const getMapsLink = () =>
+    `https://www.google.com/maps?q=${encodeURIComponent(
+      `${endereco}, ${barbearia.nome}`
+    )}`;
+
+  const getWhatsAppLink = () => {
+    const mensagem = [
+      `*${barbearia.nome}* está no Tonsus!`,
+      "",
+      `Localização no mapa: ${getMapsLink()}`,
+      "",
+      `Agende seu horário ou saiba mais clicando no link`,
+      window.location.href,
+    ].join("\n");
+
+    return `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
+  };
+
   const actions = [
     {
       titulo: handleActionText,
-      action: () => handleAction(),
+      action: handleAction,
       icon: <ContentCutRoundedIcon />,
     },
     {
@@ -42,16 +55,13 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
     },
     {
       titulo: "Localização",
-      action: () => {
-        const enderecoCompleto = `${endereco}, ${barbearia.nome}`;
-        window.open(
-          `https://www.google.com/maps?q=${encodeURIComponent(
-            enderecoCompleto
-          )}`,
-          "_blank"
-        );
-      },
+      action: () => window.open(getMapsLink(), "_blank"),
       icon: <LocationOn />,
+    },
+    {
+      titulo: "Compartilhar",
+      action: () => window.open(getWhatsAppLink(), "_blank"),
+      icon: <Share />,
     },
   ];
 
@@ -63,42 +73,45 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
             <Card elevation={0} sx={{ position: "relative" }}>
               <Box
                 sx={{
-                  backgroundImage: `url(${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner} )`,
+                  backgroundImage: `url(${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/banner/${barbearia.banner})`,
                   backgroundColor: "#212121",
                   height: 160,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               />
-
               <Avatar
                 src={`${process.env.REACT_APP_BACK_TONSUS}/images/establishment/${barbearia.id}/profile/${barbearia.profile}`}
                 sx={{
-                  width: "160px",
-                  height: "160px",
+                  width: 160,
+                  height: 160,
                   position: "absolute",
-                  top: "125px",
+                  top: 125,
                   left: "50%",
                   transform: "translate(-50%, -50%)",
                 }}
               />
-
               <CardContent sx={{ textAlign: "center", marginTop: 4 }}>
                 <Typography variant="h6">{barbearia.nome}</Typography>
-
-                <Typography variant="body1">{endereco}</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "text.secondary", wordBreak: "break-word" }}
+                >
+                  {barbearia.endereco.replace(/\s+,/g, ",").trim()}
+                </Typography>
               </CardContent>
             </Card>
           </Grid>
+
           <Grid item size={{ xs: 12 }} sx={{ mt: "10px" }}>
             <Rows
               items={actions}
               onSelect={({ action }) => action()}
-              oneTapMode={true}
-              collapse={true}
+              oneTapMode
+              collapse
               distribution={3}
             />
-          </Grid>{" "}
+          </Grid>
         </Grid>
       ) : (
         <div

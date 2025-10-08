@@ -128,11 +128,18 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
             <Box>
               <Toolbar>
                 {" "}
-                <img
-                  src={LogoImage}
-                  style={{ height: "32px", marginLeft: "8px" }}
-                />
+                <a href="/home">
+                  <img
+                    src={LogoImage}
+                    style={{
+                      height: "32px",
+                      marginLeft: "8px",
+                      marginTop: "6px",
+                    }}
+                  />{" "}
+                </a>
               </Toolbar>
+
               <List disablePadding>
                 {pages
                   .filter((item) => !item.footer)

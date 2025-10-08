@@ -5,7 +5,7 @@ import {
   Grid2 as Grid,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoImage from "../Assets/plus_banner.png";
 import { getLocalItem } from "../Componentes/Funcoes";
@@ -13,6 +13,9 @@ import { TypingEffectText } from "../Componentes/Effects";
 import Footer from "../Componentes/Footer";
 
 const PublicPage = () => {
+  const [tipoAcesso] = useState(
+    getLocalItem("accessType") ? getLocalItem("accessType") : "default"
+  );
   const items = {
     default: [
       { title: "Sua primeira vez aqui?", action: "/create" },
@@ -102,9 +105,7 @@ const PublicPage = () => {
               </span>
             </Typography>
           </Grid>
-          {items[
-            getLocalItem("accessType") ? getLocalItem("accessType") : "default"
-          ].map((item) => (
+          {items[tipoAcesso].map((item) => (
             <Grid
               item
               size={{ xs: 12, md: 3 }}

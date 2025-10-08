@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import BannerFind from "../../../Assets/Cobranca/find_banner.png";
 import { Grid2 as Grid, Paper, Stack, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
-import { diferencaEmTimestamp, toUTC } from "../../../Componentes/Funcoes";
 
 const Fila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
@@ -10,6 +9,7 @@ const Fila = ({ form, alertCustom }) => {
     fila_titulo: "5 pessoas na fila",
     fila_subtitulo: "Tempo médio de espera: 25 minutos",
   });
+
   const handleGetStatus = async () => {
     try {
       if (!form.barbeiro?.id) return;
@@ -32,8 +32,10 @@ const Fila = ({ form, alertCustom }) => {
   };
 
   useEffect(() => {
-    handleGetStatus();
-  }, [form.servicos]);
+    handleGetStatus(); // chama imediatamente ao montar
+    const interval = setInterval(handleGetStatus, 10000); // atualiza a cada 10s
+    return () => clearInterval(interval); // limpa ao desmontar
+  }, [form.barbeiro?.id]); // refaz quando muda o barbeiro
 
   return (
     <Grid container>

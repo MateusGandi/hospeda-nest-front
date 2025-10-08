@@ -135,3 +135,8 @@ div:has(> div > svg:not(.MuiSvgIcon-root)) {
   align-items: center;
   flex-wrap: wrap-reverse;
 }
+
+#container-div > div {
+  height: 45px !important;
+  width: 100px !important;
+}

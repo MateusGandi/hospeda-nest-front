@@ -425,9 +425,9 @@ const NavigationBar = ({ alertCustom }) => {
                 }}
                 onClick={() => navigate("/home")}
               >
-                <b>
+                <a href="/home">
                   <img src={LogoImage} style={{ height: "32px" }} />
-                </b>
+                </a>
               </Typography>
             </Grid>
             {actions.length > 0 && (
@@ -449,9 +449,9 @@ const NavigationBar = ({ alertCustom }) => {
                       "linear-gradient(0deg,rgba(33, 33, 33, 0) 0%, rgba(33, 33, 33, 1) 28%, rgba(33, 33, 33, 1) 100%)",
                   }}
                   titulo={
-                    <b>
+                    <a href="/home">
                       <img src={LogoImage} style={{ height: "32px" }} />
-                    </b>
+                    </a>
                   }
                 >
                   <Rows

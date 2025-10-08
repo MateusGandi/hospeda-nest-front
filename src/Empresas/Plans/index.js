@@ -208,6 +208,7 @@ const ModalPlanos = ({ alertCustom }) => {
               style={{
                 cursor: "pointer",
                 height: "37px",
+                marginTop: isMobile ? "3px" : 0,
                 marginLeft: isMobile ? 0 : "8px",
               }}
             />

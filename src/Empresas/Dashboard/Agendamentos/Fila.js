@@ -191,16 +191,16 @@ export const GerenciarFila = ({ alertCustom }) => {
       buttons={[
         {
           titulo: "Remover atual da fila",
-          variant: "text",
-          color: "secondary",
+          variant: "outlined",
+          color: "terciary",
           disabled: content.items.length == 0,
           sx: { px: 2 },
           action: () => openConfirm(content.currentClient.id, "remove"),
         },
         {
           titulo: "Adicionar cliente",
-          variant: "contained",
-          color: "success",
+          variant: "outlined",
+          color: "terciary",
           sx: { px: 2, color: "#fff" },
           action: () =>
             navigate("/dashboard/agendamento/cliente", { replace: true }),
