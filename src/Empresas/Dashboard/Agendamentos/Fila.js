@@ -356,6 +356,7 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                               content.currentClient.tempoEstimado
                             )} — ${toUTC({
                               data: content.currentClient.horarioPrevisto,
+                              offsetHoras: -3,
                             })}h`
                           : "Não informado",
                       },
