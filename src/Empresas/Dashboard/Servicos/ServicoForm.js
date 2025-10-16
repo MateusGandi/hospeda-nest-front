@@ -64,13 +64,13 @@ const Servico = ({
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    if (name == "tempoGasto") {
+    if (name === "tempoGasto") {
       const hrs = formatTime(horario, value);
       setData({ ...data, [name]: hrs });
       return setHorario(hrs);
     }
 
-    if (name == "preco") {
+    if (name === "preco") {
       return setData({ ...data, [name]: formatMoney(value) });
     }
     setData({ ...data, [name]: value });

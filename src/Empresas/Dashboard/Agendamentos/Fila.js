@@ -1,12 +1,4 @@
-import {
-  Chip,
-  Grid2 as Grid,
-  Typography,
-  Button,
-  Stack,
-  Link,
-  Box,
-} from "@mui/material";
+import { Chip, Grid2 as Grid, Typography, Link } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Modal from "../../../Componentes/Modal/Simple";
 import { useNavigate } from "react-router-dom";
@@ -17,20 +9,20 @@ import {
   getLocalItem,
   getStatus,
   primeiraMaiuscula,
+  setLocalItem,
   toUTC,
 } from "../../../Componentes/Funcoes";
-import { format } from "date-fns";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import Icon from "../../../Assets/Emojis";
-
+import { CustomSelect } from "../../../Componentes/Custom";
 const DESCRIPTION = {
   confirm: "confirmar atendimento",
   remove: "remover da fila",
 };
 
-export const GerenciarFila = ({ alertCustom }) => {
+export const GerenciarFila = ({ alertCustom, data, setData }) => {
   const navigate = useNavigate();
   const handleBack = () => navigate("/dashboard");
 
@@ -60,13 +52,13 @@ export const GerenciarFila = ({ alertCustom }) => {
   const handleGetQueue = async (load = true) => {
     try {
       _setContent({ loading: load });
-      const barberId = getLocalItem("userId");
+      const barberId = data.funcionarioId;
       const { fila } = await apiService.query(
         "GET",
         `/scheduling/queue/barber/${barberId}`
       );
 
-      const items_formatted = fila.map((item) => {
+      const items_formatted = fila.map((item, index) => {
         const status = getStatus(item.status);
         return {
           ...item,
@@ -76,6 +68,7 @@ export const GerenciarFila = ({ alertCustom }) => {
             subtitulo: service.tempoGasto,
           })),
           icon: <span>{item.posicaoFila}</span>,
+          avatarProps: { background: index > 0 ? "#0195F7" : "transparent" },
           titulo: (
             <Typography
               variant="h6"
@@ -87,7 +80,7 @@ export const GerenciarFila = ({ alertCustom }) => {
               }}
             >
               <span>
-                {toUTC({ data: item.data, onlyDate: true })}{" "}
+                {toUTC({ data: item.data, onlyHours: true })}{" "}
                 {primeiraMaiuscula(
                   item.usuario?.nome || item.nomeCliente || "Cliente sem nome"
                 )}
@@ -96,15 +89,13 @@ export const GerenciarFila = ({ alertCustom }) => {
             </Typography>
           ),
           subtitulo: (
-            <Typography variant="body1">
-              Clique para enviar mensagem via WhatsApp{" "}
-            </Typography>
+            <Typography variant="body1">Clique para mandar WhatsApp</Typography>
           ),
         };
       });
-      if (JSON.stringify(content.items) == JSON.stringify(items_formatted))
-        return;
 
+      if (JSON.stringify(content.items) === JSON.stringify(items_formatted))
+        return;
       _setContent({ items: items_formatted });
     } catch (error) {
       console.error(error);
@@ -138,10 +129,10 @@ export const GerenciarFila = ({ alertCustom }) => {
       open: true,
       id,
       action: type,
-      method: type == "remove" ? "DELETE" : "PATCH",
-      title: type == "remove" ? "Remover da fila" : "Confirmar atendimento",
+      method: type === "remove" ? "DELETE" : "PATCH",
+      title: type === "remove" ? "Remover da fila" : "Confirmar atendimento",
       message:
-        type == "remove"
+        type === "remove"
           ? "Tem certeza que deseja remover este cliente da fila?"
           : "Tem certeza que deseja confirmar o atendimento deste cliente e chamar o próximo?",
     });
@@ -149,10 +140,9 @@ export const GerenciarFila = ({ alertCustom }) => {
 
   const handleGetOne = async () => {
     try {
-      const barberId = getLocalItem("userId");
       const { cliente } = await apiService.query(
         "GET",
-        `/scheduling/queue/next/${barberId}`
+        `/scheduling/queue/next/${data.funcionarioId}`
       );
       if (cliente) {
         _setContent({ currentClient: cliente });
@@ -170,9 +160,8 @@ export const GerenciarFila = ({ alertCustom }) => {
       handleGetQueue(false);
       handleGetOne();
     }, 10000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [data.funcionarioId]);
 
   return (
     <Modal
@@ -183,37 +172,47 @@ export const GerenciarFila = ({ alertCustom }) => {
       loading={content.loading}
       component="view"
       maxWidth="md"
-      disabledAction={content.items.length == 0}
+      disableSubmittion={true}
+      disabledAction={content.items.length === 0}
       actionText={
         content.items.length > 1 ? "Chamar próximo" : "Concluir atendimento"
       }
-      onAction={() => openConfirm(content.currentClient.id, "confirm")}
+      onAction={() => openConfirm(content.currentClient?.id, "confirm")}
       buttons={[
         {
           titulo: "Remover atual da fila",
           variant: "outlined",
           color: "terciary",
-          disabled: content.items.length == 0,
+          disabled: content.items.length === 0,
           sx: { px: 2 },
-          action: () => openConfirm(content.currentClient.id, "remove"),
+          action: () => openConfirm(content.currentClient?.id, "remove"),
         },
         {
           titulo: "Adicionar cliente",
           variant: "outlined",
           color: "terciary",
           sx: { px: 2, color: "#fff" },
-          action: () =>
-            navigate("/dashboard/agendamento/cliente", { replace: true }),
+          action: () => {
+            navigate("/dashboard/agendamento/cliente", { replace: true });
+          },
         },
       ]}
     >
       <Grid container spacing={2}>
-        {/* Lista da fila */}
         {content.items.length ? (
           <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
             <>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Clientes Aguardando
+              <Typography sx={{ width: { xs: "100%", md: "200px" }, mb: 2 }}>
+                <CustomSelect
+                  value={data.funcionarioId}
+                  onChange={({ target: { value } }) => {
+                    setData({ funcionarioId: value });
+                  }}
+                  options={data.options}
+                  label="Funcionário"
+                  placeholder="Selecione o funcionário"
+                  sx={{ width: { xs: "100%", md: "300px" } }}
+                />
               </Typography>
               <Rows
                 disableRipple
@@ -252,85 +251,91 @@ export const GerenciarFila = ({ alertCustom }) => {
             <Typography variant="h6">
               <Icon>🔥</Icon> Nenhum cliente em espera!
             </Typography>
-            Gerencie sua fila de atendimento aqui. Quando um cliente entrar na
+            Gerencie a fila de atendimento aqui. Quando um cliente entrar na
             fila ou for adicionado por você, ele aparecerá nesta lista.
-            <Box className="justify-end-wrap">
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  navigate("/dashboard/agendamento/cliente", { replace: true })
-                }
-                disableElevation
-                sx={{ px: 2 }}
-              >
-                Adicionar cliente
-              </Button>
-            </Box>
+            <Typography sx={{ mt: 4, display: "flex", justifyContent: "end" }}>
+              <CustomSelect
+                value={data.funcionarioId}
+                onChange={({ target: { value } }) => {
+                  setData({ funcionarioId: value });
+                }}
+                options={data.options}
+                label="Funcionário"
+                placeholder="Selecione o funcionário"
+                sx={{ width: { xs: "100%", md: "300px" } }}
+              />
+            </Typography>
           </Typography>
         )}
-        {/* Detalhes do cliente selecionado */}
+
         {content.currentClient && (
           <Grid item size={{ xs: 12, md: 5 }} order={{ xs: 1, md: 2 }}>
             <Grid container spacing={2}>
-              <Grid item size={{ xs: 12 }}>
+              <Grid size={12}>
+                <Typography variant="h4" className="show-box">
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    sx={{ mt: -1 }}
+                  >
+                    Cliente atual
+                  </Typography>
+                  {primeiraMaiuscula(
+                    content.currentClient.nome ||
+                      content.currentClient.nomeCliente ||
+                      "Cliente sem nome"
+                  )}
+                </Typography>
+              </Grid>
+              <Grid size={12}>
                 <PaperList
+                  sx={{ width: "100%" }}
                   items={[
                     {
                       titulo: "Telefone",
-                      subtitulo:
-                        content.items[0] &&
-                        content.items[0].usuario?.telefone ? (
-                          <Link
-                            href={`https://wa.me/${content.items[0].usuario?.telefone?.replace(
-                              /\D/g,
-                              ""
-                            )}?text=É%20a%20sua%20vez...`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            underline="hover"
-                            color="textSecondary"
-                          >
-                            {formatPhone(content.items[0]?.usuario?.telefone)}
-                          </Link>
-                        ) : (
-                          "Não informado"
-                        ),
+                      subtitulo: content.items[0]?.usuario?.telefone ? (
+                        <Link
+                          href={`https://wa.me/${content.items[0].usuario.telefone.replace(
+                            /\D/g,
+                            ""
+                          )}?text=É%20a%20sua%20vez...`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          underline="hover"
+                          color="primary"
+                        >
+                          {formatPhone(content.items[0].usuario.telefone)}
+                        </Link>
+                      ) : (
+                        "Não informado"
+                      ),
                     },
                     {
                       titulo: "Serviços",
-                      subtitulo: content.currentClient.servicos?.join(", "),
-                    },
-                    {
-                      titulo: "Tempo estimado de duração",
-                      subtitulo: content.currentClient.tempoEstimado
-                        ? formatarHorario(content.currentClient.tempoEstimado)
-                        : "Não informado",
-                    },
-                    {
-                      titulo: "Horário previsto de início",
                       subtitulo:
-                        content.currentClient.horarioPrevisto &&
-                        toUTC({
-                          data: content.currentClient.horarioPrevisto,
-                          onlyHours: true,
-                        }),
+                        content.currentClient.servicos?.join(", ") ||
+                        "Nenhum serviço",
+                    },
+                    {
+                      titulo: "Tempo",
+                      subtitulo: content.currentClient.tempoEstimado
+                        ? `${formatarHorario(
+                            content.currentClient.tempoEstimado
+                          )} — ${toUTC({
+                            data: content.currentClient.horarioPrevisto,
+                          })}h`
+                        : "Não informado",
                     },
                   ]}
                 >
                   <Typography
-                    variant="h5"
-                    sx={{ p: "5px 15px", background: "#363636" }}
+                    variant="body1"
+                    sx={{
+                      p: "12px 16px",
+                      background: "#333",
+                    }}
                   >
-                    <Typography variant="body2" color="textSecondary">
-                      Cliente atual
-                    </Typography>
-                    {primeiraMaiuscula(
-                      content.currentClient.nome ||
-                        content.currentClient.nomeCliente ||
-                        "Cliente sem nome"
-                    )}{" "}
+                    Detalhes do atendimento
                   </Typography>
                 </PaperList>
               </Grid>
@@ -339,7 +344,6 @@ export const GerenciarFila = ({ alertCustom }) => {
         )}
       </Grid>
 
-      {/* Modal de confirmação */}
       <Confirm
         open={confirmDialog.open}
         onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}

@@ -175,12 +175,18 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                           </Avatar>
                         }
                         title={
-                          <Typography variant="h6">
+                          <Typography
+                            variant="h6"
+                            sx={{ textShadow: "0px 0px 10px #000" }}
+                          >
                             {getLocalItem("nome")}
                           </Typography>
                         }
                         subheader={
-                          <Typography variant="body2" sx={{ mt: -0.5 }}>
+                          <Typography
+                            variant="body1"
+                            sx={{ mt: -0.5, textShadow: "0px 0px 10px #000" }}
+                          >
                             {barbearia.nome}
                           </Typography>
                         }
@@ -199,8 +205,10 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6">Saldo Geral</Typography>
-                    <Typography variant="h5">
+                    {" "}
+                    <Typography variant="h6">
+                      <Typography variant="body1">Total vendas</Typography>
+
                       {mostrarSaldo
                         ? `R$ ${financas.ganho?.toFixed(2)}`
                         : "******"}
@@ -227,8 +235,10 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               <Grid size={{ xs: 12, md: 3.5 }} sx={{ zIndex: 1, m: "0 10px" }}>
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6">Movimentado hoje</Typography>
-                    <Typography variant="h5">
+                    {" "}
+                    <Typography variant="h6">
+                      <Typography variant="body1">Movimentado hoje</Typography>
+
                       {`R$ ${financas.total?.toFixed(2)}`}
                     </Typography>
                   </CardContent>
@@ -238,8 +248,10 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               <Grid size={{ xs: 12, md: 3.5 }} sx={{ zIndex: 1, m: "0 10px" }}>
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6">Perdas/Despesas</Typography>
-                    <Typography variant="h5">
+                    {" "}
+                    <Typography variant="h6">
+                      <Typography variant="body1">Perdas/Despesas</Typography>
+
                       {`R$ ${financas.perda?.toFixed(2)}`}
                     </Typography>
                   </CardContent>
@@ -339,12 +351,18 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                         </Avatar>
                       }
                       title={
-                        <Typography variant="h6">
+                        <Typography
+                          variant="h6"
+                          sx={{ textShadow: "0px 0px 10px #000" }}
+                        >
                           {getLocalItem("nome")}
                         </Typography>
                       }
                       subheader={
-                        <Typography variant="body2" sx={{ mt: -0.5 }}>
+                        <Typography
+                          variant="body1"
+                          sx={{ mt: -0.5, textShadow: "0px 0px 10px #000" }}
+                        >
                           {barbearia.nome} | {formatCNPJ(barbearia.cnpj)}
                         </Typography>
                       }
@@ -362,8 +380,10 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6">Saldo Geral</Typography>
-                    <Typography variant="h5">
+                    {" "}
+                    <Typography variant="h6">
+                      <Typography variant="body1">Total vendas</Typography>
+
                       {mostrarSaldo
                         ? `R$ ${financas.ganho?.toFixed(2)}`
                         : "******"}
@@ -390,8 +410,10 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               <Grid size={{ xs: 12, md: 3.5 }} sx={{ zIndex: 1, m: "0 10px" }}>
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6">Movimentado hoje</Typography>
-                    <Typography variant="h5">
+                    {" "}
+                    <Typography variant="h6">
+                      <Typography variant="body1">Movimentado hoje</Typography>
+
                       {`R$ ${financas.total?.toFixed(2)}`}
                     </Typography>
                   </CardContent>
@@ -401,8 +423,9 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
               <Grid size={{ xs: 12, md: 3.5 }} sx={{ zIndex: 1, m: "0 10px" }}>
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6">Perdas/Despesas</Typography>
-                    <Typography variant="h5">
+                    <Typography variant="h6">
+                      <Typography variant="body1">Perdas/Despesas</Typography>
+
                       {`R$ ${financas.perda?.toFixed(2)}`}
                     </Typography>
                   </CardContent>

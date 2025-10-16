@@ -44,6 +44,7 @@ export const toUTC = ({
   onlyDate = false,
   onlyHours = false,
   offsetHoras = 0,
+  format = "pt",
 }) => {
   try {
     if (!dataISO) return "Data inválida";
@@ -55,6 +56,7 @@ export const toUTC = ({
     }
 
     const dataLocal = data.toISOString();
+    if (format === "en") return dataLocal.split("T")[0];
 
     return dataLocal
       .split("T")
@@ -151,7 +153,7 @@ export const formatTime = (valorant, valor) => {
   numeros = numeros.slice(0, 4);
 
   if (
-    numeros.slice(0, 2).padEnd(2, "0") == 24 &&
+    numeros.slice(0, 2).padEnd(2, "0") === 24 &&
     +numeros.slice(2, 4).padEnd(2, "0") > 0
   )
     return valor.slice(0, -1);
@@ -180,7 +182,7 @@ export const formatMoney = (valor, type = "normal") => {
 
   const numeroFormatado = (parseInt(numeros, 10) / 100).toFixed(2);
 
-  return type == "normal"
+  return type === "normal"
     ? numeroFormatado
     : `R$ ${numeroFormatado}`.replace(".", ",");
 };
@@ -322,7 +324,7 @@ export const setLocalItem = (key, value) => {
 
 export const getLocalItem = (key) => {
   const item = window.localStorage.getItem(key);
-  if (item === null || item == "/login") return null;
+  if (item === null || item === "/login") return null;
 
   try {
     const parsed = JSON.parse(item);
@@ -405,8 +407,10 @@ export function formatDataToString(dataISO, allow) {
     "Novembro",
     "Dezembro",
   ];
+  const data = new Date(dataISO);
 
-  const [ano, mes, dia] = dataISO.split("T")[0].split("-");
+  data.setHours(data.getHours() - 3);
+  const [ano, mes, dia] = data.toISOString().split("T")[0].split("-");
   const temp = {
     ano,
     mes: meses[parseInt(mes, 10) - 1],
@@ -535,7 +539,7 @@ export async function validarCampos(tipo, dados, componentValidations) {
         if (valor !== dados[outroCampo]) {
           throw new Error(
             `${primeiraMaiuscula(label || campo)} deve ser igual a ${(
-              regras.find((r) => r.campo == outroCampo)?.label || outroCampo
+              regras.find((r) => r.campo === outroCampo)?.label || outroCampo
             ).toLowerCase()}.`
           );
         }

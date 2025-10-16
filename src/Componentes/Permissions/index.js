@@ -139,7 +139,7 @@ const Permissions = ({
 
   useEffect(() => {
     if (
-      type == "popup" &&
+      type === "popup" &&
       ["/login", "/create", "/recover", "/change", "/complete"].every(
         (rot) => window.location.pathname != rot
       )

@@ -57,7 +57,13 @@ const Estabelecimentos = ({ alertCustom }) => {
 
         const dados = formatarRows(data);
         setEmpresas(dados || []);
-        setEmpresasFiltred(dados || []);
+        setEmpresasFiltred(
+          dados.map((item) => ({
+            ...item,
+            disabled: !item.aberto,
+            sx: !item.aberto && { opacity: 0.5 },
+          })) || []
+        );
       } catch (error) {
         console.error("Erro ao buscar empresas:", error);
       }
@@ -126,9 +132,10 @@ const Estabelecimentos = ({ alertCustom }) => {
               onSelect={dados.onSelect}
               sx={{ backgroundColor: "transparent" }}
               avatarProps={{
-                width: 56,
-                height: 56,
+                width: 70,
+                height: 70,
                 backgroundColor: "#212121",
+                borderRadius: "10px",
               }}
             />
           ) : (

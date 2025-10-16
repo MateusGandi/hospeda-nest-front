@@ -105,6 +105,7 @@ export const CustomSelect = ({
   children,
   label,
   placeholder,
+  sx,
   ...props
 }) => {
   return (
@@ -115,6 +116,7 @@ export const CustomSelect = ({
       label={label} // Mantendo o label vindo da props
       InputLabelProps={{ shrink: true }}
       displayEmpty
+      sx={sx}
       SelectProps={{
         displayEmpty: true, // Permite exibir o placeholder
         renderValue: (selected) =>
@@ -168,7 +170,7 @@ export default function CustomDateInput({ value, onChange, label, ...props }) {
         locale: ptBR,
       });
 
-      if (isValid(parsed) && e.target.value.toString().length == 10) {
+      if (isValid(parsed) && e.target.value.toString().length === 10) {
         _setDados((prev) => ({
           ...prev,
           dataSelecionada: parsed,

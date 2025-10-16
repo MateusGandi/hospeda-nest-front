@@ -51,7 +51,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
     try {
       setDados("loading", true);
       const id =
-        getLocalItem("accessType") == "adm"
+        getLocalItem("accessType") === "adm"
           ? getLocalItem("establishmentId")
           : getLocalItem("userId");
 

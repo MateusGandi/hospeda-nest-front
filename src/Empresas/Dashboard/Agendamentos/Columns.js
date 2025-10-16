@@ -28,6 +28,7 @@ import Modal from "../../../Componentes/Modal/Simple";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import { Rows } from "../../../Componentes/Lista/Rows";
 import Confirm from "../../../Componentes/Alert/Confirm";
+import { CustomSelect } from "../../../Componentes/Custom";
 const CONFIRM_INITIAL = {
   open: false,
   action: () => {},
@@ -35,7 +36,11 @@ const CONFIRM_INITIAL = {
   message: "",
   title: "",
 };
-export default function AgendamentosByCalendario({ alertCustom, data }) {
+export default function AgendamentosByCalendario({
+  alertCustom,
+  data,
+  setData,
+}) {
   const navigate = useNavigate();
 
   const colors = {
@@ -333,6 +338,21 @@ export default function AgendamentosByCalendario({ alertCustom, data }) {
           }
           tools={
             <Box className="justify-between" sx={{ gap: 1 }}>
+              <Typography sx={{ width: { xs: "100%", md: "200px" }, mb: 2 }}>
+                <CustomSelect
+                  value={data.funcionarioId}
+                  onChange={({ target: { value } }) => {
+                    setData({ funcionarioId: value });
+                  }}
+                  options={data.options}
+                  label="Funcionário"
+                  placeholder="Selecione o funcionário"
+                  sx={{
+                    width: { xs: "100%", md: "300px" },
+                    borderRadius: "50px",
+                  }}
+                />
+              </Typography>
               <Search
                 initial={content.eventos}
                 elements={content.filtred}

@@ -68,27 +68,30 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchRoutesAllowed = async () => {
-      try {
-        const paths = await Api.getAccess();
-        setPathsAllowed([...paths, "/envite", "/manager"]);
-      } catch (error) {
-        setPathsAllowed([
-          "/login",
-          "/create",
-          "/change",
-          "/complete",
-          "/recover",
-          "/home",
-          "/faq",
-          "/envite",
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchRoutesAllowed = async () => {
+    let paths = [];
+    try {
+      paths = await Api.getAccess();
+      setPathsAllowed([...paths, "/envite", "/manager"]);
+    } catch (error) {
+      paths = [
+        "/login",
+        "/create",
+        "/change",
+        "/complete",
+        "/recover",
+        "/home",
+        "/faq",
+        "/envite",
+      ];
+      setPathsAllowed(paths);
+    } finally {
+      setIsLoading(false);
+      return paths;
+    }
+  };
 
+  useEffect(() => {
     fetchRoutesAllowed();
   }, [pathSelecionado]);
 
@@ -320,23 +323,54 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
   };
 
   const accessType =
-    getLocalItem("funcionario") && getLocalItem("accessType") == "adm"
+    getLocalItem("funcionario") && getLocalItem("accessType") === "adm"
       ? "admemployee"
       : getLocalItem("accessType");
 
   const subPaths = Object.keys(routes).reduce((obj, key) => {
     const access = accessMap[accessType];
     if (access && access.includes(key)) {
-      obj[key] = routes[key]; // pega do objeto original
+      obj[key] = routes[key];
     }
     return obj;
   }, {});
 
+  const verifyAccess = (path, routes) =>
+    routes.find((rota) => `/${path?.split("/")[1]}`.includes(rota));
+
   const paths = {
-    "/login": <Login page="login" alertCustom={alertCustom} />,
-    "/create": <Login page="create" alertCustom={alertCustom} />,
-    "/recover": <Login page="recover" alertCustom={alertCustom} />,
-    "/change": <Login page="change" alertCustom={alertCustom} />,
+    "/login": (
+      <Login
+        verifyAccess={verifyAccess}
+        reloadRoutes={fetchRoutesAllowed}
+        page="login"
+        alertCustom={alertCustom}
+      />
+    ),
+    "/create": (
+      <Login
+        verifyAccess={verifyAccess}
+        reloadRoutes={fetchRoutesAllowed}
+        page="create"
+        alertCustom={alertCustom}
+      />
+    ),
+    "/recover": (
+      <Login
+        verifyAccess={verifyAccess}
+        reloadRoutes={fetchRoutesAllowed}
+        page="recover"
+        alertCustom={alertCustom}
+      />
+    ),
+    "/change": (
+      <Login
+        verifyAccess={verifyAccess}
+        reloadRoutes={fetchRoutesAllowed}
+        page="change"
+        alertCustom={alertCustom}
+      />
+    ),
     "/complete": <Login page="complete" alertCustom={alertCustom} />,
     "/home": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
@@ -368,17 +402,23 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     );
   }
 
-  const lastPath = window.location.pathname;
+  const pathTriedAccess = window.location.pathname;
   const pathAtual = pathsAllowed.find((rota) =>
     `/${pathSelecionado}`.includes(rota)
   );
+  const notAllowed = ![
+    "/login",
+    "/create",
+    "/recover",
+    "/change",
+    "/complete",
+  ].some((r) => pathTriedAccess.includes(r));
+
+  if (notAllowed) setLocalItem("lastRoute", pathTriedAccess);
+
   if (!pathAtual) {
     return <Navigate to="/login" />;
   } else {
-    !["/login", "/create", "/recover", "/change", "/complete"].some((rot) =>
-      lastPath.includes(rot)
-    ) && setLocalItem("lastRoute", lastPath);
-
     return (
       <Box
         sx={{

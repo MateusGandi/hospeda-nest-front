@@ -97,7 +97,9 @@ export const Cards = ({
                 sx={{
                   position: "absolute",
                   top: "120px",
-                  width: "250px",
+                  minWidth: "250px",
+                  left: "125px",
+                  transform: "translateX(-125px)",
                   textAlign: "center",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -107,8 +109,8 @@ export const Cards = ({
                 <span
                   style={{
                     background: "rgba(0,0,0,0.3)",
-                    padding: "2px 8px",
-                    borderRadius: "5px",
+                    padding: "5px 10px",
+                    borderRadius: "10px",
                   }}
                 >
                   {!item.disabled

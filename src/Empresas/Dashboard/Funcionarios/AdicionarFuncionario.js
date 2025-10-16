@@ -77,7 +77,7 @@ const Funcionario = ({
           servicesId: item.servicosPrestados.map((service) => service.id),
         })),
       });
-      if (data.id == getLocalItem("userId")) {
+      if (data.id === getLocalItem("userId")) {
         localStorage.setItem("funcionario", true);
         reload && reload();
       }

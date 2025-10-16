@@ -140,7 +140,7 @@ const EditableTable = ({ columns, rows, onChange }) => {
                           col.type === "date")
                       ) {
                         cellContent =
-                          col.type == "date" ? (
+                          col.type === "date" ? (
                             <CustomDateInput
                               disableElevation
                               type="text"

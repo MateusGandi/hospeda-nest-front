@@ -32,10 +32,11 @@ const Fila = ({ form, alertCustom }) => {
   };
 
   useEffect(() => {
-    handleGetStatus(); // chama imediatamente ao montar
-    const interval = setInterval(handleGetStatus, 10000); // atualiza a cada 10s
-    return () => clearInterval(interval); // limpa ao desmontar
-  }, [form.barbeiro?.id]); // refaz quando muda o barbeiro
+    handleGetStatus();
+    const interval = setInterval(handleGetStatus, 10000);
+
+    return () => clearInterval(interval);
+  }, [form.barbeiro?.id]);
 
   return (
     <Grid container>

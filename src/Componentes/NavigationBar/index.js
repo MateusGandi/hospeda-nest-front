@@ -70,7 +70,7 @@ const NavigationBar = ({ alertCustom }) => {
   };
 
   useEffect(() => {
-    getLocalItem("accessType") == "client" &&
+    getLocalItem("accessType") === "client" &&
       location.pathname.includes("/home") &&
       handleGetScheduling();
   }, [location]);

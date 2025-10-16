@@ -144,7 +144,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
     try {
       setModal((prev) => ({ ...prev, actionLoading: true }));
       const data = await Api.query("GET", `/service`);
-      if (data.length == 0) {
+      if (data.length === 0) {
         setOpenAlertModal(false);
         return alertCustom("Nenhum serviço pré-definido encontrado!");
       }
@@ -212,7 +212,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
 
   useEffect(() => {
     if (subPath) {
-      const servico = servicos.find((s) => s.id == subPath);
+      const servico = servicos.find((s) => s.id === subPath);
       if (servico) handleSelect(servico);
     }
   }, [subPath]);

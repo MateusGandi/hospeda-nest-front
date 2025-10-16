@@ -77,6 +77,7 @@ const WorkSchedule = ({
   const [form, setForm] = useState({
     filaDinamicaClientes: false,
     clientesPodemEntrarNaFila: false,
+    confirmacaoAutomaticaFila: false,
   });
 
   const handleAddAbsence = () => {
@@ -136,13 +137,17 @@ const WorkSchedule = ({
 
   const fetch = async () => {
     try {
-      const { filaDinamicaClientes, clientesPodemEntrarNaFila } =
-        await apiService.query(
-          "GET",
-          `/user/profile/${getLocalItem("userId")}`
-        );
+      const {
+        filaDinamicaClientes,
+        clientesPodemEntrarNaFila,
+        confirmacaoAutomaticaFila,
+      } = await apiService.query(
+        "GET",
+        `/user/profile/${getLocalItem("userId")}`
+      );
       setForm((prev) => ({
         ...prev,
+        confirmacaoAutomaticaFila: confirmacaoAutomaticaFila,
         clientesPodemEntrarNaFila: clientesPodemEntrarNaFila,
         filaDinamicaClientes: filaDinamicaClientes,
       }));
@@ -158,13 +163,14 @@ const WorkSchedule = ({
       await apiService.query("PATCH", `/user/${id}`, {
         filaDinamicaClientes: form.filaDinamicaClientes,
         clientesPodemEntrarNaFila: form.clientesPodemEntrarNaFila,
+        confirmacaoAutomaticaFila: form.confirmacaoAutomaticaFila,
       });
       await apiService.query(
         "PUT",
         `/user/work-schedule/${id}`,
         workDays.map(({ day, ...rest }) => rest)
       );
-      if (lunchRows[0].fim.length == 5 && lunchRows[0].fim.length == 5)
+      if (lunchRows[0].fim.length === 5 && lunchRows[0].fim.length === 5)
         await apiService.query("PUT", `/user/off-hour/${id}`, {
           horarioForaInicial: lunchRows[0].inicio + ":00" || "00:00:00",
           horarioForaFinal: lunchRows[0].fim + ":00" || "00:00:00",
@@ -183,7 +189,7 @@ const WorkSchedule = ({
 
       alertCustom("Escala de trabalho e preferências salvas com sucesso!");
       reload();
-      type == "button" ? navigate(-1) : setOpen(false);
+      type === "button" ? navigate(-1) : setOpen(false);
     } catch (e) {
       console.log(e);
       alertCustom("Erro ao salvar a escala.");
@@ -372,24 +378,15 @@ const WorkSchedule = ({
     setForm((prev) => ({ ...prev, ...dados }));
   }, [openModal]);
 
-  const handleChangePreferences = async (props) => {
-    const { id, clientesPodemEntrarNaFila } = props;
-    if ("id" in props)
-      setForm((prev) => ({
-        ...prev,
-        filaDinamicaClientes: id,
-      }));
-
-    if ("clientesPodemEntrarNaFila" in props)
-      setForm((prev) => ({
-        ...prev,
-        clientesPodemEntrarNaFila,
-      }));
-  };
+  const handleChangePreferences = async ({ campo, valor }) =>
+    setForm((prev) => ({
+      ...prev,
+      [campo]: valor,
+    }));
 
   useEffect(() => {
-    if (type == "button") {
-      modalPath == "escala" ? setOpen(true) : setOpen(false);
+    if (type === "button") {
+      modalPath === "escala" ? setOpen(true) : setOpen(false);
     }
   }, [modalPath]);
 
@@ -421,7 +418,7 @@ const WorkSchedule = ({
           maxWidth="md"
           component="view"
           buttons={[
-            ...(tab == 3
+            ...(tab === 3
               ? [
                   {
                     titulo: "Adicionar Ausência",
@@ -431,7 +428,7 @@ const WorkSchedule = ({
                   },
                 ]
               : []),
-            ...(tab == 0 && !opened
+            ...(tab === 0 && !opened
               ? [
                   {
                     titulo: "Quero Ajuda",
@@ -534,7 +531,7 @@ const WorkSchedule = ({
           maxWidth="md"
           component="view"
           buttons={[
-            ...(tab == 3
+            ...(tab === 3
               ? [
                   {
                     titulo: "Adicionar Ausência",
@@ -544,7 +541,7 @@ const WorkSchedule = ({
                   },
                 ]
               : []),
-            ...(tab == 0 && !opened
+            ...(tab === 0 && !opened
               ? [
                   {
                     titulo: "Quero Ajuda",

@@ -153,7 +153,7 @@ const ModalPlanos = ({ alertCustom }) => {
             <img
               src={Image}
               style={{
-                maxWwidth: "450px",
+                maxWidth: "450px",
                 width: "100%",
                 position: "absolute",
                 left: 0,
@@ -318,7 +318,7 @@ const ModalPlanos = ({ alertCustom }) => {
                       alignItems: "flex-end",
                     }}
                   >
-                    {plano.preco == 0
+                    {plano.preco === 0
                       ? "Gratuito"
                       : `R$ ${plano.preco?.toString().replace(".", ",")}`}
                     <Typography variant="body1">

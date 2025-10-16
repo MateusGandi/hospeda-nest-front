@@ -56,6 +56,7 @@ const Modal = ({
   componentName = "",
   alignItems = "start",
   disabledAction = false,
+  disableSubmittion = false,
 }) => {
   const location = useLocation();
   const [prevPath, setPrevPath] = useState(location.pathname);
@@ -130,7 +131,7 @@ const Modal = ({
             zIndex: 1,
           }}
         >
-          {component == "view" ? (
+          {component === "view" ? (
             <LoadingImagePulse src={LogoIcon} />
           ) : (
             <CircularProgress />
@@ -152,7 +153,7 @@ const Modal = ({
                 e.preventDefault();
               }}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !disableSubmittion) {
                   e.preventDefault();
                   if (onSubmit) onSubmit();
                   else if (onAction) onAction();
@@ -212,7 +213,8 @@ const Modal = ({
                           ? "100%"
                           : {
                               xs: "calc(100vh - 170px)",
-                              md: componentName == "create" ? "550px" : "500px",
+                              md:
+                                componentName === "create" ? "550px" : "500px",
                             },
                       m: 0,
                       p: ["modal"].includes(component)
@@ -226,7 +228,7 @@ const Modal = ({
                       container
                       spacing={2}
                       sx={{
-                        ...(component == "form"
+                        ...(component === "form"
                           ? {
                               p: "20px 0",
                               height: "100%",
@@ -244,7 +246,7 @@ const Modal = ({
                         </Grid>
                       ) : null}
                       <Grid size={12}>{children}</Grid>{" "}
-                      {component == "form" && (
+                      {component === "form" && (
                         <>
                           <Grid size={12}>
                             <Grid container>
@@ -272,7 +274,7 @@ const Modal = ({
                                   {loadingButton ? "Carregando..." : actionText}
                                 </Button>
                               </Grid>{" "}
-                              {buttons[0]?.type == "google" && (
+                              {buttons[0]?.type === "google" && (
                                 <>
                                   {" "}
                                   <Grid size={12}>
@@ -297,7 +299,6 @@ const Modal = ({
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                     /> */}
                                     <GoogleLogin
-                                      state_cookie_domain="localhost"
                                       width="350"
                                       size="large"
                                       theme="filled_black"

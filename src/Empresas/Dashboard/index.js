@@ -88,7 +88,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendados",
+          title: "Agenda",
           acessoRapido: true,
         },
         {
@@ -144,7 +144,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendados",
+          title: "Agenda",
           acessoRapido: true,
         },
       ],
@@ -219,7 +219,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
         {
           to: "agendamentos",
           icon: <CalendarMonth sx={{ mr: { md: 1, xs: 0 } }} />,
-          title: "Agendados",
+          title: "Agenda",
           acessoRapido: true,
         },
         {
@@ -335,7 +335,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
   useEffect(() => {
     const loc = barbearia?.location || {};
     if (
-      getLocalItem("accessType") == "adm" &&
+      getLocalItem("accessType") === "adm" &&
       Object.values(loc).some((item) => !item)
     ) {
       setModal((prev) => ({ ...prev, location: true }));

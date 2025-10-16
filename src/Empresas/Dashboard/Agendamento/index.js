@@ -12,27 +12,39 @@ import ClienteForm from "./Cliente";
 import { formatarHorario, getLocalItem } from "../../../Componentes/Funcoes";
 import ConfirmacaoAgendamento from "./Confirmacao/Agendamento";
 import ConfirmacaoFila from "./Confirmacao/Fila";
+import Confirm from "../../../Componentes/Alert/Confirm";
 
 const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
-  const [paths, setPaths] = useState([]);
-
-  const navigate = useNavigate();
-  const [tituloModal, setTituloModal] = useState("Dados do cliente");
   const { subPath } = useParams();
+  const navigate = useNavigate();
 
+  const [paths, setPaths] = useState([]);
+  const [tituloModal, setTituloModal] = useState("Dados do cliente");
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    title: "Confirmação",
+    message: `Você está agendando para ${
+      getLocalItem("add_client_to_employee_name") || "outro barbeiro"
+    }, tem certeza que deseja continuar?`,
+  });
+  const getBarber = () => {
+    const id = getLocalItem("add_client_to_employee") || getLocalItem("userId");
+    const funcionarios = barbearia?.funcionarios || [];
+
+    return funcionarios.find((f) => f.id === id);
+  };
   const [empresa, setEmpresa] = useState(null);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     barbearia: barbearia,
-    barbeiro: barbearia?.funcionarios.find(
-      (f) => f.id === getLocalItem("userId")
-    ),
+    barbeiro: getBarber(),
     cliente: null,
     servicos: [],
     agendamento: null,
     in_fila: false,
     fila_info: null,
     loading: false,
+    outro_barbeiro: !!getLocalItem("add_client_to_employee"),
   });
   const [page, setPage] = useState({
     open: false,
@@ -55,8 +67,20 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     setInitialized(true);
   }, [subPath]);
 
+  const cancelInsertForOtherBarber = () => {
+    localStorage.removeItem("add_client_to_employee");
+    localStorage.removeItem("add_client_to_employee_name");
+    setForm((prev) => ({
+      ...prev,
+      outro_barbeiro: false,
+      barbeiro: getBarber(),
+    }));
+    setConfirmDialog({ ...confirmDialog, open: false });
+    alertCustom("Alterado para agendar para você mesmo");
+  };
+
   const handleSave = async () => {
-    const url = subPath == "fila" ? "/scheduling/queue" : "/scheduling/manual";
+    const url = subPath === "fila" ? "/scheduling/queue" : "/scheduling/manual";
     await Api.query("POST", url, {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
@@ -65,18 +89,16 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       services: form.servicos.map(({ id }) => `${id}`),
       userName: form.cliente.nome,
       userId: form.cliente.id,
-      barberId: barbearia.funcionarios.find(
-        (f) => f.id === getLocalItem("userId")
-      ).id,
+      barberId: form.barbeiro.id,
       manual: true,
     }).then((resp) => {
-      if (subPath == "fila")
+      if (subPath === "fila")
         setForm((prev) => ({ ...prev, in_fila: true, fila_info: resp }));
       return resp;
     });
   };
 
-  const handleNext = async () => {
+  const handleNext = async (force = false) => {
     try {
       setLoading(true);
       if (
@@ -85,7 +107,11 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
       )
         return;
 
-      const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
+      const resp = paths.find(({ key }) => key === subPath) ?? paths[0];
+
+      if (subPath === "servicos" && form.outro_barbeiro && !force) {
+        return setConfirmDialog({ ...confirmDialog, open: true });
+      }
 
       if (subPath && subPath != "fila") {
         if (
@@ -96,7 +122,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
             "Preencha as informações necessárias para prosseguir!"
           );
         else if (
-          subPath == "cliente" &&
+          subPath === "cliente" &&
           form[resp.item] &&
           !form[resp.item].nome
         )
@@ -140,7 +166,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         return navigate("/dashboard");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo == 0) {
+      if (pathTo === 0) {
         setTituloModal("");
         return navigate(`/dashboard`);
       }
@@ -165,7 +191,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   }, [empresa]);
 
   const formatarRows = (items, pagina) => {
-    if (pagina == "barbeiros") {
+    if (pagina === "barbeiros") {
       return items.map((item) => ({
         ...item,
         titulo: item.nome,
@@ -175,14 +201,14 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         imagem: item.foto,
       }));
     }
-    if (pagina == "servicos") {
+    if (pagina === "servicos") {
       return items.map((item) => ({
         ...item,
         titulo: `R$ ${item.preco} ${item.nome}`,
         subtitulo: `Duração: ${formatarHorario(item.tempoGasto)}`,
       }));
     }
-    if (pagina == "agendamentos") {
+    if (pagina === "agendamentos") {
       return items.map((item) => ({
         ...item,
         titulo: format(new Date(item.data), "dd/MM HH:mm"),
@@ -202,12 +228,13 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
         text: "",
         buttons: [],
       };
-    else if (subPath == "fila")
+    else if (subPath === "fila")
       return { action: handleNext, text: "Inserir cliente na fila" };
     else return { action: handleNext, text: "Próximo", buttons: [] };
   };
 
   useEffect(() => {
+    console.log("Form data changed:", form);
     const verify = () => {
       const basePages = [
         {
@@ -356,12 +383,25 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
               <Box
                 sx={{
                   width: "100%",
-                  display: key == (subPath || "not") ? "block" : "none",
+                  display: key === (subPath || "not") ? "block" : "none",
                 }}
               >
                 {views[key]}
               </Box>
             ))}
+
+            <Confirm
+              open={confirmDialog.open}
+              onClose={cancelInsertForOtherBarber}
+              onConfirm={() => {
+                handleNext(true);
+                setConfirmDialog({ ...confirmDialog, open: false });
+              }}
+              title={confirmDialog.title}
+              message={confirmDialog.message}
+              confirmText="Continuar"
+              cancelText="Cancelar"
+            />
           </Grid>
         </Grid>
       </Modal>

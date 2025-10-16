@@ -14,19 +14,23 @@ import Banner from "../Assets/Login/tonsus_mosaico.png";
 import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
 import Complete from "./Complete";
 
-const LoginPage = ({ page, alertCustom }) => {
+const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
   const { hash } = useParams();
   const navigate = useNavigate();
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
 
-  const verifyAndRedirect = (dadosReceived, message, to) => {
-    const lastPath = to || "/home";
+  const verifyAndRedirect = async (dadosReceived, message) => {
+    const lastRoute = getLocalItem("lastRoute");
+    const routes = await reloadRoutes();
+    const isAllowed = verifyAccess(lastRoute, routes);
+    const lastPath = isAllowed ? lastRoute : "/home";
+
     if (dadosReceived && dadosReceived.pendencia) {
       alertCustom(dadosReceived.motivo);
       navigate("/complete");
     } else {
-      navigate(lastPath || "/home");
+      navigate(lastPath);
       alertCustom(message || "Acesso concedido!");
     }
   };
@@ -40,9 +44,11 @@ const LoginPage = ({ page, alertCustom }) => {
         token,
         telefone: telefone?.replace(/\D/g, ""),
       });
+
       Api.setKey(data);
-      verifyAndRedirect(data, "Login realizado com sucesso!", "/home");
+      await verifyAndRedirect(data, "Login realizado com sucesso!");
     } catch (error) {
+      console.log(error);
       alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
     } finally {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
@@ -59,7 +65,7 @@ const LoginPage = ({ page, alertCustom }) => {
       });
       Api.setKey(data);
 
-      verifyAndRedirect(data, "Senha atualizada com sucesso", "/home");
+      await verifyAndRedirect(data, "Senha atualizada com sucesso");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -78,7 +84,7 @@ const LoginPage = ({ page, alertCustom }) => {
       await Api.query("PATCH", `/user/${getLocalItem("userId")}`, {
         telefone: telefone?.replace(/\D/g, ""),
       });
-      verifyAndRedirect(null, "Dados atualizados com sucesso!", "/home");
+      verifyAndRedirect(null, "Dados atualizados com sucesso!");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -119,7 +125,7 @@ const LoginPage = ({ page, alertCustom }) => {
         telefone: telefone?.replace(/\D/g, ""),
       });
       Api.setKey(data);
-      verifyAndRedirect(data, "Conta criada com sucesso!", "/home");
+      await verifyAndRedirect(data, "Conta criada com sucesso!");
     } catch (error) {
       alertCustom(
         error?.response?.data?.message ??
@@ -252,7 +258,7 @@ const LoginPage = ({ page, alertCustom }) => {
   const submitForm = async (TOKEN) => {
     try {
       if (TOKEN) {
-        return inicialState.componente == "create"
+        return inicialState.componente === "create"
           ? handleCreate(TOKEN)
           : handleLogin(TOKEN);
       }
@@ -262,11 +268,11 @@ const LoginPage = ({ page, alertCustom }) => {
         dados,
         componentValidations
       ).then(() => {
-        inicialState.componente == "create" && handleCreate();
-        inicialState.componente == "login" && handleLogin();
-        inicialState.componente == "recover" && handleRecover();
-        inicialState.componente == "change" && handleChangePass();
-        inicialState.componente == "complete" && handleUpdate();
+        inicialState.componente === "create" && handleCreate();
+        inicialState.componente === "login" && handleLogin();
+        inicialState.componente === "recover" && handleRecover();
+        inicialState.componente === "change" && handleChangePass();
+        inicialState.componente === "complete" && handleUpdate();
       });
     } catch (error) {
       alertCustom(error.message || "Erro ao submeter o formulário!");
@@ -284,7 +290,7 @@ const LoginPage = ({ page, alertCustom }) => {
         componentName={inicialState.componente}
         onAction={submitForm}
         buttons={
-          inicialState.componente == "complete"
+          inicialState.componente === "complete"
             ? []
             : [
                 {
@@ -324,19 +330,19 @@ const LoginPage = ({ page, alertCustom }) => {
         ]}
       >
         <Grid container spacing={4}>
-          {inicialState.componente == "create" && (
+          {inicialState.componente === "create" && (
             <CreateAccount dados={dados} setDados={setDados} />
           )}
-          {inicialState.componente == "login" && (
+          {inicialState.componente === "login" && (
             <Login dados={dados} setDados={setDados} />
           )}
-          {inicialState.componente == "recover" && (
+          {inicialState.componente === "recover" && (
             <Recover dados={dados} setDados={setDados} />
           )}
-          {inicialState.componente == "change" && (
+          {inicialState.componente === "change" && (
             <ChangePassword dados={dados} setDados={setDados} />
           )}
-          {inicialState.componente == "complete" && (
+          {inicialState.componente === "complete" && (
             <Complete dados={dados} setDados={setDados} />
           )}
         </Grid>

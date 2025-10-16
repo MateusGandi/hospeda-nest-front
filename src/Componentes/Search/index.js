@@ -147,7 +147,7 @@ const SearchBarWithFilters = ({
                   border: "none",
                 },
                 ...styles(variant),
-                ...(size == "large" ? { p: "5px 10px" } : { px: "10px" }),
+                ...(size === "large" ? { p: "5px 10px" } : { px: "10px" }),
                 borderRadius: "100px",
               },
             }}

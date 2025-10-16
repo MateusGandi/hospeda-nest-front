@@ -135,7 +135,7 @@ const Checkout = ({ alertCustom }) => {
       { campo: "telefone", validacoes: "required, minLength(16), telefone" },
     ],
     metodo_pagamento: [
-      ...(selectedMethod == "CREDIT_CARD"
+      ...(selectedMethod === "CREDIT_CARD"
         ? [
             {
               campo: "nome",
@@ -218,10 +218,10 @@ const Checkout = ({ alertCustom }) => {
         "GET",
         `/payment/checkout-payment-status/${key}`
       );
-      if (status == "PAGO")
+      if (status === "PAGO")
         throw new Error(observacoes || "Pagamento já realizado!");
 
-      if (status == "VENCIDO")
+      if (status === "VENCIDO")
         throw new Error(observacoes || "Pagamento já realizado!");
 
       const titulos_label = {
@@ -334,7 +334,7 @@ const Checkout = ({ alertCustom }) => {
       return;
     }
 
-    if (modal.contextTab == null) {
+    if (modal.contextTab === null) {
       handleGetPayment();
       navigate(`/checkout/${key}/${pages[0].value}`, { replace: true });
     }
@@ -371,7 +371,9 @@ const Checkout = ({ alertCustom }) => {
         const nextPage = pages[modal.tabIndex + 1].value;
         navigate(`/checkout/${key}/${nextPage}`);
       } else {
-        navigate(getLocalItem("accessType") == "user" ? "/home" : "/dashboard");
+        navigate(
+          getLocalItem("accessType") === "user" ? "/home" : "/dashboard"
+        );
       }
     } catch (error) {
       console.error("Erro ao avançar:", error);
@@ -419,12 +421,12 @@ const Checkout = ({ alertCustom }) => {
           cupom: {
             id,
             valor_label:
-              tipo == "PERCENTUAL"
+              tipo === "PERCENTUAL"
                 ? `${-valor}%`
                 : `${formatMoney(-valor, "d")}`,
             value: prev.cupom_text,
             getValue: (total) =>
-              tipo == "PERCENTUAL"
+              tipo === "PERCENTUAL"
                 ? total - total * (valor / 100)
                 : total - valor,
           },
@@ -461,7 +463,7 @@ const Checkout = ({ alertCustom }) => {
       maxWidth="lg"
       loading={modal.loading}
       onClose={() =>
-        navigate(getLocalItem("accessType") == "user" ? "/home" : "/dashboard")
+        navigate(getLocalItem("accessType") === "user" ? "/home" : "/dashboard")
       }
       onAction={
         modal.status != "PAGO" &&
@@ -473,7 +475,7 @@ const Checkout = ({ alertCustom }) => {
       actionText={modal.actionText}
       backAction={{
         action:
-          modal.tab == "confirmacao" ? () => navigate("/home") : handleBack,
+          modal.tab === "confirmacao" ? () => navigate("/home") : handleBack,
         titulo: "Voltar",
       }}
       buttons={[

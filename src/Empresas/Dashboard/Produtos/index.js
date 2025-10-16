@@ -170,7 +170,7 @@ const Products = ({ alertCustom }) => {
       return;
     }
 
-    const item = products.find((p) => p.id == subPath);
+    const item = products.find((p) => p.id === subPath);
     if (item) {
       setFormData({
         id: item.id,

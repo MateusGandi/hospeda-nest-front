@@ -136,11 +136,12 @@ const Checkout = ({ alertCustom }) => {
               mobilePhone: form.telefone.replace(/\D/g, "").replace("55", ""),
             };
           }
-          const { payment } = await apiService.query(
-            "POST",
-            "/establishment",
-            body
-          );
+          const finalBody = Object.keys(body).reduce((acc, key) => {
+            acc[key] = body[key].trim();
+            return acc;
+          }, {});
+
+          await apiService.query("POST", "/establishment", finalBody);
           localStorage.clear();
           alertCustom("Faça login novamente para começar!");
           navigate("/login");
@@ -182,7 +183,7 @@ const Checkout = ({ alertCustom }) => {
       { campo: "logradouro", validacoes: "required, minLength(1)" },
     ],
     metodo_pagamento: [
-      ...(selectedMethod == "CREDIT_CARD"
+      ...(selectedMethod === "CREDIT_CARD"
         ? [
             {
               label: "Seu e-mail",
@@ -352,7 +353,7 @@ const Checkout = ({ alertCustom }) => {
       return;
     }
 
-    if (modal.contextTab == null) {
+    if (modal.contextTab === null) {
       handleGetPayment();
       navigate(`/onboard/${key}/${pages[0].value}`, { replace: true });
     }
@@ -439,7 +440,7 @@ const Checkout = ({ alertCustom }) => {
       loading={modal.loading}
       onClose={() =>
         navigate(
-          getLocalItem("accessType") == "client" ? "/plans" : "/dashboard"
+          getLocalItem("accessType") === "client" ? "/plans" : "/dashboard"
         )
       }
       onAction={

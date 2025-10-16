@@ -8,6 +8,7 @@ import {
   getLocalItem,
   getStatus,
   primeiraMaiuscula,
+  toUTC,
 } from "../../../Componentes/Funcoes";
 
 import Modal from "../../../Componentes/Modal/Simple";
@@ -21,59 +22,77 @@ import Icon from "../../../Assets/Emojis";
 import { PaperList } from "../../../Componentes/Lista/Paper";
 import Filter from "../../../Componentes/Filter";
 import { useNavigate } from "react-router-dom";
-import View from "../../../Componentes/View";
 import Confirm from "../../../Componentes/Alert/Confirm";
+import { Add } from "@mui/icons-material";
+import { CustomSelect } from "../../../Componentes/Custom";
 
-const CONFIRM_INITIAL = {
-  open: false,
-  action: () => {},
-  loading: false,
-  message: "",
-  title: "",
+const FILTER = {
+  "": "Todos",
+  PENDING: "Agendados",
+  NOT_ATTEND: "Não Compareceu",
+  CANCELLED: "Cancelados",
+  OK: "Concluídos",
+};
+const STATUS = {
+  reschedule: "reagendamento",
+  cancel: "cancelamento",
+  report: "reporte",
+  confirm: "confirmação",
 };
 
-const Agendamentos = ({ alertCustom }) => {
+const Agendamentos = ({ alertCustom, data, setData }) => {
   const navigate = useNavigate();
-  const [dataSelecionada, setDataSelecionada] = useState(
-    new Date().toISOString()
-  );
-  const [filterOptions] = useState({
-    "": "Todos",
-    PENDING: "Agendados",
-    NOT_ATTEND: "Não Compareci",
-    CANCELLED: "Cancelados",
-    OK: "Concluídos",
+  const [filter, _setFilter] = useState({
+    status: { titulo: "Agendados", id: 1, valor: "PENDING" },
+    data_selecionada: null,
+    calendario: {
+      open: false,
+    },
   });
-  const [modalConteudo, setModalConteudo] = useState({
+  const [modal, _setModal] = useState({
     open: false,
-    view: "agendamento",
-    titulo: "",
-    dados: null,
-    fullScreen: "mobile",
+    agendamento_selecionado: null,
     agendamentos: [],
-    size: "md",
-    filter: { titulo: "Todos", id: 0, valor: "" },
-    action: { titulo: "Concluído", do: () => handleAction("confirm") },
-    novaDataSelecionada: null,
+    confirmacao: {
+      open: false,
+      loading: false,
+      action: null,
+      title: "",
+      message: "",
+    },
   });
-  const status = {
-    reschedule: "reagendamento",
-    cancel: "cancelamento",
-    report: "reporte",
-    confirm: "confirmação",
-  };
-  const [confirmModal, setConfirmModal] = useState(CONFIRM_INITIAL);
+  const [reagendamento, _setReagendamento] = useState({
+    open: false,
+    agendamento_selecionado: null,
+    data_selecionada: null,
+  });
+  const setReagendamento = (d) => _setReagendamento((p) => ({ ...p, ...d }));
+  const setFilter = (d) => _setFilter((p) => ({ ...p, ...d }));
+  const setModal = (d) => _setModal((p) => ({ ...p, ...d }));
+
+  useEffect(() => {
+    const data = new Date();
+    data.setHours(data.getHours() - 3);
+
+    setFilter({ data_selecionada: data.toISOString() });
+  }, []);
 
   const buscarAgendamentos = async () => {
     try {
-      const dataFormatted = dataSelecionada.split("T")[0];
+      if (!filter.data_selecionada) return;
+      const { data_selecionada, status } = filter;
+      const dataFormatted = toUTC({
+        data: data_selecionada,
+        onlyDate: true,
+        offsetHoras: -3,
+        format: "en",
+      });
       const userId = getLocalItem("userId");
+
       const agendamentos = await apiService.query(
         "GET",
         `/scheduling/employee/scheduleds/${userId}/${dataFormatted}${
-          modalConteudo.filter.valor
-            ? `?status=${modalConteudo.filter.valor}`
-            : ""
+          status.valor ? `?status=${status.valor}` : ""
         }`
       );
 
@@ -136,106 +155,126 @@ const Agendamentos = ({ alertCustom }) => {
         };
       });
 
-      setModalConteudo((prev) => ({
-        ...prev,
-        size: "md",
+      setModal({
         agendamentos: agFormatted,
-      }));
+      });
     } catch (error) {
-      console.log(error);
       alertCustom(
         error?.response?.data?.message ?? "Erro ao buscar agendamentos!"
       );
     }
   };
 
-  const buttons = {
-    agendamento: [
-      {
-        titulo: "Cancelar",
-        color: "error",
-        route: "cancelled",
-        status: "CANCELLED",
-        action: () => handleAction("cancel"),
-      },
-      {
-        titulo: "Reagendar",
-        color: "terciary",
-        route: "reschedule",
-        status: "PENDING",
-        action: () =>
-          setModalConteudo((prev) => ({
-            ...prev,
-            open: true,
-            fullScreen: "all",
-            titulo: "Reagendar cliente",
-            view: "reagendar",
-            action: {
-              titulo: "Confirmar",
-              do: handleReeschedule,
-            },
-          })),
-      },
+  const buttons = [
+    {
+      titulo: "Confirmar",
+      variant: "contained",
+      color: "primary",
+      route: "confirm",
+      status: "OK",
+      action: () => handleAction("confirm"),
+    },
+    {
+      titulo: "Reagendar",
+      color: "terciary",
+      route: "reschedule",
+      status: "PENDING",
+      action: () =>
+        setReagendamento({
+          open: true,
+          agendamento_selecionado: modal.agendamento_selecionado,
+        }),
+    },
 
-      {
-        titulo: "Não compareceu",
-        color: "terciary",
-        route: "report",
-        status: "NOT_ATTEND",
-        action: () => handleAction("report"),
-      },
-    ],
-    calendario: [],
-  };
+    {
+      titulo: "Não compareceu",
+      color: "terciary",
+      route: "report",
+      status: "NOT_ATTEND",
+      action: () => handleAction("report"),
+    },
+    {
+      titulo: "Cancelar",
+      color: "error",
+      route: "cancelled",
+      status: "CANCELLED",
+      action: () => handleAction("cancel"),
+    },
+  ];
 
   useEffect(() => {
     buscarAgendamentos();
-  }, [modalConteudo.filter, dataSelecionada]);
+  }, [filter]);
 
   const handleAction = async (acao) => {
-    setConfirmModal({
-      open: true,
-      action: async () => await handleConfirm(acao),
-      title: `Confirmação de ${status[acao]}`,
-      message: `Você tem certeza que deseja realizar o(a) ${status[acao]} deste agendamento?`,
+    setModal({
+      confirmacao: {
+        open: true,
+        action: async () => await handleConfirm(acao),
+        title: "Confirmação",
+        message: `Você tem certeza que deseja realizar o(a) ${STATUS[acao]} deste agendamento?`,
+      },
     });
   };
 
   const handleConfirm = async (acao) => {
     try {
-      setConfirmModal((prev) => ({ ...prev, loading: true }));
+      if (!modal.agendamento_selecionado) return;
+
+      setModal({ confirmacao: { ...modal.confirmacao, loading: true } });
+
       await Api.query(
         "PATCH",
-        `/scheduling/${acao}/${modalConteudo.dados?.id}`,
-        modalConteudo.dados
+        `/scheduling/${acao}/${modal.agendamento_selecionado.id}`,
+        modal.agendamento_selecionado
       );
-      alertCustom(`${primeiraMaiuscula(status[acao])} realizado com sucesso!`);
-      setModalConteudo((prev) => ({
-        ...prev,
+      alertCustom(`${primeiraMaiuscula(STATUS[acao])} realizado com sucesso!`);
+      setModal({
         open: false,
-      }));
+      });
       buscarAgendamentos();
     } catch (error) {
       alertCustom(
-        error?.response?.data?.message ?? `Erro ao realizar ${status[acao]}!`
+        error?.response?.data?.message ?? `Erro ao realizar ${STATUS[acao]}!`
       );
     } finally {
-      setConfirmModal((prev) => ({ ...prev, open: false, loading: false }));
+      setModal({
+        confirmacao: { ...modal.confirmacao, open: false, loading: false },
+      });
     }
   };
 
   const handleReeschedule = async () => {
     try {
+      if (
+        !reagendamento.agendamento_selecionado ||
+        !reagendamento.data_selecionada
+      )
+        return;
+      const { funcionario, servico: servicos } =
+        reagendamento.agendamento_selecionado;
       await Api.query(
         "PUT",
-        `/scheduling/${modalConteudo.dados?.id}`,
-        modalConteudo.dados
+        `/scheduling/${reagendamento.agendamento_selecionado.id}`,
+        {
+          data: new Date(reagendamento.data_selecionada.id).toISOString(),
+          establishmentId: getLocalItem("establishmentId"),
+          barberId: funcionario.id,
+          services: servicos.map((s) => s.id),
+          status: "PENDING",
+          // ...(discount
+          //   ? { discountId: discount.id, discountValue: discount.value }
+          //   : {}),
+        }
       );
       alertCustom(`Reagendamento realizado com sucesso!`);
-      setModalConteudo((prev) => ({
-        ...prev,
+      setReagendamento({
         open: false,
-      }));
+        agendamento_selecionado: null,
+        data_selecionada: null,
+      });
+      setModal({ open: false });
+
       buscarAgendamentos();
     } catch (error) {
       alertCustom(
@@ -247,15 +286,52 @@ const Agendamentos = ({ alertCustom }) => {
   const onClose = () => {
     navigate("/dashboard");
   };
+
+  const getDescription = () => {
+    if (!modal.agendamento_selecionado) return [];
+    const {
+      servico: servicos,
+      funcionario,
+      ...agendamento
+    } = modal.agendamento_selecionado;
+    return [
+      ...servicos.map((service) => ({
+        titulo: service.nome,
+        subtitulo: `R$ ${service.preco} | ${formatarHorario(
+          service.tempoGasto
+        )}`,
+      })),
+      ...(agendamento.motivoCancelamento && {
+        titulo: "Motivo do cancelamento",
+        subtitulo: agendamento.motivoCancelamento,
+      }),
+    ];
+  };
+
   return (
     <Modal
-      open={true}
+      open
       onClose={onClose}
       titulo="Agendamentos"
       fullScreen="all"
       maxWidth="sm"
     >
       <Grid container spacing={2}>
+        <Grid item size={{ xs: 12 }}>
+          <CustomSelect
+            value={data.funcionarioId}
+            onChange={({ target: { value } }) => {
+              setData({ funcionarioId: value });
+            }}
+            options={data.options}
+            label="Funcionário"
+            placeholder="Selecione o funcionário"
+            sx={{
+              width: { xs: "100%", md: "300px" },
+              borderRadius: "50px",
+            }}
+          />
+        </Grid>
         <Grid
           item
           size={{ xs: 12 }}
@@ -266,64 +342,39 @@ const Agendamentos = ({ alertCustom }) => {
           }}
         >
           <Typography variant="h6">
-            <span>{formatDataToString(dataSelecionada)}</span>
+            <span>{formatDataToString(filter.data_selecionada)}</span>
           </Typography>
           <span>
+            <IconButton
+              onClick={() => navigate("/dashboard/agendamento/cliente")}
+            >
+              <Add />
+            </IconButton>
+
             <Filter
               title="Filtrar por"
-              options={filterOptions}
-              filter={modalConteudo.filter}
-              setFilter={(filter) =>
-                setModalConteudo((prev) => ({ ...prev, filter: filter }))
-              }
+              options={FILTER}
+              filter={filter.status}
+              setFilter={(s) => setFilter({ status: s })}
             />
             <IconButton
-              onClick={() =>
-                setModalConteudo((prev) => ({
-                  ...prev,
-                  open: true,
-                  titulo: "Selecione um dia",
-                  view: "calendario",
-                  size: "xs",
-                }))
-              }
+              onClick={() => setFilter({ calendario: { open: true } })}
             >
               <InsertInvitationRoundedIcon />
             </IconButton>
           </span>
         </Grid>
         <Grid item size={{ xs: 12 }}>
-          {modalConteudo.agendamentos?.length ? (
+          {modal.agendamentos.length ? (
             <Rows
-              items={modalConteudo.agendamentos}
+              items={modal.agendamentos}
               onSelect={(item) => {
-                setModalConteudo((prev) => ({
-                  ...prev,
-                  view: "agendamento",
+                setModal({
+                  agendamento_selecionado: item,
                   open: true,
-                  titulo: item.nomeCliente,
-                  size: "md",
-                  fullScreen: "mobile",
-                  dados: {
-                    ...item,
-                    dia: item.data,
-                    servicos: item.servico,
-                    barbeiro: { id: getLocalItem("userId") },
-
-                    //para reagendamento
-                    _data: item.novaDataSelecionada || "oi",
-                    establishmentId: getLocalItem("establishmentId"),
-                    barberId: item.funcionario.id,
-                    services: item.servico.map((s) => s.id),
-                  },
-
-                  action: {
-                    titulo: "Concluído",
-                    do: () => handleAction("confirm"),
-                  },
-                }));
+                });
               }}
-              oneTapMode={true}
+              oneTapMode
             />
           ) : (
             <Typography
@@ -344,80 +395,89 @@ const Agendamentos = ({ alertCustom }) => {
         </Grid>
       </Grid>
 
+      {/*Calendar*/}
       <Modal
-        open={modalConteudo.open}
-        onClose={() => setModalConteudo((prev) => ({ ...prev, open: false }))}
-        titulo={modalConteudo.titulo}
-        maxWidth={modalConteudo.size}
-        buttons={(buttons[modalConteudo.view] || []).filter(
-          ({ status }) =>
-            status !== modalConteudo.dados?.status &&
-            modalConteudo.dados?.status != "CANCELLED"
-        )}
-        onAction={
-          modalConteudo.dados?.status == "PENDING" && modalConteudo.action.do
-        }
-        actionText={modalConteudo.action.titulo}
-        fullScreen={modalConteudo.fullScreen}
+        open={filter.calendario.open}
+        onClose={() => setFilter({ calendario: { open: false } })}
+        titulo="Selecionar data"
+        fullScreen="mobile"
+        component="modal"
       >
-        {modalConteudo.view === "calendario" ? (
-          <Calendario
-            all={true}
-            data={dataSelecionada}
-            onSelect={(date) => {
-              setDataSelecionada(date);
-              setModalConteudo((prev) => ({ ...prev, open: false }));
-            }}
-          />
-        ) : modalConteudo.view === "reagendar" ? (
-          <Reagendamento
-            setForm={(dados) =>
-              setModalConteudo((prev) => ({
-                ...prev,
-                dados: {
-                  ...prev.dados,
-                  ...dados,
-                },
-              }))
-            }
-            form={modalConteudo.dados}
-            alertCustom={alertCustom}
-          />
-        ) : (
-          modalConteudo.dados && (
-            <>
-              <PaperList
-                sx={{ mx: 2 }}
-                items={[
-                  ...modalConteudo.dados.servico,
-                  ...(modalConteudo.dados.motivoCancelamento
-                    ? [
-                        {
-                          titulo: "Motivo do cancelamento",
-                          subtitulo: modalConteudo.dados.motivoCancelamento,
-                        },
-                      ]
-                    : []),
-                ]}
-              >
-                <Typography variant="h6" sx={{ p: "5px 10px" }}>
-                  Resumo do pedido
-                </Typography>
-              </PaperList>
-              <Confirm
-                loading={confirmModal.loading}
-                open={confirmModal.open}
-                onClose={() =>
-                  setConfirmModal((prev) => ({ ...prev, open: false }))
-                }
-                onConfirm={confirmModal.action}
-                title={confirmModal.title || "Confirmação"}
-                message={confirmModal.message || "Deseja continuar?"}
-              />
-            </>
-          )
-        )}
+        <Calendario
+          all
+          data={filter.data_selecionada}
+          onSelect={(date) =>
+            setFilter({ calendario: { open: false }, data_selecionada: date })
+          }
+        />
       </Modal>
+
+      {/* Reagendamento */}
+      <Modal
+        open={reagendamento.open}
+        onClose={() => setReagendamento({ open: false })}
+        titulo="Reagendar"
+        fullScreen="mobile"
+        component="modal"
+        buttons={[
+          {
+            titulo: "Confirmar",
+            color: "primary",
+            variant: "contained",
+            action: handleReeschedule,
+          },
+        ]}
+      >
+        <Reagendamento
+          filter={filter}
+          setFilter={setFilter}
+          onChange={(novaData) =>
+            setReagendamento({
+              data_selecionada: novaData,
+            })
+          }
+          novaData={reagendamento.data_selecionada}
+          agendamentoSelecionado={reagendamento.agendamento_selecionado}
+          alertCustom={alertCustom}
+        />
+      </Modal>
+
+      {modal.agendamento_selecionado && (
+        <Modal
+          open={modal.open}
+          onClose={() => setModal({ open: false })}
+          titulo={modal.agendamento_selecionado?.nomeCliente || ""}
+          buttons={buttons}
+          fullScreen="mobile"
+        >
+          <>
+            <PaperList sx={{ mx: 2 }} items={getDescription()}>
+              <Typography
+                variant="h6"
+                sx={{ p: "5px 10px", background: "#333" }}
+              >
+                Resumo do pedido
+              </Typography>
+            </PaperList>
+          </>
+        </Modal>
+      )}
+
+      <Confirm
+        loading={modal.confirmacao.loading}
+        open={modal.confirmacao.open}
+        onClose={() =>
+          setModal({
+            confirmacao: {
+              ...modal.confirmacao,
+              open: false,
+            },
+          })
+        }
+        onConfirm={modal.confirmacao.action}
+        title={modal.confirmacao.title || "Confirmação"}
+        message={modal.confirmacao.message || "Deseja continuar?"}
+      />
     </Modal>
   );
 };

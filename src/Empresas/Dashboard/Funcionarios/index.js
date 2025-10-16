@@ -56,13 +56,13 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
             servicesId: item.servicosPrestados.map((service) => service.id),
           })),
       });
-      if (item.id == getLocalItem("userId")) {
+      if (item.id === getLocalItem("userId")) {
         localStorage.setItem("funcionario", false);
         reload && reload();
       }
 
       fetchFuncionarios();
-      if (origin == "from-list") navigate("/dashboard/funcionarios");
+      if (origin === "from-list") navigate("/dashboard/funcionarios");
 
       setModal({
         ...INITIAL_FORM,
@@ -93,7 +93,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
 
   useEffect(() => {
     if (subPath != "novo") {
-      const funcionario = funcionarios.find((f) => f.id == subPath);
+      const funcionario = funcionarios.find((f) => f.id === subPath);
 
       if (funcionario) {
         setModal({

@@ -52,7 +52,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
 
   useEffect(() => {
     const key = path || "";
-    setSelected(pages.find((item) => item.path == key));
+    setSelected(pages.find((item) => item.path === key));
   }, [path]);
 
   useEffect(() => {

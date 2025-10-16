@@ -16,7 +16,7 @@ const ProductForm = ({ form, onChange }) => {
       onChange(
         name,
         isNumber
-          ? name == "valor"
+          ? name === "valor"
             ? formatMoney(value)
             : value
             ? +Number(value).toFixed(0)

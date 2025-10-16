@@ -6,105 +6,105 @@ import {
   Typography,
 } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarData } from "../../../Componentes/Funcoes";
+import { formatarData, toUTC } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
 import Modal from "../../../Componentes/Modal/Simple";
-import Confirm from "../../../Componentes/Alert/Confirm";
 
-const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
-  const [vagasDisponiveis, setVagasDisponiveis] = useState([]);
-  const [modal, _setModal] = useState({ open: false });
-  const [loading, setLoading] = useState(false);
+const Reagendamento = ({
+  setFilter,
+  filter,
+  onChange,
+  novaData,
+  agendamentoSelecionado,
+  alertCustom,
+}) => {
+  const [modal, _setModal] = useState({
+    calendario: { open: false },
+    vagas_disponiveis: [],
+    loading: false,
+  });
 
-  const setModal = (dados) => _setModal((prev) => ({ ...prev, ...dados }));
+  const setModal = (d) => _setModal((prev) => ({ ...prev, ...d }));
 
-  const handleOpen = () => {
-    setModal({
-      open: true,
-      onClose: () => setModal({ open: false }),
-      maxWidth: "xs",
-      titulo: "Selecione uma data específica",
-      component: "modal",
-      fullScreen: "mobile",
-      loading: false,
-    });
-  };
-
-  const buscarVagas = async (idBarbeiro, idServicos, dataAtual) => {
-    setLoading(true);
+  // Busca as vagas disponíveis
+  const buscarVagas = async (
+    idBarbeiro,
+    idServicos,
+    dataAtual,
+    idAgendamento
+  ) => {
     try {
-      return await Api.query(
+      setModal({ loading: true });
+      const resp = await Api.query(
         "GET",
-        `/scheduling/employee/${idBarbeiro}/${dataAtual}?servicesId=${idServicos}`
-      ).then((response) => response);
+        `/scheduling/employee/${idBarbeiro}/${dataAtual}?servicesId=${idServicos}&schedulingIdToBeIgnored=${idAgendamento}`
+      );
+      return resp || [];
     } catch (error) {
-      alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
+      alertCustom("Erro ao buscar vagas disponíveis!");
       return [];
     } finally {
-      setLoading(false);
+      setModal({ loading: false });
+    }
+  };
+
+  // Função principal de busca
+  const buscar = async () => {
+    try {
+      const { funcionario, servico: servicos, id } = agendamentoSelecionado;
+      const { data_selecionada } = filter;
+
+      if (!funcionario || !servicos || !data_selecionada) return;
+
+      const ids = servicos.map(({ id }) => id).join(",");
+      const dataFormatada = toUTC({
+        data: data_selecionada,
+        onlyDate: true,
+        format: "en",
+      });
+
+      const vagas = await buscarVagas(funcionario.id, ids, dataFormatada, id);
+
+      const vagasFormatadas = vagas.map((item) => ({
+        ...formatarData(item),
+      }));
+
+      setModal({ vagas_disponiveis: vagasFormatadas });
+    } catch {
+      setModal({ vagas_disponiveis: [] });
     }
   };
 
   useEffect(() => {
-    const buscar = async () => {
-      if (form.dia) {
-        const ids = form.servico.map(({ id }) => id).join(",");
-        const resp = await buscarVagas(
-          form.barbeiro?.id,
-          ids,
-          new Date(form.dia).toISOString().split("T")[0]
-        );
-
-        setVagasDisponiveis(resp.map((item) => formatarData(item)));
-      } else if (Object.values(form).every((item) => !!item)) {
-        const { dia, horario } = form;
-        const [hr, min] = horario.split(":");
-        const newDate = new Date(dia);
-        newDate.setHours(hr, min);
-        setForm({ agendamento: newDate.toISOString() });
-      }
-    };
-
-    buscar().then(() => setModal({ open: false }));
-  }, [form.dia]);
+    if (filter.data_selecionada) buscar();
+  }, [filter.data_selecionada]);
 
   useEffect(() => {
-    const fetch = async () => {
-      const ids = form.servicos?.map(({ id }) => id).join(",");
-      const dataAtual = new Date().toISOString().split("T")[0];
-      if (!ids || !form.barbeiro?.id) return;
-
-      const resp = await buscarVagas(form.barbeiro?.id, ids, dataAtual);
-      setVagasDisponiveis(resp.map((item) => formatarData(item)));
-    };
-    fetch();
+    buscar();
   }, []);
 
   const handleSelect = (item) => {
-    setForm({ ...form, novaDataSelecionada: item });
+    onChange(item);
   };
 
   return (
     <Container maxWidth="sm">
       <Grid container>
         <Grid size={12}>
-          {vagasDisponiveis && vagasDisponiveis.length ? (
+          {modal.vagas_disponiveis.length ? (
             <Rows
               items={[
                 {
                   titulo: "Selecionar uma data diferente",
                   id: 9999,
-                  action: () => handleOpen(),
+                  action: () => setModal({ calendario: { open: true } }),
                 },
-                ...vagasDisponiveis,
-              ]}
-              selectedItems={[
-                formatarData(form.novaDataSelecionada || form.agendamento),
+                ...modal.vagas_disponiveis,
               ]}
               onSelect={handleSelect}
             />
-          ) : loading ? (
+          ) : modal.loading ? (
             <div
               style={{
                 width: "100%",
@@ -124,22 +124,19 @@ const Reagendamento = ({ form, setForm, alertCustom, onSave }) => {
         </Grid>
 
         <Modal
-          props={modal}
-          open={modal.open}
-          onClose={modal.onClose}
-          maxWidth={modal.maxWidth}
-          titulo={modal.titulo}
-          component="modal"
+          open={modal.calendario.open}
+          onClose={() => setModal({ calendario: { open: false } })}
+          titulo="Selecione uma nova data"
           fullScreen="mobile"
           loading={modal.loading}
         >
           <Grid container spacing={1}>
             <Grid size={{ xs: 12, md: 12 }}>
               <Calendario
-                data={form.dia}
+                data={filter.data_selecionada}
                 onSelect={(value) => {
-                  setForm({ ...form, dia: value });
-                  modal.onClose();
+                  setFilter({ data_selecionada: value });
+                  setModal({ calendario: { open: false } });
                 }}
               />
             </Grid>

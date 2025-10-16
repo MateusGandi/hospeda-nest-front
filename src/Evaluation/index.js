@@ -39,7 +39,7 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
         setLoading(false);
         return alertCustom("Sem mais comentários");
       }
-      page == 1 && setHas(true);
+      page === 1 && setHas(true);
       setAvaliacoes(depoimentos || []);
       setMedia(media || 0);
     } catch (error) {
@@ -68,7 +68,7 @@ const ReviewBarbershopModal = ({ barbearia, open, alertCustom }) => {
         return;
       }
 
-      if (comment == 0) {
+      if (comment === 0) {
         alertCustom("Avalie entre 1 e 5 estrelas.");
         return;
       }

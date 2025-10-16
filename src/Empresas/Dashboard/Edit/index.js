@@ -73,7 +73,7 @@ const EditData = ({
 
   return (
     <>
-      {tipo == "button" ? (
+      {tipo === "button" ? (
         <Grid container alignItems="center">
           {" "}
           <Typography variant="body1">
@@ -163,7 +163,7 @@ const EditData = ({
                 variant="outlined"
               />
             </Grid>
-            <Grid item size={12}>
+            <Grid item size={{ xs: 12, md: 4 }}>
               {" "}
               <Typography variant="body1">
                 <span style={{ width: "30px" }}>

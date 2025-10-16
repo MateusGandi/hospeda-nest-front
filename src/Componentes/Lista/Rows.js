@@ -47,7 +47,7 @@ export const Rows = ({
     if (selectedItems) setSelected(selectedItems || []);
   }, [selectedItems]);
 
-  const handleSelect = async (item) => {
+  const handleSelect = async (item, campo) => {
     try {
       let updatedSelection;
       if (multipleSelect) {
@@ -62,10 +62,10 @@ export const Rows = ({
             ? []
             : [item];
       }
-      if (oneTapMode) onSelect(item);
+      if (oneTapMode) onSelect(item, campo);
 
       if (onSelect && !oneTapMode)
-        await onSelect(multipleSelect ? updatedSelection : item);
+        await onSelect(multipleSelect ? updatedSelection : item, campo);
       if (!selectedItems && !oneTapMode) setSelected(updatedSelection);
     } catch (error) {}
   };
@@ -100,7 +100,7 @@ export const Rows = ({
               >
                 <Card
                   onClick={() =>
-                    item.action ? item.action() : handleSelect(item)
+                    item.action ? item.action() : handleSelect(item, item.campo)
                   }
                   elevation={0}
                   sx={{
@@ -156,6 +156,7 @@ export const Rows = ({
                             width: 50,
                             height: 50,
                             ...avatarProps,
+                            ...(item.avatarProps || {}),
                             mr: 2,
                           }}
                         >

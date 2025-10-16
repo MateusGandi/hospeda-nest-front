@@ -4,7 +4,9 @@ import {
   Box,
   Card,
   CardContent,
+  Chip,
   Grid2 as Grid,
+  Stack,
   Typography,
 } from "@mui/material";
 import { LocationOn, Share } from "@mui/icons-material";
@@ -16,12 +18,42 @@ import StarRateRoundedIcon from "@mui/icons-material/StarRateRounded";
 const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
   const navigate = useNavigate();
   const [endereco, setEndereco] = useState("");
+  const [aberto, setAberto] = useState(false);
 
   useEffect(() => {
     if (barbearia?.endereco) {
       const enderecoLimpo = barbearia.endereco.replace(/\s+,/g, ",").trim();
       setEndereco(enderecoLimpo);
     }
+  }, [barbearia]);
+
+  // Calcula se está aberto
+  useEffect(() => {
+    if (!barbearia) return;
+
+    // Se vier a flag aberta do backend, usa ela diretamente
+    if (typeof barbearia.aberto === "boolean") {
+      setAberto(barbearia.aberto);
+      return;
+    }
+
+    const now = new Date();
+    const [h, m, s] = now.toTimeString().split(":");
+    const minutosAtuais = parseInt(h) * 60 + parseInt(m);
+
+    const [hAbertura, mAbertura] = barbearia.horarioAbertura
+      ? barbearia.horarioAbertura.split(":").map(Number)
+      : [0, 0];
+    const [hFechamento, mFechamento] = barbearia.horarioFechamento
+      ? barbearia.horarioFechamento.split(":").map(Number)
+      : [0, 0];
+
+    const minutosAbertura = hAbertura * 60 + mAbertura;
+    const minutosFechamento = hFechamento * 60 + mFechamento;
+
+    setAberto(
+      minutosAtuais >= minutosAbertura && minutosAtuais <= minutosFechamento
+    );
   }, [barbearia]);
 
   const getMapsLink = () =>
@@ -92,12 +124,41 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
                 }}
               />
               <CardContent sx={{ textAlign: "center", marginTop: 4 }}>
-                <Typography variant="h6">{barbearia.nome}</Typography>
+                <Typography variant="h5">{barbearia.nome}</Typography>
+
+                <Chip
+                  sx={{
+                    width: "100px",
+                    position: "absolute",
+                    right: 10,
+                    top: 10,
+                    color: "#fff",
+                    fontWeight: "bold",
+                  }}
+                  color={aberto ? "success" : "terciary"}
+                  variant="filled"
+                  label={aberto ? "ABERTO" : "FECHADO"}
+                />
+
                 <Typography
                   variant="body1"
-                  sx={{ color: "text.secondary", wordBreak: "break-word" }}
+                  sx={{
+                    color: "text.secondary",
+                    wordBreak: "break-word",
+                    mt: 0.5,
+                  }}
                 >
                   {barbearia.endereco.replace(/\s+,/g, ",").trim()}
+                </Typography>
+
+                <Typography
+                  variant="body1"
+                  sx={{ color: "text.secondary", mt: 0.5 }}
+                >
+                  {`Horário: ${barbearia.horarioAbertura?.slice(
+                    0,
+                    5
+                  )} - ${barbearia.horarioFechamento?.slice(0, 5)}`}
                 </Typography>
               </CardContent>
             </Card>

@@ -52,10 +52,10 @@ const Dividas = ({ alertCustom }) => {
       );
 
       const transacoes_pendentes = data.filter(
-        ({ status }) => status == "PENDING"
+        ({ status }) => status === "PENDING"
       );
       const total = transacoes_pendentes
-        .filter(({ status }) => status == "PENDING")
+        .filter(({ status }) => status === "PENDING")
         .reduce((acc, item) => acc + parseFloat(item.precoSemTaxa || 0), 0);
 
       const transacoes = data.map((item) => {

@@ -50,7 +50,7 @@ const Empresa = ({ alertCustom }) => {
   });
 
   const handleSave = async () => {
-    const url = subPath == "fila" ? "/scheduling/queue" : "/scheduling";
+    const url = subPath === "fila" ? "/scheduling/queue" : "/scheduling";
 
     await Api.query("POST", url, {
       data: form.agendamento?.id
@@ -63,7 +63,7 @@ const Empresa = ({ alertCustom }) => {
       userName: getLocalItem("nome"),
       manual: false,
     }).then((resp) => {
-      if (subPath == "fila")
+      if (subPath === "fila")
         setForm((prev) => ({ ...prev, in_fila: true, fila_info: resp }));
       return resp;
     });
@@ -78,7 +78,7 @@ const Empresa = ({ alertCustom }) => {
       )
         return;
 
-      const resp = paths.find(({ key }) => key == subPath) ?? paths[0];
+      const resp = paths.find(({ key }) => key === subPath) ?? paths[0];
       if (
         subPath &&
         (!form[resp.item] ||
@@ -126,7 +126,7 @@ const Empresa = ({ alertCustom }) => {
         return navigate("/estabelecimentos");
 
       const pathTo = paths.findIndex((item) => item.key === subPath);
-      if (pathTo == 0) {
+      if (pathTo === 0) {
         setTituloModal("");
         return navigate("/barbearia/" + barbeariaName);
       }
@@ -246,7 +246,7 @@ const Empresa = ({ alertCustom }) => {
   }, [form]);
 
   const formatarRows = (items, pagina) => {
-    if (pagina == "barbeiros") {
+    if (pagina === "barbeiros") {
       return items
         .filter((item) => !!item.servicosPrestados.length)
         .map((item) => ({
@@ -272,14 +272,14 @@ const Empresa = ({ alertCustom }) => {
           imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
         }));
     }
-    if (pagina == "servicos") {
+    if (pagina === "servicos") {
       return items.map((item) => ({
         ...item,
         titulo: `R$ ${item.preco} ${item.nome}`,
         subtitulo: `Duração: ${formatarHorario(item.tempoGasto)}`,
       }));
     }
-    if (pagina == "agendamentos") {
+    if (pagina === "agendamentos") {
       return items.map((item) => ({
         ...item,
         titulo: format(new Date(item.data), "dd/MM HH:mm"),
@@ -429,7 +429,7 @@ const Empresa = ({ alertCustom }) => {
       };
     } else if (form.disabledActionButton) {
       return { action: undefined, text: "", buttons: [] };
-    } else if (subPath == "fila") {
+    } else if (subPath === "fila") {
       if (
         form.barbeiro?.filaDinamicaClientes &&
         !form.barbeiro?.clientesPodemEntrarNaFila
@@ -467,7 +467,7 @@ const Empresa = ({ alertCustom }) => {
               <Box
                 sx={{
                   width: "100%",
-                  display: key == (subPath || "not") ? "block" : "none",
+                  display: key === (subPath || "not") ? "block" : "none",
                 }}
               >
                 {views[key]}
