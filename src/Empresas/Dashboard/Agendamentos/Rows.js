@@ -87,7 +87,7 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
         offsetHoras: -3,
         format: "en",
       });
-      const userId = getLocalItem("userId");
+      const userId = data.funcionarioId || getLocalItem("userId");
 
       const agendamentos = await apiService.query(
         "GET",
