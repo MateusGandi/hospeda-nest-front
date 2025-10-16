@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Editor Visual de Fluxo - Gerador SQL (jsPlumb + localStorage)</title>
+
+    <style>
+      :root {
+        --bg: #f7f7f8;
+        --panel: #ffffff;
+        --muted: #666;
+        --accent: #0b76ef;
+        --danger: #d9534f;
+        --node: #fffefc;
+        --border: #e0e0e0;
+        --shadow: rgba(0, 0, 0, 0.08);
+        --selected: #2a80ff;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: Inter, Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: #222;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+      }
+      header h1 {
+        font-size: 16px;
+        margin: 0;
+      }
+      #app {
+        display: flex;
+        height: calc(100vh - 56px);
+      }
+      #canvas-wrap {
+        flex: 1;
+        position: relative;
+        overflow: auto;
+        background: linear-gradient(180deg, #fbfdff, #f3f7fb);
+        padding: 12px;
+      }
+      #canvas {
+        position: relative;
+        min-height: 800px;
+        min-width: 1400px;
+      }
+      .node {
+        position: absolute;
+        width: 320px;
+        background: var(--node);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 6px 18px var(--shadow);
+        padding: 8px;
+        box-sizing: border-box;
+        cursor: grab;
+        user-select: none;
+      }
+      .node.selected {
+        border-color: var(--selected);
+        box-shadow: 0 8px 26px rgba(42, 128, 255, 0.15);
+      }
+      .node .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .node .title h3 {
+        margin: 0;
+        font-size: 13px;
+        word-break: break-word;
+      }
+      .node .body {
+        margin-top: 8px;
+        font-size: 13px;
+      }
+      .node .preview {
+        font-size: 12px;
+        color: var(--muted);
+        max-height: 62px;
+        overflow: hidden;
+      }
+      .node input[type="text"],
+      .node textarea,
+      .node select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 13px;
+        background: #fff;
+      }
+      .node textarea {
+        min-height: 56px;
+        resize: vertical;
+      }
+      .handle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        position: absolute;
+        right: -8px;
+        top: 14px;
+        background: var(--accent);
+        border: 2px solid #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        cursor: crosshair;
+      }
+      .handle.left {
+        left: -8px;
+        right: auto;
+        background: #777;
+      }
+      .small-btn {
+        font-size: 12px;
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+      }
+      .toolbar {
+        width: 380px;
+        background: var(--panel);
+        border-left: 1px solid var(--border);
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      .toolbar h2 {
+        margin: 0 0 8px 0;
+        font-size: 15px;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      #connections-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+      }
+      .line-label {
+        font-size: 12px;
+        fill: #111;
+        font-weight: 600;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .sql-box {
+        background: #0b1220;
+        color: #dff7d8;
+        padding: 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        height: 260px;
+        overflow: auto;
+        white-space: pre-wrap;
+      }
+      .conn-item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 6px;
+        border-radius: 6px;
+        border: 1px dashed var(--border);
+        margin-bottom: 6px;
+        background: #fff;
+      }
+      .conn-item small {
+        color: var(--muted);
+      }
+      footer {
+        padding: 8px 12px;
+        background: var(--panel);
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .danger {
+        color: var(--danger);
+      }
+      .label-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 12px;
+        background: #eee;
+        font-size: 11px;
+        color: #333;
+        margin-left: 6px;
+      }
+      .top-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      textarea#import-json {
+        width: 100%;
+        height: 90px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px;
+      }
+    </style>
+
+    <!-- jsPlumb CDN (v2) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsplumb@2.15.6/dist/js/jsplumb.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Editor Visual de Fluxo — jsPlumb + localStorage</h1>
+      <div class="muted">
+        Edição em tempo real • duplo clique abre editor • salva tudo no
+        localStorage
+      </div>
+    </header>
+
+    <div id="app">
+      <div id="canvas-wrap">
+        <div id="canvas"></div>
+      </div>
+
+      <aside class="toolbar">
+        <h2>Controles</h2>
+        <div class="controls">
+          <button id="add-node" class="btn-primary">+ Novo Nó</button>
+          <button id="load-example" class="btn-ghost">Exemplo</button>
+        </div>
+
+        <div class="top-row">
+          <div style="flex: 1">
+            <label class="muted">Import JSON</label>
+            <textarea
+              id="import-json"
+              placeholder='Cole array de objetos ou {"nodes":[], "conns":[]}'
+            ></textarea>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <button id="import-btn" class="small-btn">Importar</button>
+          <button id="clear-btn" class="small-btn">Limpar</button>
+          <button id="export-json" class="small-btn">Exportar</button>
+        </div>
+
+        <h3>Editor do Nó selecionado</h3>
+        <div id="node-editor">
+          <div class="note">
+            Clique (ou duplo clique) em um nó para editar seus campos
+          </div>
+        </div>
+
+        <h3 style="margin-top: 10px">Conexões</h3>
+        <div
+          id="conns-list"
+          style="max-height: 120px; overflow: auto; margin-bottom: 8px"
+        ></div>
+
+        <div style="display: flex; gap: 8px; margin-top: 8px">
+          <button id="generate-sql" class="btn-primary" style="flex: 1">
+            Gerar SQL
+          </button>
+          <button id="download-sql" class="btn-ghost" style="flex: 1">
+            Baixar SQL
+          </button>
+        </div>
+
+        <h3 style="margin-top: 12px">SQL Gerado</h3>
+        <div id="sql" class="sql-box">-- SQL aparecerá aqui --</div>
+
+        <div style="margin-top: 12px">
+          <div class="note">
+            Dica: arraste do <b>ponto direito</b> de um nó até o
+            <b>ponto esquerdo</b> de outro para criar uma conexão. Ao conectar
+            você indicará o rótulo (success / cancel / outro).
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <span class="note"
+        >Conexões: clique sobre uma conexão na lista para remover. As alterações
+        são salvas automaticamente.</span
+      >
+    </footer>
+
+    <script>
+      /* ---------- Config e Estado ---------- */
+      const STORAGE_KEY = "fluxo_editor_v1";
+      let nodes = []; // {id, grupo, message, options, varField, success, cancel, type, status, functionField, regex, sessionName, x,y}
+      let conns = []; // {id, fromId, toId, label, connectionId}
+      let selectedNodeId = null;
+
+      const canvas = document.getElementById("canvas");
+      const nodeEditor = document.getElementById("node-editor");
+      const connsList = document.getElementById("conns-list");
+      const sqlBox = document.getElementById("sql");
+
+      const instance = jsPlumb.getInstance({
+        Connector: ["Bezier", { curviness: 50 }],
+        Anchors: ["Right", "Left"],
+        Endpoint: ["Dot", { radius: 4 }],
+        PaintStyle: { stroke: "#3a3a3a", strokeWidth: 2 },
+        HoverPaintStyle: { stroke: "#0b76ef", strokeWidth: 3 },
+        ConnectionOverlays: [
+          ["Label", { label: "", id: "label", cssClass: "conn-overlay-label" }],
+        ],
+        Container: canvas,
+      });
+
+      /* ---------- Helpers ---------- */
+      function generateId(prefix) {
+        return prefix + "_" + Math.random().toString(36).slice(2, 9);
+      }
+      function saveState() {
+        const payload = { nodes, conns };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        //console.log('saved', payload);
+      }
+      function loadState() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        try {
+          const parsed = JSON.parse(raw);
+          nodes = parsed.nodes || [];
+          conns = parsed.conns || [];
+          return true;
+        } catch (e) {
+          console.warn("loadState error", e);
+          return false;
+        }
+      }
+      function clearState() {
+        localStorage.removeItem(STORAGE_KEY);
+        nodes = [];
+        conns = [];
+        instance.deleteEveryConnection();
+        instance.deleteEveryEndpoint();
+        renderAll();
+        saveState();
+      }
+
+      /* ---------- Render / DOM ---------- */
+      function renderAll() {
+        // remove existing DOM nodes
+        canvas.innerHTML = "";
+        instance.setContainer(canvas);
+        // render nodes
+        nodes.forEach((n) => {
+          renderNode(n);
+        });
+        // after nodes exist, re-instantiate jsPlumb endpoints and connections
+        instance.repaintEverything();
+        // create connections
+        conns.forEach((c) => {
+          // If connection already exists (on reload) skip duplicates
+          try {
+            const fromEl = document.getElementById(domId(c.fromId));
+            const toEl = document.getElementById(domId(c.toId));
+            if (!fromEl || !toEl) return;
+            const conn = instance.connect({
+              source: fromEl,
+              target: toEl,
+              overlays: [
+                [
+                  "Label",
+                  { label: c.label, location: 0.5, cssClass: "conn-label" },
+                ],
+              ],
+              anchors: ["Right", "Left"],
+              detachable: true,
+            });
+            c.connectionId = conn.id;
+          } catch (err) {
+            /* ignore */
+          }
+        });
+        bindJsPlumbEvents();
+        renderConnsList();
+      }
+
+      function domId(id) {
+        return "node_" + id;
+      }
+
+      // render single node DOM + endpoints + drag
+      function renderNode(n) {
+        // skip if already exists (defensive)
+        let el = document.getElementById(domId(n.id));
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "node";
+          el.id = domId(n.id);
+          canvas.appendChild(el);
+        }
+        // update position & content
+        el.style.left = (n.x || 100) + "px";
+        el.style.top = (n.y || 100) + "px";
+        el.innerHTML = `
+    <div class="title">
+      <h3>${escapeHtml(n.grupo || "(sem grupo)")}</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="small-btn" data-action="edit">Editar</button>
+        <button class="small-btn" data-action="del">x</button>
+      </div>
+    </div>
+    <div class="body">
+      <div class="preview">${escapeHtml(short(n.message || ""))}</div>
+      <div class="handle left" title="entrada"></div>
+      <div class="handle right" title="saída" style="position:absolute;right:-8px;top:14px;"></div>
+    </div>
+  `;
+        // events
+        el.querySelector('[data-action="edit"]').onclick = (e) => {
+          e.stopPropagation();
+          openEditor(n.id);
+          selectNode(n.id);
+        };
+        el.querySelector('[data-action="del"]').onclick = (e) => {
+          e.stopPropagation();
+          if (confirm("Remover nó e suas conexões?")) removeNode(n.id);
+        };
+        el.ondblclick = () => {
+          openEditor(n.id);
+          selectNode(n.id);
+        };
+        el.onclick = (e) => {
+          selectNode(n.id);
+        };
+
+        // make draggable & add endpoints via jsPlumb
+        instance.draggable(el, {
+          grid: [1, 1],
+          stop: function (params) {
+            // update model
+            const rect = el.getBoundingClientRect();
+            const parentRect = canvas.getBoundingClientRect();
+            // positions relative to canvas (consider scroll)
+            const x = el.offsetLeft;
+            const y = el.offsetTop;
+            const node = nodes.find((x) => x.id === n.id);
+            if (node) {
+              node.x = x;
+              node.y = y;
+              saveState();
+            }
+          },
+        });
+
+        // remove existing endpoints to avoid dupes
+        try {
+          instance.removeAllEndpoints(el);
+        } catch (e) {}
+
+        // add endpoints
+        instance.makeSource(el, {
+          filter: ".handle.right, .handle.right *",
+          anchor: "Right",
+          connector: ["Bezier", { curviness: 50 }],
+          connectorStyle: { stroke: "#3a3a3a", strokeWidth: 2 },
+          maxConnections: -1,
+        });
+
+        instance.makeTarget(el, {
+          dropOptions: { hoverClass: "dragHover" },
+          anchor: "Left",
+          allowLoopback: false,
+          maxConnections: -1,
+        });
+
+        // visually highlight if selected
+        if (selectedNodeId === n.id) el.classList.add("selected");
+        else el.classList.remove("selected");
+      }
+
+      /* ---------- Node operations ---------- */
+      function addNode(data) {
+        const id =
+          data?.id ??
+          Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 1000);
+        const node = {
+          id,
+          grupo: data?.grupo ?? "NODE_" + id,
+          message: data?.message ?? "",
+          options: data?.options ?? "",
+          varField: data?.varField ?? "",
+          success: data?.success ?? "",
+          cancel: data?.cancel ?? "",
+          type: data?.type ?? "",
+          status: data?.status ?? "",
+          functionField: data?.functionField ?? "",
+          regex: data?.regex ?? "",
+          sessionName: data?.sessionName ?? "",
+          x: data?.x ?? 50 + Math.round(Math.random() * 500),
+          y: data?.y ?? 50 + Math.round(Math.random() * 200),
+        };
+        nodes.push(node);
+        renderNode(node);
+        saveState();
+        return node;
+      }
+      function removeNode(id) {
+        // remove from nodes
+        nodes = nodes.filter((n) => n.id !== id);
+        // remove connections referencing this
+        conns = conns.filter((c) => c.fromId !== id && c.toId !== id);
+        // remove DOM
+        const el = document.getElementById(domId(id));
+        if (el) {
+          instance.remove(el);
+          el.remove();
+        }
+        // re-render connections list
+        renderConnsList();
+        saveState();
+      }
+      function findNode(id) {
+        return nodes.find((n) => n.id === id);
+      }
+
+      /* ---------- Selection & Editor ---------- */
+      function selectNode(id) {
+        selectedNodeId = id;
+        // highlight UI
+        document
+          .querySelectorAll(".node")
+          .forEach((el) =>
+            el.classList.toggle("selected", el.id === domId(id))
+          );
+        openEditor(id);
+      }
+      function openEditor(id) {
+        const n = findNode(id);
+        if (!n) return;
+        // build editor with live bindings
+        nodeEditor.innerHTML = `
+    <div style="display:grid;gap:8px">
+      <label><b>id</b><input id="f-id" type="text" value="${
+        n.id
+      }" disabled></label>
+      <label><b>grupo</b><input id="f-grupo" type="text" value="${escapeHtmlAttr(
+        n.grupo || ""
+      )}"></label>
+      <label><b>message</b><textarea id="f-message">${escapeHtmlAttr(
+        n.message || ""
+      )}</textarea></label>
+      <label><b>options</b><input id="f-options" type="text" value="${escapeHtmlAttr(
+        n.options || ""
+      )}"></label>
+      <label><b>var</b><input id="f-var" type="text" value="${escapeHtmlAttr(
+        n.varField || ""
+      )}"></label>
+      <label><b>type</b><input id="f-type" type="text" value="${escapeHtmlAttr(
+        n.type || ""
+      )}"></label>
+      <label><b>status</b><input id="f-status" type="text" value="${escapeHtmlAttr(
+        n.status || ""
+      )}"></label>
+      <label><b>function</b><input id="f-func" type="text" value="${escapeHtmlAttr(
+        n.functionField || ""
+      )}"></label>
+      <label><b>regex</b><input id="f-regex" type="text" value="${escapeHtmlAttr(
+        n.regex || ""
+      )}"></label>
+      <label><b>sessionName</b><input id="f-session" type="text" value="${escapeHtmlAttr(
+        n.sessionName || ""
+      )}"></label>
+      <div style="display:flex;gap:8px">
+        <button id="save-node" class="small-btn">Salvar</button>
+        <button id="center-node" class="small-btn">Centralizar</button>
+      </div>
+    </div>
+  `;
+        // live preview: update on input (autosave every change)
+        const inputs = [
+          "f-grupo",
+          "f-message",
+          "f-options",
+          "f-var",
+          "f-type",
+          "f-status",
+          "f-func",
+          "f-regex",
+          "f-session",
+        ];
+        inputs.forEach((idf) => {
+          const el = document.getElementById(idf);
+          el.addEventListener("input", () => {
+            // update model and preview quickly
+            n.grupo = document.getElementById("f-grupo").value;
+            n.message = document.getElementById("f-message").value;
+            n.options = document.getElementById("f-options").value;
+            n.varField = document.getElementById("f-var").value;
+            n.type = document.getElementById("f-type").value;
+            n.status = document.getElementById("f-status").value;
+            n.functionField = document.getElementById("f-func").value;
+            n.regex = document.getElementById("f-regex").value;
+            n.sessionName = document.getElementById("f-session").value;
+            // update DOM node preview immediately
+            const dom = document.getElementById(domId(n.id));
+            if (dom) {
+              const h3 = dom.querySelector(".title h3");
+              if (h3) h3.textContent = n.grupo || "(sem grupo)";
+              const prev = dom.querySelector(".preview");
+              if (prev) prev.textContent = short(n.message || "");
+            }
+            saveState();
+          });
+        });
+
+        document.getElementById("save-node").onclick = () => {
+          // final save already done by input listeners; keep for compatibility
+          saveState();
+          renderAll();
+        };
+        document.getElementById("center-node").onclick = () => {
+          const el = document.getElementById(domId(n.id));
+          if (el)
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center",
+            });
+        };
+      }
+
+      /* ---------- Connections handling (via jsPlumb) ---------- */
+      function bindJsPlumbEvents() {
+        // avoid duplicate bindings
+        instance.unbind();
+        // when a new connection is established (via drag), ask for label and save
+        instance.bind("connection", function (info, originalEvent) {
+          // label prompt
+          const label = prompt(
+            "Rótulo da conexão (digite: success / cancel / outro):",
+            "success"
+          );
+          if (!label) {
+            // remove connection if none provided
+            try {
+              instance.deleteConnection(info.connection);
+            } catch (e) {}
+            return;
+          }
+          // apply label overlay
+          info.connection.getOverlay("label").setLabel(label);
+          // store in conns model (prevent duplicates)
+          const existing = conns.find(
+            (c) =>
+              c.fromId === parseId(info.sourceId) &&
+              c.toId === parseId(info.targetId) &&
+              c.label === label
+          );
+          const cid = generateId("c");
+          if (!existing) {
+            conns.push({
+              id: cid,
+              fromId: parseId(info.sourceId),
+              toId: parseId(info.targetId),
+              label,
+              connectionId: info.connection.id,
+            });
+            saveState();
+            renderConnsList();
+          }
+        });
+
+        // when connection detached, remove from model
+        instance.bind("connectionDetached", function (info) {
+          // remove using connection id
+          conns = conns.filter((c) => c.connectionId !== info.connection.id);
+          saveState();
+          renderConnsList();
+        });
+
+        // repaint when elements move
+        instance.bind("move", function (params) {
+          /* no-op */
+        });
+      }
+
+      function parseId(domIdStr) {
+        // domId is 'node_<id>' but may be numeric; reverse
+        if (typeof domIdStr === "number") return domIdStr;
+        if (!domIdStr) return domIdStr;
+        if (domIdStr.startsWith("node_")) return domIdStr.slice(5);
+        return domIdStr;
+      }
+
+      /* ---------- Conns list UI ---------- */
+      function renderConnsList() {
+        connsList.innerHTML = "";
+        conns.forEach((c) => {
+          const from = findNode(c.fromId);
+          const to = findNode(c.toId);
+          const div = document.createElement("div");
+          div.className = "conn-item";
+          div.innerHTML = `<div style="flex:1"><b>${escapeHtml(
+            c.label
+          )}</b> <small>${from ? escapeHtml(from.grupo) : c.fromId} → ${
+            to ? escapeHtml(to.grupo) : c.toId
+          }</small></div>
+      <div><button class="small-btn" data-id="${c.id}">Excluir</button></div>`;
+          connsList.appendChild(div);
+          div.querySelector("button").onclick = () => {
+            if (!confirm("Excluir conexão?")) return;
+            // remove connection from jsPlumb and model
+            try {
+              // find connection by id and remove
+              const conn = instance
+                .getAllConnections()
+                .find((x) => x.id === c.connectionId);
+              if (conn) instance.deleteConnection(conn);
+            } catch (e) {}
+            conns = conns.filter((x) => x.id !== c.id);
+            saveState();
+            renderConnsList();
+          };
+        });
+      }
+
+      /* ---------- Import / Export ---------- */
+      document.getElementById("import-btn").addEventListener("click", () => {
+        const txt = document.getElementById("import-json").value.trim();
+        if (!txt) return alert("Cole um JSON para importar.");
+        try {
+          const parsed = JSON.parse(txt);
+          // support either array or {nodes, conns}
+          if (Array.isArray(parsed)) {
+            nodes = parsed.map((r) => ({
+              id: r.id ?? r.group ?? generateId("n"),
+              grupo: r.grupo ?? r.group ?? r.grup ?? "",
+              message: r.message ?? r.msg ?? "",
+              options: r.options ?? "",
+              varField: r.var ?? "",
+              type: r.type ?? "",
+              status: r.status ?? "",
+              functionField: r.function ?? "",
+              regex: r.regex ?? "",
+              sessionName: r.sessionName ?? "",
+              x: r.x ?? 50 + Math.round(Math.random() * 500),
+              y: r.y ?? 50 + Math.round(Math.random() * 200),
+            }));
+            conns = [];
+          } else if (parsed.nodes) {
+            nodes = parsed.nodes;
+            conns = parsed.conns || [];
+          } else {
+            alert("JSON não está no formato esperado (array ou {nodes,conns})");
+            return;
+          }
+          // normalize IDs as strings (to keep consistency)
+          nodes = nodes.map((n) => ({ ...n, id: String(n.id) }));
+          conns = conns.map((c) => ({
+            ...c,
+            fromId: String(c.fromId),
+            toId: String(c.toId),
+            id: c.id ?? generateId("c"),
+          }));
+          // render and save
+          instance.deleteEveryConnection();
+          instance.deleteEveryEndpoint();
+          renderAll();
+          saveState();
+          alert("Importado com sucesso.");
+        } catch (e) {
+          alert("Erro no JSON: " + e.message);
+        }
+      });
+
+      document.getElementById("clear-btn").addEventListener("click", () => {
+        if (!confirm("Limpar tudo e resetar?")) return;
+        clearState();
+        renderConnsList();
+        nodeEditor.innerHTML =
+          '<div class="note">Clique em um nó para editar seus campos</div>';
+        sqlBox.textContent = "-- SQL aparecerá aqui --";
+      });
+
+      document.getElementById("export-json").addEventListener("click", () => {
+        const payload = { nodes, conns };
+        const txt = JSON.stringify(payload, null, 2);
+        const w = window.open("", "_blank", "width=800,height=600");
+        w.document.write(
+          "<pre style='white-space:pre-wrap;font-family:monospace'>" +
+            escapeHtml(txt) +
+            "</pre>"
+        );
+      });
+
+      /* ---------- SQL generation ---------- */
+      document.getElementById("generate-sql").addEventListener("click", () => {
+        // map success & cancel based on first connection with label
+        nodes.forEach((n) => {
+          const succ = conns.find(
+            (c) => String(c.fromId) === String(n.id) && c.label === "success"
+          );
+          const canc = conns.find(
+            (c) => String(c.fromId) === String(n.id) && c.label === "cancel"
+          );
+          n.success = succ ? findNode(succ.toId)?.grupo || succ.toId : "";
+          n.cancel = canc ? findNode(canc.toId)?.grupo || canc.toId : "";
+        });
+        const cols = [
+          "id",
+          "grupo",
+          "message",
+          "options",
+          "var",
+          "success",
+          "cancel",
+          "type",
+          "status",
+          "function",
+          "regex",
+          "sessionName",
+        ];
+        const lines = nodes.map((n) => {
+          const vals = [
+            escapeSql(n.id),
+            escapeSql(n.grupo),
+            escapeSql(n.message),
+            escapeSql(n.options),
+            escapeSql(n.varField),
+            escapeSql(n.success),
+            escapeSql(n.cancel),
+            escapeSql(n.type),
+            escapeSql(n.status),
+            escapeSql(n.functionField),
+            escapeSql(n.regex),
+            escapeSql(n.sessionName),
+          ];
+          return `INSERT INTO passosatendimentos (${cols.join(
+            ","
+          )})\nVALUES (${vals.join(",")});`;
+        });
+        sqlBox.textContent = lines.join("\n\n") || "-- sem nós --";
+      });
+
+      document.getElementById("download-sql").addEventListener("click", () => {
+        const content = sqlBox.textContent || "";
+        const blob = new Blob([content], { type: "text/sql" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "passosatendimentos.sql";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      /* ---------- Utilities ---------- */
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function escapeHtmlAttr(s) {
+        return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+      }
+      function escapeSql(v) {
+        if (v === null || v === undefined) return "''";
+        const s = String(v).replace(/'/g, "''");
+        if (/^\d+$/.test(s)) return s;
+        return `'${s}'`;
+      }
+      function short(t) {
+        if (!t) return "";
+        return t.length > 120 ? t.slice(0, 120) + "..." : t;
+      }
+
+      /* ---------- Initial bindings & load ---------- */
+      document.getElementById("add-node").addEventListener("click", () => {
+        const n = addNode();
+        renderNode(n);
+        saveState();
+      });
+      document.getElementById("load-example").addEventListener("click", () => {
+        // minimal example set (you can import full JSON)
+        const example = [
+          {
+            id: "55",
+            grupo: "PASSO1",
+            message:
+              "*Atendimento Tonsus*\\nSeja bem vindo ao nosso atendimento automático 🤖!",
+            options: "",
+            type: "info",
+            status: true,
+            sessionName: "TONSUS",
+            x: 60,
+            y: 40,
+          },
+          {
+            id: "57",
+            grupo: "PASSO3",
+            message:
+              "🤝 Olá {{const_nomeusuario}}, como podemos te ajudar hoje?",
+            options:
+              "NOTIFICACOES,CANCELAMENTO,AGENDAMENTO,DUVIDAS,RECUPERAR,NENHUM",
+            type: "opcoes",
+            status: true,
+            sessionName: "TONSUS",
+            x: 420,
+            y: 40,
+          },
+        ];
+        nodes = example;
+        conns = [];
+        instance.deleteEveryConnection();
+        instance.deleteEveryEndpoint();
+        renderAll();
+        saveState();
+      });
+
+      // load from localStorage if present
+      if (loadState()) {
+        // ensure string ids
+        nodes = nodes.map((n) => ({ ...n, id: String(n.id) }));
+        conns = conns.map((c) => ({
+          ...c,
+          fromId: String(c.fromId),
+          toId: String(c.toId),
+        }));
+        renderAll();
+      } else {
+        renderAll();
+      }
+
+      /* ---------- ensure jsPlumb events bound after initial DOM generation ---------- */
+      bindJsPlumbEvents();
+
+      /* ---------- window unload: save ---------- */
+      window.addEventListener("beforeunload", () => saveState());
+
+      /* ---------- end ---------- */
+    </script>
+  </body>
+</html>

@@ -29,8 +29,6 @@ const Funcionario = ({
   onClose,
   servicos,
   titulo,
-  onSubmit,
-  submitText,
   actionText,
   buttons,
   alertCustom,
@@ -43,9 +41,11 @@ const Funcionario = ({
     nome: "",
     telefone: "",
     servicosPrestados: [],
+    imagem: "",
   });
 
   useEffect(() => {
+    console.log("funcionario", funcionario);
     if (funcionario) {
       setData({
         ...funcionario,
@@ -53,30 +53,38 @@ const Funcionario = ({
         title: `${funcionario.nome} - ${funcionario.telefone}`,
       });
     } else {
-      setData({
-        nome: "",
-        telefone: "",
-        servicosPrestados: [],
-      });
+      console.log("reset");
+      reset();
     }
-  }, [funcionario]);
+  }, [open]);
+
+  const reset = () => {
+    setData((prev) => ({
+      ...prev,
+      id: null,
+      idOrig: null,
+      nome: "",
+      imagem: "",
+      telefone: "",
+      servicosPrestados: [],
+    }));
+  };
 
   const handleSave = async () => {
     try {
       setLoading(true);
-      const semAtual = funcionarios.filter((f) => f.id !== data.idOrig);
-
       if (!data.id) {
         throw new Error("Selecione um funcionário!");
       }
 
-      const funcionariosFinais = [...semAtual, data];
+      const funcionariosFinais = [...funcionarios, data];
       await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
         funcionarios: funcionariosFinais.map((item) => ({
           userId: item.id,
           servicesId: item.servicosPrestados.map((service) => service.id),
         })),
       });
+
       if (data.id === getLocalItem("userId")) {
         localStorage.setItem("funcionario", true);
         reload && reload();
@@ -100,8 +108,6 @@ const Funcionario = ({
         titulo={titulo}
         onAction={handleSave}
         actionText={actionText}
-        onSubmit={onSubmit}
-        submitText={submitText}
         fullScreen="all"
         component="view"
         buttons={(buttons || []).map((btn) => ({
@@ -122,11 +128,11 @@ const Funcionario = ({
                   background: "#0195F7",
                   fontSize: funcionario && data.id ? 100 : 50,
                 }}
-                src={data.imagem}
+                src={data.imagem ? data.imagem : ""}
               >
                 {funcionario && data.id
                   ? primeiraMaiuscula(data.nome[0])
-                  : "Tonsus"}
+                  : "Ts"}
               </Avatar>
               <Box sx={{ m: "0 24px", width: "100%" }}>
                 {data.id && funcionario ? (
@@ -143,14 +149,7 @@ const Funcionario = ({
                     placeholder="Pesquise por nome ou telefone..."
                     setItemSelecionado={(item) => {
                       if (!item) {
-                        return setData((prev) => ({
-                          ...prev,
-                          id: null,
-                          idOrig: null,
-                          nome: "",
-                          telefone: "",
-                          servicosPrestados: [],
-                        }));
+                        return reset();
                       }
 
                       setData((prev) => ({

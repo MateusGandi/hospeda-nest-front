@@ -12,6 +12,7 @@ import {
   getLocalItem,
   isMobile,
   orderBy,
+  setLocalItem,
 } from "../../../Componentes/Funcoes";
 import View from "../../../Componentes/View";
 import Confirm from "../../../Componentes/Alert/Confirm";
@@ -19,7 +20,6 @@ import Confirm from "../../../Componentes/Alert/Confirm";
 const INITIAL_FORM = {
   open: false,
   titulo: "Adicionar novo funcionário",
-  funcionarioSelecionado: null,
   actionText: "Adicionar",
   loading: false,
   barbeariaId: null,
@@ -35,7 +35,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
   const [confirmDelete, setConfirmDelete] = useState({
     open: false,
     item: null,
-    origin: "from-list", // from-form
+    origin: "from-list",
   });
   const [modal, setModal] = useState({
     ...INITIAL_FORM,
@@ -48,6 +48,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
     try {
       const { item, origin } = confirmDelete;
       setModal((prev) => ({ ...prev, actionLoading: true }));
+
       await Api.query("PATCH", `/establishment/${modal.barbeariaId}`, {
         funcionarios: funcionarios
           .filter((op) => op.id != item.id)
@@ -57,7 +58,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
           })),
       });
       if (item.id === getLocalItem("userId")) {
-        localStorage.setItem("funcionario", false);
+        setLocalItem("funcionario", false);
         reload && reload();
       }
 
@@ -118,7 +119,6 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
             },
           ],
           titulo: `Editar dados de ${funcionario.nome}`,
-          funcionarioSelecionado: funcionario,
           actionText: "Salvar",
           barbeariaId: getLocalItem("establishmentId"),
           funcionario: funcionario,
@@ -135,16 +135,18 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
       setModal({
         ...INITIAL_FORM,
         barbeariaId: getLocalItem("establishmentId"),
+        funcionario: null,
         open: true,
       });
     }
   }, [subPath, funcionarios]);
 
-  const addFuncionario = () => {
+  const addFuncionario = (a) => {
     setModal({
       ...INITIAL_FORM,
       barbeariaId: getLocalItem("establishmentId"),
       open: true,
+      funcionario: null,
     });
     navigate(`novo`);
   };
@@ -236,7 +238,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
         actionText="Adicionar Funcionário"
         fullScreen="all"
         component="view"
-        loadingButton={modal.actionLoading}
+        disableSubmittion={true}
       >
         {funcionarios && funcionarios.length ? (
           <Grid container spacing={2}>
@@ -304,7 +306,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
 
       <FuncionarioForm
         funcionarios={funcionarios}
-        funcionario={modal.funcionarioSelecionado}
+        funcionario={modal.funcionario}
         setFuncionarios={setFuncionarios}
         actionText={modal.actionText}
         open={modal.open}

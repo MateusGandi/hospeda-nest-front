@@ -41,10 +41,12 @@ export const Rows = ({
   spacing = 1,
   disableRipple = false,
 }) => {
-  const [selected, setSelected] = useState(selectedItems || []);
+  const [selected, setSelected] = useState([]);
 
   useEffect(() => {
-    if (selectedItems) setSelected(selectedItems || []);
+    if (Array.isArray(selectedItems) && selectedItems.length)
+      setSelected(selectedItems || []);
+    else setSelected([]);
   }, [selectedItems]);
 
   const handleSelect = async (item, campo) => {
