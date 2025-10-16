@@ -162,8 +162,12 @@ const WorkSchedule = ({
       const id = dados?.id || getLocalItem("userId");
       await apiService.query("PATCH", `/user/${id}`, {
         filaDinamicaClientes: form.filaDinamicaClientes,
-        clientesPodemEntrarNaFila: form.clientesPodemEntrarNaFila,
-        confirmacaoAutomaticaFila: form.confirmacaoAutomaticaFila,
+        clientesPodemEntrarNaFila: form.filaDinamicaClientes
+          ? form.clientesPodemEntrarNaFila
+          : false,
+        confirmacaoAutomaticaFila: form.filaDinamicaClientes
+          ? form.confirmacaoAutomaticaFila
+          : false,
       });
       await apiService.query(
         "PUT",

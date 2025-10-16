@@ -284,6 +284,14 @@ Se preferir, estamos no Tonsus, pode agendar com a gente por lá também!
       maxWidth="xs"
       fullScreen="mobile"
       component="modal"
+      buttons={[
+        {
+          titulo: "Concluir",
+          variant: "text",
+          color: "secondary",
+          action: () => setModalBotAberto(false),
+        },
+      ]}
       titulo={
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Badge
