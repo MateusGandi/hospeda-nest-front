@@ -150,7 +150,7 @@ export default function AgendamentosByCalendario({
     try {
       const { inicio, fim, filter } = params;
       if (!inicio || !fim) return;
-      const userId = getLocalItem("userId");
+      const userId = data.funcionarioId || getLocalItem("userId");
 
       setContent({ loading: true });
 
@@ -254,6 +254,9 @@ export default function AgendamentosByCalendario({
 
   const handleUpdateAgendamento = async (item, data, discount) => {
     try {
+      if (item.statusKey === "CANCELLED")
+        throw new Error("Não é possível reagendar um agendamento cancelado!");
+
       setContent({ loading: true });
       const dataCorrigida = new Date(data);
       dataCorrigida.setHours(dataCorrigida.getHours() - 3);
@@ -263,7 +266,7 @@ export default function AgendamentosByCalendario({
         establishmentId: getLocalItem("establishmentId"),
         barberId: item.funcionario.id,
         services: item.servico.map((service) => service.id),
-
+        status: "PENDING",
         ...(discount
           ? { discountId: discount.id, discountValue: discount.value }
           : {}),
@@ -274,7 +277,9 @@ export default function AgendamentosByCalendario({
     } catch (error) {
       handleGetAgendamentos();
       alertCustom(
-        error?.response?.data?.message ?? "Erro ao atualizar agendamento!"
+        error.message ||
+          error?.response?.data?.message ||
+          "Erro ao atualizar agendamento!"
       );
     } finally {
       setContent({ loading: false });
@@ -310,49 +315,42 @@ export default function AgendamentosByCalendario({
           loading={content.loading}
           legend={
             <Box
-              className="justify-center"
+              className="justify-between-wrap show-box"
               sx={{
-                justifyContent: "left",
+                alignItems: "top",
                 gap: 1,
-                m: 1,
+                pt: 5,
+                mb: 2,
               }}
             >
-              {Object.keys(colorsByStatus).map((key) => (
-                <>
-                  <Typography
-                    component={"span"}
-                    variant="body2"
-                    color="GrayText"
-                    sx={{ mr: 1, gap: 1 }}
-                    className="justify-center"
-                  >
-                    <SquareRoundedIcon
-                      fontSize="small"
-                      sx={{ color: colorsByStatus[key] }}
+              <CustomSelect
+                value={data.funcionarioId}
+                onChange={({ target: { value } }) => {
+                  setData({ funcionarioId: value });
+                }}
+                options={data.options}
+                label="Funcionário"
+                placeholder="Selecione o funcionário"
+                sx={{
+                  width: "100%",
+                  maxWidth: 250,
+                }}
+              />
+              <Typography variant="body1" sx={{ mt: -3 }}>
+                Legenda
+                <Typography className="justify-between" sx={{ gap: 1, mt: 2 }}>
+                  {Object.keys(colorsByStatus).map((key) => (
+                    <Chip
+                      label={filterOptions[key]}
+                      sx={{ background: colorsByStatus[key] }}
                     />
-                    {filterOptions[key]}
-                  </Typography>
-                </>
-              ))}
+                  ))}
+                </Typography>
+              </Typography>
             </Box>
           }
           tools={
             <Box className="justify-between" sx={{ gap: 1 }}>
-              <Typography sx={{ width: { xs: "100%", md: "200px" }, mb: 2 }}>
-                <CustomSelect
-                  value={data.funcionarioId}
-                  onChange={({ target: { value } }) => {
-                    setData({ funcionarioId: value });
-                  }}
-                  options={data.options}
-                  label="Funcionário"
-                  placeholder="Selecione o funcionário"
-                  sx={{
-                    width: { xs: "100%", md: "300px" },
-                    borderRadius: "50px",
-                  }}
-                />
-              </Typography>
               <Search
                 initial={content.eventos}
                 elements={content.filtred}

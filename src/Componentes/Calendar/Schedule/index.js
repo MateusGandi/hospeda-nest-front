@@ -310,7 +310,7 @@ export default function WeekCalendar({
       >
         <Grid container justifyContent="center">
           <Grid size={12}>
-            <Box className="justify-between-wrap" sx={{ my: 3 }}>
+            <Box className="justify-between-wrap" sx={{ mb: 2 }}>
               {" "}
               <Box
                 className="justify-center-wrap"

@@ -180,6 +180,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         <Rows
           oneTapMode={true}
           variant="contained"
+          sx={{ backgroundColor: "transparent" }}
           items={
             dados.funcionarios.length
               ? dados.funcionarios

@@ -23,12 +23,12 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   const [confirmDialog, setConfirmDialog] = useState({
     open: false,
     title: "Confirmação",
-    message: `Você está agendando para ${
-      getLocalItem("add_client_to_employee_name") || "outro barbeiro"
-    }, tem certeza que deseja continuar?`,
+    message: `Deseja continuar agendando para ${
+      getLocalItem("barberName") || "outro barbeiro"
+    }?`,
   });
   const getBarber = () => {
-    const id = getLocalItem("add_client_to_employee") || getLocalItem("userId");
+    const id = getLocalItem("barberId") || getLocalItem("userId");
     const funcionarios = barbearia?.funcionarios || [];
 
     return funcionarios.find((f) => f.id === id);
@@ -44,7 +44,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
     in_fila: false,
     fila_info: null,
     loading: false,
-    outro_barbeiro: !!getLocalItem("add_client_to_employee"),
+    outro_barbeiro: !!getLocalItem("barberId"),
   });
   const [page, setPage] = useState({
     open: false,
@@ -68,8 +68,8 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   }, [subPath]);
 
   const cancelInsertForOtherBarber = () => {
-    localStorage.removeItem("add_client_to_employee");
-    localStorage.removeItem("add_client_to_employee_name");
+    localStorage.removeItem("barberId");
+    localStorage.removeItem("barberName");
     setForm((prev) => ({
       ...prev,
       outro_barbeiro: false,
@@ -234,7 +234,6 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
   };
 
   useEffect(() => {
-    console.log("Form data changed:", form);
     const verify = () => {
       const basePages = [
         {
@@ -400,7 +399,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
               title={confirmDialog.title}
               message={confirmDialog.message}
               confirmText="Continuar"
-              cancelText="Cancelar"
+              cancelText="Voltar para mim"
             />
           </Grid>
         </Grid>

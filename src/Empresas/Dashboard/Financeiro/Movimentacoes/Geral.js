@@ -199,7 +199,7 @@ const ListaMovimentacoes = ({ buscar, alertCustom }) => {
         open={detalhe.open}
         onClose={() => setDetalhe((prev) => ({ ...prev, open: false }))}
         titulo="Detalhes da Movimentação"
-        maxWidth="md"
+        maxWidth="xs"
         buttons={[
           {
             titulo: "Fechar",

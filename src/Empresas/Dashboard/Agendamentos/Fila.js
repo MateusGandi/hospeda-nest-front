@@ -202,7 +202,13 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
         {content.items.length ? (
           <Grid item size={{ xs: 12, md: 7 }} order={{ xs: 2, md: 1 }}>
             <>
-              <Typography sx={{ width: { xs: "100%", md: "200px" }, mb: 2 }}>
+              <Typography
+                sx={{
+                  width: { xs: "100%", md: "200px" },
+                  mb: 2,
+                  display: { xs: "none", md: "block" },
+                }}
+              >
                 <CustomSelect
                   value={data.funcionarioId}
                   onChange={({ target: { value } }) => {
@@ -211,7 +217,10 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                   options={data.options}
                   label="Funcionário"
                   placeholder="Selecione o funcionário"
-                  sx={{ width: { xs: "100%", md: "300px" } }}
+                  sx={{
+                    width: { xs: "100%", md: "300px" },
+                    mt: { xs: 2, md: 0 },
+                  }}
                 />
               </Typography>
               <Rows
@@ -269,78 +278,103 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
         )}
 
         {content.currentClient && (
-          <Grid item size={{ xs: 12, md: 5 }} order={{ xs: 1, md: 2 }}>
-            <Grid container spacing={2}>
-              <Grid size={12}>
-                <Typography variant="h4" className="show-box">
-                  <Typography
-                    variant="body1"
-                    color="textSecondary"
-                    sx={{ mt: -1 }}
-                  >
-                    Cliente atual
+          <>
+            <Grid item size={12}>
+              <Typography
+                sx={{
+                  width: { xs: "100%", md: "200px" },
+                  mb: 2,
+                  display: { xs: "block", md: "none" },
+                }}
+              >
+                <CustomSelect
+                  value={data.funcionarioId}
+                  onChange={({ target: { value } }) => {
+                    setData({ funcionarioId: value });
+                  }}
+                  options={data.options}
+                  label="Funcionário"
+                  placeholder="Selecione o funcionário"
+                  sx={{
+                    width: { xs: "100%", md: "300px" },
+                    mt: { xs: 2, md: 0 },
+                  }}
+                />
+              </Typography>{" "}
+            </Grid>
+            <Grid item size={{ xs: 12, md: 5 }} order={{ xs: 1, md: 2 }}>
+              <Grid container spacing={2}>
+                <Grid size={12}>
+                  <Typography variant="h4" className="show-box">
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      sx={{ mt: -1 }}
+                    >
+                      Cliente atual
+                    </Typography>
+                    {primeiraMaiuscula(
+                      content.currentClient.nome ||
+                        content.currentClient.nomeCliente ||
+                        "Cliente sem nome"
+                    )}
                   </Typography>
-                  {primeiraMaiuscula(
-                    content.currentClient.nome ||
-                      content.currentClient.nomeCliente ||
-                      "Cliente sem nome"
-                  )}
-                </Typography>
-              </Grid>
-              <Grid size={12}>
-                <PaperList
-                  sx={{ width: "100%" }}
-                  items={[
-                    {
-                      titulo: "Telefone",
-                      subtitulo: content.items[0]?.usuario?.telefone ? (
-                        <Link
-                          href={`https://wa.me/${content.items[0].usuario.telefone.replace(
-                            /\D/g,
-                            ""
-                          )}?text=É%20a%20sua%20vez...`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          underline="hover"
-                          color="primary"
-                        >
-                          {formatPhone(content.items[0].usuario.telefone)}
-                        </Link>
-                      ) : (
-                        "Não informado"
-                      ),
-                    },
-                    {
-                      titulo: "Serviços",
-                      subtitulo:
-                        content.currentClient.servicos?.join(", ") ||
-                        "Nenhum serviço",
-                    },
-                    {
-                      titulo: "Tempo",
-                      subtitulo: content.currentClient.tempoEstimado
-                        ? `${formatarHorario(
-                            content.currentClient.tempoEstimado
-                          )} — ${toUTC({
-                            data: content.currentClient.horarioPrevisto,
-                          })}h`
-                        : "Não informado",
-                    },
-                  ]}
-                >
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      p: "12px 16px",
-                      background: "#333",
-                    }}
+                </Grid>
+                <Grid size={12}>
+                  <PaperList
+                    sx={{ width: "100%" }}
+                    items={[
+                      {
+                        titulo: "Telefone",
+                        subtitulo: content.items[0]?.usuario?.telefone ? (
+                          <Link
+                            href={`https://wa.me/${content.items[0].usuario.telefone.replace(
+                              /\D/g,
+                              ""
+                            )}?text=É%20a%20sua%20vez...`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            underline="hover"
+                            color="primary"
+                          >
+                            {formatPhone(content.items[0].usuario.telefone)}
+                          </Link>
+                        ) : (
+                          "Não informado"
+                        ),
+                      },
+                      {
+                        titulo: "Serviços",
+                        subtitulo:
+                          content.currentClient.servicos?.join(", ") ||
+                          "Nenhum serviço",
+                      },
+                      {
+                        titulo: "Tempo",
+                        subtitulo: content.currentClient.tempoEstimado
+                          ? `${formatarHorario(
+                              content.currentClient.tempoEstimado
+                            )} — ${toUTC({
+                              data: content.currentClient.horarioPrevisto,
+                            })}h`
+                          : "Não informado",
+                      },
+                    ]}
                   >
-                    Detalhes do atendimento
-                  </Typography>
-                </PaperList>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        p: "12px 16px",
+                        background: "#333",
+                      }}
+                    >
+                      Detalhes do atendimento
+                    </Typography>
+                  </PaperList>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          </>
         )}
       </Grid>
 

@@ -18,8 +18,8 @@ export default function AgendamentosView({ alertCustom }) {
   const [data, setData] = useState({
     loading: true,
     filaDinamicaClientes: false,
-    funcionarioId: getLocalItem("userId"),
-    funcionarioOrigemId: getLocalItem("userId"),
+    funcionarioId: null,
+    funcionarioAtual: null,
     startHour: 9,
     endHour: 18,
     funcionarios: [],
@@ -27,27 +27,30 @@ export default function AgendamentosView({ alertCustom }) {
   });
   const _setData = (v) => setData((prev) => ({ ...prev, ...v }));
 
+  useEffect(() => {
+    _setData({
+      funcionarioId: getLocalItem("userId"),
+      funcionarioAtual: getLocalItem("userId"),
+    });
+  }, []);
+
   const getEstablishment = async () => {
     try {
-      if (!data.funcionarioId) return;
       setData((prev) => ({ ...prev, loading: true }));
+      const id = getLocalItem("establishmentId");
+
       const { horarioAbertura, horarioFechamento, funcionarios } =
-        await apiService.query(
-          "GET",
-          `/establishment?establishmentId=${localStorage.getItem(
-            "establishmentId"
-          )}`
-        );
+        await apiService.query("GET", `/establishment?establishmentId=${id}`);
+
+      const { filaDinamicaClientes } =
+        funcionarios.find(({ id }) => id === data.funcionarioId) || {};
 
       _setData({
-        filaDinamicaClientes:
-          funcionarios.find(({ id }) => id === data.funcionarioId)
-            ?.filaDinamicaClientes || false,
+        filaDinamicaClientes: !!filaDinamicaClientes,
         loading: false,
         startHour: normalizeHour(horarioAbertura, "down"),
         endHour: normalizeHour(horarioFechamento, "up"),
         funcionarios: funcionarios || [],
-        funcionarioOrigemId: getLocalItem("userId"),
       });
     } catch (error) {
       alertCustom("Erro ao carregar dados da barbearia");
@@ -55,7 +58,7 @@ export default function AgendamentosView({ alertCustom }) {
   };
 
   useEffect(() => {
-    getEstablishment();
+    data.funcionarioId && getEstablishment();
   }, [data.funcionarioId]);
 
   useEffect(() => {
@@ -63,30 +66,23 @@ export default function AgendamentosView({ alertCustom }) {
       value: f.id,
       label: `${primeiraMaiuscula(f.nome)} - ${f.telefone}`,
     }));
-    const atual = temp.find(({ value }) => value === getLocalItem("userId"));
 
-    _setData({ options: temp, funcionarioId: atual?.value });
+    _setData({ options: temp });
   }, [data.funcionarios]);
-
-  useEffect(() => {
-    console.log("funcionarioId", data.funcionarioId);
-  }, [data.funcionarioId]);
 
   const handleScheduleToOtherBarber = () => {
     const direction =
-      data.funcionarioId !== data.funcionarioOrigemId ? "add" : "remove";
+      data.funcionarioId !== data.funcionarioAtual && data.funcionarioId
+        ? "add"
+        : "remove";
 
-    if (direction === "add" && data.funcionarioId) {
-      setLocalItem("add_client_to_employee", data.funcionarioId);
-      setLocalItem(
-        "add_client_to_employee_name",
-        data.funcionarios.find((f) => f.id === data.funcionarioId)?.nome
-      );
-    }
-
-    if (direction === "remove" || !data.funcionarioId) {
-      localStorage.removeItem("add_client_to_employee");
-      localStorage.removeItem("add_client_to_employee_name");
+    const barber = data.funcionarios.find((f) => f.id === data.funcionarioId);
+    if (direction === "add" && barber) {
+      setLocalItem("barberId", data.funcionarioId);
+      setLocalItem("barberName", barber.nome);
+    } else if (direction === "remove") {
+      localStorage.removeItem("barberId");
+      localStorage.removeItem("barberName");
     }
   };
 

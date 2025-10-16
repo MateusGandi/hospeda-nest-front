@@ -8,7 +8,9 @@ const Alerta = ({ alert, setAlert }) => {
     setAlert((prev) => ({ ...prev, open: false }));
   };
 
-  const isError = alert.message?.toLowerCase().includes("erro");
+  const isError =
+    alert.message?.toLowerCase().includes("erro") ||
+    alert.message?.toLowerCase().includes("não");
 
   return (
     <Snackbar
