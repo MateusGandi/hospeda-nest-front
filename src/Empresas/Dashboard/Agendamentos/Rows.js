@@ -84,7 +84,6 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
       const dataFormatted = toUTC({
         data: data_selecionada,
         onlyDate: true,
-        offsetHoras: -3,
         format: "en",
       });
       const userId = data.funcionarioId || getLocalItem("userId");
@@ -110,50 +109,56 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
         };
       });
 
-      const agFormatted = agendas.map((item) => {
-        const status = getStatus(item.status);
-        return {
-          ...item,
-          servico: item.servico.map((service) => ({
-            ...service,
-            titulo: `${service.nome} | R$ ${service.preco}`,
-            subtitulo: formatarHorario(service.tempoGasto),
-          })),
-          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
-          titulo: (
-            <Typography
-              variant="h6"
-              sx={{
-                width: "100%",
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-              }}
-            >
-              <span>
-                {" "}
-                <span className="show-art"> {format(item.data, "HH:mm")}</span>
-                {item.nomeCliente || "Desconhecido"}{" "}
-              </span>
-              <span>
-                {" "}
-                {status.manual && <Chip size="small" label={"Manual"} />}
-                <Chip size="small" label={status.valor} color={status.color} />
-              </span>
-            </Typography>
-          ),
-          subtitulo: (
-            <>
+      const agFormatted = agendas
+        .slice() // para não mutar o array original
+        .sort((a, b) => new Date(a.data) - new Date(b.data)) // menor para maior
+        .map((item) => {
+          const status = getStatus(item.status);
+          return {
+            ...item,
+            servico: item.servico.map((service) => ({
+              ...service,
+              titulo: `${service.nome} | R$ ${service.preco}`,
+              subtitulo: formatarHorario(service.tempoGasto),
+            })),
+            imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
+            titulo: (
+              <Typography
+                variant="h6"
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>
+                  <span className="show-art">
+                    {" "}
+                    {format(item.data, "HH:mm")}
+                  </span>
+                  {item.nomeCliente || "Desconhecido"}
+                </span>
+                <span>
+                  {status.manual && <Chip size="small" label={"Manual"} />}
+                  <Chip
+                    size="small"
+                    label={status.valor}
+                    color={status.color}
+                  />
+                </span>
+              </Typography>
+            ),
+            subtitulo: (
               <Typography variant="body2" sx={{ display: "flex", gap: 1 }}>
                 {format(
                   new Date(item.dataFinalizacao),
                   "'Previsão de finalização até ' HH:mm ' horas'"
                 )}
               </Typography>
-            </>
-          ),
-        };
-      });
+            ),
+          };
+        });
 
       setModal({
         agendamentos: agFormatted,
@@ -447,7 +452,10 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
           open={modal.open}
           onClose={() => setModal({ open: false })}
           titulo={modal.agendamento_selecionado?.nomeCliente || ""}
-          buttons={buttons}
+          buttons={
+            modal.agendamento_selecionado?.status != "CANCELLED" && buttons
+          }
+          component="view"
           fullScreen="mobile"
         >
           <>

@@ -399,7 +399,7 @@ const AgendamentoManual = ({ onClose, barbearia, alertCustom }) => {
               title={confirmDialog.title}
               message={confirmDialog.message}
               confirmText="Continuar"
-              cancelText="Voltar para mim"
+              cancelText="Cancelar"
             />
           </Grid>
         </Grid>
