@@ -212,7 +212,7 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
 
   useEffect(() => {
     if (subPath) {
-      const servico = servicos.find((s) => s.id === subPath);
+      const servico = servicos.find((s) => s.id === +subPath);
       if (servico) handleSelect(servico);
     }
   }, [subPath]);

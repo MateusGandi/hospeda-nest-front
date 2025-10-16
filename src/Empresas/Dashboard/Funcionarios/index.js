@@ -93,7 +93,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
 
   useEffect(() => {
     if (subPath != "novo") {
-      const funcionario = funcionarios.find((f) => f.id === subPath);
+      const funcionario = funcionarios.find((f) => f.id === +subPath);
 
       if (funcionario) {
         setModal({
@@ -165,7 +165,7 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
           ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
           : "Sem serviços cadastrados",
       }));
-
+      console.log(orderBy(data || [], "id", "asc"));
       setFuncionarios(orderBy(data || [], "id", "asc"));
 
       reload();
