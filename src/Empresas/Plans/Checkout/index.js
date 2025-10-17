@@ -137,7 +137,8 @@ const Checkout = ({ alertCustom }) => {
             };
           }
           const finalBody = Object.keys(body).reduce((acc, key) => {
-            acc[key] = body[key]?.trim();
+            acc[key] =
+              typeof body[key] == "string" ? body[key]?.trim() : body[key];
             return acc;
           }, {});
 
