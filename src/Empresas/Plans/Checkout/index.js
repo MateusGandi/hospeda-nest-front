@@ -137,7 +137,7 @@ const Checkout = ({ alertCustom }) => {
             };
           }
           const finalBody = Object.keys(body).reduce((acc, key) => {
-            acc[key] = body[key].trim();
+            acc[key] = body[key]?.trim();
             return acc;
           }, {});
 
