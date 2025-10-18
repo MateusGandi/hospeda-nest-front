@@ -45,7 +45,6 @@ const Funcionario = ({
   });
 
   useEffect(() => {
-    console.log("funcionario", funcionario);
     if (funcionario) {
       setData({
         ...funcionario,
@@ -53,21 +52,19 @@ const Funcionario = ({
         title: `${funcionario.nome} - ${funcionario.telefone}`,
       });
     } else {
-      console.log("reset");
       reset();
     }
   }, [open]);
 
   const reset = () => {
-    setData((prev) => ({
-      ...prev,
+    setData({
       id: null,
       idOrig: null,
       nome: "",
       imagem: "",
       telefone: "",
       servicosPrestados: [],
-    }));
+    });
   };
 
   const handleSave = async () => {
@@ -76,12 +73,15 @@ const Funcionario = ({
       if (!data.id) {
         throw new Error("Selecione um funcionário!");
       }
+      const temp = funcionarios.filter((f) => f.id != data.idOrig);
+      const funcionariosFinais = [...temp, data];
 
-      const funcionariosFinais = [...funcionarios, data];
       await apiService.query("PATCH", `/establishment/${barbeariaId}`, {
         funcionarios: funcionariosFinais.map((item) => ({
           userId: item.id,
-          servicesId: item.servicosPrestados.map((service) => service.id),
+          servicesId: [...item.servicosPrestados, { id: -1 }].map(
+            (service) => service.id
+          ),
         })),
       });
 

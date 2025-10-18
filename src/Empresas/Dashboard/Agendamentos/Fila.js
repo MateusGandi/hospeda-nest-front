@@ -89,14 +89,16 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
             </Typography>
           ),
           subtitulo: (
-            <Typography variant="body1">Clique para mandar WhatsApp</Typography>
+            <Typography variant="body1">Clique para ver detalhes</Typography>
           ),
         };
       });
 
       if (JSON.stringify(content.items) === JSON.stringify(items_formatted))
         return;
+
       _setContent({ items: items_formatted });
+      return items_formatted;
     } catch (error) {
       console.error(error);
       alertCustom("Erro ao carregar a fila de espera");
@@ -119,8 +121,7 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
         }, tente novamente mais tarde!`
       );
     } finally {
-      await handleGetOne();
-      handleGetQueue();
+      handleGetQueue().then(async () => handleGetOne());
     }
   };
 
@@ -138,14 +139,17 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
     });
   };
 
-  const handleGetOne = async () => {
+  const handleGetOne = async (items) => {
     try {
       const { cliente } = await apiService.query(
         "GET",
         `/scheduling/queue/next/${data.funcionarioId}`
       );
       if (cliente) {
-        _setContent({ currentClient: cliente });
+        const currentClient = items.find((i) => i.id === cliente.id);
+        _setContent({
+          currentClient: { ...currentClient, ...cliente },
+        });
       } else {
         _setContent({ currentClient: null });
       }
@@ -155,10 +159,9 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
   };
 
   useEffect(() => {
-    handleGetOne().then(() => handleGetQueue());
+    handleGetQueue().then((items) => handleGetOne(items));
     const interval = setInterval(() => {
-      handleGetQueue(false);
-      handleGetOne();
+      handleGetQueue(false).then((items) => handleGetOne(items));
     }, 10000);
     return () => clearInterval(interval);
   }, [data.funcionarioId]);
@@ -231,16 +234,6 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                 onDelete={(id) => openConfirm(id, "remove")}
                 onSelect={(item) => {
                   _setContent({ currentClient: item });
-                  if (item.usuario?.telefone) {
-                    const telefone = item.usuario.telefone.replace(/\D/g, "");
-                    const mensagem = encodeURIComponent(
-                      "É a sua vez, pode vir!"
-                    );
-                    window.open(
-                      `https://wa.me/${telefone}?text=${mensagem}`,
-                      "_blank"
-                    );
-                  }
                 }}
                 disabled={content.disabled}
                 styleSelect={{ background: "#0195F7" }}
@@ -326,9 +319,9 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                     items={[
                       {
                         titulo: "Telefone",
-                        subtitulo: content.items[0]?.usuario?.telefone ? (
+                        subtitulo: content.currentClient?.usuario?.telefone ? (
                           <Link
-                            href={`https://wa.me/${content.items[0].usuario.telefone.replace(
+                            href={`https://wa.me/${content.currentClient.usuario.telefone.replace(
                               /\D/g,
                               ""
                             )}?text=É%20a%20sua%20vez...`}
@@ -337,7 +330,9 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                             underline="hover"
                             color="primary"
                           >
-                            {formatPhone(content.items[0].usuario.telefone)}
+                            {formatPhone(
+                              content.currentClient.usuario.telefone
+                            )}
                           </Link>
                         ) : (
                           "Não informado"
@@ -346,20 +341,22 @@ export const GerenciarFila = ({ alertCustom, data, setData }) => {
                       {
                         titulo: "Serviços",
                         subtitulo:
-                          content.currentClient.servicos?.join(", ") ||
-                          "Nenhum serviço",
+                          content.currentClient?.servico?.length > 0
+                            ? content.currentClient.servico
+                                .map((s) => `${s.nome} | R$ ${s.preco}`)
+                                .join("\n")
+                            : "Nenhum serviço",
                       },
-                      {
-                        titulo: "Tempo",
-                        subtitulo: content.currentClient.tempoEstimado
-                          ? `${formatarHorario(
-                              content.currentClient.tempoEstimado
-                            )} — ${toUTC({
-                              data: content.currentClient.horarioPrevisto,
-                              offsetHoras: -3,
-                            })}h`
-                          : "Não informado",
-                      },
+                      ...(content.currentClient.tempoEstimado
+                        ? [
+                            {
+                              titulo: "Duração estimada",
+                              subtitulo: `${formatarHorario(
+                                content.currentClient.tempoEstimado
+                              )}`,
+                            },
+                          ]
+                        : []),
                     ]}
                   >
                     <Typography

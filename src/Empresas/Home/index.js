@@ -247,30 +247,32 @@ const Empresa = ({ alertCustom }) => {
 
   const formatarRows = (items, pagina) => {
     if (pagina === "barbeiros") {
-      return items
-        .filter((item) => !!item.servicosPrestados.length)
-        .map((item) => ({
-          ...item,
-          titulo:
-            !item.clientesPodemEntrarNaFila && item.filaDinamicaClientes ? (
-              <>
-                <Chip
-                  label="Presencial"
-                  size="small"
-                  color="warning"
-                  variant="filled"
-                  sx={{ mr: 1, mb: 1 }}
-                />{" "}
-                <span>{item.nome}</span>
-              </>
-            ) : (
-              item.nome
-            ),
-          subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
-            item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
-          }`,
-          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
-        }));
+      return (
+        items
+          // .filter((item) => !!item.servicosPrestados.length)
+          .map((item) => ({
+            ...item,
+            titulo:
+              !item.clientesPodemEntrarNaFila && item.filaDinamicaClientes ? (
+                <>
+                  <Chip
+                    label="Presencial"
+                    size="small"
+                    color="warning"
+                    variant="filled"
+                    sx={{ mr: 1, mb: 1 }}
+                  />{" "}
+                  <span>{item.nome}</span>
+                </>
+              ) : (
+                item.nome
+              ),
+            subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
+              item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
+            }`,
+            imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
+          }))
+      );
     }
     if (pagina === "servicos") {
       return items.map((item) => ({

@@ -167,7 +167,6 @@ const GerenciarFuncionarios = ({ alertCustom, reload }) => {
           ? item.servicosPrestados.map(({ nome }) => nome).join(", ")
           : "Sem serviços cadastrados",
       }));
-      console.log(orderBy(data || [], "id", "asc"));
       setFuncionarios(orderBy(data || [], "id", "asc"));
 
       reload();

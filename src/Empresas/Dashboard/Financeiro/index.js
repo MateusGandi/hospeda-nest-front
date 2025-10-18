@@ -36,8 +36,10 @@ import FornecedoresInfo from "./Movimentacoes/Fornecedores";
 import Dividas from "./Dividas";
 
 import View from "../../../Componentes/View";
+import { useNavigate } from "react-router-dom";
 
-const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
+const GestaoFinancas = ({ alertCustom, barbearia }) => {
+  const navigate = useNavigate();
   const tabsAccess = {
     adm: [
       { icon: <RequestPageIcon />, label: "Geral", id: 0 },
@@ -82,6 +84,8 @@ const GestaoFinancas = ({ alertCustom, onClose, barbearia }) => {
     vendas: [],
   });
   const setLoading = (loading) => setDados((prev) => ({ ...prev, loading }));
+
+  const onClose = () => navigate("/dashboard");
 
   const handleTabChange = (tabId) => {
     setDados((prev) => ({

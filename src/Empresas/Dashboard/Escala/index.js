@@ -340,7 +340,7 @@ const WorkSchedule = ({
               ][i],
               horarioInicio: dia?.horarioInicio?.slice(0, 5) || "",
               horarioFim: dia?.horarioFim?.slice(0, 5) || "",
-              ativo: !!dia,
+              ativo: dia.ativo,
             };
           });
           setWorkDays(escala);
