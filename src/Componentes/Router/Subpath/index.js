@@ -206,7 +206,7 @@ export function SubRoutes({ fetch, views = {}, dados, base = "/dashboard" }) {
               transition: "margin 0.3s ease-in-out",
             }}
           >
-            {views[path]?.componente || views[""].componente || (
+            {views[path]?.componente || views[""]?.componente || (
               <div>Página não encontrada</div>
             )}
           </Box>
