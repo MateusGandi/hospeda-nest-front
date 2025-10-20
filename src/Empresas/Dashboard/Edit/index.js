@@ -49,10 +49,24 @@ const EditData = ({
     ) {
       return alertCustom("Preencha todos os campos corretamente");
     }
-    const { longitudeAndLatitude, location, ...rest } = formData;
+    const {
+      nome,
+      horarioAbertura,
+      horarioFechamento,
+      telefone,
+      endereco,
+      aberto,
+    } = formData;
 
     setIsSending(true);
-    await onSave(rest).finally(() => {
+    await onSave({
+      nome,
+      horarioAbertura,
+      horarioFechamento,
+      telefone,
+      endereco,
+      aberto,
+    }).finally(() => {
       setIsSending(false);
     });
   };
