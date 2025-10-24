@@ -53,11 +53,10 @@ const Checkout = ({ alertCustom }) => {
     response: null,
 
     nome: "",
-    cnpj: "",
     cpfCnpj: "",
     email: "",
     telefone: "",
-    cnpj: "",
+    documento: "",
     bairro: "",
     cidade: "",
     estado: "",
@@ -102,8 +101,14 @@ const Checkout = ({ alertCustom }) => {
             `/user/profile/${getLocalItem("userId")}`
           );
 
-          const { cnpj, bairro, cidade, estado, meAsEmployee, logradouro } =
-            form;
+          const {
+            documento,
+            bairro,
+            cidade,
+            estado,
+            meAsEmployee,
+            logradouro,
+          } = form;
           const body = {
             nome: form.nome,
             formaPagamento: selectedMethod,
@@ -111,7 +116,7 @@ const Checkout = ({ alertCustom }) => {
             funcionarios: meAsEmployee ? [data.telefone] : [],
             endereco: [bairro, cidade, estado, logradouro].join(", "),
             telefone: form.telefone.replace(/\D/g, ""),
-            cnpj: cnpj.replace(/\D/g, ""),
+            cnpj: documento.replace(/\D/g, ""),
             planId: +key,
           };
 
@@ -173,9 +178,9 @@ const Checkout = ({ alertCustom }) => {
       },
 
       {
-        label: "CNPJ",
-        campo: "cnpj",
-        validacoes: "required, minLength(14), cnpj",
+        label: "CNPJ ou CPF",
+        campo: "documento",
+        validacoes: "required, minLength(11)",
       },
       { campo: "estado", validacoes: "required, minLength(1)" },
       { campo: "cidade", validacoes: "required, minLength(1)" },
@@ -199,7 +204,7 @@ const Checkout = ({ alertCustom }) => {
             {
               campo: "cpfCnpj",
               label: "CPF ou CNPJ do titular",
-              validacoes: "required, minLength(14), cnpj",
+              validacoes: "required, minLength(11)",
             },
             {
               campo: "numeroCartao",
@@ -380,7 +385,11 @@ const Checkout = ({ alertCustom }) => {
           : formatCPF(valor);
     if (name === "telefone") valor = formatPhone(valor);
     if (name === "cvv") valor = valor.slice(0, 3);
-    if (name === "cnpj") valor = formatCNPJ(valor);
+    if (name === "documento")
+      valor =
+        valor.replace(/\D/g, "").length > 11
+          ? formatCNPJ(valor)
+          : formatCPF(valor);
     if (name === "cep") valor = formatCEP(valor);
     if (name === "meAsEmployee") valor = checked;
 
@@ -570,9 +579,9 @@ const Checkout = ({ alertCustom }) => {
                     <Grid size={{ xs: 12, md: 4 }} sx={{ mt: 1.5 }}>
                       <CustomInput
                         fullWidth
-                        label="CNPJ"
-                        value={form.cnpj}
-                        name="cnpj"
+                        label="CNPJ ou CPF"
+                        value={form.documento}
+                        name="documento"
                         onChange={handleChange}
                         variant="outlined"
                       />
