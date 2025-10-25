@@ -327,6 +327,22 @@ const WorkSchedule = ({
         .then((d) => {
           const escala = [...Array(7)].map((_, i) => {
             const dia = d.escala?.find((item) => item.diaSemana === i);
+            if (!dia)
+              return {
+                diaSemana: i,
+                day: [
+                  "Domingo",
+                  "Segunda-feira",
+                  "Terça-feira",
+                  "Quarta-feira",
+                  "Quinta-feira",
+                  "Sexta-feira",
+                  "Sábado",
+                ][i],
+                horarioInicio: "",
+                horarioFim: "",
+                ativo: false,
+              };
             return {
               diaSemana: i,
               day: [
@@ -405,6 +421,7 @@ const WorkSchedule = ({
           size="large"
           onClick={() => navigate("escala")}
           disabled={disabled}
+          fullWidth={isMobile}
         >
           Configurar
         </Button>

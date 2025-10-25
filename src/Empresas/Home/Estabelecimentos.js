@@ -98,12 +98,14 @@ const Estabelecimentos = ({ alertCustom }) => {
       open={dados.open}
       backAction={dados.back}
       onClose={dados.onClose}
-      titulo={"Selecione uma barbearia próxima a você"}
       fullScreen="all"
       component="view"
     >
-      <Grid container sx={{ display: "flex", justifyContent: "center" }}>
-        <Grid size={{ xs: 12, md: 8 }}>
+      <Grid
+        container
+        sx={{ display: "flex", justifyContent: "center", mt: -2 }}
+      >
+        <Grid size={{ xs: 12, md: 8 }} className="show-box">
           <SearchBarWithFilters
             initial={empresas}
             elements={empresasFiltred}

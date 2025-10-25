@@ -20,6 +20,7 @@ import SearchField from "../../../Componentes/AutoComplete/searchAutocomplete";
 import apiService from "../../../Componentes/Api/axios";
 import WorkSchedule from "../Escala";
 import { useNavigate } from "react-router-dom";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 
 const Funcionario = ({
   funcionario,
@@ -210,6 +211,7 @@ const Funcionario = ({
                   <Button
                     sx={{ px: 2, mt: 2 }}
                     onClick={() => navigate("/dashboard/servicos")}
+                    startIcon={<LaunchRoundedIcon />}
                   >
                     Cadastrar
                   </Button>

@@ -70,9 +70,9 @@ export const TypingEffectText = () => {
     <Typography
       component="p"
       sx={{
-        fontSize: { xs: "	1.5rem", md: "3.7rem" },
+        fontSize: { xs: "	1.8rem", md: "3.7rem" },
         width: "96%",
-        minHeight: { xs: "135px", md: "210px" },
+        minHeight: { xs: "175px", md: "210px" },
         textAlign: "left",
       }}
     >

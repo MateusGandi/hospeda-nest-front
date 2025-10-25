@@ -4,6 +4,7 @@ import Icon from "../../../../Assets/Emojis";
 import BannerFind from "../../../../Assets/Cobranca/find_banner.png";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { toUTC } from "../../../../Componentes/Funcoes";
 
 const ConfirmacaoFila = ({ form, alertCustom }) => {
   const [content, setContent] = useState({
@@ -36,11 +37,7 @@ const ConfirmacaoFila = ({ form, alertCustom }) => {
 
     temp.posicao_label = `Seu cliente é o ${posicaoFila}º na fila`;
     temp.tempo_espera_label = `Tempo médio de espera: ${tempoEspera}`;
-    temp.atendimento_label = format(
-      new Date(horarioPrevisto),
-      "dd/MM/yyyy' às 'HH:mm'h'"
-    );
-
+    temp.atendimento_label = toUTC({ data: horarioPrevisto });
     setContent(temp);
   }, []);
 

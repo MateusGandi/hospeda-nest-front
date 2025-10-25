@@ -303,12 +303,11 @@ const Modal = ({
                                       size="large"
                                       theme="filled_black"
                                       shape="pill"
-                                      text={buttons[0]?.text || "signin_with"}
+                                      text="signin_with"
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                       onError={(e) => buttons[0]?.action(e)}
-                                      buttonText="Login"
-                                      logo_alignment="center"
                                       useOneTap={false}
+                                      auto_select={false}
                                     />
                                   </Grid>
                                 </>

@@ -5,7 +5,7 @@ import CreateAccount from "./Create";
 import Recover from "./Recover";
 import ChangePassword from "./ChangePassword";
 
-import { Grid2 as Grid, Typography } from "@mui/material";
+import { Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
 import Modal from "../Componentes/Modal/Simple";
 import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
@@ -13,6 +13,7 @@ import Banner from "../Assets/Login/tonsus_mosaico.png";
 
 import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
 import Complete from "./Complete";
+import Logo from "../Assets/Login/tonsus_extend.png";
 
 const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
   const { hash } = useParams();
@@ -284,7 +285,17 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
       <Modal
         open={inicialState.open}
         onClose={handleClose}
-        titulo={inicialState.titulo}
+        titulo={
+          <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
+            {" "}
+            <Box sx={{ display: { xs: "block", md: "none" } }}>
+              <img src={Logo} style={{ width: "60%" }} />
+            </Box>
+            <Typography variant="h6" color="textSecondary">
+              {inicialState.titulo}
+            </Typography>
+          </Stack>
+        }
         actionText={inicialState.actionText}
         loadingButton={inicialState.loadingButton}
         componentName={inicialState.componente}

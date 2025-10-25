@@ -197,9 +197,7 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h6">
-          {videoList[currentIndex]?.title ?? "oi"}
-        </Typography>
+        <Typography variant="h6">{videoList[currentIndex]?.title}</Typography>
         <IconButton
           aria-label="close"
           onClick={handleClose}

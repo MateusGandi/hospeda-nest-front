@@ -43,6 +43,7 @@ import {
 } from "@mui/icons-material";
 import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 import WidgetsRoundedIcon from "@mui/icons-material/WidgetsRounded";
+import { Notification } from "../Alert/Notification";
 
 const NavigationBar = ({ alertCustom }) => {
   const navigate = useNavigate();
@@ -293,6 +294,10 @@ const NavigationBar = ({ alertCustom }) => {
         icon: <BusinessCenterIcon />,
       },
       {
+        component: <Notification />,
+        type: "component",
+      },
+      {
         titulo: "Pesquisar",
         type: "icon",
         icon: <SearchIcon />,
@@ -431,7 +436,8 @@ const NavigationBar = ({ alertCustom }) => {
               </Typography>
             </Grid>
             {actions.length > 0 && (
-              <Grid item>
+              <Grid item sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                {isMobile && <Notification />}
                 <IconButton
                   onClick={() => setMenuOpen((prev) => !prev)}
                   sx={{ display: { xs: "block", md: "none" } }}
@@ -456,7 +462,11 @@ const NavigationBar = ({ alertCustom }) => {
                 >
                   <Rows
                     items={actions
-                      .filter((item) => location.pathname !== item.route)
+                      .filter(
+                        (item) =>
+                          location.pathname !== item.route &&
+                          item.type != "component"
+                      )
                       .map((item) => ({
                         ...item,
                         action: () => {
@@ -484,7 +494,11 @@ const NavigationBar = ({ alertCustom }) => {
                         location.pathname !== item.route && item.type != "link"
                     )
                     .map((item, index) =>
-                      item.type === "icon" ? (
+                      item.type === "component" ? (
+                        <Box key={index} sx={{ mx: 0.5 }}>
+                          {item.component}
+                        </Box>
+                      ) : item.type === "icon" ? (
                         <IconButton
                           key={index}
                           onClick={item.action}

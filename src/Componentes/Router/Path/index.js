@@ -419,6 +419,9 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
   if (!pathAtual) {
     return <Navigate to="/login" />;
   } else {
+    if (pathAtual === "/login" && getLocalItem("token")) {
+      return <Navigate to="/home" />;
+    }
     return (
       <Box
         sx={{

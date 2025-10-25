@@ -94,10 +94,9 @@ const GetUserLocation = ({
     <>
       <Grid2 size={12}>
         <Typography
-          variant="body2"
+          variant="body1"
           sx={{
             width: "100%",
-            p: 1,
             textAlign: "center",
           }}
         >

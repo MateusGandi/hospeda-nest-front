@@ -40,7 +40,7 @@ const Checkout = ({ alertCustom }) => {
   const [openResumo, setOpenResumo] = useState(false);
   const [form, setForm] = useState({
     total_label: "",
-    pedido_label: "Pedido #123123331553",
+    aviso_label: "Valor sujeito a taxas de transação",
     subtotal_label: "",
     desconto_label: "",
     parcelamento: null,
@@ -276,6 +276,7 @@ const Checkout = ({ alertCustom }) => {
                 valor_base: Number(p.valor) * p.prest,
               })),
             });
+            setSelectedMethod(metodo);
 
             return {
               id: index,
@@ -549,7 +550,7 @@ const Checkout = ({ alertCustom }) => {
                             component="span"
                           >
                             {" "}
-                            {form.pedido_label}
+                            {form.aviso_label}
                           </Typography>
                         </Stack>
                       </Typography>
@@ -686,9 +687,10 @@ const Checkout = ({ alertCustom }) => {
                         checkmode={false}
                         unSelectMode={true}
                         styleSelect={{ background: "#0195F7" }}
-                        selectedItems={metodosPagamento.filter(
-                          (item) => item.value === selectedMethod
-                        )}
+                        selectedItems={metodosPagamento.filter((item) => {
+                          console.log(item.value, selectedMethod);
+                          return item.value === selectedMethod;
+                        })}
                         onSelect={(e) => setSelectedMethod(e.value)}
                         items={metodosPagamento}
                         spacing={2}

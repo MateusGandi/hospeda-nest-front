@@ -52,11 +52,11 @@ const ModalPlanos = ({ alertCustom }) => {
   ]);
 
   const periodicidade = {
-    SEMANAL: "/ semana",
-    DIARIO: "/ dia",
-    QUINZENAL: "/ 15 dias",
-    MENSAL: "/ mês",
-    ANUAL: "/ ano",
+    SEMANAL: "/semana",
+    DIARIO: "/dia",
+    QUINZENAL: "/15 dias",
+    MENSAL: "/mês",
+    ANUAL: "/ano",
   };
   const to = {
     client: "/home",
@@ -212,7 +212,7 @@ const ModalPlanos = ({ alertCustom }) => {
                 marginLeft: isMobile ? 0 : "8px",
               }}
             />
-            {!isMobile && (
+            {!isMobile && !getLocalItem("userId") && (
               <Button
                 variant="text"
                 disableElevation
@@ -240,7 +240,7 @@ const ModalPlanos = ({ alertCustom }) => {
         }}
       >
         <WhatsAppButton />
-        <Grid container spacing={3} sx={{ m: 1 }}>
+        <Grid container spacing={3} sx={{ m: 1, mt: -3 }}>
           <Grid
             size={{ xs: 12, md: 6 }}
             order={{ xs: 1, md: 1 }}
@@ -254,17 +254,39 @@ const ModalPlanos = ({ alertCustom }) => {
             >
               <Grid size={12}>
                 <Typography variant={isMobile ? "h4" : "h3"}>
-                  Aumente seu <b>faturamento</b> e visibilidade por um preço
-                  justo!
+                  Começe a <b>faturar</b> de verdade com o Tonsus!
                 </Typography>
               </Grid>
               <Grid size={12}>
                 <Typography variant="h6">
                   Descubra na prática como revolucionar sua gestão com nossas
-                  ferramentas para atrair mais clientes
+                  ferramentas para atrair mais clientes e aumentar suas vendas.
                 </Typography>
               </Grid>
-              <Grid size={12}>
+              <Grid
+                size={12}
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="terciary"
+                  disableElevation
+                  size="large"
+                  onClick={() => navigate(modal.videos[0].id)}
+                  sx={{
+                    mt: 2,
+                    width: { xs: "100%", md: "200px" },
+                    fontWeight: 600,
+                  }}
+                  // endIcon={<EastRoundedIcon />}
+                >
+                  Veja na prática
+                </Button>
                 <Button
                   variant="contained"
                   color="primary"
@@ -273,12 +295,12 @@ const ModalPlanos = ({ alertCustom }) => {
                   onClick={() => navigate(modal.videos[0].id)}
                   sx={{
                     mt: 2,
-                    width: { xs: "100%", md: "300px" },
+                    width: { xs: "100%", md: "200px" },
                     fontWeight: 600,
                   }}
-                  endIcon={<EastRoundedIcon />}
+                  // endIcon={<EastRoundedIcon />}
                 >
-                  Entenda como funciona
+                  Começar agora
                 </Button>
               </Grid>
             </Grid>
@@ -307,7 +329,9 @@ const ModalPlanos = ({ alertCustom }) => {
                   <Typography variant="h5" sx={{ mt: 1 }}>
                     {plano.nome}
                   </Typography>
-                  <Typography variant="body1">{plano.descricao}</Typography>
+                  <Typography variant="body1" sx={{ height: "20px" }}>
+                    {plano.descricao}
+                  </Typography>
                   <Typography
                     variant="h4"
                     color={plano.destaque ? "success" : "primary"}
@@ -417,7 +441,7 @@ const ModalPlanos = ({ alertCustom }) => {
                   readOnly
                   sx={{ color: "#ffb200" }}
                 />
-                <span>{modal.avaliacao?.toFixed(2)}/5</span>
+                <span>{modal.avaliacao?.toFixed(2) || 0}/5</span>
               </Typography>
             </Typography>
           </Grid>
@@ -474,7 +498,7 @@ const ModalPlanos = ({ alertCustom }) => {
               ))}
             </Grid>
           </Grid>{" "}
-          <Grid size={12} order={998} sx={{ textAlign: "center", mb: -7 }}>
+          {/* <Grid size={12} order={998} sx={{ textAlign: "center", mb: -7 }}>
             <Typography variant={"h4"}>
               Atendimento WhatsApp
               <Typography variant={"h6"}>
@@ -577,7 +601,7 @@ const ModalPlanos = ({ alertCustom }) => {
                 </Stack>
               </Grid>
             </Grid>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Modal>
     </>

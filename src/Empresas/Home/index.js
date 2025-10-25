@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Chip, Grid2 as Grid, Typography } from "@mui/material";
 import Modal from "../../Componentes/Modal/Simple";
 import Api from "../../Componentes/Api/axios";
+// import BarberPresentation from "./MarketPlace";
 import BarberPresentation from "./Presentation";
 import { useParams, useNavigate } from "react-router-dom";
 import { format, set } from "date-fns";
@@ -245,34 +246,62 @@ const Empresa = ({ alertCustom }) => {
     verify();
   }, [form]);
 
+  const estaForaParaAlmoco = (horarioForaInicial, horarioForaFinal) => {
+    if (!horarioForaInicial || !horarioForaFinal) return false;
+
+    const agora = new Date();
+    const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
+
+    const [hIni, mIni] = horarioForaInicial.split(":").map(Number);
+    const [hFim, mFim] = horarioForaFinal.split(":").map(Number);
+
+    const inicio = hIni * 60 + mIni;
+    const fim = hFim * 60 + mFim;
+
+    return minutosAtuais >= inicio && minutosAtuais <= fim;
+  };
+
   const formatarRows = (items, pagina) => {
     if (pagina === "barbeiros") {
-      return (
-        items
-          // .filter((item) => !!item.servicosPrestados.length)
-          .map((item) => ({
-            ...item,
-            titulo:
-              !item.clientesPodemEntrarNaFila && item.filaDinamicaClientes ? (
-                <>
-                  <Chip
-                    label="Presencial"
-                    size="small"
-                    color="warning"
-                    variant="filled"
-                    sx={{ mr: 1, mb: 1 }}
-                  />{" "}
-                  <span>{item.nome}</span>
-                </>
-              ) : (
-                item.nome
-              ),
-            subtitulo: `${formatPhone(item.telefone)} - Especialidades: ${
-              item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
-            }`,
-            imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
-          }))
-      );
+      return items.map((item) => {
+        const foraParaAlmoco = estaForaParaAlmoco(
+          item.horarioForaInicial,
+          item.horarioForaFinal
+        );
+        return {
+          ...item,
+          titulo: (
+            <>
+              {" "}
+              <Typography variant="h6" sx={{ width: "100%" }}>
+                {item.nome}
+              </Typography>
+              {foraParaAlmoco && (
+                <Chip
+                  label="Fora para almoço"
+                  size="small"
+                  color="error"
+                  variant="filled"
+                  sx={{ mr: 1, mb: 1 }}
+                />
+              )}
+              {!item.clientesPodemEntrarNaFila && item.filaDinamicaClientes && (
+                <Chip
+                  label="Presencial"
+                  size="small"
+                  color="warning"
+                  variant="filled"
+                  sx={{ mr: 1, mb: 1, color: "#fff" }}
+                />
+              )}
+            </>
+          ),
+          subtitulo: `Especialidades: ${
+            item.servicosPrestados?.map(({ nome }) => nome)?.join(", ") || ""
+          }`,
+          imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.id}/${item.foto}`,
+        };
+      });
     }
     if (pagina === "servicos") {
       return items.map((item) => ({
@@ -293,6 +322,7 @@ const Empresa = ({ alertCustom }) => {
   const views = {
     not: (
       <BarberPresentation
+        alertCustom={alertCustom}
         barbearia={empresa}
         handleAction={handleNext}
         handleActionText={"Escolher barbeiro"}

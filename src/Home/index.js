@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoImage from "../Assets/plus_banner.png";
-import { getLocalItem } from "../Componentes/Funcoes";
+import { getLocalItem, isMobile } from "../Componentes/Funcoes";
 import { TypingEffectText } from "../Componentes/Effects";
 import Footer from "../Componentes/Footer";
 
@@ -18,17 +18,17 @@ const PublicPage = () => {
   );
   const items = {
     default: [
-      { title: "Sua primeira vez aqui?", action: "/create" },
       {
-        title: "Agendar um horário",
+        title: "Começar agora",
         action: "/estabelecimentos",
         force: true,
       },
+      { title: "Sua primeira vez aqui?", action: "/create" },
     ],
     client: [
-      { title: "Meus agendamentos", action: "/me" },
+      { title: "Minha conta", action: "/me" },
       {
-        title: "Agendar um horário",
+        title: "Começar agora",
         action: "/estabelecimentos",
         force: true,
       },
@@ -88,10 +88,10 @@ const PublicPage = () => {
           {/* Texto descritivo */}
           <Grid size={12}>
             <Typography
+              className={isMobile ? "show-box" : ""}
               variant={"h5"}
               style={{
                 marginBottom: "40px",
-                color: "#fff",
               }}
             >
               <span
@@ -113,20 +113,20 @@ const PublicPage = () => {
             >
               <Button
                 fullWidth
-                variant={item.force ? "contained" : "outlined"}
+                variant={"contained"}
                 size="large"
                 color={item.force ? "primary" : "secondary"}
                 disableElevation
-                style={{
+                sx={{
                   ...(item.force
                     ? {
                         background:
                           "linear-gradient(to right, #2C69D1, #0ABCF9)",
                       }
-                    : {}),
-
+                    : { background: "rgba(256,256,256,0.1)" }),
                   fontWeight: "bold",
                   color: "#FFFFFF",
+                  boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.05)",
                 }}
                 onClick={() => navigate(item.action)}
               >
