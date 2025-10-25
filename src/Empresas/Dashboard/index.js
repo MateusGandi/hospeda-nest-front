@@ -389,7 +389,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                   }}
                 />
                 <input
-                  accept="image/*"
+                  accept="image/*,image/heic,image/heif"
                   style={{ display: "none" }}
                   id="banner-upload"
                   type="file"
@@ -437,7 +437,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                 </label>
 
                 <input
-                  accept="image/*"
+                  accept="image/*,image/heic,image/heif"
                   style={{ display: "none" }}
                   id="profile-upload"
                   type="file"

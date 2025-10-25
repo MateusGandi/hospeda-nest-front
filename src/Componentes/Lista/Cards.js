@@ -64,12 +64,13 @@ export const Cards = ({
             {/* Upload ao clicar na imagem */}
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,image/heic,image/heif"
               style={{ display: "none" }}
               id={`upload-${item.id}`}
               onChange={(e) => handleUpload(e, item.id)}
               disabled={selectionMode === "onTap"}
             />
+
             <label
               htmlFor={!item.disabled ? `upload-${item.id}` : ""}
               style={{ position: "relative" }}

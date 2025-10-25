@@ -126,7 +126,7 @@ const ModalRelatorio = ({
                   <input
                     id="upload-foto"
                     type="file"
-                    accept="image/*"
+                    accept="image/*,image/heic,image/heif"
                     style={{ display: "none" }}
                     onChange={(e) => handlePhotoUpload(e, usuario.id)}
                   />
