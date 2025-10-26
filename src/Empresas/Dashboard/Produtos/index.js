@@ -5,7 +5,12 @@ import Api from "../../../Componentes/Api/axios";
 import Confirm from "../../../Componentes/Alert/Confirm";
 import { Cards } from "../../../Componentes/Lista/Cards";
 import ProductForm from "./ProductForm";
-import { getLocalItem, isMobile, orderBy } from "../../../Componentes/Funcoes";
+import {
+  getLocalItem,
+  isMobile,
+  orderBy,
+  UploadImage,
+} from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
 import View from "../../../Componentes/View";
 import { useNavigate, useParams } from "react-router-dom";
@@ -66,22 +71,13 @@ const Products = ({ alertCustom }) => {
   };
 
   const handlePhotoUpload = async (e, productId) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
     try {
-      const fileExtension = file.type.split("/")[1];
-      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
-      const renamedFile = new File([file], newName, { type: file.type });
-
-      const formData = new FormData();
-      formData.append("fotos", renamedFile);
-
-      await Api.query("POST", `/images/product/${productId}`, formData);
-      alertCustom("Foto adicionada com sucesso!");
+      const endpoint = `/images/product/${productId}`;
+      await UploadImage(e, endpoint);
       fetchProducts();
+      alertCustom("Foto adicionada com sucesso!");
     } catch (error) {
-      alertCustom("Erro ao adicionar foto!");
+      alertCustom(error.message || "Erro ao adicionar foto!");
     }
   };
 

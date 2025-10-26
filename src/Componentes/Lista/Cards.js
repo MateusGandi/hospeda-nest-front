@@ -22,6 +22,7 @@ export const Cards = ({
   selectionMode = "onEdit", // "onTap" ou "onEdit"
   keys,
 }) => {
+  const [loading, setLoading] = useState({});
   const [previews, setPreviews] = useState({}); // Estado para armazenar imagens carregadas
 
   const handleSelect = (id) => {
@@ -30,14 +31,18 @@ export const Cards = ({
     }
   };
 
-  const handleUpload = (event, id) => {
+  const handleUpload = async (event, id) => {
+    setLoading((p) => ({ ...p, [id]: true }));
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      setPreviews((prev) => ({ ...prev, [id]: reader.result })); // Atualiza a pré-visualização da imagem
-      if (onUpload) onUpload(event, id);
+    reader.onload = async () => {
+      // setPreviews((prev) => ({ ...prev, [id]: reader.result })); // Atualiza a pré-visualização da imagem
+      if (onUpload)
+        await onUpload(event, id).finally(() =>
+          setLoading((p) => ({ ...p, [id]: false }))
+        );
     };
     reader.readAsDataURL(file);
   };
@@ -71,10 +76,7 @@ export const Cards = ({
               disabled={selectionMode === "onTap"}
             />
 
-            <label
-              htmlFor={!item.disabled ? `upload-${item.id}` : ""}
-              style={{ position: "relative" }}
-            >
+            <label htmlFor={!item.disabled ? `upload-${item.id}` : ""}>
               <CardMedia
                 component="img"
                 sx={{
@@ -96,11 +98,8 @@ export const Cards = ({
               />
               <Typography
                 sx={{
-                  position: "absolute",
-                  top: "120px",
-                  minWidth: "250px",
-                  left: "125px",
-                  transform: "translateX(-125px)",
+                  mt: -5,
+                  mb: 2,
                   textAlign: "center",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -114,7 +113,9 @@ export const Cards = ({
                     borderRadius: "10px",
                   }}
                 >
-                  {!item.disabled
+                  {loading[item.id]
+                    ? "Carregando..."
+                    : !item.disabled
                     ? "Clique para mudar a imagem"
                     : "Salve antes de adicionar imagem"}
                 </span>

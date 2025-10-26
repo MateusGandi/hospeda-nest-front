@@ -6,7 +6,11 @@ import { Grid2 as Grid, Typography } from "@mui/material";
 import Api from "../../../Componentes/Api/axios";
 import Icon from "../../../Assets/Emojis";
 import Confirm from "../../../Componentes/Alert/Confirm";
-import { getLocalItem, orderBy } from "../../../Componentes/Funcoes";
+import {
+  getLocalItem,
+  orderBy,
+  UploadImage,
+} from "../../../Componentes/Funcoes";
 import { useNavigate, useParams } from "react-router-dom";
 
 const GerenciarServicos = ({ alertCustom, reload }) => {
@@ -218,39 +222,13 @@ const GerenciarServicos = ({ alertCustom, reload }) => {
   }, [subPath]);
 
   const handlePhotoUpload = async (e, serviceId) => {
-    const file = e.target.files[0];
-
-    if (!file) {
-      console.error("Nenhum arquivo selecionado.");
-      return;
-    }
-
     try {
-      const fileExtension = file.type.split("/")[1];
-      const newName = `${file.name.split(".")[0]}.${fileExtension}`;
-      const renamedFile = new File([file], newName, { type: file.type });
-
-      const formData = new FormData();
-      formData.append("fotos", renamedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const endpoint = `/images/service/${serviceId}`;
-          await Api.query("POST", endpoint, formData);
-          alertCustom("Foto adicionada com sucesso!");
-          fetchServicos();
-        } catch (uploadError) {
-          alertCustom("Erro ao adicionar foto!");
-          console.error("Erro ao fazer upload da imagem:", uploadError);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Erro ao processar o arquivo:", error);
-    } finally {
+      const endpoint = `/images/service/${serviceId}`;
+      await UploadImage(e, endpoint);
       fetchServicos();
+      alertCustom("Foto adicionada com sucesso!");
+    } catch (error) {
+      alertCustom(error.message || "Erro ao adicionar foto!");
     }
   };
 

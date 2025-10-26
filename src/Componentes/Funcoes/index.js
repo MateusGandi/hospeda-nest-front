@@ -1,5 +1,7 @@
 import ColorThief from "colorthief";
 import validator from "validator";
+import heic2any from "heic2any";
+import apiService from "../Api/axios";
 
 export const match = () => window.innerWidth <= 600;
 
@@ -22,6 +24,86 @@ const timezones = {
   manaus: "America/Manaus",
   eirunepe: "America/Eirunepe",
   rio_branco: "America/Rio_Branco",
+};
+
+export const UploadImage = async (e, url) => {
+  const file = e.target.files?.[0];
+  if (!file) throw new Error("Nenhum arquivo selecionado.");
+
+  try {
+    let processedFile = file;
+
+    if (
+      file.type === "image/heic" ||
+      file.name.toLowerCase().endsWith(".heic")
+    ) {
+      const blob = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality: 0.8,
+      });
+      processedFile = new File([blob], "convertido.jpg", {
+        type: "image/jpeg",
+      });
+    }
+
+    const compressToJpeg = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            const maxWidth = 1920;
+            const scale = Math.min(1, maxWidth / img.width);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const compress = (quality) => {
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob)
+                    return reject(new Error("Falha ao gerar blob JPEG."));
+                  if (blob.size > 10 * 1024 * 1024 && quality > 0.3) {
+                    compress(quality - 0.1);
+                  } else {
+                    resolve(
+                      new File([blob], ".jpg", {
+                        type: "image/jpeg",
+                      })
+                    );
+                  }
+                },
+                "image/jpeg",
+                quality
+              );
+            };
+
+            compress(0.8);
+          };
+          img.onerror = () => reject(new Error("Erro ao carregar imagem."));
+          img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const finalFile = await compressToJpeg(processedFile);
+
+    const formData = new FormData();
+    formData.append("fotos", finalFile);
+
+    await apiService.query("POST", url, formData);
+
+    return "Foto adicionada com sucesso!";
+  } catch (error) {
+    console.error("Erro ao processar o arquivo:", error);
+    throw new Error("Erro ao adicionar foto!");
+  }
 };
 
 export const diferencaEmTimestamp = (dataInicial, dataFinal) => {
