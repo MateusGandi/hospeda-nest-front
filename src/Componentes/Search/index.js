@@ -38,7 +38,7 @@ const SearchBarWithFilters = ({
   useEffect(() => {
     // Extrai os valores únicos para cada propriedade de filtro
     const filterValues = {};
-    propFilters.forEach((prop) => {
+    propFilters.forEach(({ key: prop }) => {
       const uniqueValues = Array.from(
         new Set(elements.map((element) => element[prop]))
       ).filter((value) => value != null); // Filtra valores nulos ou indefinidos
@@ -56,14 +56,14 @@ const SearchBarWithFilters = ({
           );
 
       const matchesFilters = selectedFilters.every((filter) =>
-        propFilters.some((prop) => element[prop] === filter)
+        propFilters.some(({ key: prop }) => element[prop] === filter)
       );
 
       return matchesSearch && matchesFilters;
     });
 
     setElements(filteredElements);
-  }, [searchValue, selectedFilters]);
+  }, [searchValue, selectedFilters, initial]);
 
   const handleInputChange = (event) => {
     setSearchValue(event.target.value);
@@ -108,7 +108,7 @@ const SearchBarWithFilters = ({
   const styles = (prop) => {
     return {
       contained: {
-        background: "#212121",
+        background: "#333",
       },
       outlined: {
         border: "1.7px solid #484848",
@@ -155,7 +155,7 @@ const SearchBarWithFilters = ({
         </Grid2>
       </Grid2>
       <Collapse
-        in={filtersVisible && !!uniqueFilterValues[propFilters[0]]?.length}
+        in={filtersVisible && !!uniqueFilterValues[propFilters[0]?.key]?.length}
       >
         <Paper
           elevation={0}
@@ -173,20 +173,16 @@ const SearchBarWithFilters = ({
             <Typography variant="body1" sx={{ mb: 1 }}>
               Mais filtros
             </Typography>
-            {propFilters.map((prop) =>
-              uniqueFilterValues[prop]?.map((value) => (
-                <Chip
-                  key={`${prop}-${value}`}
-                  label={value}
-                  onClick={() => toggleFilterSelection(value)}
-                  color={
-                    selectedFilters.includes(value) ? "warning" : "default"
-                  }
-                  sx={{ marginRight: 1, marginBottom: 1 }}
-                  clickable
-                />
-              ))
-            )}
+            {propFilters.map(({ key: prop, label, value }) => (
+              <Chip
+                key={`${prop}-${label}`}
+                label={label}
+                onClick={() => toggleFilterSelection(value)}
+                color={selectedFilters.includes(value) ? "primary" : "default"}
+                sx={{ marginRight: 1, marginBottom: 1 }}
+                clickable
+              />
+            ))}
             {aditionalFilters ? aditionalFilters : null}
           </Box>
 

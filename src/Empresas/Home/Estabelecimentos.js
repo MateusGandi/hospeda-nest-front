@@ -56,14 +56,14 @@ const Estabelecimentos = ({ alertCustom }) => {
         );
 
         const dados = formatarRows(data);
-        setEmpresas(dados || []);
-        setEmpresasFiltred(
-          dados.map((item) => ({
-            ...item,
-            disabled: !item.aberto,
-            sx: !item.aberto && { opacity: 0.5 },
-          })) || []
-        );
+        const formattedRows = dados.map((item) => ({
+          ...item,
+          bagde: item.aberto,
+          disabled: !item.aberto,
+          sx: !item.aberto && { opacity: 0.5 },
+        }));
+        setEmpresas(formattedRows);
+        setEmpresasFiltred(formattedRows);
       } catch (error) {
         console.error("Erro ao buscar empresas:", error);
       }
@@ -111,7 +111,9 @@ const Estabelecimentos = ({ alertCustom }) => {
             elements={empresasFiltred}
             setElements={setEmpresasFiltred}
             label="Barbearias"
-            propFilters={["nome"]}
+            propFilters={[
+              { key: "aberto", label: "Apenas abertos", value: true },
+            ]}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
             fullWidth={false}

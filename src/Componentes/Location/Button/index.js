@@ -107,7 +107,13 @@ const GetUserLocation = ({
         <Tooltip title="Exibir barbearias próximas">
           <IconButton
             disabled={loading}
-            onClick={address ? handleClearLocation : handleGetLocation}
+            onClick={
+              loading
+                ? () => {}
+                : address
+                ? handleClearLocation
+                : handleGetLocation
+            }
             size="large"
             sx={{ background: "#363636", maxWidth: "50px" }}
           >

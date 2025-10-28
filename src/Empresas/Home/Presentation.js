@@ -32,8 +32,8 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
     if (!barbearia) return;
 
     // Se vier a flag aberta do backend, usa ela diretamente
-    if (typeof barbearia.aberto === "boolean") {
-      setAberto(barbearia.aberto);
+    if (!barbearia.aberto) {
+      setAberto(false);
       return;
     }
 
@@ -135,7 +135,7 @@ const BarberPresentation = ({ barbearia, handleAction, handleActionText }) => {
                     color: "#fff",
                     fontWeight: "bold",
                   }}
-                  color={aberto ? "success" : "terciary"}
+                  color={aberto ? "success" : "error"}
                   variant="filled"
                   label={aberto ? "ABERTO" : "FECHADO"}
                 />
