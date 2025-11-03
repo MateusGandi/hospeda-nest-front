@@ -26,20 +26,28 @@ const PublicPage = () => {
       { title: "Sua primeira vez aqui?", action: "/create" },
     ],
     client: [
-      { title: "Minha conta", action: "/me" },
       {
         title: "Começar agora",
         action: "/estabelecimentos",
         force: true,
       },
+      { title: "Minha conta", action: "/me" },
+      ...(isMobile
+        ? [
+            {
+              title: "Sou barbeiro(a)!",
+              action: "/plans",
+            },
+          ]
+        : []),
     ],
     manager: [],
     adm: [
-      { title: "Barbearias", action: "/estabelecimentos" },
+      { title: "Ver Barbearias", action: "/estabelecimentos" },
       { title: "Gerenciar barbearia", action: "/dashboard", force: true },
     ],
     employee: [
-      { title: "Barbearias", action: "/estabelecimentos" },
+      { title: "Ver Barbearias", action: "/estabelecimentos" },
       { title: "Atender clientes", action: "/dashboard", force: true },
     ],
   };

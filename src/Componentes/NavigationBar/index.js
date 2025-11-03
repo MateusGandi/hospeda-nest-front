@@ -87,7 +87,7 @@ const NavigationBar = ({ alertCustom }) => {
   const actionsMap = {
     null: [
       {
-        titulo: "Para empresas",
+        titulo: "Para barbeiros",
         action: () => navigate("/plans"),
         route: "/plans",
         type: "text",
@@ -188,7 +188,7 @@ const NavigationBar = ({ alertCustom }) => {
     ],
     client: [
       {
-        titulo: "Para empresas",
+        titulo: "Para barbeiros",
         action: () => navigate("/plans"),
         route: "/plans",
         type: "text",
@@ -245,7 +245,7 @@ const NavigationBar = ({ alertCustom }) => {
         icon: <LogoutIcon />,
       },
       {
-        titulo: "Para empresas",
+        titulo: "Para barbeiros",
         action: () => navigate("/plans"),
         route: "/plans",
         type: "text",

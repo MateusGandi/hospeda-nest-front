@@ -16,16 +16,21 @@ import {
 import { isMobile } from "../Funcoes";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
+const VideoPlayer = ({
+  open,
+  setOpen,
+  onClose,
+  videoList = [],
+  maxWidth,
+  url,
+}) => {
   const videoRefs = useRef([]);
   const containerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [touchStartY, setTouchStartY] = useState(null);
   const navigate = useNavigate();
-  const { videoPath } = useParams();
-  const location = useLocation();
-  const [internalOpen, setInternalOpen] = useState(open);
+  const { subPath } = useParams();
 
   const isYouTube = (url) => {
     return url?.includes("youtube.com") || url?.includes("youtu.be");
@@ -52,35 +57,28 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
   };
 
   useEffect(() => {
-    if (videoPath && videoList.length > 0) {
-      const index = videoList.findIndex((video) => video.id === videoPath);
+    if (subPath && videoList.length > 0) {
+      const index = videoList.findIndex((video) => video.id === subPath);
+
       if (index !== -1) {
         setCurrentIndex(index);
-        setInternalOpen(true);
+        setOpen(true);
       }
     }
-  }, [videoPath, videoList]);
+  }, [subPath, videoList]);
 
   useEffect(() => {
-    if (internalOpen) {
-      navigate(`/plans/${videoList[currentIndex]?.id}`);
+    if (open) {
+      navigate(`/${url}/${videoList[currentIndex]?.id}`);
       playVideo(currentIndex);
     }
-  }, [currentIndex, internalOpen]);
+  }, [currentIndex, open]);
 
   useEffect(() => {
-    if (internalOpen && !videoPath) {
-      handleClose();
+    if (open && !subPath) {
+      setOpen(false);
     }
-  }, [videoPath]);
-
-  const handleClose = () => {
-    onClose();
-    setInternalOpen(false);
-    const loc = location.pathname.split("/");
-    loc.pop();
-    navigate(loc.join("/"));
-  };
+  }, [subPath]);
 
   const playVideo = (index) => {
     videoRefs.current.forEach((video, i) => {
@@ -169,8 +167,8 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
 
   return (
     <Dialog
-      open={internalOpen}
-      onClose={handleClose}
+      open={open}
+      onClose={onClose}
       fullScreen={isMobile}
       maxWidth={maxWidth}
       PaperProps={{
@@ -195,14 +193,13 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
           zIndex: 999,
           mt: "3px",
           alignItems: "center",
+          background: videoList[currentIndex]?.title
+            ? "linear-gradient(to bottom, rgba(0,0,0,1) 20%, transparent 100%)"
+            : "transparent",
         }}
       >
         <Typography variant="h6">{videoList[currentIndex]?.title}</Typography>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{ color: "#fff" }}
-        >
+        <IconButton aria-label="close" onClick={onClose} sx={{ color: "#fff" }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -321,6 +318,24 @@ const VideoPlayer = ({ open, onClose, videoList = [], maxWidth }) => {
             </IconButton>
           </Grid>
         )}
+        <Box
+          sx={{
+            display: {
+              xs: currentIndex === videoList.length - 1 ? "none" : "block",
+              md: "none",
+            },
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            pb: 1,
+            textAlign: "center",
+          }}
+          component={Typography}
+          variant="body2"
+        >
+          Arraste para baixo para ver mais
+        </Box>
       </DialogContent>
     </Dialog>
   );

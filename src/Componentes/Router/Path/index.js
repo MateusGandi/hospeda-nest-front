@@ -38,7 +38,7 @@ import BarberShopMenu from "../../../Empresas/Dashboard";
 
 import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
 import LoadingImagePulse from "../../Effects/loading";
-
+import VideoLibraryRoundedIcon from "@mui/icons-material/VideoLibraryRounded";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
@@ -60,6 +60,7 @@ import {
 } from "@mui/icons-material";
 import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 import Suporte from "../../../Support";
+import Tutorial from "../../../Empresas/Dashboard/Tutorial";
 
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -169,6 +170,12 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
           onClose={handleClose}
         />
       ),
+    },
+    tutorial: {
+      icon: <VideoLibraryRoundedIcon />,
+      titulo: "Tutoriais",
+      acessoRapido: false,
+      componente: <Tutorial alertCustom={alertCustom} />,
     },
     funcionarios: {
       icon: <People />,
@@ -294,6 +301,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "financeiro",
       "funcionarios",
       "agendamentos",
+      "tutorial",
       "",
       "support",
     ],
@@ -307,6 +315,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "produtos",
       "financeiro",
       "funcionarios",
+      "tutorial",
       "agendamentos",
       "",
       "support",
@@ -317,6 +326,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "escala",
       "financeiro",
       "agendamentos",
+      "tutorial",
       "",
       "support",
     ],

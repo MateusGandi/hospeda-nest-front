@@ -100,7 +100,7 @@ function App() {
     "/dashboard/:path?/:subPath?/:modalPath?",
     "/manager/:page?",
     "/me/:agendamentoId?",
-    "/plans/:videoPath?",
+    "/plans/:subPath?",
     "/checkout/:key/:page?",
     "/review/:barbeariaId",
     "/faq/:title?",

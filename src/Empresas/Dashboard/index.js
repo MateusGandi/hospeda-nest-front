@@ -49,6 +49,7 @@ import LoadingImagePulse from "../../Componentes/Effects/loading";
 import Modal from "../../Componentes/Modal/Simple";
 import CustomCard from "../../Componentes/Card";
 
+import VideoLibraryRoundedIcon from "@mui/icons-material/VideoLibraryRounded";
 import Onboarding from "./Onboarding";
 import EditData from "./Edit";
 
@@ -503,6 +504,18 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                             className="btn-menu"
                             sx={{ width: { xs: "100%", md: "auto" } }}
                             variant="contained"
+                            color="secondary"
+                            disableElevation
+                            size="large"
+                            startIcon={<VideoLibraryRoundedIcon />}
+                            onClick={() => navigate("tutorial")}
+                          >
+                            Tutoriais
+                          </Button>
+                          <Button
+                            className="btn-menu"
+                            sx={{ width: { xs: "100%", md: "auto" } }}
+                            variant="contained"
                             color="primary"
                             disableElevation
                             size="large"
@@ -524,7 +537,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                             startIcon={<WhatsAppIcon />}
                             onClick={() => navigate("whatsapp")}
                           >
-                            Robô WhatsApp
+                            WhatsApp
                           </Button>{" "}
                         </Grid>
                       </Grid>

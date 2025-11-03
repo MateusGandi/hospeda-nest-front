@@ -154,7 +154,7 @@ export const Rows = ({
                           }
                           sx={{
                             bgcolor: "transparent",
-                            color: "#fff",
+                            color: "#fff !important",
                             width: 50,
                             height: 50,
                             ...avatarProps,

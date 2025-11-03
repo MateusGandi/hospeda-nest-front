@@ -14,7 +14,7 @@ import {
   Box,
 } from "@mui/material";
 import Modal from "../../Componentes/Modal/Simple";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import VideoPlayer from "../../Componentes/Video";
@@ -35,21 +35,7 @@ import WhatsAppButton from "../../Componentes/Alert/WhatsApp";
 import Image from "../../Assets/Landing/planos.png";
 
 const ModalPlanos = ({ alertCustom }) => {
-  const [mensagensChat] = useState([
-    { remetente: "cliente", texto: "Olá, bom dia." },
-    {
-      remetente: "bot",
-      texto:
-        "🤝 Olá Edu, como podemos te ajudar hoje?\n\nPor hora, podemos te ajudar com:\n- Notificações\n- Cancelamentos\n- Agendamentos\n- Dúvidas sobre o app\n- Recuperar sua conta perdida",
-    },
-    { remetente: "cliente", texto: "Estou com algumas dúvidas..." },
-
-    {
-      remetente: "bot",
-      texto:
-        "Vamos lá, sobre o que quer saber mais?\n- Como funciona o app\n- Como funciona o CashBack",
-    },
-  ]);
+  const location = useLocation();
 
   const periodicidade = {
     SEMANAL: "/semana",
@@ -77,16 +63,6 @@ const ModalPlanos = ({ alertCustom }) => {
     usuarios: formatNumberToWords(3000),
     avaliacao: 4.1,
     videos: [
-      // {
-      //   id: "67f00094-d984-8007-b039-a6cc21a8f7e6",
-      //   title: "Tudo sobre o Tonsus",
-      //   src: "https://www.w3schools.com/html/mov_bbb.mp4",
-      // },
-      // {
-      //   id: "video4",
-      //   src: "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
-      //   description: "Dica de 1 minuto para melhor utilização",
-      // },
       {
         id: "video5",
         src: "https://www.youtube.com/watch?v=ENCbaMJQ57k&ab_channel=BruceDark",
@@ -125,14 +101,24 @@ const ModalPlanos = ({ alertCustom }) => {
 
   const handleSelectPlan = async (idPlan) => navigate(`/onboard/${idPlan}`);
 
+  const handleClose = () => {
+    const loc = location.pathname.split("/");
+    loc.pop();
+    navigate(loc.join("/"));
+  };
+
   return (
     <>
       <VideoPlayer
+        url="plans"
         setOpen={(flag) => setModal((prev) => ({ ...prev, video: flag }))}
         maxWidth="xs"
         open={modal.video}
         videoList={modal.videos}
-        onClose={() => setModal((prev) => ({ ...prev, video: false }))}
+        onClose={() => {
+          setModal((prev) => ({ ...prev, video: false }));
+          handleClose();
+        }}
       />
       <Modal
         open={modal.openDetalhes}
