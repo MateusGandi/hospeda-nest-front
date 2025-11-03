@@ -77,7 +77,7 @@ const ConfirmacaoFila = ({ form, alertCustom }) => {
             >
               {content.posicao_label}
             </Typography>
-            {content.tempo_espera_label}
+            {/* {content.tempo_espera_label} */}
           </Typography>
         </Paper>
       </Grid>

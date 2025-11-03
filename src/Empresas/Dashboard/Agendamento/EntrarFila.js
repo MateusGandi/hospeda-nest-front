@@ -63,7 +63,7 @@ const Fila = ({ form, alertCustom }) => {
               >
                 {content.fila_titulo}
               </Typography>
-              {content.fila_subtitulo}
+              {/* {content.fila_subtitulo} */}
             </Typography>
           </Paper>
           <Typography className="show-box" variant="h6">

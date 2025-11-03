@@ -107,7 +107,7 @@ const Fila = ({ form, alertCustom }) => {
               <Typography variant="h4" sx={{ color: "#fff" }}>
                 {content.fila_titulo}
               </Typography>
-              {content.fila_subtitulo}
+              {/* {content.fila_subtitulo} */}
             </Typography>
           </Paper>
 
