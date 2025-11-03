@@ -108,7 +108,7 @@ const PublicPage = () => {
                   padding: "3px 10px",
                 }}
               >
-                Os serviços da sua barberia e tudo mais em um só lugar, agende
+                Os serviços da sua barbearia e tudo mais em um só lugar, agende
                 já!
               </span>
             </Typography>
