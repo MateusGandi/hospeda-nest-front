@@ -126,12 +126,12 @@ const WorkSchedule = ({
   const setDefaultSchedule = () => {
     const updated = workDays.map((day, index) => ({
       ...day,
-      horarioInicio: index < 6 ? "08:00" : "00:00",
-      horarioFim: index < 6 ? "18:00" : "00:00",
+      horarioInicio: index < 6 ? "08:00:00" : "00:00:00",
+      horarioFim: index < 6 ? "18:00:00" : "00:00:00",
       ativo: index < 6,
     }));
     setWorkDays(updated);
-    setLunchRows([{ inicio: "12:00", fim: "13:00" }]);
+    setLunchRows([{ inicio: "12:00:00", fim: "13:00:00" }]);
     setOpened(false);
   };
 
