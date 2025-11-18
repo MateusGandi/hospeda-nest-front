@@ -25,6 +25,9 @@ export default function FreeSolo({
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
+  const [isFocus, setIsFocus] = React.useState(false);
+  const [isHover, setIsHover] = React.useState(false);
+  const isActive = isFocus || isHover;
 
   // Função para contar dígitos numéricos na string
   const countDigits = (str) => {
@@ -137,6 +140,10 @@ export default function FreeSolo({
             variant="outlined"
             placeholder={placeholder}
             fullWidth
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
             sx={{
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -149,10 +156,16 @@ export default function FreeSolo({
               },
             }}
           />
-          {!inputValue.length && !itemSelecionado && (
+
+          {!isActive && !inputValue.length && !itemSelecionado && (
             <SearchIcon
               fontSize="medium"
-              sx={{ position: "absolute", right: "13px", top: "13px" }}
+              sx={{
+                zIndex: 999,
+                position: "absolute",
+                right: "13px",
+                top: "13px",
+              }}
             />
           )}
         </Box>

@@ -61,6 +61,7 @@ import {
 import QuestionAnswerRoundedIcon from "@mui/icons-material/QuestionAnswerRounded";
 import Suporte from "../../../Support";
 import Tutorial from "../../../Empresas/Dashboard/Tutorial";
+import { GerenciarClientes } from "../../../Empresas/Dashboard/Clientes";
 
 export function RouteElement({ path: pathSelecionado, alertCustom }) {
   const [pathsAllowed, setPathsAllowed] = useState([]);
@@ -174,7 +175,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
     tutorial: {
       icon: <VideoLibraryRoundedIcon />,
       titulo: "Tutoriais",
-      acessoRapido: false,
+      acessoRapido: true,
       componente: <Tutorial alertCustom={alertCustom} />,
     },
     funcionarios: {
@@ -223,6 +224,12 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
           onClose={handleClose}
         />
       ),
+    },
+    clientes: {
+      icon: <People />,
+      titulo: "Clientes",
+      acessoRapido: false,
+      componente: <GerenciarClientes alertCustom={alertCustom} />,
     },
     escala: {
       icon: <Settings />,
@@ -295,7 +302,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "editar",
       "agendamento",
       "whatsapp",
-      // "escala",
+      "clientes",
       "servicos",
       "produtos",
       "financeiro",
@@ -312,6 +319,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "whatsapp",
       "escala",
       "servicos",
+      "clientes",
       "produtos",
       "financeiro",
       "funcionarios",
@@ -324,6 +332,7 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
       "me",
       "agendamento",
       "escala",
+      "clientes",
       "financeiro",
       "agendamentos",
       "tutorial",

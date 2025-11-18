@@ -93,6 +93,11 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           acessoRapido: true,
         },
         {
+          to: "clientes",
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Clientes",
+        },
+        {
           to: "escala",
           icon: <Settings sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Escala de Trabalho",
@@ -178,6 +183,11 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           title: "Produtos",
         },
         {
+          to: "clientes",
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Clientes",
+        },
+        {
           to: "/me",
           icon: <PersonIcon sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Conta",
@@ -210,6 +220,11 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
           to: "produtos",
           icon: <LocalMallRoundedIcon sx={{ mr: { md: 1, xs: 0 } }} />,
           title: "Produtos",
+        },
+        {
+          to: "clientes",
+          icon: <People sx={{ mr: { md: 1, xs: 0 } }} />,
+          title: "Clientes",
         },
         {
           to: "agendamento/cliente",

@@ -432,6 +432,10 @@ export default function AgendamentosByCalendario({
               <PaperList
                 items={[
                   ...modal.selecionado.servico,
+                  {
+                    titulo: "Telefone do cliente",
+                    subtitulo: modal.selecionado.telefone || "N/A",
+                  },
                   ...(modal.selecionado.motivoCancelamento
                     ? [
                         {

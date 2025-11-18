@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Grid2 as Grid, Typography } from "@mui/material";
-import Api from "../../../Componentes/Api/axios";
-import { Cards } from "../../../Componentes/Lista/Cards";
-import { getLocalItem, isMobile, orderBy } from "../../../Componentes/Funcoes";
-import Icon from "../../../Assets/Emojis";
-import View from "../../../Componentes/View";
-import Modal from "../../../Componentes/Modal/Simple";
+import Api from "../../Componentes/Api/axios";
+import { Cards } from "../../Componentes/Lista/Cards";
+import { getLocalItem, isMobile, orderBy } from "../../Componentes/Funcoes";
+import Icon from "../../Assets/Emojis";
+import View from "../../Componentes/View";
+import Modal from "../../Componentes/Modal/Simple";
 
 const Products = ({ alertCustom }) => {
   const [products, setProducts] = useState([]);
