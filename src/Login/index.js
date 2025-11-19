@@ -11,7 +11,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import Api from "../Componentes/Api/axios";
 import Banner from "../Assets/Login/tonsus_mosaico.png";
 
-import { getLocalItem, validarCampos } from "../Componentes/Funcoes";
+import {
+  getLocalItem,
+  removeLocalItem,
+  validarCampos,
+} from "../Componentes/Funcoes";
 import Complete from "./Complete";
 import Logo from "../Assets/Login/tonsus_extend.png";
 
@@ -22,17 +26,27 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
   const [dados, setDados] = useState({});
 
   const verifyAndRedirect = async (dadosReceived, message) => {
-    const lastRoute = getLocalItem("lastRoute");
-    const routes = await reloadRoutes();
-    const isAllowed = verifyAccess(lastRoute, routes);
-    const lastPath = isAllowed ? lastRoute : "/home";
+    try {
+      const lastRoute = getLocalItem("lastRoute");
+      const routes = await reloadRoutes();
+      const isAllowed = verifyAccess(lastRoute, routes);
+      const lastPath = isAllowed ? lastRoute : "/home";
 
-    if (dadosReceived && dadosReceived.pendencia) {
-      alertCustom(dadosReceived.motivo);
-      navigate("/complete");
-    } else {
-      navigate(lastPath);
-      alertCustom(message || "Acesso concedido!");
+      if (dadosReceived && dadosReceived.pendencia) {
+        alertCustom(
+          dadosReceived.motivo || "Complete seu cadastro antes de continuar!"
+        );
+        navigate("/complete");
+      } else {
+        removeLocalItem("pendencia");
+        navigate(lastPath);
+        alertCustom(message || "Acesso concedido!");
+      }
+      setTimeout(() => {
+        removeLocalItem("redirect");
+      }, 5000);
+    } catch (error) {
+      console.error(error.message);
     }
   };
 

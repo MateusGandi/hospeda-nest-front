@@ -415,6 +415,9 @@ export const getLocalItem = (key) => {
     return item; // Retorna o item original se o parse falhar (string, número ou booleano)
   }
 };
+export const removeLocalItem = (key) => {
+  window.localStorage.removeItem(key);
+};
 
 export const primeiraMaiuscula = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1);

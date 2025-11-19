@@ -3,6 +3,7 @@ import { getLocalItem, setLocalItem } from "../Funcoes";
 
 class ApiService {
   setKey(data) {
+    setLocalItem("redirect", true);
     if (data) Object.keys(data).map((key) => setLocalItem(key, data[key]));
   }
 

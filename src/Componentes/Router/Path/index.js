@@ -390,7 +390,14 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
         alertCustom={alertCustom}
       />
     ),
-    "/complete": <Login page="complete" alertCustom={alertCustom} />,
+    "/complete": (
+      <Login
+        verifyAccess={verifyAccess}
+        reloadRoutes={fetchRoutesAllowed}
+        page="complete"
+        alertCustom={alertCustom}
+      />
+    ),
     "/home": <PublicPage />,
     "/estabelecimentos": <Estabelecimentos alertCustom={alertCustom} />,
     "/barbearia": <Empresa alertCustom={alertCustom} />, //barbearia tbm tem subrotas, mas como elas não são independentes, não podemos usar SubRoutes
@@ -438,7 +445,12 @@ export function RouteElement({ path: pathSelecionado, alertCustom }) {
   if (!pathAtual) {
     return <Navigate to="/login" />;
   } else {
-    if (pathAtual === "/login" && getLocalItem("token")) {
+    if (
+      pathAtual === "/login" &&
+      getLocalItem("token") &&
+      !getLocalItem("pendencia") &&
+      !getLocalItem("redirect")
+    ) {
       return <Navigate to="/home" />;
     }
     return (
