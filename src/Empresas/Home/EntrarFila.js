@@ -17,7 +17,7 @@ const Fila = ({ form, alertCustom }) => {
 
   const handleGetStatus = async () => {
     try {
-      if (!form?.barbeiro?.id) return;
+      if (!form?.barbeiro?.id || !form.barbeiro.filaDinamicaClientes) return;
       const { peopleAhead, waitTime } = await Api.query(
         "GET",
         `/scheduling/queue/estimate/${form.barbeiro.id}`

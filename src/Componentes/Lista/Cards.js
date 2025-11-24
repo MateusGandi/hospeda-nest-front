@@ -122,7 +122,7 @@ export const Cards = ({
               </Typography>
             </label>
 
-            <CardContent sx={{ p: 1 }}>
+            <CardContent sx={{ p: 1 }} onClick={() => handleSelect(item.id)}>
               {keys ? (
                 keys.map((key) => (
                   <Typography variant="body1" sx={{ width: "100%", m: 0 }}>

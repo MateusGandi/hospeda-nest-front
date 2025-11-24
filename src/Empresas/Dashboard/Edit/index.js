@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Grid2 as Grid, Switch, Typography } from "@mui/material";
+import {
+  Grid2 as Grid,
+  IconButton,
+  InputAdornment,
+  Switch,
+  Typography,
+} from "@mui/material";
 import Modal from "../../../Componentes/Modal/Simple";
 import Api from "../../../Componentes/Api/axios";
 import { CustomInput } from "../../../Componentes/Custom";
 import { formatPhone, formatTime } from "../../../Componentes/Funcoes";
 import Icon from "../../../Assets/Emojis";
 import View from "../../../Componentes/View";
+import { CopyAllRounded } from "@mui/icons-material";
 
 const EditData = ({
   open = true,
@@ -83,6 +90,13 @@ const EditData = ({
       console.error("Erro ao mudar status do estabelecimento:", error);
       alertCustom("Erro ao mudar status do estabelecimento");
     }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(
+      `https://tonsus.com.br/barbearia/` + formData.path
+    );
+    alertCustom("Link copiado para a área de transferência!");
   };
 
   return (
@@ -175,6 +189,21 @@ const EditData = ({
                 value={formData.endereco}
                 onChange={handleChange("endereco")}
                 variant="outlined"
+              />
+            </Grid>
+            <Grid item size={{ xs: 12, md: 8 }}>
+              <CustomInput
+                fullWidth
+                label="Link de acesso rápido"
+                readOnly
+                value={`https://tonsus.com.br/barbearia/` + formData.path}
+                onChange={() => alertCustom("Este campo não pode ser editado")}
+                variant="outlined"
+                endIcon={
+                  <IconButton onClick={handleCopy}>
+                    <CopyAllRounded />
+                  </IconButton>
+                }
               />
             </Grid>
             <Grid item size={{ xs: 12, md: 4 }}>

@@ -21,6 +21,7 @@ import {
   Build,
   CalendarMonth,
   Home,
+  CopyAllRounded,
 } from "@mui/icons-material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -348,6 +349,13 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
     }
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(
+      `https://tonsus.com.br/barbearia/` + barbearia.path
+    );
+    alertCustom("Link copiado para a área de transferência!");
+  };
+
   useEffect(() => {
     const loc = barbearia?.location || {};
     if (
@@ -522,12 +530,24 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                             color="secondary"
                             disableElevation
                             size="large"
+                            startIcon={<CopyAllRounded />}
+                            onClick={handleCopy}
+                          >
+                            copiar Meu link
+                          </Button>
+                          <Button
+                            className="btn-menu"
+                            sx={{ width: { xs: "100%", md: "auto" } }}
+                            variant="contained"
+                            color="primary"
+                            disableElevation
+                            size="large"
                             startIcon={<VideoLibraryRoundedIcon />}
                             onClick={() => navigate("tutorial")}
                           >
                             Tutoriais
                           </Button>
-                          <Button
+                          {/* <Button
                             className="btn-menu"
                             sx={{ width: { xs: "100%", md: "auto" } }}
                             variant="contained"
@@ -538,7 +558,7 @@ const BarberShopMenu = ({ alertCustom, barbearia, reload, onSave }) => {
                             onClick={() => navigate("/plans")}
                           >
                             Planos
-                          </Button>
+                          </Button> */}
                           <Button
                             className="btn-menu"
                             sx={{

@@ -43,7 +43,10 @@ const Servicos = ({ form, setForm, alertCustom }) => {
       return info;
     } catch (error) {
       console.error("Erro ao buscar vagas:", error);
-      alertCustom("Erro ao buscar vagas, tente novamente mais tarde!");
+      alertCustom(
+        error.response.data.message ??
+          "Erro ao buscar vagas, tente novamente mais tarde!"
+      );
       return [];
     } finally {
       setLoading(false);

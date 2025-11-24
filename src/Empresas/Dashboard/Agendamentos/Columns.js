@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Icon from "../../../Assets/Emojis";
 import Filter from "../../../Componentes/Filter";
-import Search from "../../../Componentes/Search";
+import Search from "../../../Componentes/Search/ApplyFilter";
 import { useNavigate } from "react-router-dom";
 import {
   diferencaEmMinutos,
@@ -435,6 +435,10 @@ export default function AgendamentosByCalendario({
                   {
                     titulo: "Telefone do cliente",
                     subtitulo: modal.selecionado.telefone || "N/A",
+                  },
+                  {
+                    titulo: "E-mail do cliente",
+                    subtitulo: modal.selecionado.email || "N/A",
                   },
                   ...(modal.selecionado.motivoCancelamento
                     ? [

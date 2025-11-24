@@ -442,24 +442,32 @@ export const getStatus = (status) => {
       return {
         color: "primary",
         valor: "Agendado",
+        color: "#1976d2",
       };
     case "NOT_ATTEND":
       return {
         color: "error",
         valor: "Não Compareceu",
+        color: "#d32f2f",
       };
     case "CANCELLED":
       return {
         color: "warning",
         valor: "Cancelado",
+        color: "#ed6c02",
       };
     case "OK":
       return {
         color: "success",
         valor: "Concluído",
+        color: "#2e7d32",
       };
     default:
-      return { color: "warning", valor: "Não atendido" };
+      return {
+        color: "#1976d2",
+        color: "warning",
+        valor: "Não atendido",
+      };
   }
 };
 
@@ -501,7 +509,8 @@ export function formatDataToString(dataISO, allow) {
     mes: meses[parseInt(mes, 10) - 1],
     dia,
   };
-  if (!allow) return `${dia} de ${meses[parseInt(mes, 10) - 1]} de ${ano}`;
+  if (!allow)
+    return `${dia} de ${meses[parseInt(mes, 10) - 1].slice(0, 3)}. de ${ano}`;
   return allow.map((item) => temp[item]).join(" de ");
 }
 

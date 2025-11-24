@@ -43,7 +43,7 @@ const STATUS = {
 const Agendamentos = ({ alertCustom, data, setData }) => {
   const navigate = useNavigate();
   const [filter, _setFilter] = useState({
-    status: { titulo: "Agendados", id: 1, valor: "PENDING" },
+    status: { titulo: "Todos", id: 0, valor: "" },
     data_selecionada: null,
     calendario: {
       open: false,
@@ -121,7 +121,8 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
               titulo: `${service.nome} | R$ ${service.preco}`,
               subtitulo: formatarHorario(service.tempoGasto),
             })),
-            imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
+            sx: { backgroundColor: status.color },
+            // imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
             titulo: (
               <Typography
                 variant="h6"
@@ -141,11 +142,11 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
                 </span>
                 <span>
                   {status.manual && <Chip size="small" label={"Manual"} />}
-                  <Chip
+                  {/* <Chip
                     size="small"
                     label={status.valor}
                     color={status.color}
-                  />
+                  /> */}
                 </span>
               </Typography>
             ),
@@ -306,10 +307,16 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
           service.tempoGasto
         )}`,
       })),
-      ...(agendamento.motivoCancelamento && {
-        titulo: "Motivo do cancelamento",
-        subtitulo: agendamento.motivoCancelamento,
-      }),
+      { titulo: "Telefone", subtitulo: agendamento.telefone || "N/A" },
+      { titulo: "E-mail", subtitulo: agendamento.email || "N/A" },
+      ...(agendamento.motivoCancelamento
+        ? [
+            {
+              titulo: "Motivo do cancelamento",
+              subtitulo: agendamento.motivoCancelamento,
+            },
+          ]
+        : []),
     ];
   };
 
@@ -458,16 +465,31 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
           component="view"
           fullScreen="mobile"
         >
-          <>
-            <PaperList sx={{ mx: 2 }} items={getDescription()}>
-              <Typography
-                variant="h6"
-                sx={{ p: "5px 10px", background: "#333" }}
-              >
-                Resumo do pedido
-              </Typography>
-            </PaperList>
-          </>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <Rows
+                disabled={true}
+                items={[
+                  {
+                    titulo: modal.agendamento_selecionado.funcionario.nome,
+                    subtitulo: "Atendente responsável",
+                    size: 50,
+                    imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${modal.agendamento_selecionado.funcionario.id}/${modal.agendamento_selecionado.funcionario.foto}`,
+                  },
+                ]}
+              />
+            </Grid>{" "}
+            <Grid size={12}>
+              <PaperList items={getDescription()}>
+                <Typography
+                  variant="h6"
+                  sx={{ p: "5px 10px", background: "#333" }}
+                >
+                  Resumo do pedido
+                </Typography>
+              </PaperList>
+            </Grid>
+          </Grid>
         </Modal>
       )}
 

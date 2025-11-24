@@ -52,7 +52,7 @@ const Empresa = ({ alertCustom }) => {
 
   const handleSave = async () => {
     const url = subPath === "fila" ? "/scheduling/queue" : "/scheduling";
-
+    const location = getLocalItem("userLocation");
     await Api.query("POST", url, {
       data: form.agendamento?.id
         ? new Date(form.agendamento.id).toISOString()
@@ -63,6 +63,7 @@ const Empresa = ({ alertCustom }) => {
       services: form.servicos.map(({ id }) => id),
       userName: getLocalItem("nome"),
       manual: false,
+      location: location,
     }).then((resp) => {
       if (subPath === "fila")
         setForm((prev) => ({ ...prev, in_fila: true, fila_info: resp }));
@@ -111,7 +112,7 @@ const Empresa = ({ alertCustom }) => {
       setTituloModal(paths[pathTo + 1].title);
       navigate(`/barbearia/${empresa.path}/${paths[pathTo + 1].key}`);
     } catch (error) {
-      alertCustom("Erro interno!");
+      // alertCustom("Erro interno!");
     } finally {
       setLoading(false);
     }

@@ -249,9 +249,8 @@ const Modal = ({
                       {component === "form" && (
                         <>
                           <Grid size={12}>
-                            <Grid container>
+                            <Grid container justifyContent={"center"}>
                               <Grid
-                                size={12}
                                 sx={{
                                   px: 2,
                                 }}
@@ -266,6 +265,7 @@ const Modal = ({
                                   type="submit"
                                   sx={{
                                     height: 45,
+                                    width: "270px",
                                     background:
                                       "linear-gradient(to right, #2C69D1, #0ABCF9)",
                                     ...buttonStyle,
@@ -299,7 +299,7 @@ const Modal = ({
                                       onSuccess={(e) => buttons[0]?.action(e)}
                                     /> */}
                                     <GoogleLogin
-                                      width="350"
+                                      width="270"
                                       size="large"
                                       theme="filled_black"
                                       shape="pill"

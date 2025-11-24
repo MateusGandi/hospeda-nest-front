@@ -25,6 +25,17 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const el = document.querySelector("div[role='button']");
+      if (el) {
+        el.style.maxWidth = "270px";
+      }
+    }, 10);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const verifyAndRedirect = async (dadosReceived, message) => {
     try {
       const lastRoute = getLocalItem("lastRoute");

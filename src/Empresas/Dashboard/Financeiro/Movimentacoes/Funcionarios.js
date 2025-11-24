@@ -8,8 +8,7 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import SearchBarWithFilters from "../../../../Componentes/Search";
-import { PaperList } from "../../../../Componentes/Lista/Paper";
+import SearchBarWithFilters from "../../../../Componentes/Search/ApplyFilter";
 import apiService from "../../../../Componentes/Api/axios";
 import {
   getLocalItem,

@@ -7,7 +7,7 @@ import {
   IconButton,
   Chip,
 } from "@mui/material";
-import SearchBarWithFilters from "../../../../Componentes/Search";
+import SearchBarWithFilters from "../../../../Componentes/Search/ApplyFilter";
 import { PaperList } from "../../../../Componentes/Lista/Paper";
 import apiService from "../../../../Componentes/Api/axios";
 import {
