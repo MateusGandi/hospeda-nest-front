@@ -75,17 +75,19 @@ const Estabelecimentos = ({ alertCustom }) => {
     buscarDados();
   }, [location, searchValue, filters]);
 
+  const getDistance = ({ distancia, metrica }) => {
+    if (!distancia || distancia == 99999) return "";
+
+    return `${distancia} ${metrica} |`;
+  };
+
   const formatarRows = (items) => {
     return items.map((item) => ({
       ...item,
       // disabled: !item.aberto,
       // sx: { backgroundColor: !item.aberto ? "#363636" : "transparent" },
       titulo: item.nome,
-      subtitulo: `${
-        item.distancia && item.distancia != 99999
-          ? item.distancia?.toFixed(0) + " km | "
-          : ""
-      }${formatPhone(item.telefone)} | ${
+      subtitulo: `${getDistance(item)}${formatPhone(item.telefone)} | ${
         item.endereco.length > 20
           ? item.endereco.slice(0, 40) + "..."
           : item.endereco
@@ -128,7 +130,7 @@ const Estabelecimentos = ({ alertCustom }) => {
                 {
                   key: "distance",
                   label: "Mais próximas",
-                  value: 15,
+                  value: 25,
                 },
               ]}
               onChange={handleChange}

@@ -145,10 +145,14 @@ const Empresa = ({ alertCustom }) => {
       setLoading(true);
       try {
         if (!form.barbearia && subPath) return navigate("/estabelecimentos");
+        const location = getLocalItem("userLocation");
+        if (!location) return navigate("/estabelecimentos");
 
         const data = await Api.query(
           "GET",
-          `/establishment/client/${barbeariaName}`
+          `/establishment/client/${barbeariaName}?location=${
+            location && Object.values(location).join(",")
+          }`
         );
         setForm((prev) => ({ ...prev, barbearia: data }));
         setEmpresa(data);
