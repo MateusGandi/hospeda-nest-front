@@ -282,7 +282,7 @@ export default function WeekCalendar({
           style={{
             ...style,
             padding: "4px 6px",
-            backgroundColor: "#00aaff",
+            backgroundColor: item.color || "#00aaff",
             color: "#fff",
             borderRadius: "6px",
             width: "150px",

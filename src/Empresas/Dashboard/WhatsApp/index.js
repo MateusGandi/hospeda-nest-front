@@ -59,9 +59,18 @@ Se preferir, estamos no Tonsus, pode agendar com a gente por lá também!
     {
       remetente: "bot",
       texto:
-        "Ah sim! Você pode agendar diretamente na plataforma:\n👉 tonsus.com.br/estabelecimentos\n Lá você agenda a hora que quiser, quando e onde estiver!",
+        "Para qual dia você gostaria de agendar?\n- Hoje\n- Amanhã\n- Outro dia",
     },
-    { remetente: "cliente", texto: "Opa, vou agendar agora mesmo!" },
+    { remetente: "cliente", texto: "Hoje" },
+    {
+      remetente: "bot",
+      texto: "Quais horários você quer?\n- 08:00\n- 09:00",
+    },
+    { remetente: "cliente", texto: "Ah sim, quero as 08:00" },
+    {
+      remetente: "bot",
+      texto: "Certo, agendado para hoje às 08:00! 👍",
+    },
   ];
 
   useEffect(() => {
@@ -73,7 +82,7 @@ Basta clicar no link abaixo e começar a conversar
 👉 api.whatsapp.com/send?phone=556292324267
 
 Se preferir, estamos no Tonsus, pode agendar com a gente por lá também!
-👉 tonsus.com.br`);
+👉 tonsus.com.br/barbearia/${barbearia.path}`);
   }, [barbearia]);
 
   // Função para mostrar mensagens em sequência na modal do barbeiro

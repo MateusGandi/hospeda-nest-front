@@ -107,15 +107,6 @@ export const GerenciarClientes = ({ alertCustom }) => {
       loading={loading}
     >
       <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid size={12} className="show-box">
-          <Typography variant="h6">
-            <Icon>⚙️</Icon> Controle de Clientes
-            <Typography variant="body1">
-              Bloqueie clientes para que eles não possam fazer agendamentos no
-              seu estabelecimento sem notificá-los.
-            </Typography>
-          </Typography>
-        </Grid>
         <Grid size={{ xs: 0, md: 6 }}></Grid>
         <Grid size={{ xs: 12, md: 6 }}>
           <SearchField
@@ -127,6 +118,15 @@ export const GerenciarClientes = ({ alertCustom }) => {
             }
             itemSelecionado={form.cliente}
           />
+        </Grid>
+        <Grid size={12} className="show-box">
+          <Typography variant="h6">
+            <Icon>⚙️</Icon> Controle de Clientes
+            <Typography variant="body1">
+              Bloqueie clientes para que eles não possam fazer agendamentos no
+              seu estabelecimento sem notificá-los.
+            </Typography>
+          </Typography>
         </Grid>
 
         <Grid size={12}>

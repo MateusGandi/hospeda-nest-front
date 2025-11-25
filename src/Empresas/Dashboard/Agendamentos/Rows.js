@@ -121,7 +121,7 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
               titulo: `${service.nome} | R$ ${service.preco}`,
               subtitulo: formatarHorario(service.tempoGasto),
             })),
-            sx: { backgroundColor: status.color },
+            sx: { backgroundColor: status.hexa },
             // imagem: `${process.env.REACT_APP_BACK_TONSUS}/images/user/${item.funcionario.id}/${item.funcionario.foto}`,
             titulo: (
               <Typography

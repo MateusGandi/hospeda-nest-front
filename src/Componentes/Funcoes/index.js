@@ -442,29 +442,29 @@ export const getStatus = (status) => {
       return {
         color: "primary",
         valor: "Agendado",
-        color: "#1976d2",
+        hexa: "#1976d2",
       };
     case "NOT_ATTEND":
       return {
         color: "error",
         valor: "Não Compareceu",
-        color: "#d32f2f",
+        hexa: "#d32f2f",
       };
     case "CANCELLED":
       return {
         color: "warning",
         valor: "Cancelado",
-        color: "#ed6c02",
+        hexa: "#ed6c02",
       };
     case "OK":
       return {
         color: "success",
         valor: "Concluído",
-        color: "#2e7d32",
+        hexa: "#2e7d32",
       };
     default:
       return {
-        color: "#1976d2",
+        hexa: "#1976d2",
         color: "warning",
         valor: "Não atendido",
       };
