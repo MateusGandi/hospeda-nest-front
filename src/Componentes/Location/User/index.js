@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgress, Stack, Typography, Button } from "@mui/material";
+import {
+  CircularProgress,
+  Stack,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
 import Modal from "../../Modal/Simple";
 import { getLocalItem, isMobile } from "../../Funcoes";
 import { LoadingBox } from "../../Custom";
 
 const LocationModalRequest = ({ alertCustom, setLocation }) => {
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleClose = () => {
+    if (loading)
+      return alertCustom("Esper um pouco... Estamos obtendo sua localização.");
     setShowModal(false);
   };
-
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     try {
       const savedLocation = getLocalItem("userLocation");
 
       if (savedLocation) {
-        requestLocation();
+        requestLocation(true);
       } else {
         setShowModal(true);
       }
@@ -27,13 +34,13 @@ const LocationModalRequest = ({ alertCustom, setLocation }) => {
     }
   }, []);
 
-  const requestLocation = () => {
+  const requestLocation = (force = false) => {
     if (!navigator.geolocation) {
       alertCustom("Geolocalização não é suportada.");
       return;
     }
 
-    setLoading(true);
+    if (!force) setLoading(true);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -63,12 +70,12 @@ const LocationModalRequest = ({ alertCustom, setLocation }) => {
         } catch (error) {
           alertCustom("Erro ao buscar endereço.");
         } finally {
-          setLoading(false);
+          if (!force) setLoading(false);
         }
       },
       () => {
         alertCustom("Você precisa permitir o acesso à localização.");
-        setLoading(false);
+        if (!force) setLoading(false);
       },
       {
         enableHighAccuracy: true,
@@ -114,8 +121,9 @@ const LocationModalRequest = ({ alertCustom, setLocation }) => {
           Para obter as barbearias mais próximas, precisamos acessar sua
           localização atual.
         </Typography>
-
-        {loading && <LoadingBox message="Obtendo informações..." />}
+        <Box sx={{ height: "50px" }}>
+          {loading && <LoadingBox message="Obtendo informações..." />}
+        </Box>
       </Stack>
     </Modal>
   );

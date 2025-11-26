@@ -146,14 +146,12 @@ const Empresa = ({ alertCustom }) => {
       try {
         if (!form.barbearia && subPath) return navigate("/estabelecimentos");
         const location = getLocalItem("userLocation");
-        if (!location) return navigate("/estabelecimentos");
+        let url = `/establishment/client/${barbeariaName}`;
 
-        const data = await Api.query(
-          "GET",
-          `/establishment/client/${barbeariaName}?location=${
-            location && Object.values(location).join(",")
-          }`
-        );
+        if (location)
+          url += `?location=${location && Object.values(location).join(",")}`;
+
+        const data = await Api.query("GET", url);
         setForm((prev) => ({ ...prev, barbearia: data }));
         setEmpresa(data);
       } catch (error) {

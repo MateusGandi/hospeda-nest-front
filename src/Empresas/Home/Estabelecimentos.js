@@ -8,11 +8,11 @@ import { Rows } from "../../Componentes/Lista/Rows";
 import ConeSVG from "../../Assets/cone.svg";
 import { formatPhone } from "../../Componentes/Funcoes";
 import LocationModalAuto from "../../Componentes/Location/User";
+import { LoadingBox } from "../../Componentes/Custom";
 
 const Estabelecimentos = ({ alertCustom }) => {
   const navigate = useNavigate();
 
-  const [loadingLocation, setLoadingLocation] = useState(false);
   const [empresas, setEmpresas] = useState([]);
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,10 @@ const Estabelecimentos = ({ alertCustom }) => {
   useEffect(() => {
     const buscarDados = async () => {
       try {
+        if (loading) return;
+
         if (!searchValue && !filters.length) setLoading(true);
+
         let query = [];
 
         if (location)
@@ -113,7 +116,6 @@ const Estabelecimentos = ({ alertCustom }) => {
     <>
       <LocationModalAuto alertCustom={alertCustom} setLocation={setLocation} />
       <Modal
-        loading={loading}
         open={dados.open}
         backAction={dados.back}
         onClose={dados.onClose}
@@ -136,7 +138,7 @@ const Estabelecimentos = ({ alertCustom }) => {
                 },
               ]}
               onChange={handleChange}
-            ></SimpleSearchNoFilters>
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 8 }} sx={{ mt: 1 }}>
             {empresas && empresas.length ? (
@@ -153,6 +155,11 @@ const Estabelecimentos = ({ alertCustom }) => {
                   backgroundColor: "#212121",
                   borderRadius: "10px",
                 }}
+              />
+            ) : loading ? (
+              <LoadingBox
+                sx={{ mt: "25%" }}
+                message="Carregando barbearias..."
               />
             ) : (
               <Typography
