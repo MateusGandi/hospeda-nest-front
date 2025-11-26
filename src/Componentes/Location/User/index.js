@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Stack, Typography, Button } from "@mui/material";
 import Modal from "../../Modal/Simple";
-import { getLocalItem } from "../../Funcoes";
+import { getLocalItem, isMobile } from "../../Funcoes";
 import { LoadingBox } from "../../Custom";
 
 const LocationModalRequest = ({ alertCustom, setLocation }) => {
   const [showModal, setShowModal] = useState(false);
 
-  // ⭐ LOADING INTERNO
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -74,24 +77,33 @@ const LocationModalRequest = ({ alertCustom, setLocation }) => {
       }
     );
   };
+  const buttons = [
+    {
+      titulo: "Permitir",
+      disabled: loading,
+      action: requestLocation,
+      variant: "contained",
+      color: "primary",
+      sx: { width: "100%", height: 45 },
+    },
+    {
+      titulo: "Agora não",
+      disabled: loading,
+      action: handleClose,
+      variant: "text",
+      color: "secondary",
+      sx: { width: "100%", height: 45 },
+    },
+  ];
 
   return (
     <Modal
       open={showModal}
-      onClose={() => {}}
+      onClose={handleClose}
       titulo=" "
       component="modal"
       maxWidth="xs"
-      buttons={[
-        {
-          titulo: "Permitir",
-          disabled: loading,
-          action: requestLocation,
-          variant: "contained",
-          color: "primary",
-          sx: { width: "100%", height: 45 },
-        },
-      ]}
+      buttons={isMobile ? buttons : buttons.reverse()}
     >
       <Stack spacing={3} sx={{ width: "100%", textAlign: "center", p: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>

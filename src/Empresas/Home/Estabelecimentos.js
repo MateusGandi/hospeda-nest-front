@@ -36,11 +36,13 @@ const Estabelecimentos = ({ alertCustom }) => {
   useEffect(() => {
     const buscarDados = async () => {
       try {
-        if (!location) return;
         if (!searchValue && !filters.length) setLoading(true);
         let query = [];
 
-        query.push(`location=${location && Object.values(location).join(",")}`);
+        if (location)
+          query.push(
+            `location=${location && Object.values(location).join(",")}`
+          );
 
         if (filters.length) {
           filters.forEach(({ key, value }) => query.push(`${key}=${value}`));
