@@ -18,7 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import Modal from "../Modal/Simple";
 import { Rows } from "../Lista/Rows";
-import { getLocalItem, isMobile } from "../Funcoes";
+import { getLocalItem, isMobile, removeLocalItem } from "../Funcoes";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import LoginIcon from "@mui/icons-material/Login";
@@ -365,14 +365,34 @@ const NavigationBar = ({ alertCustom }) => {
     setActions(actionsMap[accessType]);
   }, [hasScheduling, location]);
 
-  const verifyAndRedirect = (dadosReceived, message) => {
-    if (dadosReceived && dadosReceived.pendencia) {
-      alertCustom(dadosReceived.motivo);
-      navigate("/complete");
-    } else {
-      alertCustom(message || "Acesso concedido!");
+  const verifyAccess = (path, routes) =>
+    routes.find((rota) => `/${path?.split("/")[1]}`.includes(rota));
+
+  const verifyAndRedirect = async (dadosReceived, message) => {
+    try {
+      const lastRoute = getLocalItem("lastRoute");
+      const routes = await apiService.getAccess();
+      const isAllowed = verifyAccess(lastRoute, routes);
+      const lastPath = isAllowed ? lastRoute : "/home";
+
+      if (dadosReceived && dadosReceived.pendencia) {
+        alertCustom(
+          dadosReceived.motivo || "Complete seu cadastro antes de continuar!"
+        );
+        navigate("/complete");
+      } else {
+        removeLocalItem("pendencia");
+        navigate(lastPath);
+        alertCustom(message || "Acesso concedido!");
+      }
+      setTimeout(() => {
+        removeLocalItem("redirect");
+      }, 5000);
+    } catch (error) {
+      console.error(error.message);
     }
   };
+
   const handleLogin = async (token) => {
     try {
       const data = await apiService.query("POST", "/user/login", { token });
