@@ -18,7 +18,7 @@ const LocationModalRequest = ({ alertCustom, setLocation }) => {
       const savedLocation = getLocalItem("userLocation");
 
       if (savedLocation) {
-        setLocation(savedLocation);
+        requestLocation();
       } else {
         setShowModal(true);
       }
