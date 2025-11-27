@@ -114,7 +114,6 @@ const Estabelecimentos = ({ alertCustom }) => {
 
   return (
     <>
-      <LocationModalAuto alertCustom={alertCustom} setLocation={setLocation} />
       <Modal
         open={dados.open}
         backAction={dados.back}
@@ -122,6 +121,13 @@ const Estabelecimentos = ({ alertCustom }) => {
         fullScreen="all"
         component="view"
       >
+        {" "}
+        <LocationModalAuto
+          extLoading={loading}
+          location={location}
+          alertCustom={alertCustom}
+          setLocation={setLocation}
+        />
         <Grid
           container
           sx={{ display: "flex", justifyContent: "center", mt: -2 }}
