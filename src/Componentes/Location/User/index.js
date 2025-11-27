@@ -9,7 +9,12 @@ import {
   Paper,
 } from "@mui/material";
 import Modal from "../../Modal/Simple";
-import { getLocalItem, isMobile } from "../../Funcoes";
+import {
+  getLocalItem,
+  isMobile,
+  removeLocalItem,
+  setLocalItem,
+} from "../../Funcoes";
 import { LoadingBox } from "../../Custom";
 import NearMeRoundedIcon from "@mui/icons-material/NearMeRounded";
 
@@ -28,11 +33,15 @@ const LocationModalRequest = ({
       return alertCustom(
         "Só mais um momento, estamos obtendo sua localização..."
       );
+    setLocalItem("disable_location_request", true);
     setShowModal(false);
   };
 
   useEffect(() => {
     try {
+      const perm = getLocalItem("disable_location_request");
+      if (perm) return;
+
       const savedLocation = getLocalItem("userLocation");
 
       if (savedLocation) {
@@ -80,7 +89,10 @@ const LocationModalRequest = ({
           setLocation(coordinates);
           setShowModal(false);
         } catch (error) {
-          alertCustom("Erro ao buscar endereço.");
+          alertCustom(
+            "Não foi possível obter sua localização, tente novamente mais tarde!"
+          );
+          setShowModal(false);
         } finally {
           if (!force) setLoading(false);
         }
@@ -145,43 +157,29 @@ const LocationModalRequest = ({
     return isMobile ? btns : btns.reverse();
   };
 
+  const handleOpen = () => {
+    removeLocalItem("disable_location_request");
+    setShowModal(true);
+  };
   return (
     <>
       {!location && !showModal && !extLoading && (
-        <Stack
-          onClick={() => setShowModal(true)}
-          direction="row"
-          spacing={2}
+        <Paper
+          onClick={handleOpen}
           sx={{
-            cursor: "pointer",
             position: "fixed",
-            bottom: { xs: 0, md: 32 },
-            right: { xs: 0, md: 50 },
-            alignItems: "center",
-            justifyContent: { xs: "right", md: "center" },
-            p: { xs: "10px", md: 0 },
-            zIndex: 1300,
-            width: { xs: "100vw", md: "auto" },
+            bottom: { xs: 20, md: 32 },
+            right: { xs: 10, md: 50 },
+            bgcolor: "primary.main",
+            boxShadow: 3,
+            borderRadius: "50%",
+            zIndex: 1500,
           }}
         >
-          <Typography
-            variant="body1"
-            sx={{ display: { xs: "none", md: "block" } }}
-          >
-            Habilite sua localização
-          </Typography>
-          <Paper
-            sx={{
-              bgcolor: "primary.main",
-              boxShadow: 3,
-              borderRadius: "50%",
-            }}
-          >
-            <IconButton>
-              <NearMeRoundedIcon fontSize="large" />
-            </IconButton>
-          </Paper>
-        </Stack>
+          <IconButton>
+            <NearMeRoundedIcon fontSize="large" />
+          </IconButton>
+        </Paper>
       )}
       <Modal
         open={showModal}
