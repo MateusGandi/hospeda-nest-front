@@ -27,6 +27,7 @@ const LocationModalRequest = ({
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(false);
+  const [actions, setActions] = useState([]);
 
   const handleClose = () => {
     if (loading)
@@ -45,7 +46,7 @@ const LocationModalRequest = ({
       const savedLocation = getLocalItem("userLocation");
 
       if (savedLocation) {
-        requestLocation(true);
+        requestLocation();
       } else {
         setShowModal(true);
       }
@@ -54,67 +55,63 @@ const LocationModalRequest = ({
     }
   }, []);
 
-  const requestLocation = (force = false) => {
+  // ⭐ Transformar geolocation em Promise REAL
+  const getPosition = () =>
+    new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      });
+    });
+
+  const requestLocation = async () => {
     setErro(false);
+
     if (!navigator.geolocation) {
       alertCustom("Geolocalização não é suportada.");
       return;
     }
 
-    if (!force) setLoading(true);
+    setLoading(true);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
+    try {
+      const position = await getPosition();
 
-          const coordinates = { latitude, longitude };
-          localStorage.setItem("userLocation", JSON.stringify(coordinates));
+      const { latitude, longitude } = position.coords;
 
-          // Buscar endereço (reverse)
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
-          );
+      const coordinates = { latitude, longitude };
+      localStorage.setItem("userLocation", JSON.stringify(coordinates));
 
-          const data = await response.json();
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+      );
 
-          let address = "Endereço não encontrado";
+      const data = await response.json();
 
-          if (data?.display_name) {
-            address = data.display_name.split(",").slice(0, 2).join(", ");
-          }
+      let address = "Endereço não encontrado";
 
-          localStorage.setItem("userAddress", address);
-
-          setLocation(coordinates);
-          setShowModal(false);
-        } catch (error) {
-          alertCustom(
-            "Não foi possível obter sua localização, tente novamente mais tarde!"
-          );
-          setShowModal(false);
-        } finally {
-          if (!force) setLoading(false);
-        }
-      },
-      () => {
-        alertCustom(
-          "Você precisa permitir o acesso à localização no seu dispositivo!"
-        );
-        setErro(true);
-        if (!force) setLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
+      if (data?.display_name) {
+        address = data.display_name.split(",").slice(0, 2).join(", ");
       }
-    );
+
+      localStorage.setItem("userAddress", address);
+
+      setLocation(coordinates);
+      setShowModal(false);
+    } catch (error) {
+      alertCustom(
+        "Você precisa permitir o acesso à localização no seu dispositivo!"
+      );
+      setErro(true);
+    } finally {
+      setLoading(false);
+    }
   };
+
   const buttons = [
     {
       titulo: "Permitir",
-      disabled: loading,
       action: requestLocation,
       variant: "contained",
       color: "primary",
@@ -122,13 +119,13 @@ const LocationModalRequest = ({
     },
     {
       titulo: "Agora não",
-      disabled: loading,
       action: handleClose,
       variant: "text",
       color: "secondary",
       sx: { width: "100%" },
     },
   ];
+
   const tutorialButton = [
     {
       titulo: "Saiba mais",
@@ -143,8 +140,10 @@ const LocationModalRequest = ({
     },
     {
       titulo: "Tentar novamente",
-      disabled: loading,
-      action: () => setErro(false) || requestLocation(true),
+      action: () => {
+        setErro(false);
+        requestLocation();
+      },
       variant: "text",
       color: "secondary",
       sx: { width: "100%" },
@@ -157,10 +156,15 @@ const LocationModalRequest = ({
     return isMobile ? btns : btns.reverse();
   };
 
+  useEffect(() => {
+    setActions(renderButtons());
+  }, [showModal]);
+
   const handleOpen = () => {
     removeLocalItem("disable_location_request");
     setShowModal(true);
   };
+
   return (
     <>
       {!location && !showModal && !extLoading && (
@@ -187,7 +191,7 @@ const LocationModalRequest = ({
         titulo=" "
         component="modal"
         maxWidth="xs"
-        buttons={renderButtons()}
+        buttons={actions.map((btn) => ({ ...btn, disabled: loading }))}
       >
         <Stack spacing={3} sx={{ width: "100%", textAlign: "center", p: 3 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
