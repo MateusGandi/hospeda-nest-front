@@ -1,10 +1,17 @@
 import React, { use, useEffect, useState } from "react";
-import { Chip, Grid2 as Grid, IconButton, Typography } from "@mui/material";
+import {
+  Chip,
+  Grid2 as Grid,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 
 import { format } from "date-fns";
 import {
   formatarHorario,
   formatDataToString,
+  formatPhone,
   getLocalItem,
   getStatus,
   primeiraMaiuscula,
@@ -307,7 +314,22 @@ const Agendamentos = ({ alertCustom, data, setData }) => {
           service.tempoGasto
         )}`,
       })),
-      { titulo: "Telefone", subtitulo: agendamento.telefone || "N/A" },
+      {
+        titulo: "Telefone",
+        subtitulo: agendamento.telefone ? (
+          <Tooltip title="Abrir no WhatsApp">
+            <a
+              href={`https://wa.me/${agendamento.telefone.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {formatPhone(agendamento.telefone)}
+            </a>
+          </Tooltip>
+        ) : (
+          "N/A"
+        ),
+      },
       { titulo: "E-mail", subtitulo: agendamento.email || "N/A" },
       ...(agendamento.motivoCancelamento
         ? [

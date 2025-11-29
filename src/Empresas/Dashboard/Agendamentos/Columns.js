@@ -8,6 +8,7 @@ import {
   IconButton,
   Typography,
   Grid2 as Grid,
+  Tooltip,
 } from "@mui/material";
 import Icon from "../../../Assets/Emojis";
 import Filter from "../../../Componentes/Filter";
@@ -16,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import {
   diferencaEmMinutos,
   formatarHorario,
+  formatPhone,
   getLocalItem,
   getStatus,
   primeiraMaiuscula,
@@ -277,8 +279,8 @@ export default function AgendamentosByCalendario({
     } catch (error) {
       handleGetAgendamentos();
       alertCustom(
-        error.message ||
-          error?.response?.data?.message ||
+        error?.response?.data?.message ||
+          error.message ||
           "Erro ao atualizar agendamento!"
       );
     } finally {
@@ -288,7 +290,7 @@ export default function AgendamentosByCalendario({
 
   useEffect(() => {
     handleGetAgendamentos();
-  }, [params]);
+  }, [params.filter, params.inicio, params.fim, data.funcionarioId]);
 
   const onClose = () => {
     navigate("/dashboard");
@@ -317,8 +319,10 @@ export default function AgendamentosByCalendario({
             <Box
               className="justify-between-wrap show-box"
               sx={{
+                background: "transparent",
                 alignItems: "top",
                 gap: 1,
+                p: 0,
                 pt: 5,
                 mb: 2,
               }}
@@ -355,7 +359,7 @@ export default function AgendamentosByCalendario({
                 initial={content.eventos}
                 elements={content.filtred}
                 setElements={(elements) => setContent({ filtred: elements })}
-                label="Pesquisar eventos"
+                label="Pesquisar agendamentos"
                 searchValue={params.search}
                 setSearchValue={(value) => setParams({ search: value })}
                 variant="outlined"
@@ -434,7 +438,22 @@ export default function AgendamentosByCalendario({
                   ...modal.selecionado.servico,
                   {
                     titulo: "Telefone do cliente",
-                    subtitulo: modal.selecionado.telefone || "N/A",
+                    subtitulo: modal.selecionado.telefone ? (
+                      <Tooltip title="Abrir no WhatsApp">
+                        <a
+                          href={`https://wa.me/${modal.selecionado.telefone.replace(
+                            /\D/g,
+                            ""
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {formatPhone(modal.selecionado.telefone)}
+                        </a>
+                      </Tooltip>
+                    ) : (
+                      "N/A"
+                    ),
                   },
                   {
                     titulo: "E-mail do cliente",

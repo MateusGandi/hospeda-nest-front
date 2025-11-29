@@ -15,6 +15,7 @@ export const PaperList = ({
   items = [],
   variant = "outlined",
   sx = {},
+  avatarProps,
 }) => {
   return (
     <Paper
@@ -36,11 +37,17 @@ export const PaperList = ({
                     <ListItemAvatar>
                       <Avatar
                         src={item.image}
-                        sx={{
-                          width: item.size || 60,
-                          height: item.size || 60,
-                          bgcolor: !item.image ? "primary.main" : "transparent",
-                        }}
+                        sx={
+                          avatarProps
+                            ? avatarProps
+                            : {
+                                width: item.size || 60,
+                                height: item.size || 60,
+                                bgcolor: !item.image
+                                  ? "primary.main"
+                                  : "transparent",
+                              }
+                        }
                       >
                         {item.icon}
                       </Avatar>

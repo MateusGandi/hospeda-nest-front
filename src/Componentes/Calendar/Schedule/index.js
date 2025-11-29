@@ -55,7 +55,7 @@ const isDisabledDateTime = (disabledRanges, dateTime) => {
   });
 };
 
-function Event({ event, onSelect, onDelete, allowDrag }) {
+function Event({ event, start, onSelect, onDelete, allowDrag }) {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.EVENT,
@@ -69,15 +69,13 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
   );
 
   if (isDragging) return null;
+  const eventHeight = event.duration * 2; //20px por 10 min
 
-  // Altura proporcional à duração em minutos (2px por minuto)
-  const eventHeight = event.duration * 2;
-
-  // top fixo dentro da célula, já que cada célula corresponde a 10 minutos (20px de altura)
-  const topPx = 2;
+  const topPx = 0;
 
   return (
     <Paper
+      elevation={0}
       ref={allowDrag ? drag : null}
       onClick={() => onSelect(event)}
       sx={{
@@ -85,10 +83,13 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         top: topPx,
         left: 4,
         right: 4,
+        //  marginTop: `${marginTop}px`,
+        minHeight: "30px",
         height: eventHeight,
+        border: "1px solid #212121",
         bgcolor: event.color || "#00aaff",
         color: "#fff",
-        padding: "4px 6px",
+        p: "6px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -98,7 +99,6 @@ function Event({ event, onSelect, onDelete, allowDrag }) {
         userSelect: "none",
         borderRadius: "6px",
         cursor: allowDrag ? "grab" : "grabbing !important",
-        p: 1,
       }}
     >
       <Box
@@ -146,7 +146,8 @@ function Cell({ day, hour, minute, children, onDropEvent, onCellClick }) {
       ref={drop}
       onClick={() => onCellClick(day, hour, minute)}
       style={{
-        height: 20,
+        height: 30,
+        borderBottom: "1px solid #252525",
         position: "relative",
         cursor: "pointer",
         backgroundColor: isOver && canDrop ? "#555" : undefined,
@@ -448,8 +449,8 @@ export default function WeekCalendar({
                           position: "relative",
                         }}
                       >
-                        {Array.from({ length: 6 }).map((_, subIndex) => {
-                          const cellStartMinute = subIndex * 10;
+                        {Array.from({ length: 4 }).map((_, subIndex) => {
+                          const cellStartMinute = subIndex * 15;
 
                           const cellDateTime = new Date(date);
                           cellDateTime.setHours(hour, cellStartMinute, 0, 0);
@@ -461,7 +462,7 @@ export default function WeekCalendar({
                                 cellDateTime.toDateString() &&
                               evDate.getHours() === hour &&
                               evDate.getMinutes() >= cellStartMinute &&
-                              evDate.getMinutes() < cellStartMinute + 10
+                              evDate.getMinutes() < cellStartMinute + 15
                             );
                           });
                           const isDisabled = isDisabledDateTime(
@@ -512,6 +513,7 @@ export default function WeekCalendar({
                                       key={event.id}
                                       event={event}
                                       onSelect={onEventClick}
+                                      start={cellStartMinute}
                                       // onDelete={() => {}}
                                       allowDrag={
                                         allowEventMove && !isDisabledEvent
