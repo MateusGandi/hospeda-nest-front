@@ -82,7 +82,7 @@ const Estabelecimentos = ({ alertCustom }) => {
 
   const getDistance = ({ distancia, metrica }) => {
     if (!distancia || distancia == 99999) return "";
-
+    if (metrica == "km") return `${Number(distancia).toFixed(1)} ${metrica} |`;
     return `${distancia} ${metrica} |`;
   };
 

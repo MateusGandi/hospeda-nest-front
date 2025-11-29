@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Rows } from "../../Componentes/Lista/Rows";
-import { formatarData } from "../../Componentes/Funcoes";
+import { formatarData, toUTC } from "../../Componentes/Funcoes";
 import Api from "../../Componentes/Api/axios";
 import Calendario from "../../Componentes/Calendar/Simple";
 import Modal from "../../Componentes/Modal/Simple";
@@ -122,7 +122,8 @@ const Servicos = ({ form, setForm, alertCustom }) => {
               onSelect={handleSelect}
             />
             <Typography variant="h6" className="show-box" sx={{ m: "12px 0" }}>
-              <Icon>🔍</Icon> Nenhuma vaga disponível para este dia!
+              <Icon>🔍</Icon> Nenhuma vaga disponível para{" "}
+              {toUTC({ data: data.dia, onlyDate: true })}!
               <Typography variant="body1">
                 Sem vagas para este dia mas selecione uma data diferente...
               </Typography>

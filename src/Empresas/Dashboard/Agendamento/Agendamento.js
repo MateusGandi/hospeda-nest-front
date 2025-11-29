@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgress, Grid2 as Grid, Typography } from "@mui/material";
 import { Rows } from "../../../Componentes/Lista/Rows";
-import { formatarData } from "../../../Componentes/Funcoes";
+import { formatarData, toUTC } from "../../../Componentes/Funcoes";
 import Api from "../../../Componentes/Api/axios";
 import Calendario from "../../../Componentes/Calendar/Simple";
 import Horario from "../../../Componentes/Horario/fixed";
@@ -124,7 +124,8 @@ const Agendamento = ({ form, setForm, alertCustom }) => {
               onSelect={handleSelect}
             />
             <Typography variant="h6" className="show-box" sx={{ m: "12px 0" }}>
-              <Icon>🔍</Icon> Nenhuma vaga disponível para esse dia!
+              <Icon>🔍</Icon> Nenhuma vaga disponível para{" "}
+              {toUTC({ data: data.dia, onlyDate: true })}!
               <Typography variant="body1">
                 Verifique sua escala de trabalho, você pode não ter escala para
                 este dia!
