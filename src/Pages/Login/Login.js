@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { Grid2 as Grid, IconButton, InputAdornment } from "@mui/material";
+
+import { CustomInput } from "../../Components/Custom";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { CustomInput } from "../Componentes/Custom";
-import { formatPhone } from "../Componentes/Funcoes";
+import { formatPhone } from "../../Components/Functions";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Login = ({ dados, setDados }) => {
   const [showPassword, setShowPassword] = useState(false);

@@ -1,164 +1,55 @@
-import React, { useEffect, useState } from "react";
+import { Box, Grid2 as Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import Login from "./Login";
+import API from "../../Components/Axios";
 import CreateAccount from "./Create";
-import Recover from "./Recover";
-import ChangePassword from "./ChangePassword";
+import Login from "./Login";
+import View from "../../Components/View";
+import { useNavigate } from "react-router-dom";
+import { validarCampos } from "../Componentes/Funcoes";
 
-import { Box, Grid2 as Grid, Stack, Typography } from "@mui/material";
-import Modal from "../Componentes/Modal/Simple";
-import { useNavigate, useParams } from "react-router-dom";
-import Api from "../Componentes/Api/axios";
-import Banner from "../Assets/Login/tonsus_mosaico.png";
-
-import {
-  getLocalItem,
-  removeLocalItem,
-  validarCampos,
-} from "../Componentes/Funcoes";
-import Complete from "./Complete";
-import Logo from "../Assets/Login/tonsus_extend.png";
-
-const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
-  const { hash } = useParams();
+const LoginPage = ({ page, alertCustom }) => {
   const navigate = useNavigate();
   const [inicialState, setInicialState] = useState(null);
   const [dados, setDados] = useState({});
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const el = document.querySelector("div[role='button']");
-      if (el) {
-        el.style.maxWidth = "270px";
-      }
-    }, 10);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const verifyAndRedirect = async (dadosReceived, message) => {
-    try {
-      const lastRoute = getLocalItem("lastRoute");
-      const routes = await reloadRoutes();
-      const isAllowed = verifyAccess(lastRoute, routes);
-      const lastPath = isAllowed ? lastRoute : "/home";
-
-      if (dadosReceived && dadosReceived.pendencia) {
-        alertCustom(
-          dadosReceived.motivo || "Complete seu cadastro antes de continuar!"
-        );
-        navigate("/complete");
-      } else {
-        removeLocalItem("pendencia");
-        navigate(lastPath);
-        alertCustom(message || "Acesso concedido!");
-      }
-      setTimeout(() => {
-        removeLocalItem("redirect");
-      }, 5000);
-    } catch (error) {
-      console.error(error.message);
-    }
+  const verifyAndRedirect = async (message) => {
+    navigate("/");
+    alertCustom(message);
   };
 
   const handleLogin = async (token) => {
     setInicialState((prev) => ({ ...prev, loadingButton: true }));
     try {
       const { telefone, ...rest } = dados;
-      const data = await Api.query("POST", "/user/login", {
+      const data = await API.query("POST", "/user/login", {
         ...rest,
         token,
         telefone: telefone?.replace(/\D/g, ""),
       });
 
-      Api.setKey(data);
-      await verifyAndRedirect(data, "Login realizado com sucesso!");
+      API.setData(data);
+      verifyAndRedirect("Login realizado com sucesso!");
     } catch (error) {
-      console.log(error);
       alertCustom(error?.response?.data?.message ?? "Erro ao realizar login!");
     } finally {
       setInicialState((prev) => ({ ...prev, loadingButton: false }));
     }
   };
 
-  const handleChangePass = async () => {
-    setInicialState((prev) => ({ ...prev, loadingButton: true }));
-    try {
-      const { senha } = dados;
-
-      const data = await Api.query("POST", `/user/recover/change/${hash}`, {
-        password: senha,
-      });
-      Api.setKey(data);
-
-      await verifyAndRedirect(data, "Senha atualizada com sucesso");
-    } catch (error) {
-      alertCustom(
-        error?.response?.data?.message ??
-          "Erro ao atualizar senha, verifique os dados!"
-      );
-    } finally {
-      setInicialState((prev) => ({ ...prev, loadingButton: false }));
-    }
-  };
-
-  const handleUpdate = async () => {
-    setInicialState((prev) => ({ ...prev, loadingButton: true }));
+  const handleCreate = async () => {
     try {
       const { telefone, ...rest } = dados;
 
-      await Api.query("PATCH", `/user/${getLocalItem("userId")}`, {
-        telefone: telefone?.replace(/\D/g, ""),
-      });
-      verifyAndRedirect(null, "Dados atualizados com sucesso!");
-    } catch (error) {
-      alertCustom(
-        error?.response?.data?.message ??
-          "Erro ao recuperar conta, verifique os dados!"
-      );
-    } finally {
-      setInicialState((prev) => ({ ...prev, loadingButton: false }));
-    }
-  };
-
-  const handleRecover = async () => {
-    setInicialState((prev) => ({ ...prev, loadingButton: true }));
-    try {
-      const { telefone } = dados;
-      await Api.query("POST", `/user/recover/${telefone.replace(/\D/g, "")}`);
-
-      alertCustom("Um link de recuperação será enviado para seu e-mail!");
-    } catch (error) {
-      console.log(error);
-      alertCustom(
-        error?.response?.data?.message ??
-          "Erro ao recuperar conta, verifique os dados!"
-      );
-    } finally {
-      setInicialState((prev) => ({ ...prev, loadingButton: false }));
-    }
-  };
-
-  const handleCreate = async (token) => {
-    setInicialState((prev) => ({ ...prev, loadingButton: true }));
-    try {
-      const { telefone, confirmarSenha, senha, ...rest } = dados;
-
-      const data = await Api.query("POST", "/user/register", {
+      const data = await API.query("POST", "/user/create", {
         ...rest,
-        senha,
-        token,
         telefone: telefone?.replace(/\D/g, ""),
       });
-      Api.setKey(data);
-      await verifyAndRedirect(data, "Conta criada com sucesso!");
+
+      API.setData(data);
+      verifyAndRedirect("Conta criada com sucesso!");
     } catch (error) {
-      alertCustom(
-        error?.response?.data?.message ??
-          "Erro ao criar conta, verifique seus dados!"
-      );
-    } finally {
-      setInicialState((prev) => ({ ...prev, loadingButton: false }));
+      alertCustom(error?.response?.data?.message ?? "Erro ao criar conta!");
     }
   };
 
@@ -186,33 +77,6 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
         action: handleClose,
       },
     },
-    change: {
-      titulo: "Atualize sua senha",
-      actionText: "Atualizar",
-      componente: "change",
-      backAction: {
-        titulo: "Voltar",
-        action: handleClose,
-      },
-    },
-    recover: {
-      titulo: "Recupere sua conta",
-      actionText: "Recuperar",
-      componente: "recover",
-      backAction: {
-        titulo: "Voltar",
-        action: handleClose,
-      },
-    },
-    complete: {
-      titulo: "Complete seu cadastro",
-      actionText: "Atualizar",
-      componente: "complete",
-      backAction: {
-        titulo: "Voltar",
-        action: handleClose,
-      },
-    },
   };
 
   useEffect(() => {
@@ -222,26 +86,12 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
         ...paginas[page],
       });
     else setInicialState(null);
-  }, [page, hash]);
-
-  const google = (type = "") => {
-    return (
-      {
-        create: "signup_with",
-        login: "signin_with",
-        recover: "signin_with",
-        change: "continue_with",
-      }[type] || "signin"
-    );
-  };
+  }, [page]);
 
   const componentValidations = {
     create: [
       { campo: "nome", validacoes: "required, minLength(8)" },
-      {
-        campo: "telefone",
-        validacoes: "required, minLength(16), telefone",
-      },
+      { campo: "telefone", validacoes: "required, minLength(16), telefone" },
       {
         campo: "senha",
         validacoes: "required, minLength(5), equal(confirmarSenha)",
@@ -249,46 +99,13 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
       { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
     ],
     login: [
-      {
-        campo: "telefone",
-        validacoes: "required, minLength(10), telefone",
-      },
+      { campo: "telefone", validacoes: "required, minLength(10), telefone" },
       { campo: "senha", validacoes: "required" },
-    ],
-    recover: [
-      {
-        campo: "telefone",
-        validacoes: "required, minLength(13), telefone",
-      },
-    ],
-    change: [
-      {
-        label: "Nova senha",
-        campo: "senha",
-        validacoes: "required, minLength(5), equal(confirm)",
-      },
-      {
-        label: "Senha que você confirmou",
-        campo: "confirm",
-        validacoes: "required, equal(senha)",
-      },
-    ],
-    complete: [
-      {
-        campo: "telefone",
-        validacoes: "required, minLength(12), telefone",
-      },
     ],
   };
 
-  const submitForm = async (TOKEN) => {
+  const submitForm = async () => {
     try {
-      if (TOKEN) {
-        return inicialState.componente === "create"
-          ? handleCreate(TOKEN)
-          : handleLogin(TOKEN);
-      }
-
       await validarCampos(
         inicialState.componente,
         dados,
@@ -296,94 +113,40 @@ const LoginPage = ({ verifyAccess, reloadRoutes, page, alertCustom }) => {
       ).then(() => {
         inicialState.componente === "create" && handleCreate();
         inicialState.componente === "login" && handleLogin();
-        inicialState.componente === "recover" && handleRecover();
-        inicialState.componente === "change" && handleChangePass();
-        inicialState.componente === "complete" && handleUpdate();
       });
     } catch (error) {
       alertCustom(error.message || "Erro ao submeter o formulário!");
     }
   };
 
-  return (
-    inicialState && (
-      <Modal
-        open={inicialState.open}
-        onClose={handleClose}
-        titulo={
-          <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
-            {" "}
-            <Box sx={{ display: { xs: "block", md: "none" } }}>
-              <img src={Logo} style={{ width: "60%" }} />
-            </Box>
-            <Typography variant="h6" color="textSecondary">
-              {inicialState.titulo}
-            </Typography>
-          </Stack>
-        }
-        actionText={inicialState.actionText}
-        loadingButton={inicialState.loadingButton}
-        componentName={inicialState.componente}
-        onAction={submitForm}
-        buttons={
-          inicialState.componente === "complete"
-            ? []
-            : [
-                {
-                  type: "google",
-                  text: google(inicialState.componente),
-                  action: ({ credential }) => submitForm(credential),
-                },
-              ]
-        }
-        sx={{ background: "#000" }}
-        buttonStyle={{ variant: "contained" }}
-        maxWidth={"lg"}
-        component="form"
-        fullScreen="all"
-        backAction={inicialState.backAction}
-        images={[
-          {
-            styles: { width: "90%" },
-            src: Banner,
-          },
+  if (!inicialState) return null;
 
-          // {
-          //   src: "", //LogoBanner,
-          //   styles: {
-          //     // width: "40px",
-          //     // height: "40px",
-          //     // margin: "10px",
-          //     // padding: "10px",
-          //     // background: "#0195F7",
-          //     // borderRadius: "10px",
-          //   },
-          //   text: {
-          //     content: "Ferramentas personalizadas para o seu negócio!",
-          //     variant: "h6",
-          //   },
-          // },
-        ]}
-      >
-        <Grid container spacing={4}>
-          {inicialState.componente === "create" && (
-            <CreateAccount dados={dados} setDados={setDados} />
-          )}
-          {inicialState.componente === "login" && (
-            <Login dados={dados} setDados={setDados} />
-          )}
-          {inicialState.componente === "recover" && (
-            <Recover dados={dados} setDados={setDados} />
-          )}
-          {inicialState.componente === "change" && (
-            <ChangePassword dados={dados} setDados={setDados} />
-          )}
-          {inicialState.componente === "complete" && (
-            <Complete dados={dados} setDados={setDados} />
-          )}
-        </Grid>
-      </Modal>
-    )
+  return (
+    <View
+      titulo={inicialState.titulo}
+      maxWidth="lg"
+      sx={{ background: "#000" }}
+      height="85vh"
+      buttons={[
+        {
+          titulo: inicialState.actionText,
+          action: submitForm,
+          variant: "contained",
+          color: "primary",
+          disabled: inicialState.loadingButton,
+        },
+      ]}
+    >
+      <Grid container spacing={4}>
+        {inicialState.componente === "create" && (
+          <CreateAccount dados={dados} setDados={setDados} />
+        )}
+
+        {inicialState.componente === "login" && (
+          <Login dados={dados} setDados={setDados} />
+        )}
+      </Grid>
+    </View>
   );
 };
 

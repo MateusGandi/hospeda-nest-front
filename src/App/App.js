@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import { RouteElement, Redirect } from "./Components/Router/Path";
+import { RouteElement } from "../Components/Router/Path";
 import theme from "./Theme";
 import Alerta from "./Components/Alert/Temp";
 import NavigationBar from "./Components/NavigationBar";
@@ -45,17 +45,10 @@ function App() {
             <Route
               key={index}
               path={path}
-              element={
-                <RouteElement
-                  path={path}
-                  alertCustom={alertCustom}
-                  page={page}
-                  setPage={setPage}
-                />
-              }
+              element={<RouteElement path={path} alertCustom={alertCustom} />}
             />
           ))}
-          <Route path="*" element={<Redirect />} />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
