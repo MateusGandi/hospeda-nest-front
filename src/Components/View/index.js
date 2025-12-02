@@ -7,7 +7,6 @@ const View = ({
   children,
   buttons = [],
   maxWidth = "md",
-  height = "80vh",
   loading = false,
   sx = {},
 }) => {
@@ -23,7 +22,7 @@ const View = ({
       <Box
         sx={{
           width: "100%",
-          height,
+          height: "calc(100vh - 60px)",
           borderRadius: 2,
           display: "flex",
           flexDirection: "column",
