@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Box } from "@mui/material";
 
 const SimpleAppBar = ({ titulo, rightContent }) => {
   return (
-    <AppBar position="static" elevation={1}>
+    <AppBar position="static" elevation={1} sx={{ height: "60px" }}>
       <Toolbar
         sx={{
           display: "flex",
@@ -11,12 +11,10 @@ const SimpleAppBar = ({ titulo, rightContent }) => {
           alignItems: "center",
         }}
       >
-        {/* Título */}
         <Typography variant="h6" component="div">
           {titulo}
         </Typography>
 
-        {/* Área para botões/ícones opcionais */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           {rightContent}
         </Box>

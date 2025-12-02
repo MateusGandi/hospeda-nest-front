@@ -125,8 +125,6 @@ const LoginPage = ({ page, alertCustom }) => {
     <View
       titulo={inicialState.titulo}
       maxWidth="lg"
-      sx={{ background: "#000" }}
-      height="85vh"
       buttons={[
         {
           titulo: inicialState.actionText,
