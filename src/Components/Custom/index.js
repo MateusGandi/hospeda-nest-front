@@ -15,8 +15,8 @@ import { height, styled } from "@mui/system";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Calendario from "../Calendar/Simple";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Modal from "../Modal/Simple";
-import { Rows } from "../Lista/Rows";
+import Modal from "../Modal";
+import { Rows } from "../List/Rows";
 import { formatDate } from "../Functions";
 import { ptBR } from "date-fns/locale";
 

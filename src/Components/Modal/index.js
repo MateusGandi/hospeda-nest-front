@@ -1,29 +1,14 @@
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Divider,
-  Grid2 as Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Button from "@mui/material/Button";
-import CloseIcon from "@mui/icons-material/Close";
+import React from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { GoogleLogin } from "@react-oauth/google";
-import { GoogleLoginButton } from "../../Custom";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
-import { LoadingBox } from "../Custom";
-import LoadingImagePulse from "../../Effects/loading";
-import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
+import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
+import { Container, Typography } from "@mui/material";
 import { isMobile } from "../Functions";
+import { LoadingBox } from "../Custom";
 
 const full = {
   [undefined]: { xs: false, md: false, radius: "10px" },
@@ -34,26 +19,27 @@ const full = {
 
 const Modal = ({
   open,
-  onClose,
+  handleClose,
   children,
   maxWidth = "md",
   titulo,
   fullScreen,
   loading = false,
   buttons = [], // {titulo, action, color}
+  buttonStyle,
   sx,
 }) => {
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth={maxWidth}
       fullWidth
-      fullScreen={full[fullScreen].sec}
+      fullScreen={full[fullScreen]?.xs && full[fullScreen]?.md}
       PaperProps={{
         sx: {
           ...sx,
-          borderRadius: full[fullScreen].radius,
+          borderRadius: full[fullScreen]?.radius,
           position: "relative",
         },
       }}
@@ -66,8 +52,7 @@ const Modal = ({
         }}
       >
         <Typography variant="h6">{titulo}</Typography>
-
-        <IconButton aria-label="close" onClick={onClose} color="GrayText">
+        <IconButton aria-label="close" onClick={handleClose} color="GrayText">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -88,9 +73,18 @@ const Modal = ({
       ) : (
         <>
           <DialogContent sx={{ p: 0 }}>
-            <Container maxWidth={maxWidth}>{children}</Container>
+            <Container
+              maxWidth={maxWidth}
+              sx={{
+                height: "100%",
+                py: 2,
+                px: 0,
+              }}
+            >
+              {children}
+            </Container>
           </DialogContent>
-          {buttons.length && (
+          {buttons.length > 0 && (
             <DialogActions
               sx={{
                 display: "flex",
@@ -101,21 +95,21 @@ const Modal = ({
                 m: 1,
               }}
             >
-              {buttons &&
-                buttons.map((button) => (
-                  <Button
-                    size="large"
-                    color={button.color || "primary"}
-                    disableElevation
-                    disabled={button.disabled}
-                    onClick={button.action}
-                    icon={button.icon}
-                    variant={button.variant || "outlined"}
-                    sx={button.sx}
-                  >
-                    {button.titulo}
-                  </Button>
-                ))}
+              {buttons.map((button, index) => (
+                <Button
+                  key={index}
+                  size="large"
+                  color={button.color || "primary"}
+                  disableElevation
+                  disabled={button.disabled}
+                  onClick={button.action}
+                  startIcon={button.icon}
+                  variant={button.variant ? button.variant : "outlined"}
+                  sx={button.sx}
+                >
+                  {button.titulo}
+                </Button>
+              ))}
             </DialogActions>
           )}
         </>

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
-import Login from "../../..//Pages/Login";
-import Manager from "../../../Manager";
-import PublicPage from "../../../Home";
+import Login from "../../../Pages/Login";
+import Manager from "../../../Pages/Manager";
+import PublicPage from "../../../Pages/Home";
 import { useState } from "react";
 
 export function RouteElement({ path: pathSelected, alertCustom }) {
