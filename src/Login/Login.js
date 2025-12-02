@@ -1,13 +1,5 @@
-import React, { use, useState } from "react";
-import {
-  Grid2 as Grid,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Link,
-  Box,
-  Divider,
-} from "@mui/material";
+import { useState } from "react";
+import { Grid2 as Grid, IconButton, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { CustomInput } from "../Componentes/Custom";
@@ -21,9 +13,9 @@ const Login = ({ dados, setDados }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    if (name === "telefone") {
+    if (name === "telefone")
       return setDados((prev) => ({ ...prev, [name]: formatPhone(value) }));
-    }
+
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 

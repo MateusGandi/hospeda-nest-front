@@ -36,7 +36,6 @@ const Create = ({ dados, setDados }) => {
 
   return (
     <>
-      {" "}
       <Grid item size={{ xs: 12 }}>
         <CustomInput
           fullWidth
@@ -109,7 +108,7 @@ const Create = ({ dados, setDados }) => {
             Já possui uma conta? Acesse-a
           </a>
         </Box>
-      </Grid>{" "}
+      </Grid>
     </>
   );
 };

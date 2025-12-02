@@ -9,13 +9,11 @@ import {
   Container,
 } from "@mui/material";
 
-import Alerta from "./Componentes/Alert/Temp";
-import NavigationBar from "./Componentes/NavigationBar";
+import Alerta from "./Components/Alert/Temp";
+import NavigationBar from "./Components/NavigationBar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { RouteElement, Redirect } from "./Componentes/Router/Path";
-import Permissions from "./Componentes/Permissions";
+import { RouteElement, Redirect } from "./Components/Router/Path";
 
-//mateusgayy
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -37,46 +35,6 @@ const theme = createTheme({
     quaternary: {
       main: "#A755F7",
     },
-    background: {
-      default: "#1b1b1b",
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        outlined: {
-          borderColor: "#484848", // Cor da borda laranja
-          borderWidth: "1.5px",
-        },
-      },
-      variants: [
-        {
-          props: { variant: "outlined", color: "secondary" },
-          style: {
-            borderColor: "#fff",
-            color: "#fff",
-          },
-        },
-      ],
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#363636",
-          color: "#fff",
-          borderRadius: "10px",
-        },
-      },
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          backgroundColor: "#000",
-          color: "#fff",
-          borderRadius: "10px",
-        },
-      },
-    },
   },
   typography: {
     fontFamily: "'Inter', sans-serif",
@@ -85,27 +43,7 @@ const theme = createTheme({
 
 function App() {
   const [page, setPage] = useState(null);
-  const [paths] = useState([
-    "/home",
-    "/create",
-    "/complete",
-    "/onboard/:planId/:page?",
-    "/login",
-    "/change/:hash?",
-    "/recover",
-    "/estabelecimentos",
-    "/barbearia/:barbeariaName/:subPath?",
-    "/agendamento/:barbeariaName/:subPath?",
-    "/barbearia",
-    "/dashboard/:path?/:subPath?/:modalPath?",
-    "/manager/:page?",
-    "/me/:agendamentoId?",
-    "/plans/:subPath?",
-    "/checkout/:key/:page?",
-    "/review/:barbeariaId",
-    "/faq/:title?",
-    "/envite/:establishmentId?/:token?",
-  ]);
+  const [paths] = useState(["/", "/create", "/login", "/dashboard/:path?"]);
 
   const [alert, setAlert] = useState({
     message: "",
@@ -131,11 +69,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Alerta alert={alert} setAlert={setAlert} />
+      <NavigationBar />
       <CssBaseline />
       <BrowserRouter>
-        <NavigationBar logo="Tonsus App" alertCustom={alertCustom} />
-
-        <Permissions alertCustom={alertCustom} />
         <Routes>
           {paths.map((path, index) => (
             <Route
