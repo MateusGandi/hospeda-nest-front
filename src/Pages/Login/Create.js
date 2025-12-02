@@ -20,18 +20,16 @@ const Create = ({ dados, setDados }) => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    if (name === "telefone") {
+    if (name === "telefone")
       return setDados((prev) => ({ ...prev, [name]: formatPhone(value) }));
-    }
+
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 
   const togglePasswordVisibility = (field) => {
-    if (field === "password") {
-      setShowPassword((prev) => !prev);
-    } else if (field === "confirmPassword") {
-      setShowConfirmPassword((prev) => !prev);
-    }
+    if (field === "password") return setShowPassword((prev) => !prev);
+    if (field === "confirmPassword")
+      return setShowConfirmPassword((prev) => !prev);
   };
 
   return (

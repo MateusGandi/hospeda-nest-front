@@ -57,9 +57,6 @@ const Login = ({ dados, setDados }) => {
         />
       </Grid>{" "}
       <Grid item size={{ xs: 12 }} sx={{ display: "flex", flexWrap: "wrap" }}>
-        <a onClick={() => navigate("/recover")} className="show-link">
-          Esqueceu sua senha?
-        </a>
         <a onClick={() => navigate("/create")} className="show-link">
           Não tem uma conta? Crie uma
         </a>
