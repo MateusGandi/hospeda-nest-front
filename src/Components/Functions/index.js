@@ -1,6 +1,6 @@
-import validator from "validator";
+import apiService from "../Axios";
 import heic2any from "heic2any";
-import apiService from "../Api/axios";
+import validator from "validator";
 
 export const match = () => window.innerWidth <= 600;
 

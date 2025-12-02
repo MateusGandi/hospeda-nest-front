@@ -6,7 +6,7 @@ import CreateAccount from "./Create";
 import Login from "./Login";
 import View from "../../Components/View";
 import { useNavigate } from "react-router-dom";
-import { validarCampos } from "../Componentes/Funcoes";
+import { validateFields } from "../../Components/Functions";
 
 const LoginPage = ({ page, alertCustom }) => {
   const navigate = useNavigate();
@@ -91,7 +91,7 @@ const LoginPage = ({ page, alertCustom }) => {
   const componentValidations = {
     create: [
       { campo: "nome", validacoes: "required, minLength(8)" },
-      { campo: "telefone", validacoes: "required, minLength(16), telefone" },
+      { campo: "telefone", validacoes: "required, minLength(16), phone" },
       {
         campo: "senha",
         validacoes: "required, minLength(5), equal(confirmarSenha)",
@@ -99,14 +99,14 @@ const LoginPage = ({ page, alertCustom }) => {
       { campo: "confirmarSenha", validacoes: "required, equal(senha)" },
     ],
     login: [
-      { campo: "telefone", validacoes: "required, minLength(10), telefone" },
+      { campo: "telefone", validacoes: "required, minLength(10), phone" },
       { campo: "senha", validacoes: "required" },
     ],
   };
 
   const submitForm = async () => {
     try {
-      await validarCampos(
+      await validateFields(
         inicialState.componente,
         dados,
         componentValidations

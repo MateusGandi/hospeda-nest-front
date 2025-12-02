@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
-import { RouteElement } from "../Components/Router/Path";
-import theme from "./Theme";
 import Alerta from "./Components/Alert/Temp";
 import NavigationBar from "./Components/NavigationBar";
+import { RouteElement } from "./Components/Router/Path";
+import Theme from "./Theme";
+import { useState } from "react";
 
-const theme = createTheme(theme);
+const theme = createTheme(Theme);
 
 function App() {
   const [page, setPage] = useState(null);

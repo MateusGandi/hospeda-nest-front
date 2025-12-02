@@ -17,7 +17,7 @@ import Calendario from "../Calendar/Simple";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Modal from "../Modal/Simple";
 import { Rows } from "../Lista/Rows";
-import { formatDate } from "../Funcoes";
+import { formatDate } from "../Functions";
 import { ptBR } from "date-fns/locale";
 
 const meses = [
@@ -240,7 +240,6 @@ export const LoadingBox = ({ label = "Carregando..." }) => {
         alignItems: "center",
         justifyContent: "center",
         gap: 1,
-        ...sx,
       }}
     >
       <CircularProgress size={25} />

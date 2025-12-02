@@ -23,7 +23,7 @@ import IconButton from "@mui/material/IconButton";
 import { LoadingBox } from "../Custom";
 import LoadingImagePulse from "../../Effects/loading";
 import LogoIcon from "../../../Assets/Login/tonsus_logo_white.png";
-import { isMobile } from "../../Funcoes";
+import { isMobile } from "../Functions";
 
 const full = {
   [undefined]: { xs: false, md: false, radius: "10px" },
